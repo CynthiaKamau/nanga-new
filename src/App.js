@@ -1,15 +1,15 @@
 import React from "react";
 import { createBrowserHistory } from "history";
-import { Router, Route, Switch, Redirect } from "react-router-dom";
+import { BrowserRouter, Route, Switch } from "react-router-dom";
 import axios from "axios";
 
 // core components
-// core components
-import Admin from "layouts/Admin.js";
-import RTL from "layouts/RTL.js";
-import LoginPage from "views/Pages/Login";
-import User from "layouts/User";
-import TeamLead from "layouts/TeamLead";
+import AuthLayout from "layouts/Auth.js";
+import RtlLayout from "layouts/RTL.js";
+import AdminLayout from "layouts/Admin.js";
+import LoginPage from "views/Pages/LoginPage";
+
+import "assets/scss/material-dashboard-pro-react.scss?v=1.10.0";
 
 const App = () => {
 
@@ -20,16 +20,15 @@ const App = () => {
   axios.defaults.baseURL = `http://${REACT_APP_SERVER_URL}`;
 
   return (
-    <Router history={hist}>
-      <Switch>
-        <Route path="/admin" component={Admin} />
-        <Route path="/user" component={User} />
-        <Route path="/auth/login-page" component={LoginPage} />
-        <Route path="/teamlead" component={TeamLead} />
-        <Route path="/rtl" component={RTL} />
-        <Redirect from="/" to="/admin/dashboard" />
-      </Switch>
-    </Router>
+    <BrowserRouter history={hist}>
+    <Switch>
+      <Route path="/rtl" component={RtlLayout} />
+      <Route path="/auth" component={AuthLayout} />
+      <Route path="/admin" component={AdminLayout} />
+      <Route path="/" component={LoginPage} />
+      {/* <Redirect from="/" to="/admin/dashboard" /> */}
+    </Switch>
+  </BrowserRouter>
   );
 }
 
