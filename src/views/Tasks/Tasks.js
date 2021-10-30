@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 // @material-ui/core
-// import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 // core components
 import GridItem from "components/Grid/GridItem.js";
 import GridContainer from "components/Grid/GridContainer.js";
@@ -27,12 +27,12 @@ import TextField from '@material-ui/core/TextField';
 import DateFnsUtils from '@date-io/date-fns';
 import {MuiPickersUtilsProvider, KeyboardDatePicker} from '@material-ui/pickers';
 
-// import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
+import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
 
-// const useStyles = makeStyles(styles);
+const useStyles = makeStyles(styles);
 
 export default function TasksPage() {
-//   const classes = useStyles();
+    const classes = useStyles();
 
     const [addopen, setAddOpen] = useState(false);
     const [editopen, setEditOpen] = useState(false);
@@ -92,7 +92,7 @@ export default function TasksPage() {
                 </p>
               </CardHeader>
               <CardBody>
-              <div className="pull-right"><Button color="primary" size="lg" onClick={handleAddClickOpen}> Add Task </Button> </div>
+              <div className={classes.btnRight}><Button color="primary" size="lg" onClick={handleAddClickOpen}> Add Task </Button> </div>
 
                 <Table>
                     <TableHead>

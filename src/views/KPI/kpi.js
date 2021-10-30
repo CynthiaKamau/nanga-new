@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 // @material-ui/core
-// import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 // core components
 import GridItem from "components/Grid/GridItem.js";
 import GridContainer from "components/Grid/GridContainer.js";
@@ -25,13 +25,12 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
 
+import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
 
-// import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
-
-// const useStyles = makeStyles(styles);
+const useStyles = makeStyles(styles);
 
 export default function Teams() {
-//   const classes = useStyles();
+    const classes = useStyles();
 
     const [addopen, setAddOpen] = useState(false);
     const [editopen, setEditOpen] = useState(false);
@@ -93,7 +92,7 @@ export default function Teams() {
                 </p>
               </CardHeader>
               <CardBody>
-              <div className="pull-right"><Button color="primary" size="lg" onClick={handleAddClickOpen}> Add KPI </Button> </div>
+              <div className={classes.btnRight}><Button color="primary" size="lg" onClick={handleAddClickOpen}> Add KPI </Button> </div>
 
                 <Table>
                     <TableHead>

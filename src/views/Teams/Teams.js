@@ -1,6 +1,6 @@
-import React from "react";
+import React, {useState} from "react";
 // @material-ui/core
-// import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 // core components
 import GridItem from "components/Grid/GridItem.js";
 import GridContainer from "components/Grid/GridContainer.js";
@@ -24,20 +24,21 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
+import JsonData from "../../data/data.json";
 
 
-// import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
+import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
 
-// const useStyles = makeStyles(styles);
+const useStyles = makeStyles(styles);
 
 export default function TeamsPage() {
-//   const classes = useStyles();
+    const classes = useStyles();
 
-    const [addopen, setAddOpen] = React.useState(false);
-    const [editopen, setEditOpen] = React.useState(false);
-    const [deleteopen, setDeleteOpen] = React.useState(false);
-    const [name, setName] = React.useState("");
-    const [teamlead, setTeamLead] = React.useState("");
+    const [addopen, setAddOpen] = useState(false);
+    const [editopen, setEditOpen] = useState(false);
+    const [deleteopen, setDeleteOpen] = useState(false);
+    const [name, setName] = useState("");
+    const [teamlead, setTeamLead] = useState("");
 
     const handleAddClickOpen = () => {
         setAddOpen(true);
@@ -46,6 +47,16 @@ export default function TeamsPage() {
     const handleEditClickOpen = () => {
         setEditOpen(true);
     };
+
+    const setEditing = (list) => {
+        console.log("here", list)
+        setName(list.team_name);
+        setTeamLead(list.team_lead)
+    }
+
+    const setDelete = (list) => {
+        console.log(list)
+    }
 
     const handleDeleteClickOpen = () => {
         setDeleteOpen(true);
@@ -62,6 +73,8 @@ export default function TeamsPage() {
     const handleDeleteClose = () => {
         setDeleteOpen(false);
     };
+
+    const items = JsonData.Teams;
 
     const teamleads = [
         {
@@ -90,7 +103,7 @@ export default function TeamsPage() {
                 </p>
               </CardHeader>
               <CardBody>
-              <div className="pull-right"><Button color="primary" size="lg" onClick={handleAddClickOpen}> Add Team </Button> </div>
+              <div className={classes.btnRight}><Button color="primary" size="lg" onClick={handleAddClickOpen}> Add Team </Button> </div>
 
                 <Table>
                     <TableHead>
@@ -101,40 +114,22 @@ export default function TeamsPage() {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        <TableRow key=''>
-                            <TableCell>ICT Applications</TableCell>
-                            <TableCell>John Omondi</TableCell>
+                        {items && items.map((list, index) => (
+                        <TableRow key={index}>
+                            <TableCell>{list.team_name}</TableCell>
+                            <TableCell>{list.team_lead}</TableCell>
                             <TableCell>
                             <IconButton aria-label="view" color="error" onClick={handleAddClickOpen} ><ControlPointIcon /></IconButton>
-                            <IconButton aria-label="edit" color="primary" onClick={handleEditClickOpen} ><EditIcon/></IconButton>
-                            <IconButton aria-label="delete" color="secondary" onClick={handleDeleteClickOpen} ><DeleteIcon /></IconButton>
+                            <IconButton aria-label="edit" color="primary" onClick={(list) => { handleEditClickOpen(); setEditing(list)}} ><EditIcon/></IconButton>
+                            <IconButton aria-label="delete" color="secondary" onClick={(list) => { handleDeleteClickOpen(); setDelete(list)}} ><DeleteIcon /></IconButton>
                             </TableCell>
 
                         </TableRow>
-                        <TableRow key=''>
-                            <TableCell>Marketing</TableCell>
-                            <TableCell>Mbugua Macharia</TableCell>
-                            <TableCell>
-                            <IconButton aria-label="view" color="error" onClick={handleAddClickOpen} ><ControlPointIcon /></IconButton>
-                            <IconButton aria-label="edit" color="primary" onClick={handleEditClickOpen} ><EditIcon/></IconButton>
-                            <IconButton aria-label="delete" color="secondary" onClick={handleDeleteClickOpen} ><DeleteIcon /></IconButton>
-                            </TableCell>
-
-                        </TableRow>
-                        <TableRow key=''>
-                            <TableCell>ICT Security</TableCell>
-                            <TableCell>Paul Karimi</TableCell>
-                            <TableCell>
-                            <IconButton aria-label="view" color="error" onClick={handleAddClickOpen} ><ControlPointIcon /></IconButton>
-                            <IconButton aria-label="edit" color="primary" onClick={handleEditClickOpen} ><EditIcon/></IconButton>
-                            <IconButton aria-label="delete" color="secondary" onClick={handleDeleteClickOpen} ><DeleteIcon /></IconButton>
-                            </TableCell>
-
-                        </TableRow>
+                        ))}
                     </TableBody>
                 </Table>
 
-                <Dialog open={addopen} onClose={handleAddClose}>
+                <Dialog open={addopen} onClose={handleAddClose} >
                     <DialogTitle>Team</DialogTitle>
                     <DialogContent>
                     <DialogContentText>
@@ -144,6 +139,7 @@ export default function TeamsPage() {
                             autoFocus
                             margin="dense"
                             id="name"
+                            name="name"
                             label="Name"
                             type="text"
                             fullWidth

@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState} from "react";
 // @material-ui/core
-// import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 // core components
 import GridItem from "components/Grid/GridItem.js";
 import GridContainer from "components/Grid/GridContainer.js";
@@ -24,56 +24,65 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
+import JsonData from "../../data/data.json";
 
-// import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
+import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
 // import classNames from "classnames";
 
-// const useStyles = makeStyles(styles);
+const useStyles = makeStyles(styles);
 
 export default function UsersPage() {
-//   const classes = useStyles();
+  const classes = useStyles();
 
-    const [addopen, setAddOpen] = React.useState(false);
-    const [editopen, setEditOpen] = React.useState(false);
-    const [deleteopen, setDeleteOpen] = React.useState(false);
-    const [name, setName] = React.useState("");
-    const [status, setStatus] = React.useState("");
-    const [team, setTeam] = React.useState("");
-    const [role, setRole] = React.useState("");
+  const [addopen, setAddOpen] = useState(false);
+  const [editopen, setEditOpen] = useState(false);
+  const [deleteopen, setDeleteOpen] = useState(false);
+  const [name, setName] = useState("");
+  const [status, setStatus] = useState("");
+  const [team, setTeam] = useState("");
+  const [role, setRole] = useState("");
+  // const [selectedUser, setSelectedUser] = useState("");
 
-    const teams = [
-        {
-          value: 'finance',
-          label: 'Finance',
-        },
-        {
-          value: 'sales',
-          label: 'Sales',
-        },
-        {
-          value: 'marketing',
-          label: 'Marketing',
-        },
-        {
-          value: 'it',
-          label: 'IT',
-        }
-    ]
+  const items = JsonData.Users;
+  const teams = JsonData.Teams;
+  const roles = JsonData.Roles;
+  // const statuses = JsonData.Status;
 
-    const roles = [
-        {
-          value: 'admin',
-          label: 'Admin',
-        },
-        {
-          value: 'teamlead',
-          label: 'Team Lead',
-        },
-        {
-          value: 'user',
-          label: 'System User',
-        }
-    ]
+  console.log(items);
+
+  // const teams = [
+  //     {
+  //       value: 'finance',
+  //       label: 'Finance',
+  //     },
+  //     {
+  //       value: 'sales',
+  //       label: 'Sales',
+  //     },
+  //     {
+  //       value: 'marketing',
+  //       label: 'Marketing',
+  //     },
+  //     {
+  //       value: 'it',
+  //       label: 'IT',
+  //     }
+  // ]
+
+  // const roles = [
+  //     {
+  //       value: 'admin',
+  //       label: 'Admin',
+  //     },
+  //     {
+  //       value: 'teamlead',
+  //       label: 'Team Lead',
+  //     },
+  //     {
+  //       value: 'user',
+  //       label: 'System User',
+  //     }
+  // ]
 
     const statuses = [
         {
@@ -96,11 +105,28 @@ export default function UsersPage() {
 
   const handleEditClickOpen = () => {
     setEditOpen(true);
+
   };
+
+  const setEditing = (list) => {
+
+    console.log(list)
+
+    setName(list.fullnames);      
+    setTeam(list.team_name);
+    setRole(list.role_name);
+    setStatus(list.status);
+
+  }
 
   const handleDeleteClickOpen = () => {
     setDeleteOpen(true);
   };
+
+  const setDelete = (list) => {
+    // setSelectedUser(list);
+    console.log(list)
+  }
 
   const handleAddClose = () => {
     setAddOpen(false);
@@ -114,6 +140,13 @@ export default function UsersPage() {
     setDeleteOpen(false);
   };
 
+  const handleDelete = (user) => {
+    setDeleteOpen(false);
+
+    console.log(user);
+  };
+
+
   return (
     <div>
       <GridContainer>
@@ -126,7 +159,7 @@ export default function UsersPage() {
                 </p>
               </CardHeader>
               <CardBody>
-              <div className="pull-right"><Button color="primary" size="lg" onClick={handleAddClickOpen}> Add User </Button> </div>
+              <div className={classes.btnRight}><Button color="primary" size="lg" onClick={handleAddClickOpen}> Add User </Button> </div>
 
                 <Table>
                     <TableHead>
@@ -140,73 +173,22 @@ export default function UsersPage() {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        <TableRow key=''>
-                            <TableCell>1</TableCell>
-                            <TableCell>Jane Doe</TableCell>
-                            <TableCell>Active</TableCell>
-                            <TableCell>Marketing</TableCell>
-                            <TableCell>Admin</TableCell>
-                            <TableCell>
-                            <IconButton aria-label="view" color="error" onClick={handleAddClickOpen} ><ControlPointIcon /></IconButton>
-                            <IconButton aria-label="edit" color="primary" onClick={handleEditClickOpen} ><EditIcon/></IconButton>
-                            <IconButton aria-label="delete" color="secondary" onClick={handleDeleteClickOpen} ><DeleteIcon /></IconButton>
-                            </TableCell>
-
-                        </TableRow>
-                        <TableRow key=''>
-                        <TableCell>2</TableCell>
-                            <TableCell>Ann Kaggle</TableCell>
-                            <TableCell>Active</TableCell>
-                            <TableCell>Sales</TableCell>
-                            <TableCell>Team Lead</TableCell>
-                            <TableCell>
-                            <IconButton aria-label="view" color="error" onClick={handleAddClickOpen} ><ControlPointIcon /></IconButton>
-                            <IconButton aria-label="edit" color="primary" onClick={handleEditClickOpen} ><EditIcon/></IconButton>
-                            <IconButton aria-label="delete" color="secondary" onClick={handleDeleteClickOpen} ><DeleteIcon /></IconButton>
-                            </TableCell>
-
-                        </TableRow>
-                        <TableRow key=''>
-                        <TableCell>3</TableCell>
-                            <TableCell>Martin Muthui</TableCell>
-                            <TableCell>Active</TableCell>
-                            <TableCell>ICT</TableCell>
-                            <TableCell>User</TableCell>
-                            <TableCell>
-                            <IconButton aria-label="view" color="error" onClick={handleAddClickOpen} ><ControlPointIcon /></IconButton>
-                            <IconButton aria-label="edit" color="primary" onClick={handleEditClickOpen} ><EditIcon/></IconButton>
-                            <IconButton aria-label="delete" color="secondary" onClick={handleDeleteClickOpen} ><DeleteIcon /></IconButton>
-                            </TableCell>
-
+                      {items && items.map((list, index) => (
+                        <TableRow key={index}>
+                          <TableCell>{list.id}</TableCell>
+                          <TableCell>{list.fullnames}</TableCell>
+                          <TableCell>{list.status}</TableCell>
+                          <TableCell>{list.teams.name}</TableCell>
+                          <TableCell>{list.roles.role_name}</TableCell>
+                          <TableCell>
+                          <IconButton aria-label="view" color="error" onClick={handleAddClickOpen} ><ControlPointIcon /></IconButton>
+                          <IconButton aria-label="edit" color="primary" onClick={(list) => { handleEditClickOpen(); setEditing(list)}} ><EditIcon/></IconButton>
+                          <IconButton aria-label="delete" color="secondary" onClick={(list) => { handleDeleteClickOpen(); setDelete(list)}} ><DeleteIcon /></IconButton>
+                          </TableCell>
                         </TableRow>
 
-                        <TableRow key=''>
-                        <TableCell>4</TableCell>
-                            <TableCell>Leon Hunter</TableCell>
-                            <TableCell>Active</TableCell>
-                            <TableCell>Sales</TableCell>
-                            <TableCell>User</TableCell>
-                            <TableCell>
-                            <IconButton aria-label="view" color="error" onClick={handleAddClickOpen} ><ControlPointIcon /></IconButton>
-                            <IconButton aria-label="edit" color="primary" onClick={handleEditClickOpen} ><EditIcon/></IconButton>
-                            <IconButton aria-label="delete" color="secondary" onClick={handleDeleteClickOpen} ><DeleteIcon /></IconButton>
-                            </TableCell>
-
-                        </TableRow>
-
-                        <TableRow key=''>
-                        <TableCell>5</TableCell>
-                            <TableCell>Sam Smith</TableCell>
-                            <TableCell>Active</TableCell>
-                            <TableCell>Marketing</TableCell>
-                            <TableCell>User</TableCell>
-                            <TableCell>
-                            <IconButton aria-label="view" color="error" onClick={handleAddClickOpen} ><ControlPointIcon /></IconButton>
-                            <IconButton aria-label="edit" color="primary" onClick={handleEditClickOpen} ><EditIcon/></IconButton>
-                            <IconButton aria-label="delete" color="secondary" onClick={handleDeleteClickOpen} ><DeleteIcon /></IconButton>
-                            </TableCell>
-
-                        </TableRow>
+                      ))}
+                        
                     </TableBody>
                 </Table>
 
@@ -244,8 +226,8 @@ export default function UsersPage() {
                             helperText="Please select your role"
                         >
                             {roles.map((option) => (
-                            <MenuItem key={option.value} value={option.value}>
-                                {option.label}
+                            <MenuItem key={option.id} value={option.id}>
+                                {option.role_name}
                             </MenuItem>
                             ))}
                         </TextField>
@@ -264,8 +246,8 @@ export default function UsersPage() {
                             helperText="Please select your team"
                         >
                             {teams.map((option) => (
-                            <MenuItem key={option.value} value={option.value}>
-                                {option.label}
+                            <MenuItem key={option.id} value={option.id}>
+                                {option.team_name}
                             </MenuItem>
                             ))}
                         </TextField>
@@ -331,8 +313,8 @@ export default function UsersPage() {
                             helperText="Please select your role"
                         >
                             {roles.map((option) => (
-                            <MenuItem key={option.value} value={option.value}>
-                                {option.label}
+                            <MenuItem key={option.id} value={option.id}>
+                                {option.role_name}
                             </MenuItem>
                             ))}
                         </TextField>
@@ -351,8 +333,8 @@ export default function UsersPage() {
                             helperText="Please select your team"
                         >
                             {teams.map((option) => (
-                            <MenuItem key={option.value} value={option.value}>
-                                {option.label}
+                            <MenuItem key={option.team_name} value={option.team_name}>
+                                {option.id}
                             </MenuItem>
                             ))}
                         </TextField>
@@ -400,7 +382,7 @@ export default function UsersPage() {
                     </DialogContent>
                     <DialogActions>
                     <Button color="danger" onClick={handleDeleteClose}>Disagree</Button>
-                    <Button color="success" onClick={handleDeleteClose} autoFocus>
+                    <Button color="success" onClick={handleDelete} autoFocus>
                         Agree
                     </Button>
                     </DialogActions>

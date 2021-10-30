@@ -166,5 +166,58 @@
     ],
     "Objectives": {
 
-    }
+    },
+    "Categories": [
+        {
+            "id": 0,
+            "description": "Profitability and Shareholder Returns"
+        },
+        {
+            "id": 1,
+            "description": "Customer Metrics"
+        },
+        {
+            "id": 2,
+            "description": "Margins/Efficiency"
+        },
+        {
+            "id": 3,
+            "description": "Growth Metrics"
+        },
+        {
+            "id": 4,
+            "description": "Capital Management Metrics"
+        },
+        {
+            "id": 5,
+            "description": "Risk and Control Environmnet"
+        }
+    ],
+    "Roles": [
+        {
+            "id": 0,
+            "role_name": "ICT ADMINISTRATOR",
+            "created_by": 0,
+            "updated_by": null,
+            "date_created": "2021-10-12T12:01:47.000+0000",
+            "date_updated": "2021-10-12T12:01:47.000+0000"
+        },
+        {
+            "id": 1,
+            "role_name": "TEAM LEAD",
+            "created_by": 0,
+            "updated_by": 0,
+            "date_created": "2021-10-13T07:44:56.000+0000",
+            "date_updated": "2021-10-13T07:44:56.000+0000"
+        },
+        {
+            "id": 2,
+            "role_name": "NORMAL USER",
+            "created_by": 0,
+            "updated_by": 0,
+            "date_created": "2021-10-13T07:44:56.000+0000",
+            "date_updated": "2021-10-13T07:44:56.000+0000"
+        }
+    ],
+    "Status": []
 }

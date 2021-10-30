@@ -115,6 +115,9 @@ const dashboardStyle = {
   },
   textInput: {
     marginBottom: '15px'
+  },
+  btnRight: {
+    float: 'right'
   }
 };
 
