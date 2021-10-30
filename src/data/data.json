@@ -1,0 +1,170 @@
+{
+    "User": {
+
+    },
+    "Users": [
+        {
+            "id": 0,
+            "fullnames": "TIMOTHY WAMALWA",
+            "email": "TWAMALWA@uapoldmutual.com",
+            "status": "Active",
+            "extension": null,
+            "disabled": true,
+            "updated_by": 0,
+            "created_by": 0,
+            "team": 0,
+            "role": 0,
+            "directreport": 0,
+            "date_created": "2021-10-12T11:59:37.000+0000",
+            "date_updated": "2021-10-13T09:16:24.000+0000",
+            "view": null,
+            "roles": {
+                "id": 0,
+                "role_name": "ICT ADMINISTRATOR",
+                "created_by": 0,
+                "updated_by": null,
+                "date_created": "2021-10-12T12:01:47.000+0000",
+                "date_updated": "2021-10-12T12:01:47.000+0000"
+            },
+            "teams": {
+                "id": 0,
+                "name": "ICT APPLICATIONS",
+                "user": null,
+                "team_lead": 1,
+                "updated_by": 0,
+                "created_by": 0,
+                "date_created": "2021-10-12T12:01:00.000+0000",
+                "date_updated": "2021-10-22T08:42:48.000+0000",
+                "isParent": true,
+                "parent_team": null
+            }
+        },
+        {
+            "id": 1,
+            "fullnames": "John Omondi",
+            "email": "jomondi@uapoldmutual.com",
+            "status": "Active",
+            "extension": "10643",
+            "disabled": true,
+            "updated_by": null,
+            "created_by": 0,
+            "team": 0,
+            "role": 1,
+            "directreport": null,
+            "date_created": "2021-10-22T08:42:39.000+0000",
+            "date_updated": null,
+            "view": null,
+            "roles": {
+                "id": 1,
+                "role_name": "TEAM LEAD",
+                "created_by": 0,
+                "updated_by": 0,
+                "date_created": "2021-10-13T07:44:56.000+0000",
+                "date_updated": "2021-10-13T07:44:56.000+0000"
+            },
+            "teams": {
+                "id": 0,
+                "name": "ICT APPLICATIONS",
+                "user": null,
+                "team_lead": 1,
+                "updated_by": 0,
+                "created_by": 0,
+                "date_created": "2021-10-12T12:01:00.000+0000",
+                "date_updated": "2021-10-22T08:42:48.000+0000",
+                "isParent": true,
+                "parent_team": null
+            }
+        },
+        {
+            "id": 3,
+            "fullnames": "Mbugua Macharia",
+            "email": "MGMacharia@uapoldmutual.com",
+            "status": "Active",
+            "extension": "10760",
+            "disabled": false,
+            "updated_by": null,
+            "created_by": 0,
+            "team": 2,
+            "role": 1,
+            "directreport": null,
+            "date_created": "2021-10-22T09:23:52.000+0000",
+            "date_updated": null,
+            "view": null,
+            "roles": {
+                "id": 1,
+                "role_name": "TEAM LEAD",
+                "created_by": 0,
+                "updated_by": 0,
+                "date_created": "2021-10-13T07:44:56.000+0000",
+                "date_updated": "2021-10-13T07:44:56.000+0000"
+            },
+            "teams": {
+                "id": 2,
+                "name": "MARKETTING",
+                "user": null,
+                "team_lead": 3,
+                "updated_by": 0,
+                "created_by": 0,
+                "date_created": "2021-10-22T09:23:28.000+0000",
+                "date_updated": "2021-10-22T09:24:01.000+0000",
+                "isParent": true,
+                "parent_team": null
+            }
+        }
+    ],
+    "KPIS": [
+        {
+            "id": 4,
+            "categoryId": 2,
+            "title": "Electricity budget",
+            "kpiUnitOfMeasure": "%",
+            "updatedBy": null,
+            "createdBy": 0,
+            "dateCreated": "2021-10-27",
+            "dateUpdated": null
+        },
+        {
+            "id": 5,
+            "categoryId": 1,
+            "title": "Customer retainment",
+            "kpiUnitOfMeasure": "numeric",
+            "updatedBy": 1,
+            "createdBy": 1,
+            "dateCreated": "2021-10-27",
+            "dateUpdated": "2021-10-27"
+        },
+        {
+            "id": 6,
+            "categoryId": 2,
+            "title": "Electricity budget",
+            "kpiUnitOfMeasure": "%",
+            "updatedBy": null,
+            "createdBy": 3,
+            "dateCreated": "2021-10-27",
+            "dateUpdated": null
+        }
+    ],
+    "Teams": [
+        {
+            "id": 0,
+            "team_name": "ICT APPLICATIONS",
+            "team_lead": "John Omondi",
+            "created_by": "TIMOTHY WAMALWA",
+            "team_lead_id": 1,
+            "parent_team_id": null,
+            "is_parent": true
+        },
+        {
+            "id": 2,
+            "team_name": "MARKETTING",
+            "team_lead": "Mbugua Macharia",
+            "created_by": "TIMOTHY WAMALWA",
+            "team_lead_id": 3,
+            "parent_team_id": null,
+            "is_parent": true
+        }
+    ],
+    "Objectives": {
+
+    }
+}

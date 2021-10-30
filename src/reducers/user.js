@@ -1,23 +1,23 @@
 import {
-    ALL_TASKS_SUCCESS,
-    ALL_TASKS_FETCH_REQUEST,
-    ALL_TASKS_FAIL,
-    
-    TASK_SUCCESS,
-    TASK_FETCH_REQUEST,
-    TASK_FAIL,
+    ALL_USERS_SUCCESS,
+    ALL_USERS_FETCH_REQUEST,
+    ALL_USERS_FAIL,
 
-    ADD_TASK_SUCCESS,
-    ADD_TASK_FETCH_REQUEST,
-    ADD_TASK_FAIL,
+    USER_SUCCESS,
+    USER_FETCH_REQUEST,
+    USER_FAIL,
 
-    EDIT_TASK_SUCCESS,
-    EDIT_TASK_FETCH_REQUEST,
-    EDIT_TASK_FAIL,
+    ADD_USER_SUCCESS,
+    ADD_USER_FETCH_REQUEST,
+    ADD_USER_FAIL,
 
-    DELETE_TASK_SUCCESS,
-    DELETE_TASK_FETCH_REQUEST,
-    DELETE_TASK_FAIL
+    EDIT_USER_SUCCESS,
+    EDIT_USER_FETCH_REQUEST,
+    EDIT_USER_FAIL,
+
+    DELETE_USER_SUCCESS,
+    DELETE_USER_FETCH_REQUEST,
+    DELETE_USER_FAIL
 } from '../actions/types';
 
 const initialState = {
@@ -29,43 +29,43 @@ const initialState = {
 
 export default function(state = initialState, action) {
     switch(action.type) {
-        case ALL_TASKS_FETCH_REQUEST : 
-        case TASK_FETCH_REQUEST :
-        case ADD_TASK_FETCH_REQUEST :
-        case EDIT_TASK_FETCH_REQUEST :
-        case DELETE_TASK_FETCH_REQUEST :
+        case ALL_USERS_FETCH_REQUEST : 
+        case USER_FETCH_REQUEST :
+        case ADD_USER_FETCH_REQUEST :
+        case EDIT_USER_FETCH_REQUEST :
+        case DELETE_USER_FETCH_REQUEST :
             return {
                 ...state,
                 isLoading: true
             }
 
-        case ALL_TASKS_SUCCESS :
+        case ALL_USERS_SUCCESS :
             return {
                 ...state,
                 items : action.payload.message,
                 isLoading : false
             }
-        case TASK_SUCCESS :
-        case ADD_TASK_SUCCESS :
-        case EDIT_TASK_SUCCESS :
-        case DELETE_TASK_SUCCESS :
+        case USER_SUCCESS :
+        case ADD_USER_SUCCESS :
+        case EDIT_USER_SUCCESS :
+        case DELETE_USER_SUCCESS :
             return {
                 ...state,
                 item : action.payload.message,
                 isLoading : false
             }
 
-        case ALL_TASKS_FAIL :
+        case ALL_USERS_FAIL :
             return {
                 ...state,
                 isLoading: false,
                 items : null,
                 error: action.payload
             }
-        case TASK_FAIL :
-        case ADD_TASK_FAIL :
-        case EDIT_TASK_FAIL :
-        case DELETE_TASK_FAIL :
+        case USER_FAIL :
+        case ADD_USER_FAIL :
+        case EDIT_USER_FAIL :
+        case DELETE_USER_FAIL :
             return {
                 ...state,
                 isLoading: false,

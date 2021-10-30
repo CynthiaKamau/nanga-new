@@ -58,7 +58,7 @@ export default function LoginPage() {
     const handleMouseDownPassword = (event) => {
         event.preventDefault();
       };
-      const { isLoggedIn } = useSelector(state => state.auth);
+    //   const { isLoggedIn } = useSelector(state => state.auth);
   
     const dispatch = useDispatch();
   
@@ -69,6 +69,7 @@ export default function LoginPage() {
   
     const handleLogin = e => {
       e.preventDefault();
+      setshowloader(true);
 
       if (username === "" || password === "") {
           // setusernameerror("Username is required");
@@ -164,11 +165,26 @@ export default function LoginPage() {
                           </GridItem> */}
   
                           <GridItem xs={12} sm={12} md={12} lg={12} style={{ textAlign: "center"}}>
-                          <Link to={"/admin/dashboard"}>
-                              <Button size="lg" color="success" >
+                          { showloader === true ? (
+                            <div style={{ textAlign: "center", marginTop: 10 }}>
+                            <Loader
+                                type="Puff"
+                                color="#00BFFF"
+                                height={150}
+                                width={150}
+                            />
+                        </div>
+                          ) :
+                          (
+                            <Button size="lg" color="success" onClick={handleLogin} >
                               Login
-                              </Button>
-                          </Link>
+                            </Button>
+                          )}
+                          {/* <Link to={"/admin/dashboard"}> */}
+                              {/* <Button size="lg" color="success" onClicK={handleLogin()} >
+                              Login
+                              </Button> */}
+                          {/* </Link> */}
                           </GridItem>
                       </CardFooter>
   

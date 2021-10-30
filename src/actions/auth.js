@@ -3,6 +3,8 @@ import { setError } from './error';
 import {
     LOGIN_SUCCESS,
     LOGIN_FAIL,
+    LOGIN_REQUEST,
+
     USER_FETCH_REQUEST,
     USER_FETCHED,
     LOGOUT,
@@ -29,20 +31,29 @@ export const loadUser = (dispatch, getState) => {
 }
 
 //login
-export const login = ({ username, password }) => (dispatch) => {
+export const login = ({ username, password }) => {
 
     const config = { headers: { 'Content-Type': 'application/json' } }
 
     const body = JSON.stringify({ username, password });
 
-    axios.post('/user/login', body, config)
-        .then(res => dispatch({
-            type: LOGIN_SUCCESS,
-            payload: res.data
-        }),)
-        .catch(error => dispatch(setError(error.message, error.status, 'LOGIN_FAIL')),
-            dispatch({ type: LOGIN_FAIL })
-        );
+    return async function (dispatch) {
+
+        dispatch({ type: LOGIN_REQUEST });
+
+        try {
+
+            let response = await axios.post('/authenticate', body, config)
+            if (response.status == 200) {
+                dispatch({ type: LOGIN_SUCCESS, payload: response.data })
+            } else {
+                dispatch({ type: LOGIN_FAIL, payload: response.data })
+            }
+        } catch (error) {
+            dispatch({ type: LOGIN_FAIL, payload: error.response.data.message })
+        }
+
+    }
 
 }
 
