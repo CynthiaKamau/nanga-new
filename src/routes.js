@@ -50,7 +50,7 @@ var dashRoutes = [
       },
       {
         path: "/teams",
-        name: "All Teams",
+        name: "My Team",
         rtlName: "عالتسعير",
         mini: "PP",
         rtlMini: "ع",
@@ -68,7 +68,7 @@ var dashRoutes = [
     views: [
       {
         path: "/kpis",
-        name: "My KPIS",
+        name: "KPIS",
         rtlName: "عالتسعير",
         mini: "PP",
         rtlMini: "ع",

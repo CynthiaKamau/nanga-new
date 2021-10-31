@@ -1,4 +1,5 @@
 import React, { useState} from "react";
+import { useSelector, useDispatch } from "react-redux";
 // @material-ui/core
 import { makeStyles } from "@material-ui/core/styles";
 // core components
@@ -25,6 +26,10 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
 import JsonData from "../../data/data.json";
+import { editUser } from "../../actions/users";
+import swal from "sweetalert2";
+import Loader from "react-loader-spinner";
+
 
 import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
 // import classNames from "classnames";
@@ -33,6 +38,10 @@ const useStyles = makeStyles(styles);
 
 export default function UsersPage() {
   const classes = useStyles();
+  const dispatch = useDispatch();
+
+  const { item } = useSelector(state => state.user)
+  const { error } = useSelector(state => state.user);
 
   const [addopen, setAddOpen] = useState(false);
   const [editopen, setEditOpen] = useState(false);
@@ -41,6 +50,8 @@ export default function UsersPage() {
   const [status, setStatus] = useState("");
   const [team, setTeam] = useState("");
   const [role, setRole] = useState("");
+  const [showloader, setshowloader] = useState(false);  
+
   // const [selectedUser, setSelectedUser] = useState("");
 
   const items = JsonData.Users;
@@ -113,9 +124,28 @@ export default function UsersPage() {
     console.log(list)
 
     setName(list.fullnames);      
-    setTeam(list.team_name);
-    setRole(list.role_name);
+    setTeam(list.teams.id);
+    setRole(list.roles.id);
     setStatus(list.status);
+
+  }
+
+  const saveEdited = e => {
+    e.preventDefault();
+    setshowloader(true);
+
+    dispatch(editUser())
+    if (!item && error) {
+      setshowloader(false);
+      swal.fire({
+          title: "Error",
+          text: error,
+          icon: "error",
+          dangerMode: true
+      });
+  } else {
+      window.reload()
+  }
 
   }
 
@@ -182,8 +212,8 @@ export default function UsersPage() {
                           <TableCell>{list.roles.role_name}</TableCell>
                           <TableCell>
                           <IconButton aria-label="view" color="error" onClick={handleAddClickOpen} ><ControlPointIcon /></IconButton>
-                          <IconButton aria-label="edit" color="primary" onClick={(list) => { handleEditClickOpen(); setEditing(list)}} ><EditIcon/></IconButton>
-                          <IconButton aria-label="delete" color="secondary" onClick={(list) => { handleDeleteClickOpen(); setDelete(list)}} ><DeleteIcon /></IconButton>
+                          <IconButton aria-label="edit" color="primary" onClick={() => { handleEditClickOpen(); setEditing(list)}} ><EditIcon/></IconButton>
+                          <IconButton aria-label="delete" color="secondary" onClick={() => { handleDeleteClickOpen(); setDelete(list)}} ><DeleteIcon /></IconButton>
                           </TableCell>
                         </TableRow>
 
@@ -266,7 +296,7 @@ export default function UsersPage() {
                             helperText="Please select your status"
                         >
                             {statuses.map((option) => (
-                            <MenuItem key={option.value} value={option.value}>
+                            <MenuItem key={option.label} value={option.label}>
                                 {option.label}
                             </MenuItem>
                             ))}
@@ -275,7 +305,7 @@ export default function UsersPage() {
                     </DialogContent>
                     <DialogActions>
                     <Button color="danger" onClick={handleAddClose}>Cancel</Button>
-                    <Button color="success" onClick={handleAddClose}>Save</Button>
+                    <Button color="success" onClick={() => { handleAddClose(); saveEdited()}}>Save</Button>
                     </DialogActions>
                 </Dialog>
 
@@ -333,8 +363,8 @@ export default function UsersPage() {
                             helperText="Please select your team"
                         >
                             {teams.map((option) => (
-                            <MenuItem key={option.team_name} value={option.team_name}>
-                                {option.id}
+                            <MenuItem key={option.id} value={option.id}>
+                                {option.team_name}
                             </MenuItem>
                             ))}
                         </TextField>
@@ -353,7 +383,7 @@ export default function UsersPage() {
                             helperText="Please select your status"
                         >
                             {statuses.map((option) => (
-                            <MenuItem key={option.value} value={option.value}>
+                            <MenuItem key={option.label} value={option.label}>
                                 {option.label}
                             </MenuItem>
                             ))}
@@ -362,7 +392,19 @@ export default function UsersPage() {
                     </DialogContent>
                     <DialogActions>
                     <Button color="danger" onClick={handleEditClose}>Cancel</Button>
-                    <Button color="success" onClick={handleEditClose}>Save</Button>
+                    { showloader === true ? (
+                      <div style={{ textAlign: "center", marginTop: 10 }}>
+                        <Loader
+                            type="Puff"
+                            color="#00BFFF"
+                            height={150}
+                            width={150}
+                        />
+                      </div>
+                      ) :
+                      (
+                        <Button color="success" onClick={handleEditClose}>Save</Button>
+                      )}
                     </DialogActions>
                 </Dialog>
 

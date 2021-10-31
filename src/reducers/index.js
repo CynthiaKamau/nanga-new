@@ -6,11 +6,12 @@ import auth from './auth';
 import kpi from "./kpi";
 import objective from "./objective";
 import task from "./task";
+import user from "./user"
 
 const persistConfig = {
     key: 'root',
     storage,
-    whitelist: ['auth', 'kpi', 'objective', 'task']
+    whitelist: ['auth', 'kpi', 'objective', 'task', 'user']
 }
 
 const rootReducer = combineReducers({
@@ -18,7 +19,8 @@ const rootReducer = combineReducers({
     auth : auth,
     kpi : kpi,
     objective : objective,
-    task : task
+    task : task,
+    user : user
 })
 
 export default persistReducer(persistConfig, rootReducer);

@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 // @material-ui/core
 import { makeStyles } from "@material-ui/core/styles";
 // core components
@@ -39,6 +39,8 @@ export default function TeamsPage() {
     const [deleteopen, setDeleteOpen] = useState(false);
     const [name, setName] = useState("");
     const [teamlead, setTeamLead] = useState("");
+    const [isparent, setIsParent] = useState(true);
+    const [parentId, setParentId] = useState("");
 
     const handleAddClickOpen = () => {
         setAddOpen(true);
@@ -51,7 +53,9 @@ export default function TeamsPage() {
     const setEditing = (list) => {
         console.log("here", list)
         setName(list.team_name);
-        setTeamLead(list.team_lead)
+        setTeamLead(list.team_lead_id)
+        setIsParent(list.is_parent)
+        setParentId(list.parent_team_id)
     }
 
     const setDelete = (list) => {
@@ -75,183 +79,286 @@ export default function TeamsPage() {
     };
 
     const items = JsonData.Teams;
+    const teamleads = JsonData.Users;
 
-    const teamleads = [
+    const options = [
         {
-          value: '1',
-          label: 'John Doe',
+          value: true,
+          label: 'Parent Team',
         },
         {
-          value: '2',
-          label: 'Ann Claire',
+          value: false,
+          label: 'Child Team',
         },
-        {
-          value: '3',
-          label: 'Patrick Newton',
-        }
     ]
 
-  return (
-    <div>
-      <GridContainer>
-      <GridItem xs={12} sm={12} md={12}>
-            <Card>
-              <CardHeader color="primary">
-                <h4>Teams</h4>
-                <p>
-                  Team details.
-                </p>
-              </CardHeader>
-              <CardBody>
-              <div className={classes.btnRight}><Button color="primary" size="lg" onClick={handleAddClickOpen}> Add Team </Button> </div>
 
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>Name</TableCell>
-                            <TableCell>Team Lead</TableCell>
-                            <TableCell>Action</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {items && items.map((list, index) => (
-                        <TableRow key={index}>
-                            <TableCell>{list.team_name}</TableCell>
-                            <TableCell>{list.team_lead}</TableCell>
-                            <TableCell>
-                            <IconButton aria-label="view" color="error" onClick={handleAddClickOpen} ><ControlPointIcon /></IconButton>
-                            <IconButton aria-label="edit" color="primary" onClick={(list) => { handleEditClickOpen(); setEditing(list)}} ><EditIcon/></IconButton>
-                            <IconButton aria-label="delete" color="secondary" onClick={(list) => { handleDeleteClickOpen(); setDelete(list)}} ><DeleteIcon /></IconButton>
-                            </TableCell>
+    // const teamleads = [
+    //     {
+    //       value: '1',
+    //       label: 'John Doe',
+    //     },
+    //     {
+    //       value: '2',
+    //       label: 'Ann Claire',
+    //     },
+    //     {
+    //       value: '3',
+    //       label: 'Patrick Newton',
+    //     }
+    // ]
 
-                        </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
+    return (
+        <div>
+            <GridContainer>
+                <GridItem xs={12} sm={12} md={12}>
+                    <Card>
+                        <CardHeader color="primary">
+                            <h4>Teams</h4>
+                            <p>
+                                Team details.
+                            </p>
+                        </CardHeader>
+                        <CardBody>
+                            <div className={classes.btnRight}><Button color="primary" size="lg" onClick={handleAddClickOpen}> Add Team </Button> </div>
 
-                <Dialog open={addopen} onClose={handleAddClose} >
-                    <DialogTitle>Team</DialogTitle>
-                    <DialogContent>
-                    <DialogContentText>
-                        Create New Team 
-                    </DialogContentText>
-                        <TextField
-                            autoFocus
-                            margin="dense"
-                            id="name"
-                            name="name"
-                            label="Name"
-                            type="text"
-                            fullWidth
-                            style={{marginBottom : '15px'}}
-                            value={name}
-                            variant="standard"
-                            onChange = {(event) => {
-                                setName(event.target.value);
-                            }}
-                        />
+                            <Table>
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell>Name</TableCell>
+                                        <TableCell>Team Lead</TableCell>
+                                        <TableCell>Action</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {items && items.map((list, index) => (
+                                        <TableRow key={index}>
+                                            <TableCell>{list.team_name}</TableCell>
+                                            <TableCell>{list.team_lead}</TableCell>
+                                            <TableCell>
+                                                <IconButton aria-label="view" color="error" onClick={handleAddClickOpen} ><ControlPointIcon /></IconButton>
+                                                <IconButton aria-label="edit" color="primary" onClick={() => { handleEditClickOpen(); setEditing(list) }} ><EditIcon /></IconButton>
+                                                <IconButton aria-label="delete" color="secondary" onClick={() => { handleDeleteClickOpen(); setDelete(list) }} ><DeleteIcon /></IconButton>
+                                            </TableCell>
 
-                        <label style={{ fontWeight: 'bold', color: 'black'}}> Team Lead : </label>
-                        <TextField
-                            id="outlined-select-teamlead"
-                            select
-                            fullWidth
-                            variant="outlined"
-                            label="Select"
-                            value={teamlead}
-                            onChange = {(event) => {
-                            setTeamLead(event.target.value);
-                            }}
-                            helperText="Please select your team lead"
-                        >
-                            {teamleads.map((option) => (
-                            <MenuItem key={option.value} value={option.value}>
-                                {option.label}
-                            </MenuItem>
-                            ))}
-                        </TextField>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
 
-                    </DialogContent>
-                    <DialogActions>
-                    <Button color="danger" onClick={handleAddClose}>Cancel</Button>
-                    <Button color="success" onClick={handleAddClose}>Save</Button>
-                    </DialogActions>
-                </Dialog>
+                            <Dialog open={addopen} onClose={handleAddClose} >
+                                <DialogTitle>Team</DialogTitle>
+                                <DialogContent>
+                                    <DialogContentText>
+                                        Create New Team
+                                    </DialogContentText>
+                                    <TextField
+                                        autoFocus
+                                        margin="dense"
+                                        id="name"
+                                        name="name"
+                                        label="Name"
+                                        type="text"
+                                        fullWidth
+                                        style={{ marginBottom: '15px' }}
+                                        value={name}
+                                        variant="standard"
+                                        onChange={(event) => {
+                                            setName(event.target.value);
+                                        }}
+                                    />
 
-                <Dialog open={editopen} onClose={handleEditClose}>
-                    <DialogTitle>Team</DialogTitle>
-                    <DialogContent>
-                    <DialogContentText>
-                        Edit Team Details
-                    </DialogContentText>
-                        <TextField
-                            autoFocus
-                            margin="dense"
-                            style={{marginBottom : '15px'}}
-                            id="name"
-                            label="Name"
-                            type="text"
-                            fullWidth
-                            value={name}
-                            variant="standard"
-                            onChange = {(event) => {
-                                setName(event.target.value);
-                            }}
-                        />
+                                    <label style={{ fontWeight: 'bold', color: 'black' }}> Team Lead : </label>
+                                    <TextField
+                                        id="outlined-select-teamlead"
+                                        select
+                                        fullWidth
+                                        variant="outlined"
+                                        label="Select"
+                                        value={teamlead}
+                                        onChange={(event) => {
+                                            setTeamLead(event.target.value);
+                                        }}
+                                        helperText="Please select your team lead"
+                                    >
+                                        {teamleads.map((option) => (
+                                            <MenuItem key={option.id} value={option.id}>
+                                                {option.fullnames}
+                                            </MenuItem>
+                                        ))}
+                                    </TextField>
 
-                        <label style={{ fontWeight: 'bold', color: 'black'}}> Team Lead : </label>
-                        <TextField
-                            id="outlined-select-teamlead"
-                            select
-                            fullWidth
-                            variant="outlined"
-                            label="Select"
-                            value={teamlead}
-                            onChange = {(event) => {
-                            setTeamLead(event.target.value);
-                            }}
-                            helperText="Please select your team lead"
-                        >
-                            {teamleads.map((option) => (
-                            <MenuItem key={option.value} value={option.value}>
-                                {option.label}
-                            </MenuItem>
-                            ))}
-                        </TextField>
+                                    <label style={{ fontWeight: 'bold', color: 'black' }}> Team Level : </label>
+                                    <TextField
+                                        id="outlined-select-isparent"
+                                        select
+                                        fullWidth
+                                        variant="outlined"
+                                        label="Select"
+                                        value={isparent}
+                                        onChange={(event) => {
+                                            setIsParent(event.target.value);
+                                        }}
+                                        helperText="Please select if the team is a parent"
+                                    >
+                                        {options.map((option) => (
+                                            <MenuItem key={option.value} value={option.value}>
+                                                {option.label}
+                                            </MenuItem>
+                                        ))}
+                                    </TextField>
 
-                    </DialogContent>
-                    <DialogActions>
-                    <Button color="danger" onClick={handleEditClose}>Cancel</Button>
-                    <Button color="success" onClick={handleEditClose}>Save</Button>
-                    </DialogActions>
-                </Dialog>
+                                    {isparent === false ? (
+                                        <div>
+                                            <label style={{ fontWeight: 'bold', color: 'black' }}> Parent Team : </label>
+                                            <TextField
+                                                id="outlined-select-isparent"
+                                                select
+                                                fullWidth
+                                                variant="outlined"
+                                                label="Select"
+                                                value={parentId}
+                                                onChange={(event) => {
+                                                    setParentId(event.target.value);
+                                                }}
+                                                helperText="Please select parent team "
+                                            >
+                                                {items.map((option) => (
+                                                    <MenuItem key={option.id} value={option.id}>
+                                                        {option.team_name}
+                                                    </MenuItem>
+                                                ))}
+                                            </TextField>
+                                        </div>
 
-                <Dialog
-                    open={deleteopen}
-                    onClose={handleDeleteClose}
-                    aria-labelledby="alert-dialog-title"
-                    aria-describedby="alert-dialog-description"
-                >
-                    <DialogTitle id="alert-dialog-title">
-                    {"Are you sure you want to delete the team?"}
-                    </DialogTitle>
-                    <DialogContent>
-                    <DialogContentText id="alert-dialog-description">
-                        Please confirm that you want to delete this team.
-                    </DialogContentText>
-                    </DialogContent>
-                    <DialogActions>
-                    <Button color="danger" onClick={handleDeleteClose}>Disagree</Button>
-                    <Button color="success" onClick={handleDeleteClose} autoFocus>
-                        Agree
-                    </Button>
-                    </DialogActions>
-                </Dialog>
+                                    ) : null }
 
-              </CardBody>
-            </Card>
-          </GridItem>
-      </GridContainer>
-    </div>
-  );
+                                </DialogContent>
+                                <DialogActions>
+                                    <Button color="danger" onClick={handleAddClose}>Cancel</Button>
+                                    <Button color="success" onClick={handleAddClose}>Save</Button>
+                                </DialogActions>
+                            </Dialog>
+
+                            <Dialog open={editopen} onClose={handleEditClose}>
+                                <DialogTitle>Team</DialogTitle>
+                                <DialogContent>
+                                    <DialogContentText>
+                                        Edit Team Details
+                                    </DialogContentText>
+                                    <TextField
+                                        autoFocus
+                                        margin="dense"
+                                        style={{ marginBottom: '15px' }}
+                                        id="name"
+                                        label="Name"
+                                        type="text"
+                                        fullWidth
+                                        value={name}
+                                        variant="standard"
+                                        onChange={(event) => {
+                                            setName(event.target.value);
+                                        }}
+                                    />
+
+                                    <label style={{ fontWeight: 'bold', color: 'black' }}> Team Lead : </label>
+                                    <TextField
+                                        id="outlined-select-teamlead"
+                                        select
+                                        fullWidth
+                                        variant="outlined"
+                                        label="Select"
+                                        value={teamlead}
+                                        onChange={(event) => {
+                                            setTeamLead(event.target.value);
+                                        }}
+                                        helperText="Please select your team lead"
+                                    >
+                                        {teamleads.map((option) => (
+                                            <MenuItem key={option.id} value={option.id}>
+                                                {option.fullnames}
+                                            </MenuItem>
+                                        ))}
+                                    </TextField>
+
+                                    <label style={{ fontWeight: 'bold', color: 'black' }}> Team Level : </label>
+                                    <TextField
+                                        id="outlined-select-isparent"
+                                        select
+                                        fullWidth
+                                        variant="outlined"
+                                        label="Select"
+                                        value={isparent}
+                                        onChange={(event) => {
+                                            setIsParent(event.target.value);
+                                        }}
+                                        helperText="Please select if the team is a parent"
+                                    >
+                                        {options.map((option) => (
+                                            <MenuItem key={option.value} value={option.value}>
+                                                {option.label}
+                                            </MenuItem>
+                                        ))}
+                                    </TextField>
+
+                                    {isparent === false ? (
+                                        <div>
+                                            <label style={{ fontWeight: 'bold', color: 'black' }}> Parent Team : </label>
+                                            <TextField
+                                                id="outlined-select-isparent"
+                                                select
+                                                fullWidth
+                                                variant="outlined"
+                                                label="Select"
+                                                value={parentId}
+                                                onChange={(event) => {
+                                                    setParentId(event.target.value);
+                                                }}
+                                                helperText="Please select parent team "
+                                            >
+                                                {items.map((option) => (
+                                                    <MenuItem key={option.id} value={option.id}>
+                                                        {option.team_name}
+                                                    </MenuItem>
+                                                ))}
+                                            </TextField>
+                                        </div>
+
+                                    ) : null }
+
+                                </DialogContent>
+                                <DialogActions>
+                                    <Button color="danger" onClick={handleEditClose}>Cancel</Button>
+                                    <Button color="success" onClick={handleEditClose}>Save</Button>
+                                </DialogActions>
+                            </Dialog>
+
+                            <Dialog
+                                open={deleteopen}
+                                onClose={handleDeleteClose}
+                                aria-labelledby="alert-dialog-title"
+                                aria-describedby="alert-dialog-description"
+                            >
+                                <DialogTitle id="alert-dialog-title">
+                                    {"Are you sure you want to delete the team?"}
+                                </DialogTitle>
+                                <DialogContent>
+                                    <DialogContentText id="alert-dialog-description">
+                                        Please confirm that you want to delete this team.
+                                    </DialogContentText>
+                                </DialogContent>
+                                <DialogActions>
+                                    <Button color="danger" onClick={handleDeleteClose}>Disagree</Button>
+                                    <Button color="success" onClick={handleDeleteClose} autoFocus>
+                                        Agree
+                                    </Button>
+                                </DialogActions>
+                            </Dialog>
+
+                        </CardBody>
+                    </Card>
+                </GridItem>
+            </GridContainer>
+        </div>
+    );
 }

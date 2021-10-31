@@ -6,6 +6,10 @@ import {
     ALL_USERS_FETCH_REQUEST,
     ALL_USERS_FAIL,
 
+    USER_SUCCESS,
+    USER_FETCH_REQUEST,
+    USER_FAIL,
+
     ADD_USER_SUCCESS,
     ADD_USER_FETCH_REQUEST,
     ADD_USER_FAIL,
@@ -92,7 +96,8 @@ export const addUser = (user_id, target, start_date, kpi_id, end_date, descripti
 }
 
 //edit specific user
-export const editUser = (id, description, kpi_id, user_id, start_date, end_date,  target, target_achieved, target_achieved_on_review, created_by, updated_by ) => (dispatch, getState) => {
+export const editUser = (id, description, kpi_id, user_id, start_date, end_date,  target, target_achieved, target_achieved_on_review, created_by, updated_by ) => {
+    const config = { headers: { 'Content-Type': 'application/json' } }
 
     const body = JSON.stringify({ id, description, kpi_id, user_id, start_date, end_date,  target, target_achieved, target_achieved_on_review, created_by, updated_by });
     console.log("user", body);
@@ -119,6 +124,8 @@ export const editUser = (id, description, kpi_id, user_id, start_date, end_date,
 
 //delete specific user
 export const deleteUser = (id) => {
+    const config = { headers: { 'Content-Type': 'application/json' } }
+
     const body = JSON.stringify({ id });
     console.log("user", body);
 
