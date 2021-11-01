@@ -13,7 +13,7 @@ import TableRow from '@material-ui/core/TableRow';
 import Card from "components/Card/Card.js";
 import CardHeader from "components/Card/CardHeader.js";
 import CardBody from "components/Card/CardBody.js";
-import { ArrowRight } from "@material-ui/icons";
+import { ArrowForward } from "@material-ui/icons";
 import CustomLinearProgress from "components/CustomLinearProgress/CustomLinearProgress.js";
 
 import MenuItem from '@material-ui/core/MenuItem';
@@ -26,6 +26,7 @@ import TextField from '@material-ui/core/TextField';
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import avatar from "assets/img/faces/marc.jpg";
+import { useHistory } from "react-router";
 
 import styles from "assets/jss/material-dashboard-pro-react/views/assignedTasksStyle.js";
 
@@ -33,6 +34,7 @@ const useStyles = makeStyles(styles);
 
 export default function AssignedTasksPage() {
     const classes = useStyles();
+    const history = useHistory();
 
     const [addopen, setAddOpen] = useState(false);
     const [editopen, setEditOpen] = useState(false);
@@ -40,6 +42,7 @@ export default function AssignedTasksPage() {
     const [name, setName] = useState("");
     const [teamlead, setTeamLead] = useState("");
     const [duedate, setDueDate] = useState("");
+    // const [startdate, setStartDate] = useState("");
 
     const handleClickOpen = () => {
         setAddOpen(true);
@@ -56,6 +59,12 @@ export default function AssignedTasksPage() {
     const handleDeleteClose = () => {
         setDeleteOpen(false);
     };
+
+    const handleOpen = e => {
+        e.preventDefault();
+
+        history.push(`/admin/dashboard`);
+    }
 
     const teamleads = [
         {
@@ -91,6 +100,7 @@ export default function AssignedTasksPage() {
                                     <TableRow>
                                         <TableCell>Management Actions</TableCell>
                                         <TableCell>Assigned By</TableCell>
+                                        <TableCell>Start Date</TableCell>
                                         <TableCell>Due Date</TableCell>
                                         <TableCell>Progress</TableCell>
                                     </TableRow>
@@ -99,6 +109,7 @@ export default function AssignedTasksPage() {
                                     <TableRow key='' >
                                         <TableCell>Add more customers</TableCell>
                                         <TableCell onClick={handleClickOpen} > <img src={avatar} alt="..." style={{ maxWidth: '50px', maxHeight: '50px', borderRadius: '50%', marginRight: '160px', marginTop: '35px' }} />  </TableCell>
+                                        <TableCell>12/12/2020</TableCell>
                                         <TableCell>12/12/2021</TableCell>
                                         <TableCell>
                                             <CustomLinearProgress
@@ -107,11 +118,12 @@ export default function AssignedTasksPage() {
                                                 value={30}
                                             />
                                         </TableCell>
-                                        <TableCell> <ArrowRight /> </TableCell>
+                                        <TableCell onClick={handleOpen} > <ArrowForward /> </TableCell>
                                     </TableRow>
                                     <TableRow key=''>
                                         <TableCell>Add more customers</TableCell>
                                         <TableCell onClick={handleClickOpen} > <img src={avatar} alt="..." style={{ maxWidth: '50px', maxHeight: '50px', borderRadius: '50%', marginRight: '160px', marginTop: '35px' }} />  </TableCell>
+                                        <TableCell>12/12/2020</TableCell>
                                         <TableCell>12/12/2021</TableCell>
                                         <TableCell>
                                             <CustomLinearProgress
@@ -119,12 +131,13 @@ export default function AssignedTasksPage() {
                                                 color="primary"
                                                 value={70}
                                             /> </TableCell>
-                                        <TableCell> <ArrowRight /> </TableCell>
+                                        <TableCell onClick={handleOpen} > <ArrowForward /> </TableCell>
 
                                     </TableRow>
                                     <TableRow key=''>
                                         <TableCell>Add more customers</TableCell>
                                         <TableCell onClick={handleClickOpen} > <img src={avatar} alt="..." style={{ maxWidth: '50px', maxHeight: '50px', borderRadius: '50%', marginRight: '160px', marginTop: '35px' }} />  </TableCell>
+                                        <TableCell>12/12/2020</TableCell>
                                         <TableCell>12/12/2021</TableCell>
                                         <TableCell>
                                             <CustomLinearProgress
@@ -132,7 +145,7 @@ export default function AssignedTasksPage() {
                                                 color="primary"
                                                 value={50}
                                             /></TableCell>
-                                        <TableCell> <ArrowRight /> </TableCell>
+                                        <TableCell onClick={handleOpen} > <ArrowForward /> </TableCell>
                                     </TableRow>
                                 </TableBody>
                             </Table>

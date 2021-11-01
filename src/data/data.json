@@ -164,13 +164,7 @@
             "is_parent": true
         }
     ],
-    "Objectives": [
-        {
-            "success": true,
-            "message": "Objectives fetched successfully.",
-            "timestamp": "2021-11-01T07:06:52.934+0000",
-            "status": 200,
-            "data": [
+    "Objectives":  [
               {
                 "id": 7,
                 "description": "retain insurance subscribers",
@@ -185,8 +179,6 @@
                 "updated_by": 0,
                 "date_created": "2021-10-27T03:24:44.000+0000",
                 "date_updated": "2021-10-27T03:36:20.000+0000"
-              }
-            ]
           }
     ],
     "Categories": [

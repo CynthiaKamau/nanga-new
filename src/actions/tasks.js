@@ -97,7 +97,8 @@ export const addTask = (user_id, target, start_date, kpi_id, end_date, descripti
 }
 
 //edit specific task
-export const editTask = (id, description, kpi_id, user_id, start_date, end_date,  target, target_achieved, target_achieved_on_review, created_by, updated_by ) => (dispatch, getState) => {
+export const editTask = (id, description, kpi_id, user_id, start_date, end_date,  target, target_achieved, target_achieved_on_review, created_by, updated_by ) => {
+    const config = { headers: { 'Content-Type': 'application/json' } }
 
     const body = JSON.stringify({ id, description, kpi_id, user_id, start_date, end_date,  target, target_achieved, target_achieved_on_review, created_by, updated_by });
     console.log("task", body);
@@ -124,6 +125,9 @@ export const editTask = (id, description, kpi_id, user_id, start_date, end_date,
 
 //delete specific task
 export const deleteTask = (id) => {
+
+    const config = { headers: { 'Content-Type': 'application/json' } }
+
     const body = JSON.stringify({ id });
     console.log("task", body);
 

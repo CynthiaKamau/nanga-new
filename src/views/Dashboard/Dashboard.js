@@ -23,6 +23,7 @@ import Button from "components/CustomButtons/Button.js";
 import { useHistory } from "react-router";
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
+import JsonData from "../../data/data.json";
 
 import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
 
@@ -43,46 +44,13 @@ export default function Dashboard() {
   const [taskdescription, setTaskDescription] = useState("");
   const [start_date, setStartDate] = useState("");
   const [end_date, setEndDate] = useState("");
+  const [task_start_date, setTaskStartDate] = useState("");
+  const [task_end_date, setTaskEndDate] = useState("");
   const [objective, setObjective] = useState("");
   // const [newuser, setNewUser] = useState(true);
 
-  const kpis = [
-    {
-      value: 'finance',
-      label: 'Finance',
-    },
-    {
-      value: 'kpi',
-      label: 'KPI',
-    },
-    {
-      value: 'objectives',
-      label: 'Objectives',
-    },
-    {
-      value: 'tasks',
-      label: 'Tasks',
-    },
-  ]
-
-  const categories = [
-    {
-      value: 'finance',
-      label: 'Finance',
-    },
-    {
-      value: 'kpi',
-      label: 'KPI',
-    },
-    {
-      value: 'objectives',
-      label: 'Objectives',
-    },
-    {
-      value: 'tasks',
-      label: 'Tasks',
-    },
-  ]
+  const categories = JsonData.Categories;
+  const kpis = JsonData.KPIS;
 
   const handleAddClickOpen = () => {
     setAddOpen(true);
@@ -164,8 +132,8 @@ export default function Dashboard() {
               helperText="Please select your category"
             >
               {categories.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
+                <MenuItem key={option.id} value={option.id}>
+                  {option.description}
                 </MenuItem>
               ))}
             </TextField>
@@ -185,8 +153,8 @@ export default function Dashboard() {
               helperText="Please select your kpi"
             >
               {kpis.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
+                <MenuItem key={option.id} value={option.id}>
+                  {option.title}
                 </MenuItem>
               ))}
             </TextField>
@@ -206,6 +174,37 @@ export default function Dashboard() {
                 setTarget(event.target.value);
               }}
             />
+
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+              <KeyboardDatePicker
+                margin="normal"
+                id="date-picker-dialog"
+                helperText="Set start date"
+                format="yyyy/dd/MM"
+                fullWidth
+                value={start_date}
+                onChange={setStartDate}
+                KeyboardButtonProps={{
+                  'aria-label': 'change date',
+                }}
+              />
+            </MuiPickersUtilsProvider>
+
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+              <KeyboardDatePicker
+                margin="normal"
+                id="date-picker-dialog"
+                helperText="Set end date"
+                format="yyyy/dd/MM"
+                fullWidth
+                value={end_date}
+                onChange={setEndDate}
+                KeyboardButtonProps={{
+                  'aria-label': 'change date',
+                }}
+              />
+            </MuiPickersUtilsProvider>
+
 
           </DialogContent>
           <DialogActions>
@@ -256,8 +255,8 @@ export default function Dashboard() {
                 helperText="Set start date"
                 format="yyyy/dd/MM"
                 fullWidth
-                value={start_date}
-                onChange={setStartDate}
+                value={task_start_date}
+                onChange={setTaskStartDate}
                 KeyboardButtonProps={{
                   'aria-label': 'change date',
                 }}
@@ -271,15 +270,13 @@ export default function Dashboard() {
                 helperText="Set end date"
                 format="yyyy/dd/MM"
                 fullWidth
-                value={end_date}
-                onChange={setEndDate}
+                value={task_end_date}
+                onChange={setTaskEndDate}
                 KeyboardButtonProps={{
                   'aria-label': 'change date',
                 }}
               />
             </MuiPickersUtilsProvider>
-
-
 
           </DialogContent>
           <DialogActions>

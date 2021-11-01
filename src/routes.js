@@ -1,11 +1,13 @@
 import UsersPage from "views/Users/Users";
-import TeamsPage from "views/Teams/Teams.js"
+import TeamsPage from "views/Teams/Teams.js";
+import MyTeamPage from "views/Teams/MyTeam";
 import Objectives from "@material-ui/icons/DoneAll";
 import DashboardPage from "views/Dashboard/Dashboard.js";
 import TasksPage from "views/Tasks/Tasks";
 import AssignedTasksPage from "views/Tasks/AssignedTasksPage";
-import StrategicObjectives from "views/Objectives/ViewObjectives";
-import KPIsPage from "views/KPI/kpi"; 
+import StrategicObjectives from "views/Objectives/Objectives";
+import KPIsPage from "views/KPI/kpi";
+import MyKpis from "views/KPI/mykpi"; 
 import UserProfile from "views/UserProfile/UserProfile";
 
 // @material-ui/icons
@@ -43,18 +45,18 @@ var dashRoutes = [
         path: "/teams",
         name: "All Teams",
         rtlName: "عالتسعير",
-        mini: "PP",
+        mini: "T",
         rtlMini: "ع",
         component: TeamsPage,
         layout: "/admin",
       },
       {
-        path: "/teams",
+        path: "/user-team",
         name: "My Team",
         rtlName: "عالتسعير",
-        mini: "PP",
+        mini: "TM",
         rtlMini: "ع",
-        component: TeamsPage,
+        component: MyTeamPage,
         layout: "/admin",
       },
     ],
@@ -70,18 +72,18 @@ var dashRoutes = [
         path: "/kpis",
         name: "KPIS",
         rtlName: "عالتسعير",
-        mini: "PP",
+        mini: "K",
         rtlMini: "ع",
         component: KPIsPage,
         layout: "/admin",
       },
       {
-        path: "/kpis",
+        path: "/user-kpis",
         name: "My KPIS",
         rtlName: "عالتسعير",
-        mini: "PP",
+        mini: "KM",
         rtlMini: "ع",
-        component: KPIsPage,
+        component: MyKpis,
         layout: "/admin",
       },
     ],
@@ -105,7 +107,7 @@ var dashRoutes = [
         path: "/tasks",
         name: "My Tasks",
         rtlName: "عالتسعير",
-        mini: "PP",
+        mini: "T",
         rtlMini: "ع",
         component: TasksPage,
         layout: "/admin",
@@ -114,7 +116,7 @@ var dashRoutes = [
         path: "/shared-tasks",
         name: "Assigned Tasks",
         rtlName: "عالتسعير",
-        mini: "PP",
+        mini: "TM",
         rtlMini: "ع",
         component: AssignedTasksPage,
         layout: "/admin",

@@ -95,7 +95,7 @@ export default function TasksPage() {
                             <div className={classes.btnRight}><Button color="primary" size="lg" onClick={handleAddClickOpen}> Add Task </Button> </div>
 
                             <Table>
-                                <TableHead>
+                                <TableHead className={classes.tableHeader}>
                                     <TableRow>
                                         <TableCell>Name</TableCell>
                                         <TableCell>Due Date</TableCell>

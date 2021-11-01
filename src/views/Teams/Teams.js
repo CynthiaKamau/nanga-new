@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+
 // @material-ui/core
 import { makeStyles } from "@material-ui/core/styles";
 // core components
@@ -25,6 +27,9 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
 import JsonData from "../../data/data.json";
+import { addTeam, editTeam } from "../../actions/teams"
+import swal from "sweetalert2";
+import Loader from "react-loader-spinner";
 
 
 import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
@@ -33,6 +38,10 @@ const useStyles = makeStyles(styles);
 
 export default function TeamsPage() {
     const classes = useStyles();
+    const dispatch = useDispatch();
+
+    const { item } = useSelector(state => state.team)
+    const { error } = useSelector(state => state.team);
 
     const [addopen, setAddOpen] = useState(false);
     const [editopen, setEditOpen] = useState(false);
@@ -41,10 +50,34 @@ export default function TeamsPage() {
     const [teamlead, setTeamLead] = useState("");
     const [isparent, setIsParent] = useState(true);
     const [parentId, setParentId] = useState("");
+    const [id, setId] = useState("");
+    const [showloader, setshowloader] = useState(false);
+
 
     const handleAddClickOpen = () => {
         setAddOpen(true);
     };
+
+    const saveTeam = e => {
+        e.preventDefault();
+        setshowloader(true);
+    
+        console.log("save user", name, teamlead, isparent, parentId )
+    
+        dispatch(addTeam(name, teamlead, isparent, parentId))
+        if (error) {
+          setshowloader(false);
+            swal.fire({
+                title: "Error",
+                text: error,
+                icon: "error",
+                dangerMode: true
+            });
+    
+        } else if(item) {
+          location.reload();
+        }
+    }
 
     const handleEditClickOpen = () => {
         setEditOpen(true);
@@ -56,6 +89,28 @@ export default function TeamsPage() {
         setTeamLead(list.team_lead_id)
         setIsParent(list.is_parent)
         setParentId(list.parent_team_id)
+        setId(list.id)
+    }
+
+    const saveEdited = e => {
+        e.preventDefault();
+        setshowloader(true);
+    
+        console.log("save user", id, name, teamlead, isparent, parentId )
+    
+        dispatch(editTeam(id, name, teamlead, isparent, parentId))
+        if (error) {
+          setshowloader(false);
+            swal.fire({
+                title: "Error",
+                text: error,
+                icon: "error",
+                dangerMode: true
+            });
+    
+        } else if(item) {
+          location.reload();
+        }
     }
 
     const setDelete = (list) => {
@@ -236,7 +291,19 @@ export default function TeamsPage() {
                                 </DialogContent>
                                 <DialogActions>
                                     <Button color="danger" onClick={handleAddClose}>Cancel</Button>
-                                    <Button color="primary" onClick={handleAddClose}>Save</Button>
+                                    {showloader === true ? (
+                                        <div style={{ textAlign: "center", marginTop: 10 }}>
+                                        <Loader
+                                            type="Puff"
+                                            color="#00BFFF"
+                                            height={150}
+                                            width={150}
+                                        />
+                                        </div>
+                                    ) :
+                                    (
+                                        <Button color="primary" onClick={(e) => {handleAddClose(); saveTeam(e)}}>Save</Button>
+                                    )}
                                 </DialogActions>
                             </Dialog>
 
@@ -329,7 +396,19 @@ export default function TeamsPage() {
                                 </DialogContent>
                                 <DialogActions>
                                     <Button color="danger" onClick={handleEditClose}>Cancel</Button>
-                                    <Button color="primary" onClick={handleEditClose}>Save</Button>
+                                    {showloader === true ? (
+                                        <div style={{ textAlign: "center", marginTop: 10 }}>
+                                        <Loader
+                                            type="Puff"
+                                            color="#00BFFF"
+                                            height={150}
+                                            width={150}
+                                        />
+                                        </div>
+                                    ) :
+                                    (
+                                        <Button color="primary" onClick={(e) => {handleEditClose(); saveEdited(e)}}>Save</Button>
+                                    )}
                                 </DialogActions>
                             </Dialog>
 

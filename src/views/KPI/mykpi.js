@@ -35,14 +35,16 @@ import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle
 
 const useStyles = makeStyles(styles);
 
-export default function KPIs() {
+export default function myKpis() {
     const classes = useStyles();
     const dispatch = useDispatch();
 
     const { item } = useSelector(state => state.user)
     const { error } = useSelector(state => state.user);
 
-    const items = JsonData.KPIS;
+    const items = JsonData.Objectives;
+
+    console.log("obj", items)
     const categories = JsonData.Categories;
 
     const [addopen, setAddOpen] = useState(false);
@@ -51,6 +53,9 @@ export default function KPIs() {
     const [kpi, setKPI] = useState("");
     const [uom, setUnitOfMeasure] = useState("");
     const [category, setCategory] = useState("");
+    const [target, setTarget] = useState("");
+    const [targetAtReview, setTargetAtReview] = useState("");
+    const [targetAchieved, setTargetAchieved] = useState("");
     const [showloader, setshowloader] = useState(false);  
     const [id, setId] = useState("");
 
@@ -62,9 +67,9 @@ export default function KPIs() {
         e.preventDefault();
         setshowloader(true);
 
-        console.log("save values", kpi, uom, category)
+        console.log("save values", kpi, uom, category, target, targetAchieved, targetAtReview)
     
-        dispatch(addKpi(kpi, uom, category ))
+        dispatch(addKpi(kpi, uom, category, target, targetAchieved, targetAtReview ))
         if (error) {
           setshowloader(false);
           swal.fire({
@@ -90,6 +95,9 @@ export default function KPIs() {
         setUnitOfMeasure(list.kpiUnitOfMeasure);
         setCategory(list.categoryId);
         setId(list.id);
+        setTarget(list.target);
+        setTargetAchieved(list.target_achieved);
+        setTargetAtReview(list.target_achieved_on_review);
     }
 
     const saveEdited = e => {
@@ -111,8 +119,7 @@ export default function KPIs() {
             location.reload()
         }
     
-      }
-
+    }
 
     const handleDeleteClickOpen = () => {
         setDeleteOpen(true);
@@ -155,9 +162,9 @@ export default function KPIs() {
       <GridItem xs={12} sm={12} md={12}>
             <Card>
               <CardHeader color="primary">
-                <h4>KPIs</h4>
+                <h4>User KPIs</h4>
                 <p>
-                  KPI details.
+                User KPI details.
                 </p>
               </CardHeader>
               <CardBody>
@@ -169,15 +176,21 @@ export default function KPIs() {
                             <TableCell>KPI</TableCell>
                             <TableCell>Unit Of Measure</TableCell>
                             <TableCell>Categories</TableCell>
+                            <TableCell>Target</TableCell>
+                            <TableCell>Target Achieved</TableCell>
+                            <TableCell>Target At Review</TableCell>
                             <TableCell>Action</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {items && items.map((list, index) => (
                             <TableRow key={index}>
-                                <TableCell>{list.title}</TableCell>
+                                <TableCell>{list.description}</TableCell>
                                 <TableCell>{list.kpiUnitOfMeasure}</TableCell>
                                 <TableCell>{list.categoryId} </TableCell>
+                                <TableCell>{list.target} </TableCell>
+                                <TableCell>{list.target_achieved} </TableCell>
+                                <TableCell>{list.target_achieved_on_review} </TableCell>
                                 <TableCell>
                                 <IconButton aria-label="view" color="error" onClick={handleAddClickOpen} ><ControlPointIcon /></IconButton>
                                 <IconButton aria-label="edit" color="primary" onClick={() => { handleEditClickOpen(); setEditing(list) }} ><EditIcon/></IconButton>
@@ -249,6 +262,51 @@ export default function KPIs() {
                             </MenuItem>
                             ))}
                         </TextField>
+
+                        <TextField
+                            autoFocus
+                            margin="dense"
+                            id="target"
+                            label="Target"
+                            type="text"
+                            fullWidth
+                            style={{marginBottom : '15px'}}
+                            value={target}
+                            variant="standard"
+                            onChange = {(event) => {
+                                setTarget(event.target.value);
+                            }}
+                        />
+
+                        <TextField
+                            autoFocus
+                            margin="dense"
+                            id="target_at_review"
+                            label="Target At Review"
+                            type="text"
+                            fullWidth
+                            style={{marginBottom : '15px'}}
+                            value={targetAtReview}
+                            variant="standard"
+                            onChange = {(event) => {
+                                setTargetAtReview(event.target.value);
+                            }}
+                        />
+
+                        <TextField
+                            autoFocus
+                            margin="dense"
+                            id="target_achieved"
+                            label="Target Achieved"
+                            type="text"
+                            fullWidth
+                            style={{marginBottom : '15px'}}
+                            value={targetAchieved}
+                            variant="standard"
+                            onChange = {(event) => {
+                                setTargetAchieved(event.target.value);
+                            }}
+                        />
 
                     </DialogContent>
                     <DialogActions>
@@ -330,6 +388,51 @@ export default function KPIs() {
                             ))}
                         </TextField>
 
+                        <TextField
+                            autoFocus
+                            margin="dense"
+                            id="target"
+                            label="Target"
+                            type="text"
+                            fullWidth
+                            style={{marginBottom : '15px'}}
+                            value={target}
+                            variant="standard"
+                            onChange = {(event) => {
+                                setTarget(event.target.value);
+                            }}
+                        />
+
+                        <TextField
+                            autoFocus
+                            margin="dense"
+                            id="target_at_review"
+                            label="Target At Review"
+                            type="text"
+                            fullWidth
+                            style={{marginBottom : '15px'}}
+                            value={targetAtReview}
+                            variant="standard"
+                            onChange = {(event) => {
+                                setTargetAtReview(event.target.value);
+                            }}
+                        />
+
+                        <TextField
+                            autoFocus
+                            margin="dense"
+                            id="target_achieved"
+                            label="Target Achieved"
+                            type="text"
+                            fullWidth
+                            style={{marginBottom : '15px'}}
+                            value={targetAchieved}
+                            variant="standard"
+                            onChange = {(event) => {
+                                setTargetAchieved(event.target.value);
+                            }}
+                        />
+
                     </DialogContent>
                     <DialogActions>
                     <Button color="danger" onClick={handleEditClose}>Cancel</Button>
@@ -342,8 +445,7 @@ export default function KPIs() {
                             width={150}
                         />
                       </div>
-                      ) :
-                      (
+                      ) : (
                         <Button color="primary" onClick={(e) => { handleEditClose(); saveEdited(e) }}>Save</Button>
                       )}
                     </DialogActions>
