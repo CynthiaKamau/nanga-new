@@ -1,6 +1,17 @@
 {
     "User": {
-
+        "success": true,
+        "message": "Login successful",
+        "ict": true,
+        "email": "lamech.ngeno@invent.co.ke",
+        "department": "Kenya shared services",
+        "team": "ICT APPLICATIONS",
+        "team_id": 0,
+        "role": "ICT ADMINISTRATOR",
+        "role_id": 0,
+        "full_name": "TIMOTHY WAMALWA",
+        "extension": null,
+        "id": 9
     },
     "Users": [
         {

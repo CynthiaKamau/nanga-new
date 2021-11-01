@@ -42,6 +42,12 @@ export default function UsersPage() {
 
   const { item } = useSelector(state => state.user)
   const { error } = useSelector(state => state.user);
+  // const { user : currentUser } = useSelector(state => state.auth);
+  const currentUser = JsonData.User;
+
+  const items = JsonData.Users;
+  const teams = JsonData.Teams;
+  const roles = JsonData.Roles;
 
   const [addopen, setAddOpen] = useState(false);
   const [editopen, setEditOpen] = useState(false);
@@ -55,9 +61,6 @@ export default function UsersPage() {
 
   // const [selectedUser, setSelectedUser] = useState("");
 
-  const items = JsonData.Users;
-  const teams = JsonData.Teams;
-  const roles = JsonData.Roles;
   // const statuses = JsonData.Status;
 
   console.log(items);
@@ -180,7 +183,7 @@ export default function UsersPage() {
               </p>
             </CardHeader>
             <CardBody>
-              <div className={classes.btnRight}><Button color="primary" size="lg" onClick={handleAddClickOpen}> Add User </Button> </div>
+              { currentUser.role_id=== 0 ? (<div className={classes.btnRight}><Button color="primary" size="lg" onClick={handleAddClickOpen}> Add User </Button> </div> ) : null }
 
               <Table>
                 <TableHead>
@@ -190,7 +193,7 @@ export default function UsersPage() {
                     <TableCell>Status</TableCell>
                     <TableCell>Team</TableCell>
                     <TableCell>Role</TableCell>
-                    <TableCell>Action</TableCell>
+                    { currentUser.role_id=== 0 ? (<TableCell>Action</TableCell> ) : null}
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -201,11 +204,11 @@ export default function UsersPage() {
                       <TableCell>{list.status}</TableCell>
                       <TableCell>{list.teams.name}</TableCell>
                       <TableCell>{list.roles.role_name}</TableCell>
-                      <TableCell>
+                      { currentUser.role_id=== 0 ? ( <TableCell>
                         <IconButton aria-label="view" color="error" onClick={handleAddClickOpen} ><ControlPointIcon /></IconButton>
                         <IconButton aria-label="edit" color="primary" onClick={() => { handleEditClickOpen(); setEditing(list) }} ><EditIcon /></IconButton>
                         <IconButton aria-label="delete" color="secondary" onClick={() => { handleDeleteClickOpen(); setDelete(list) }} ><DeleteIcon /></IconButton>
-                      </TableCell>
+                      </TableCell> ) : null }
                     </TableRow>
 
                   ))}

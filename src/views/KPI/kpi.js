@@ -41,6 +41,9 @@ export default function KPIs() {
 
     const { item } = useSelector(state => state.user)
     const { error } = useSelector(state => state.user);
+    // const { user : currentUser } = useSelector(state => state.auth);
+
+    const currentUser = JsonData.User;
 
     const items = JsonData.KPIS;
     const categories = JsonData.Categories;
@@ -111,8 +114,7 @@ export default function KPIs() {
             location.reload()
         }
     
-      }
-
+    }
 
     const handleDeleteClickOpen = () => {
         setDeleteOpen(true);
@@ -161,7 +163,7 @@ export default function KPIs() {
                 </p>
               </CardHeader>
               <CardBody>
-              <div className={classes.btnRight}><Button color="primary" size="lg" onClick={handleAddClickOpen}> Add KPI </Button> </div>
+              { currentUser.role_id === 0 ? (<div className={classes.btnRight}><Button color="primary" size="lg" onClick={handleAddClickOpen}> Add KPI </Button> </div> ) : null }
 
                 <Table>
                     <TableHead>
@@ -169,7 +171,7 @@ export default function KPIs() {
                             <TableCell>KPI</TableCell>
                             <TableCell>Unit Of Measure</TableCell>
                             <TableCell>Categories</TableCell>
-                            <TableCell>Action</TableCell>
+                            { currentUser.role_id=== 0 ? ( <TableCell>Action</TableCell> ) : null }
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -178,11 +180,11 @@ export default function KPIs() {
                                 <TableCell>{list.title}</TableCell>
                                 <TableCell>{list.kpiUnitOfMeasure}</TableCell>
                                 <TableCell>{list.categoryId} </TableCell>
-                                <TableCell>
+                                { currentUser.role_id=== 0 ? ( <TableCell>
                                 <IconButton aria-label="view" color="error" onClick={handleAddClickOpen} ><ControlPointIcon /></IconButton>
                                 <IconButton aria-label="edit" color="primary" onClick={() => { handleEditClickOpen(); setEditing(list) }} ><EditIcon/></IconButton>
                                 <IconButton aria-label="delete" color="secondary" onClick={() => { handleDeleteClickOpen(); setDelete(list) }} ><DeleteIcon /></IconButton>
-                                </TableCell>
+                                </TableCell> ) : null }
                             </TableRow>
                         ))}
 

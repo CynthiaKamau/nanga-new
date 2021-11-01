@@ -1,4 +1,6 @@
 import React from "react";
+// import { useSelector } from "react-redux";
+
 import classNames from "classnames";
 import PropTypes from "prop-types";
 // import { Manager, Target, Popper } from "react-popper";
@@ -13,7 +15,7 @@ import Grow from "@material-ui/core/Grow";
 import Hidden from "@material-ui/core/Hidden";
 import Popper from "@material-ui/core/Popper";
 import Divider from "@material-ui/core/Divider";
-
+import JsonData from "../../data/data.json";
 import avatar from "assets/img/faces/marc.jpg";
 
 // core components
@@ -24,7 +26,9 @@ import styles from "assets/jss/material-dashboard-pro-react/components/adminNavb
 const useStyles = makeStyles(styles);
 
 export default function HeaderLinks(props) {
+  // const { user : currentUser } = useSelector(state => state.auth);
 
+  const currentUser = JsonData.User;
   const [openProfile, setOpenProfile] = React.useState(null);
   const handleClickProfile = (event) => {
     if (openProfile && openProfile.contains(event.target)) {
@@ -64,9 +68,9 @@ export default function HeaderLinks(props) {
             label: rtlActive ? classes.labelRTL : "",
           }}
         >
-          <p className="classes.top classes.search" style={{ marginRight: '10px', fontWeight: 'bold' }}>John Doe </p>
+          <p className="classes.top classes.search" style={{ marginRight: '30px', fontWeight: 'bold' }}>{ currentUser.full_name} </p>
 
-          <img src={avatar} alt="..." style={{ maxWidth: '100px', maxHeight: '100px', borderRadius: '50%', marginRight: '160px', marginTop: '35px' }} />
+          <img src={avatar} alt="..." style={{ maxWidth: '100px', maxHeight: '100px', borderRadius: '50%', marginRight: '250px', marginTop: '35px' }} />
 
           <Hidden mdUp implementation="css">
             <span onClick={handleClickProfile} className={classes.linkText}>

@@ -42,6 +42,9 @@ export default function TeamsPage() {
 
     const { item } = useSelector(state => state.team)
     const { error } = useSelector(state => state.team);
+    // const { user : currentUser } = useSelector(state => state.auth);
+
+    const currentUser = JsonData.User;
 
     const [addopen, setAddOpen] = useState(false);
     const [editopen, setEditOpen] = useState(false);
@@ -175,14 +178,14 @@ export default function TeamsPage() {
                             </p>
                         </CardHeader>
                         <CardBody>
-                            <div className={classes.btnRight}><Button color="primary" size="lg" onClick={handleAddClickOpen}> Add Team </Button> </div>
+                        { currentUser.role_id === 0 ? (<div className={classes.btnRight}><Button color="primary" size="lg" onClick={handleAddClickOpen}> Add Team </Button> </div> ) : null}
 
                             <Table>
                                 <TableHead>
                                     <TableRow>
                                         <TableCell>Name</TableCell>
                                         <TableCell>Team Lead</TableCell>
-                                        <TableCell>Action</TableCell>
+                                        { currentUser.role_id === 0 ? (<TableCell>Action</TableCell> ) : null}
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
@@ -190,11 +193,11 @@ export default function TeamsPage() {
                                         <TableRow key={index}>
                                             <TableCell>{list.team_name}</TableCell>
                                             <TableCell>{list.team_lead}</TableCell>
-                                            <TableCell>
+                                            { currentUser.role_id === 0 ? ( <TableCell>
                                                 <IconButton aria-label="view" color="error" onClick={handleAddClickOpen} ><ControlPointIcon /></IconButton>
                                                 <IconButton aria-label="edit" color="primary" onClick={() => { handleEditClickOpen(); setEditing(list) }} ><EditIcon /></IconButton>
                                                 <IconButton aria-label="delete" color="secondary" onClick={() => { handleDeleteClickOpen(); setDelete(list) }} ><DeleteIcon /></IconButton>
-                                            </TableCell>
+                                            </TableCell> ) : null }
 
                                         </TableRow>
                                     ))}
