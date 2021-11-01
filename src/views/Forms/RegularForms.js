@@ -832,8 +832,8 @@ export default function RegularForms() {
                 </GridItem>
                 <GridItem xs={12} sm={10}>
                   <CustomInput
-                    id="success"
-                    labelText="Success"
+                    id="primary"
+                    labelText="primary"
                     formControlProps={{
                       fullWidth: true,
                     }}

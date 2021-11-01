@@ -68,11 +68,11 @@ export const getUser = (id) => {
 }
 
 //add specific user
-export const addUser = (user_id, target, start_date, kpi_id, end_date, description, created_by ) => {
+export const addUser = (name, status, team, role ) => {
 
     const config = { headers: { 'Content-Type': 'application/json' } }
     
-    const body = JSON.stringify({ user_id, target, start_date, kpi_id, end_date, description, created_by });
+    const body = JSON.stringify({ name, status, team, role });
     console.log("user", body);
 
     return async function (dispatch) {
@@ -96,10 +96,10 @@ export const addUser = (user_id, target, start_date, kpi_id, end_date, descripti
 }
 
 //edit specific user
-export const editUser = (id, description, kpi_id, user_id, start_date, end_date,  target, target_achieved, target_achieved_on_review, created_by, updated_by ) => {
+export const editUser = (user_id, name, status, team, role ) => {
     const config = { headers: { 'Content-Type': 'application/json' } }
 
-    const body = JSON.stringify({ id, description, kpi_id, user_id, start_date, end_date,  target, target_achieved, target_achieved_on_review, created_by, updated_by });
+    const body = JSON.stringify({ user_id, name, status, team, role });
     console.log("user", body);
 
     return async function (dispatch) {

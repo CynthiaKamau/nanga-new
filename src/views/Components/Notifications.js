@@ -193,10 +193,10 @@ export default function Notifications() {
                 />
                 <SnackbarContent
                   message={
-                    'SUCCESS - This is a regular notification made with color="success"'
+                    'SUCCESS - This is a regular notification made with color="primary"'
                   }
                   close
-                  color="success"
+                  color="primary"
                 />
                 <SnackbarContent
                   message={
@@ -589,7 +589,7 @@ export default function Notifications() {
                         </Button>
                         <Button
                           onClick={() => setSmallModal(false)}
-                          color="success"
+                          color="primary"
                           simple
                           className={
                             classes.modalSmallFooterFirstButton +

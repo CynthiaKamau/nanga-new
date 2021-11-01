@@ -43,6 +43,9 @@ export default function ObjectivesPage() {
   const [kpi, setKpi] = useState("");
   const [start_date, setStartDate] = useState("");
   const [end_date, setEndDate] = useState("");
+  const [target, setTarget] = useState("");
+  const [targetAtReview, setTargetAtReview] = useState("");
+  const [targetAchieved, setTargetAchieved] = useState("");
 
   if(description === '') { console.log(description)}
 
@@ -164,6 +167,51 @@ export default function ObjectivesPage() {
                     }}
                   />
                 </GridItem> */}
+                <TextField
+                    autoFocus
+                    margin="dense"
+                    id="target"
+                    label="Target"
+                    type="text"
+                    fullWidth
+                    style={{marginBottom : '15px'}}
+                    value={target}
+                    variant="standard"
+                    onChange = {(event) => {
+                        setTarget(event.target.value);
+                    }}
+                />
+
+                <TextField
+                    autoFocus
+                    margin="dense"
+                    id="target_at_review"
+                    label="Target At Review"
+                    type="text"
+                    fullWidth
+                    style={{marginBottom : '15px'}}
+                    value={targetAtReview}
+                    variant="standard"
+                    onChange = {(event) => {
+                        setTargetAtReview(event.target.value);
+                    }}
+                />
+
+                <TextField
+                  autoFocus
+                  margin="dense"
+                  id="target_achieved"
+                  label="Target Achieved"
+                  type="text"
+                  fullWidth
+                  style={{marginBottom : '15px'}}
+                  value={targetAchieved}
+                  variant="standard"
+                  onChange = {(event) => {
+                      setTargetAchieved(event.target.value);
+                  }}
+              />
+
               </GridContainer>
               <GridContainer>
                 <GridItem xs={12} sm={12} md={6}>
@@ -201,6 +249,7 @@ export default function ObjectivesPage() {
                         }
                     }}
                   />
+
                 </GridItem>
               </GridContainer>
             </CardBody>

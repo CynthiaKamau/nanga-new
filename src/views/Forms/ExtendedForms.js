@@ -64,7 +64,7 @@ export default function ExtendedForms() {
         range: { min: 0, max: 100 },
       });
     }
-    return function cleanup() {};
+    return function cleanup() { };
   });
   const handleSimple = (event) => {
     setSimpleSelect(event.target.value);
@@ -742,7 +742,7 @@ export default function ExtendedForms() {
                   />
                   <CustomLinearProgress
                     variant="determinate"
-                    color="success"
+                    color="primary"
                     value={100}
                     style={{ width: "35%", display: "inline-block" }}
                   />

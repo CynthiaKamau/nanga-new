@@ -39,123 +39,127 @@ const useStyles = makeStyles(styles);
 export default function LoginPage() {
     const { isAuthenticated } = useSelector(state => state.auth);
     const { error } = useSelector(state => state.auth);
-    const [showloader, setshowloader] = useState(false);  
-    
+    const [showloader, setshowloader] = useState(false);
+
     const [username, setusername] = useState("");
     const [password, setPassword] = useState("");
-    const [values, setValues] = useState({showPassword : false});
+    const [values, setValues] = useState({ showPassword: false });
 
     // const [usernameerror, setusernameerror] = useState("");
     // const [passworderror, setPassworderror] = useState("");
-  
+
     const handleClickShowPassword = () => {
         setValues({
-        ...values,
-        showPassword: !values.showPassword,
+            ...values,
+            showPassword: !values.showPassword,
         });
     };
 
     const handleMouseDownPassword = (event) => {
         event.preventDefault();
-      };
+    };
     //   const { isLoggedIn } = useSelector(state => state.auth);
-  
-    const dispatch = useDispatch();
-  
-    const classes = useStyles();
-  
-    const history = useHistory();
-  
-  
-    const handleLogin = e => {
-      e.preventDefault();
-      setshowloader(true);
 
-      if (username === "" || password === "") {
-          // setusernameerror("Username is required");
-          // setPassworderror("Password is required");
-      } else {
-          dispatch(login(username, password))
-          if (!isAuthenticated && error) {
-              setshowloader(false);
-              swal.fire({
-                  title: "Error",
-                  text: error,
-                  icon: "error",
-                  dangerMode: true
-              });
-          } else {
-              history.push(`/admin/dashboard`);
-          }
+    const dispatch = useDispatch();
+
+    const classes = useStyles();
+
+    const history = useHistory();
+
+
+    const handleLogin = e => {
+        e.preventDefault();
+        setshowloader(true);
+
+        if (username === "" || password === "") {
+            // setusernameerror("Username is required");
+            // setPassworderror("Password is required");
+        } else {
+            dispatch(login(username, password))
+            if (!isAuthenticated && error) {
+                setshowloader(false);
+                swal.fire({
+                    title: "Error",
+                    text: error,
+                    icon: "error",
+                    dangerMode: true
+                });
+            } else {
+                history.push(`/admin/dashboard`);
+            }
 
         }
     }
-  
+
 
     return (
-      <div style={{ backgroundImage: `url(${Background})`,
-          backgroundPosition: 'center',
-          backgroundSize: 'cover',
-          backgroundRepeat: 'no-repeat',
-          width: '100vw',
-          height: '100vh'}}>
-          
-          <div className={classes.container} 
-              style={{ minHeight: "100vh",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center" }}>
-              
-              <GridContainer justify="center">
-                  <GridItem xs={12} sm={8} md={8}>
-                  <Card style={{ margin : '20px'}}>
-                      <form className={classes.form}>
-                          <h2 style={{textAlign: "center",fontWeight: "bold", color: '#38aa52'}}> NANGA </h2>
-                          <p style={{textAlign: "center",fontWeight: "bold"}}> UAP Old Mutual Portal </p>
-                      <CardBody>
-  
-                          <TextField
-                          id="outlined-select-uname"
-                          fullWidth
-                          style={{ marginBottom: '15px'}}
-                          variant="outlined"
-                          label="Username"
-                          value={username}
-                          onChange = {(event) => {
-                          setusername(event.target.value);
-                          }}
-                          helperText="Please input your username">
-                          </TextField>
-  
-                          <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
-                          <OutlinedInput
-                              id="outlined-adornment-password"
-                              type={values.showPassword ? 'text' : 'password'}
-                              value={values.password}
-                              fullWidth
-                              onChange={(event) => {
-                                  setPassword(event.target.value)
-                              }}
-                              endAdornment={
-                              <InputAdornment position="end">
-                                  <IconButton
-                                  aria-label="toggle password visibility"
-                                  onClick={handleClickShowPassword}
-                                  onMouseDown={handleMouseDownPassword}
-                                  edge="end"
-                                  >
-                                  {values.showPassword ? <VisibilityOff /> : <Visibility />}
-                                  </IconButton>
-                              </InputAdornment>
-                              }
-                              label="Password"
-                          />
-                         
-                      </CardBody>
-                      <CardFooter className={classes.cardFooter}>
-                          {/* <GridItem xs={12} sm={10} md={8} lg={8}>
+        <div style={{
+            backgroundImage: `url(${Background})`,
+            backgroundPosition: 'center',
+            backgroundSize: 'cover',
+            backgroundRepeat: 'no-repeat',
+            width: '100vw',
+            height: '100vh'
+        }}>
+
+            <div className={classes.container}
+                style={{
+                    minHeight: "100vh",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center"
+                }}>
+
+                <GridContainer justify="center">
+                    <GridItem xs={12} sm={8} md={8}>
+                        <Card style={{ margin: '20px' }}>
+                            <form className={classes.form}>
+                                <h2 style={{ textAlign: "center", fontWeight: "bold", color: '#38aa52' }}> NANGA </h2>
+                                <p style={{ textAlign: "center", fontWeight: "bold" }}> UAP Old Mutual Portal </p>
+                                <CardBody>
+
+                                    <TextField
+                                        id="outlined-select-uname"
+                                        fullWidth
+                                        style={{ marginBottom: '15px' }}
+                                        variant="outlined"
+                                        label="Username"
+                                        value={username}
+                                        onChange={(event) => {
+                                            setusername(event.target.value);
+                                        }}
+                                        helperText="Please input your username">
+                                    </TextField>
+
+                                    <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
+                                    <OutlinedInput
+                                        id="outlined-adornment-password"
+                                        type={values.showPassword ? 'text' : 'password'}
+                                        value={values.password}
+                                        fullWidth
+                                        onChange={(event) => {
+                                            setPassword(event.target.value)
+                                        }}
+                                        endAdornment={
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    aria-label="toggle password visibility"
+                                                    onClick={handleClickShowPassword}
+                                                    onMouseDown={handleMouseDownPassword}
+                                                    edge="end"
+                                                >
+                                                    {values.showPassword ? <VisibilityOff /> : <Visibility />}
+                                                </IconButton>
+                                            </InputAdornment>
+                                        }
+                                        label="Password"
+                                    />
+
+                                </CardBody>
+                                <CardFooter className={classes.cardFooter}>
+                                    {/* <GridItem xs={12} sm={10} md={8} lg={8}>
                           <Button
-                              color="success"
+                              color="primary"
                               size="lg"
                               fullWidth
                               onClick={handleLogin}
@@ -163,54 +167,54 @@ export default function LoginPage() {
                               Login
                           </Button>
                           </GridItem> */}
-  
-                          <GridItem xs={12} sm={12} md={12} lg={12} style={{ textAlign: "center"}}>
-                          { showloader === true ? (
-                            <div style={{ textAlign: "center", marginTop: 10 }}>
-                            <Loader
-                                type="Puff"
-                                color="#00BFFF"
-                                height={150}
-                                width={150}
-                            />
-                        </div>
-                          ) :
-                          (
-                            <Button size="lg" color="success" onClick={handleLogin} >
-                              Login
-                            </Button>
-                          )}
-                          {/* <Link to={"/admin/dashboard"}> */}
-                              {/* <Button size="lg" color="success" onClicK={handleLogin()} >
+
+                                    <GridItem xs={12} sm={12} md={12} lg={12} style={{ textAlign: "center" }}>
+                                        {showloader === true ? (
+                                            <div style={{ textAlign: "center", marginTop: 10 }}>
+                                                <Loader
+                                                    type="Puff"
+                                                    color="#00BFFF"
+                                                    height={150}
+                                                    width={150}
+                                                />
+                                            </div>
+                                        ) :
+                                            (
+                                                <Button size="lg" color="primary" onClick={handleLogin} >
+                                                    Login
+                                                </Button>
+                                            )}
+                                        {/* <Link to={"/admin/dashboard"}> */}
+                                        {/* <Button size="lg" color="primary" onClicK={handleLogin()} >
                               Login
                               </Button> */}
-                          {/* </Link> */}
-                          </GridItem>
-                      </CardFooter>
-  
-                      <GridItem
-                          xs={12}
-                          sm={12}
-                          md={12}
-                          lg={12}
-                          style={{ textAlign: "center", marginBottom: 20 }}
-                      >
-                          <Link to={"/reset-password"}>
-                          {" "}
-                          <strong style={{ fontSize: 16 }}>
-                              {" "}
-                              Forgot Password?{" "}
-                          </strong>{" "}
-                          </Link>
-  
-                          <p> By using this portal you agree to UAP Old Mutuals Terms of Use and Privacy Policy</p>
-                      </GridItem>
-                      </form>
-                  </Card>
-                  </GridItem>
-              </GridContainer>
-          </div>
-      </div>  
-     
+                                        {/* </Link> */}
+                                    </GridItem>
+                                </CardFooter>
+
+                                <GridItem
+                                    xs={12}
+                                    sm={12}
+                                    md={12}
+                                    lg={12}
+                                    style={{ textAlign: "center", marginBottom: 20 }}
+                                >
+                                    <Link to={"/reset-password"}>
+                                        {" "}
+                                        <strong style={{ fontSize: 16 }}>
+                                            {" "}
+                                            Forgot Password?{" "}
+                                        </strong>{" "}
+                                    </Link>
+
+                                    <p> By using this portal you agree to UAP Old Mutuals Terms of Use and Privacy Policy</p>
+                                </GridItem>
+                            </form>
+                        </Card>
+                    </GridItem>
+                </GridContainer>
+            </div>
+        </div>
+
     );
-  }
+}

@@ -69,11 +69,11 @@ export const getUserKpis = (id) => {
 }
 
 //add specific kpi
-export const addKpi = (categoryId, createdBy, kpiUnitofMeasure, title) => {
+export const addKpi = (kpi, uom, category) => {
 
     const config = { headers: { 'Content-Type': 'application/json' } }
     
-    const body = JSON.stringify({ categoryId, createdBy, kpiUnitofMeasure, title });
+    const body = JSON.stringify({ kpi, uom, category });
     console.log("kpi", body);
 
     return async function (dispatch) {
@@ -89,7 +89,7 @@ export const addKpi = (categoryId, createdBy, kpiUnitofMeasure, title) => {
                 dispatch({ type: ADD_KPI_FAIL, payload: response.data })
             }
         } catch (error) {
-            dispatch({ type: ADD_KPI_FAIL, payload: error.response.data.message })
+            dispatch({ type: ADD_KPI_FAIL, payload: error })
         }
 
     }
@@ -97,9 +97,10 @@ export const addKpi = (categoryId, createdBy, kpiUnitofMeasure, title) => {
 }
 
 //edit specific kpi
-export const editKpi = (id, categoryId, title, kpiUnitofMeasurecreatedBy, updatedBy, createdBy, dateCreated, dateUpdated ) => {
+export const editKpi = (id, kpi, uom, category ) => {
+    const config = { headers: { 'Content-Type': 'application/json' } }
 
-    const body = JSON.stringify({ id, categoryId, title, kpiUnitofMeasurecreatedBy, updatedBy, createdBy, dateCreated, dateUpdated });
+    const body = JSON.stringify({ id, kpi, uom, category });
     console.log("kpi", body);
 
     return async function (dispatch) {
@@ -124,6 +125,7 @@ export const editKpi = (id, categoryId, title, kpiUnitofMeasurecreatedBy, update
 
 //delete specific kpi
 export const deleteKpi = (id) => {
+    const config = { headers: { 'Content-Type': 'application/json' } }
 
     const body = JSON.stringify({ id });
     console.log("kpi", body);

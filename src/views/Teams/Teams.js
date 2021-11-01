@@ -83,12 +83,12 @@ export default function TeamsPage() {
 
     const options = [
         {
-          value: true,
-          label: 'Parent Team',
+            value: true,
+            label: 'Parent Team',
         },
         {
-          value: false,
-          label: 'Child Team',
+            value: false,
+            label: 'Child Team',
         },
     ]
 
@@ -231,12 +231,12 @@ export default function TeamsPage() {
                                             </TextField>
                                         </div>
 
-                                    ) : null }
+                                    ) : null}
 
                                 </DialogContent>
                                 <DialogActions>
                                     <Button color="danger" onClick={handleAddClose}>Cancel</Button>
-                                    <Button color="success" onClick={handleAddClose}>Save</Button>
+                                    <Button color="primary" onClick={handleAddClose}>Save</Button>
                                 </DialogActions>
                             </Dialog>
 
@@ -324,12 +324,12 @@ export default function TeamsPage() {
                                             </TextField>
                                         </div>
 
-                                    ) : null }
+                                    ) : null}
 
                                 </DialogContent>
                                 <DialogActions>
                                     <Button color="danger" onClick={handleEditClose}>Cancel</Button>
-                                    <Button color="success" onClick={handleEditClose}>Save</Button>
+                                    <Button color="primary" onClick={handleEditClose}>Save</Button>
                                 </DialogActions>
                             </Dialog>
 
@@ -349,7 +349,7 @@ export default function TeamsPage() {
                                 </DialogContent>
                                 <DialogActions>
                                     <Button color="danger" onClick={handleDeleteClose}>Disagree</Button>
-                                    <Button color="success" onClick={handleDeleteClose} autoFocus>
+                                    <Button color="primary" onClick={handleDeleteClose} autoFocus>
                                         Agree
                                     </Button>
                                 </DialogActions>

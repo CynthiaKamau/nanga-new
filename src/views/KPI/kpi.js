@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+
 // @material-ui/core
 import { makeStyles } from "@material-ui/core/styles";
 // core components
@@ -24,6 +26,10 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
+import JsonData from "../../data/data.json";
+import { editKpi, addKpi } from "actions/kpis";
+import swal from "sweetalert2";
+import Loader from "react-loader-spinner";
 
 import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
 
@@ -31,27 +37,90 @@ const useStyles = makeStyles(styles);
 
 export default function Teams() {
     const classes = useStyles();
+    const dispatch = useDispatch();
+
+    const { item } = useSelector(state => state.user)
+    const { error } = useSelector(state => state.user);
+
+    const items = JsonData.KPIS;
+    const categories = JsonData.Categories;
 
     const [addopen, setAddOpen] = useState(false);
     const [editopen, setEditOpen] = useState(false);
     const [deleteopen, setDeleteOpen] = useState(false);
     const [kpi, setKPI] = useState("");
     const [uom, setUnitOfMeasure] = useState("");
-    const [target, setTarget] = useState("");
-    const [targetAtReview, setTargetAtReview] = useState("");
-    const [targetAchieved, setTargetAchieved] = useState("");
+    const [category, setCategory] = useState("");
+    const [showloader, setshowloader] = useState(false);  
+    const [id, setId] = useState("");
 
     const handleAddClickOpen = () => {
         setAddOpen(true);
     };
 
+    const saveKpi = e => {
+        e.preventDefault();
+        setshowloader(true);
+
+        console.log("save values", kpi, uom, category)
+    
+        dispatch(addKpi(kpi, uom, category ))
+        if (error) {
+          setshowloader(false);
+          swal.fire({
+              title: "Error",
+              text: error,
+              icon: "error",
+              dangerMode: true
+          });
+        } else if(item) {
+            location.reload()
+        }
+    
+      }
+
     const handleEditClickOpen = () => {
         setEditOpen(true);
     };
 
+    const setEditing = (list) => {
+        console.log(list);
+
+        setKPI(list.title);
+        setUnitOfMeasure(list.kpiUnitOfMeasure);
+        setCategory(list.categoryId);
+        setId(list.id);
+    }
+
+    const saveEdited = e => {
+        e.preventDefault();
+        setshowloader(true);
+
+        console.log("edit values", id, kpi, uom, category)
+    
+        dispatch(editKpi(id, kpi, uom, category ))
+        if (!item && error) {
+          setshowloader(false);
+          swal.fire({
+              title: "Error",
+              text: error,
+              icon: "error",
+              dangerMode: true
+          });
+        } else if(item) {
+            location.reload()
+        }
+    
+      }
+
+
     const handleDeleteClickOpen = () => {
         setDeleteOpen(true);
     };
+
+    const setDelete = (list) => {
+        console.log(list)
+    }
 
     const handleAddClose = () => {
         setAddOpen(false);
@@ -67,16 +136,16 @@ export default function Teams() {
 
     const uoms = [
         {
-          value: '1',
-          label: 'John Doe',
+          value: '%',
+          label: '%',
         },
         {
-          value: '2',
-          label: 'Ann Claire',
+          value: 'numeric',
+          label: 'numeric',
         },
         {
-          value: '3',
-          label: 'Patrick Newton',
+          value: 'Ksh',
+          label: 'Ksh',
         }
     ]
 
@@ -99,51 +168,24 @@ export default function Teams() {
                         <TableRow>
                             <TableCell>KPI</TableCell>
                             <TableCell>Unit Of Measure</TableCell>
-                            <TableCell>Target</TableCell>
-                            <TableCell>Target At Review</TableCell>
-                            <TableCell>Achieved</TableCell>
+                            <TableCell>Categories</TableCell>
                             <TableCell>Action</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        <TableRow key=''>
-                            <TableCell>Testing KPI</TableCell>
-                            <TableCell>%</TableCell>
-                            <TableCell>30</TableCell>
-                            <TableCell>25</TableCell>
-                            <TableCell>24</TableCell>
-                            <TableCell>
-                            <IconButton aria-label="view" color="error" onClick={handleAddClickOpen} ><ControlPointIcon /></IconButton>
-                            <IconButton aria-label="edit" color="primary" onClick={handleEditClickOpen} ><EditIcon/></IconButton>
-                            <IconButton aria-label="delete" color="secondary" onClick={handleDeleteClickOpen} ><DeleteIcon /></IconButton>
-                            </TableCell>
-                        </TableRow>
-                        <TableRow key=''>
-                            <TableCell>Testing KPI</TableCell>
-                            <TableCell>%</TableCell>
-                            <TableCell>30</TableCell>
-                            <TableCell>25</TableCell>
-                            <TableCell>24</TableCell>
-                            <TableCell>
-                            <IconButton aria-label="view" color="error" onClick={handleAddClickOpen} ><ControlPointIcon /></IconButton>
-                            <IconButton aria-label="edit" color="primary" onClick={handleEditClickOpen} ><EditIcon/></IconButton>
-                            <IconButton aria-label="delete" color="secondary" onClick={handleDeleteClickOpen} ><DeleteIcon /></IconButton>
-                            </TableCell>
+                        {items && items.map((list, index) => (
+                            <TableRow key={index}>
+                                <TableCell>{list.title}</TableCell>
+                                <TableCell>{list.kpiUnitOfMeasure}</TableCell>
+                                <TableCell>{list.categoryId} </TableCell>
+                                <TableCell>
+                                <IconButton aria-label="view" color="error" onClick={handleAddClickOpen} ><ControlPointIcon /></IconButton>
+                                <IconButton aria-label="edit" color="primary" onClick={() => { handleEditClickOpen(); setEditing(list) }} ><EditIcon/></IconButton>
+                                <IconButton aria-label="delete" color="secondary" onClick={() => { handleDeleteClickOpen(); setDelete(list) }} ><DeleteIcon /></IconButton>
+                                </TableCell>
+                            </TableRow>
+                        ))}
 
-                        </TableRow>
-                        <TableRow key=''>
-                            <TableCell>Testing KPI</TableCell>
-                            <TableCell>%</TableCell>
-                            <TableCell>30</TableCell>
-                            <TableCell>25</TableCell>
-                            <TableCell>24</TableCell>
-                            <TableCell>
-                            <IconButton aria-label="view" color="error" onClick={handleAddClickOpen} ><ControlPointIcon /></IconButton>
-                            <IconButton aria-label="edit" color="primary" onClick={handleEditClickOpen} ><EditIcon/></IconButton>
-                            <IconButton aria-label="delete" color="secondary" onClick={handleDeleteClickOpen} ><DeleteIcon /></IconButton>
-                            </TableCell>
-
-                        </TableRow>
                     </TableBody>
                 </Table>
 
@@ -179,7 +221,7 @@ export default function Teams() {
                             onChange = {(event) => {
                             setUnitOfMeasure(event.target.value);
                             }}
-                            helperText="Please select your team lead"
+                            helperText="Please select your unit of measure"
                         >
                             {uoms.map((option) => (
                             <MenuItem key={option.value} value={option.value}>
@@ -188,55 +230,42 @@ export default function Teams() {
                             ))}
                         </TextField>
 
+                        <label style={{ fontWeight: 'bold', color: 'black'}}> Category : </label>
                         <TextField
-                            autoFocus
-                            margin="dense"
-                            id="target"
-                            label="Target"
-                            type="text"
+                            id="outlined-select-category"
+                            select
                             fullWidth
-                            style={{marginBottom : '15px'}}
-                            value={target}
-                            variant="standard"
+                            variant="outlined"
+                            label="Select"
+                            value={category}
                             onChange = {(event) => {
-                                setTarget(event.target.value);
+                            setCategory(event.target.value);
                             }}
-                        />
-
-                        <TextField
-                            autoFocus
-                            margin="dense"
-                            id="target_at_review"
-                            label="Target At Review"
-                            type="text"
-                            fullWidth
-                            style={{marginBottom : '15px'}}
-                            value={targetAtReview}
-                            variant="standard"
-                            onChange = {(event) => {
-                                setTargetAtReview(event.target.value);
-                            }}
-                        />
-
-                        <TextField
-                            autoFocus
-                            margin="dense"
-                            id="target_achieved"
-                            label="Target Achieved"
-                            type="text"
-                            fullWidth
-                            style={{marginBottom : '15px'}}
-                            value={targetAchieved}
-                            variant="standard"
-                            onChange = {(event) => {
-                                setTargetAchieved(event.target.value);
-                            }}
-                        />
+                            helperText="Please select your category"
+                        >
+                            {categories.map((option) => (
+                            <MenuItem key={option.id} value={option.id}>
+                                {option.description}
+                            </MenuItem>
+                            ))}
+                        </TextField>
 
                     </DialogContent>
                     <DialogActions>
                     <Button color="danger" onClick={handleAddClose}>Cancel</Button>
-                    <Button color="success" onClick={handleAddClose}>Save</Button>
+                    { showloader === true ? (
+                      <div style={{ textAlign: "center", marginTop: 10 }}>
+                        <Loader
+                            type="Puff"
+                            color="#00BFFF"
+                            height={150}
+                            width={150}
+                        />
+                      </div>
+                      ) :
+                      (
+                        <Button color="primary" onClick={(e) => { handleAddClose(); saveKpi(e)}}>Save</Button>
+                      )}                        
                     </DialogActions>
                 </Dialog>
 
@@ -272,7 +301,7 @@ export default function Teams() {
                             onChange = {(event) => {
                             setUnitOfMeasure(event.target.value);
                             }}
-                            helperText="Please select your team lead"
+                            helperText="Please select your unit of measure"
                         >
                             {uoms.map((option) => (
                             <MenuItem key={option.value} value={option.value}>
@@ -281,55 +310,42 @@ export default function Teams() {
                             ))}
                         </TextField>
 
+                        <label style={{ fontWeight: 'bold', color: 'black'}}> Category : </label>
                         <TextField
-                            autoFocus
-                            margin="dense"
-                            id="target"
-                            label="Target"
-                            type="text"
+                            id="outlined-select-category"
+                            select
                             fullWidth
-                            style={{marginBottom : '15px'}}
-                            value={target}
-                            variant="standard"
+                            variant="outlined"
+                            label="Select"
+                            value={category}
                             onChange = {(event) => {
-                                setTarget(event.target.value);
+                            setCategory(event.target.value);
                             }}
-                        />
-
-                        <TextField
-                            autoFocus
-                            margin="dense"
-                            id="target_at_review"
-                            label="Target At Review"
-                            type="text"
-                            fullWidth
-                            style={{marginBottom : '15px'}}
-                            value={targetAtReview}
-                            variant="standard"
-                            onChange = {(event) => {
-                                setTargetAtReview(event.target.value);
-                            }}
-                        />
-
-                        <TextField
-                            autoFocus
-                            margin="dense"
-                            id="target_achieved"
-                            label="Target Achieved"
-                            type="text"
-                            fullWidth
-                            style={{marginBottom : '15px'}}
-                            value={targetAchieved}
-                            variant="standard"
-                            onChange = {(event) => {
-                                setTargetAchieved(event.target.value);
-                            }}
-                        />
+                            helperText="Please select your category"
+                        >
+                            {categories.map((option) => (
+                            <MenuItem key={option.id} value={option.id}>
+                                {option.description}
+                            </MenuItem>
+                            ))}
+                        </TextField>
 
                     </DialogContent>
                     <DialogActions>
                     <Button color="danger" onClick={handleEditClose}>Cancel</Button>
-                    <Button color="success" onClick={handleEditClose}>Save</Button>
+                    { showloader === true ? (
+                      <div style={{ textAlign: "center", marginTop: 10 }}>
+                        <Loader
+                            type="Puff"
+                            color="#00BFFF"
+                            height={150}
+                            width={150}
+                        />
+                      </div>
+                      ) :
+                      (
+                        <Button color="primary" onClick={(e) => { handleEditClose(); saveEdited(e) }}>Save</Button>
+                      )}
                     </DialogActions>
                 </Dialog>
 
@@ -349,7 +365,7 @@ export default function Teams() {
                     </DialogContent>
                     <DialogActions>
                     <Button color="danger" onClick={handleDeleteClose}>Disagree</Button>
-                    <Button color="success" onClick={handleDeleteClose} autoFocus>
+                    <Button color="primary" onClick={handleDeleteClose} autoFocus>
                         Agree
                     </Button>
                     </DialogActions>

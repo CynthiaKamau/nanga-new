@@ -164,9 +164,31 @@
             "is_parent": true
         }
     ],
-    "Objectives": {
-
-    },
+    "Objectives": [
+        {
+            "success": true,
+            "message": "Objectives fetched successfully.",
+            "timestamp": "2021-11-01T07:06:52.934+0000",
+            "status": 200,
+            "data": [
+              {
+                "id": 7,
+                "description": "retain insurance subscribers",
+                "kpi_id": 5,
+                "user_id": 0,
+                "start_date": "2021-10-26T21:00:00.000+0000",
+                "end_date": "2021-11-26T21:00:00.000+0000",
+                "target": "600",
+                "target_achieved": "400",
+                "target_achieved_on_review": null,
+                "created_by": 0,
+                "updated_by": 0,
+                "date_created": "2021-10-27T03:24:44.000+0000",
+                "date_updated": "2021-10-27T03:36:20.000+0000"
+              }
+            ]
+          }
+    ],
     "Categories": [
         {
             "id": 0,

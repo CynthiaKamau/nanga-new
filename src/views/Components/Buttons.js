@@ -42,7 +42,7 @@ export default function Buttons() {
               <Button color="info" className={classes.marginRight}>
                 Info
               </Button>
-              <Button color="success" className={classes.marginRight}>
+              <Button color="primary" className={classes.marginRight}>
                 Success
               </Button>
               <Button color="warning" className={classes.marginRight}>
@@ -70,7 +70,7 @@ export default function Buttons() {
               <Button color="info" className={classes.marginRight}>
                 <PriorityHigh className={classes.icons} /> Info
               </Button>
-              <Button color="success" className={classes.marginRight}>
+              <Button color="primary" className={classes.marginRight}>
                 <Check className={classes.icons} /> Success
               </Button>
               <Button color="warning" className={classes.marginRight}>

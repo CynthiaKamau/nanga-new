@@ -22,7 +22,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from "components/CustomButtons/Button.js";
 import { useHistory } from "react-router";
 import DateFnsUtils from '@date-io/date-fns';
-import {MuiPickersUtilsProvider, KeyboardDatePicker} from '@material-ui/pickers';
+import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 
 import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
 
@@ -107,280 +107,280 @@ export default function Dashboard() {
     <div>
 
       <GridContainer>
-          <GridItem xs={12} sm={12} md={12}>
+        <GridItem xs={12} sm={12} md={12}>
           <h3 className={classes.textBold}> THE MISSION </h3>
-            <Card>
-              <CardBody className={classes.cardGrey}>
-                <h4>
-                  Provide Exceptional Strategic Support to the Group in order to Profitably Grow our Customer Base off a Solid Foundation.
-                </h4>
-              </CardBody>
-            </Card>
-          </GridItem>
-          <GridItem xs={12} sm={12} md={12}>
+          <Card>
+            <CardBody className={classes.cardGrey}>
+              <h4>
+                Provide Exceptional Strategic Support to the Group in order to Profitably Grow our Customer Base off a Solid Foundation.
+              </h4>
+            </CardBody>
+          </Card>
+        </GridItem>
+        <GridItem xs={12} sm={12} md={12}>
           <h3 className={classes.textBold}> THE VISION</h3>
-            <Card>
-              <CardBody className={classes.cardGrey}>
-                <h4 >
-                  Build the most valuable financial services business in our industry in Africa by delivering on the 6X more strategy.
-                </h4>
-              </CardBody>
-            </Card>
-          </GridItem>
+          <Card>
+            <CardBody className={classes.cardGrey}>
+              <h4 >
+                Build the most valuable financial services business in our industry in Africa by delivering on the 6X more strategy.
+              </h4>
+            </CardBody>
+          </Card>
+        </GridItem>
 
-          <Dialog open={addopen} onClose={handleAddClose}>
-            <DialogTitle>Strategic Objective</DialogTitle>
-            <DialogContent>
+        <Dialog open={addopen} onClose={handleAddClose}>
+          <DialogTitle>Strategic Objective</DialogTitle>
+          <DialogContent>
             <DialogContentText>
-                Create New  Strategic Objective
+              Create New  Strategic Objective
             </DialogContentText>
-                <TextField
-                    fullWidth
-                    label="Description"
-                    id="description"
-                    multiline
-                    maxRows={4}
-                    className={classes.textInput}
-                    type="text"
-                    value={description}
-                    onChange = {(event) => {
-                        const value = event.target.value;
-                        setDescription(value)
-                    }} 
-                />
+            <TextField
+              fullWidth
+              label="Description"
+              id="description"
+              multiline
+              maxRows={4}
+              className={classes.textInput}
+              type="text"
+              value={description}
+              onChange={(event) => {
+                const value = event.target.value;
+                setDescription(value)
+              }}
+            />
 
-                <label> Category : </label>
-                <TextField
-                    id="outlined-select-category"
-                    select
-                    fullWidth
-                    variant="outlined"
-                    label="Select"
-                    className={classes.textInput}
-                    value={category}
-                    onChange = {(event) => {
-                        setCategory(event.target.value);
-                    }}
-                    helperText="Please select your category"
-                    >
-                    {categories.map((option) => (
-                        <MenuItem key={option.value} value={option.value}>
-                        {option.label}
-                        </MenuItem>
-                    ))}
-                </TextField>
+            <label> Category : </label>
+            <TextField
+              id="outlined-select-category"
+              select
+              fullWidth
+              variant="outlined"
+              label="Select"
+              className={classes.textInput}
+              value={category}
+              onChange={(event) => {
+                setCategory(event.target.value);
+              }}
+              helperText="Please select your category"
+            >
+              {categories.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </TextField>
 
-                <label> KPI : </label>
-                <TextField
-                    id="outlined-select-kpi"
-                    select
-                    fullWidth
-                    variant="outlined"
-                    label="Select"
-                    className={classes.textInput}
-                    value={kpi}
-                    onChange = {(event) => {
-                        setKpi(event.target.value);
-                    }}
-                    helperText="Please select your kpi"
-                    >
-                    {kpis.map((option) => (
-                        <MenuItem key={option.value} value={option.value}>
-                        {option.label}
-                        </MenuItem>
-                    ))}
-                </TextField>
+            <label> KPI : </label>
+            <TextField
+              id="outlined-select-kpi"
+              select
+              fullWidth
+              variant="outlined"
+              label="Select"
+              className={classes.textInput}
+              value={kpi}
+              onChange={(event) => {
+                setKpi(event.target.value);
+              }}
+              helperText="Please select your kpi"
+            >
+              {kpis.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </TextField>
 
-                <TextField
-                    autoFocus
-                    margin="dense"
-                    id="target"
-                    label="Target"
-                    className={classes.textInput}
-                    type="text"
-                    fullWidth
-                    style={{marginBottom : '15px'}}
-                    value={target}
-                    variant="standard"
-                    onChange = {(event) => {
-                        setTarget(event.target.value);
-                    }}
-                />
+            <TextField
+              autoFocus
+              margin="dense"
+              id="target"
+              label="Target"
+              className={classes.textInput}
+              type="text"
+              fullWidth
+              style={{ marginBottom: '15px' }}
+              value={target}
+              variant="standard"
+              onChange={(event) => {
+                setTarget(event.target.value);
+              }}
+            />
 
-            </DialogContent>
-            <DialogActions>
+          </DialogContent>
+          <DialogActions>
             <Button color="danger" onClick={handleAddClose}>Cancel</Button>
-            <Button color="success" onClick={handleAddClose}>Save</Button>
-            </DialogActions>
-          </Dialog>
+            <Button color="primary" onClick={handleAddClose}>Save</Button>
+          </DialogActions>
+        </Dialog>
 
-          <Dialog open={addopentask} onClose={handleAddTaskClose}>
-            <DialogTitle>Strategic Initiative</DialogTitle>
-            <DialogContent>
+        <Dialog open={addopentask} onClose={handleAddTaskClose}>
+          <DialogTitle>Strategic Initiative</DialogTitle>
+          <DialogContent>
             <DialogContentText>
               Add New Strategic Initiative
             </DialogContentText>
 
-                <TextField
-                    fullWidth
-                    label="Objective"
-                    id="objective"
-                    type="text"
-                    disabled
-                    value={objective}
-                    className={classes.textInput}
-                    onChange = {(event) => {
-                        const value = event.target.value;
-                        setObjective(value)
-                    }} 
-                />
-                <TextField
-                    fullWidth
-                    label="Description"
-                    id="taskdescription"
-                    multiline
-                    maxRows={4}
-                    className={classes.textInput}
-                    type="text"
-                    value={taskdescription}
-                    onChange = {(event) => {
-                        const value = event.target.value;
-                        setTaskDescription(value)
-                    }} 
-                />
+            <TextField
+              fullWidth
+              label="Objective"
+              id="objective"
+              type="text"
+              disabled
+              value={objective}
+              className={classes.textInput}
+              onChange={(event) => {
+                const value = event.target.value;
+                setObjective(value)
+              }}
+            />
+            <TextField
+              fullWidth
+              label="Description"
+              id="taskdescription"
+              multiline
+              maxRows={4}
+              className={classes.textInput}
+              type="text"
+              value={taskdescription}
+              onChange={(event) => {
+                const value = event.target.value;
+                setTaskDescription(value)
+              }}
+            />
 
-                <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                    <KeyboardDatePicker
-                        margin="normal"
-                        id="date-picker-dialog"
-                        helperText="Set start date"
-                        format="yyyy/dd/MM"
-                        fullWidth
-                        value={start_date}
-                        onChange={setStartDate}
-                        KeyboardButtonProps={{
-                            'aria-label': 'change date',
-                        }}
-                    />
-                </MuiPickersUtilsProvider>
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+              <KeyboardDatePicker
+                margin="normal"
+                id="date-picker-dialog"
+                helperText="Set start date"
+                format="yyyy/dd/MM"
+                fullWidth
+                value={start_date}
+                onChange={setStartDate}
+                KeyboardButtonProps={{
+                  'aria-label': 'change date',
+                }}
+              />
+            </MuiPickersUtilsProvider>
 
-                <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                    <KeyboardDatePicker
-                        margin="normal"
-                        id="date-picker-dialog"
-                        helperText="Set end date"
-                        format="yyyy/dd/MM"
-                        fullWidth
-                        value={end_date}
-                        onChange={setEndDate}
-                        KeyboardButtonProps={{
-                            'aria-label': 'change date',
-                        }}
-                    />
-                </MuiPickersUtilsProvider>
-                
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+              <KeyboardDatePicker
+                margin="normal"
+                id="date-picker-dialog"
+                helperText="Set end date"
+                format="yyyy/dd/MM"
+                fullWidth
+                value={end_date}
+                onChange={setEndDate}
+                KeyboardButtonProps={{
+                  'aria-label': 'change date',
+                }}
+              />
+            </MuiPickersUtilsProvider>
 
 
-            </DialogContent>
-            <DialogActions>
+
+          </DialogContent>
+          <DialogActions>
             <Button color="danger" onClick={handleAddTaskClose}>Cancel</Button>
-            <Button color="success" onClick={handleAddTaskClose}>Save</Button>
-            </DialogActions>
-          </Dialog>
+            <Button color="primary" onClick={handleAddTaskClose}>Save</Button>
+          </DialogActions>
+        </Dialog>
 
       </GridContainer>
 
-      { newuser ? (
+      {newuser ? (
         <div>
 
           <GridContainer>
 
-          <Card  style={{textAlign: 'center'}}>
+            <Card style={{ textAlign: 'center' }}>
               <GridItem >
-                  <h2> You have not set any main effort Strategic Objectives </h2>
-                  <IconButton> <AddCircleOutlineIcon className={classes.iconAdd} onClick={handleAddClickOpen}/> </IconButton>
-                  <h4>Click here to start</h4>
+                <h2> You have not set any main effort Strategic Objectives </h2>
+                <IconButton> <AddCircleOutlineIcon className={classes.iconAdd} onClick={handleAddClickOpen} /> </IconButton>
+                <h4>Click here to start</h4>
               </GridItem>
-          </Card>
+            </Card>
 
           </GridContainer>
 
         </div>
 
-      ) :  (
+      ) : (
 
         <div>
           <GridContainer>
 
-          <Grid container justify="flex-end">
-            <Button color="success" onClick={handleAddClickOpen}> Create New Objective</Button>
-          </Grid>
+            <Grid container justify="flex-end">
+              <Button color="primary" onClick={handleAddClickOpen}> Create New Objective</Button>
+            </Grid>
 
-          <Card className={classes.cardBodyRed} >
+            <Card className={classes.cardBodyRed} >
               <GridItem xs={12} sm={12} md={12}>
-                  <h4 className={classes.textBold}> 1. Grow Topline Growth </h4>
-                  <h6 className={classes.textGreen}> 6. Management actions</h6>
+                <h4 className={classes.textBold}> 1. Grow Topline Growth </h4>
+                <h6 className={classes.textGreen}> 6. Management actions</h6>
               </GridItem>
               <CardBody className={classes.cardBody}>
-                  <GridItem xs={12} sm={6} md={2}>
+                <GridItem xs={12} sm={6} md={2}>
                   <Card>
-                      <CardBody className={classes.cardBodyRed} >
+                    <CardBody className={classes.cardBodyRed} >
                       <h3 className={classes.cardTitle}>
-                          2 <small>Off Ttack</small>
+                        2 <small>Off Ttack</small>
                       </h3>
-                      </CardBody>
+                    </CardBody>
                   </Card>
-                  </GridItem>
-                  <GridItem xs={12} sm={6} md={2}>
+                </GridItem>
+                <GridItem xs={12} sm={6} md={2}>
                   <Card>
-                      <CardBody className={classes.cardBodyRed}>
+                    <CardBody className={classes.cardBodyRed}>
                       <h3 className={classes.cardTitle}>
-                          1 <small>Cancelled</small>
+                        1 <small>Cancelled</small>
                       </h3>
-                      </CardBody>
+                    </CardBody>
                   </Card>
-                  </GridItem >
-                  <GridItem xs={12} sm={6} md={2}>
+                </GridItem >
+                <GridItem xs={12} sm={6} md={2}>
                   <Card className={classes.cardBodyRed}>
-                      <CardBody>
+                    <CardBody>
                       <h3 className={classes.cardTitle}>
-                          0 <small>Postponed</small>
+                        0 <small>Postponed</small>
                       </h3>
-                      </CardBody>
+                    </CardBody>
                   </Card>
-                  </GridItem>
-                  <GridItem xs={12} sm={6} md={2}>
+                </GridItem>
+                <GridItem xs={12} sm={6} md={2}>
                   <Card className={classes.cardBodyGreen}>
-                      <CardBody>
+                    <CardBody>
                       <h3 className={classes.cardTitle}>
-                          3 <small>Ongoing</small>
+                        3 <small>Ongoing</small>
                       </h3>
-                      </CardBody>
+                    </CardBody>
                   </Card>
-                  </GridItem>
-                  <GridItem xs={12} sm={6} md={2}>
+                </GridItem>
+                <GridItem xs={12} sm={6} md={2}>
                   <Card>
-                      <CardBody className={classes.cardBodyGreen}>
+                    <CardBody className={classes.cardBodyGreen}>
                       <h3 className={classes.cardTitle}>
-                          1 <small>Completed</small>
+                        1 <small>Completed</small>
                       </h3>
-                      </CardBody>
+                    </CardBody>
                   </Card>
-                  </GridItem>
-                  <GridItem xs={12} sm={6} md={2}>
+                </GridItem>
+                <GridItem xs={12} sm={6} md={2}>
                   <Card className={classes.cardBodyGreen}>
-                      <CardBody>
+                    <CardBody>
                       <h3 className={classes.cardTitle}>
-                          0 <small>Not Started</small>
+                        0 <small>Not Started</small>
                       </h3>
-                      </CardBody>
+                    </CardBody>
                   </Card>
-                  </GridItem>
+                </GridItem>
               </CardBody>
               <CardFooter className={classes.cardFooter} >
-                <IconButton> <ExpandMoreIcon className={classes.iconBottom} onClick={() => handleRedirect()}/> </IconButton>
+                <IconButton> <ExpandMoreIcon className={classes.iconBottom} onClick={() => handleRedirect()} /> </IconButton>
               </CardFooter>
-          </Card>
+            </Card>
           </GridContainer>
         </div>
 
