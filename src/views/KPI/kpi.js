@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
 // @material-ui/core
@@ -27,7 +27,7 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
 import JsonData from "../../data/data.json";
-import { editKpi, addKpi } from "actions/kpis";
+import { getKpis, editKpi, addKpi } from "actions/kpis";
 import swal from "sweetalert2";
 import Loader from "react-loader-spinner";
 
@@ -39,13 +39,15 @@ export default function KPIs() {
     const classes = useStyles();
     const dispatch = useDispatch();
 
+    const { items } = useSelector(state => state.kpi)
     const { item } = useSelector(state => state.user)
     const { error } = useSelector(state => state.user);
-    // const { user : currentUser } = useSelector(state => state.auth);
+    const { user : currentUser } = useSelector(state => state.auth);
 
-    const currentUser = JsonData.User;
+    useEffect(() => {
+        dispatch(getKpis());
+      }, []);
 
-    const items = JsonData.KPIS;
     const categories = JsonData.Categories;
 
     const [addopen, setAddOpen] = useState(false);
@@ -80,7 +82,7 @@ export default function KPIs() {
             location.reload()
         }
     
-      }
+    }
 
     const handleEditClickOpen = () => {
         setEditOpen(true);
@@ -90,8 +92,8 @@ export default function KPIs() {
         console.log(list);
 
         setKPI(list.title);
-        setUnitOfMeasure(list.kpiUnitOfMeasure);
-        setCategory(list.categoryId);
+        setUnitOfMeasure(list.kpi_unit_of_measure);
+        setCategory(list.categories.id);
         setId(list.id);
     }
 
@@ -178,8 +180,8 @@ export default function KPIs() {
                         {items && items.map((list, index) => (
                             <TableRow key={index}>
                                 <TableCell>{list.title}</TableCell>
-                                <TableCell>{list.kpiUnitOfMeasure}</TableCell>
-                                <TableCell>{list.categoryId} </TableCell>
+                                <TableCell>{list.kpi_unit_of_measure}</TableCell>
+                                <TableCell>{list.categories.description} </TableCell>
                                 { currentUser.role_id=== 0 ? ( <TableCell>
                                 <IconButton aria-label="view" color="error" onClick={handleAddClickOpen} ><ControlPointIcon /></IconButton>
                                 <IconButton aria-label="edit" color="primary" onClick={() => { handleEditClickOpen(); setEditing(list) }} ><EditIcon/></IconButton>

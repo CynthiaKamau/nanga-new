@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+
 // @material-ui/core
 import { makeStyles } from "@material-ui/core/styles";
 // core components
@@ -27,8 +29,12 @@ import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import avatar from "assets/img/faces/marc.jpg";
 import { useHistory } from "react-router";
+import { getAssignedTasks, addAssignedTask } from "actions/tasks";
+import swal from "sweetalert2";
+import Loader from "react-loader-spinner";
 
 import styles from "assets/jss/material-dashboard-pro-react/views/assignedTasksStyle.js";
+import { editTask } from "actions/tasks";
 
 const useStyles = makeStyles(styles);
 
@@ -36,13 +42,28 @@ export default function AssignedTasksPage() {
     const classes = useStyles();
     const history = useHistory();
 
+    const dispatch = useDispatch();
+
+    const { user: currentUser } = useSelector(state => state.auth);
+    const { items, item , error, isLoading } = useSelector(state => state.task);
+
+    console.log("at", items)
+
     const [addopen, setAddOpen] = useState(false);
     const [editopen, setEditOpen] = useState(false);
     const [deleteopen, setDeleteOpen] = useState(false);
-    const [name, setName] = useState("");
-    const [teamlead, setTeamLead] = useState("");
-    const [duedate, setDueDate] = useState("");
-    // const [startdate, setStartDate] = useState("");
+    const [description, setDescription] = useState("");
+    const [end_date, setEndDate] = useState("");
+    const [start_date, setStartDate] = useState("");
+    const [objective_id, setObjectiveId] = useState("");
+    const [user_id, setUserId] = useState("");
+    const [status, setStatus] = useState("");
+    const [showloader, setshowloader] = useState(false); 
+
+    useEffect(() => {
+        dispatch(getAssignedTasks(currentUser.id))
+    }, []);
+
 
     const handleClickOpen = () => {
         setAddOpen(true);
@@ -51,6 +72,29 @@ export default function AssignedTasksPage() {
     const handleAddClose = () => {
         setAddOpen(false);
     };
+
+    const saveTask = e => {
+        e.preventDefault();
+        setshowloader(true);
+        setObjectiveId();
+        setUserId(currentUser.id);
+
+        console.log("save values", description, end_date, start_date, objective_id, user_id)
+    
+        dispatch(addAssignedTask( description, end_date, start_date, objective_id, user_id ))
+        if (error) {
+          setshowloader(false);
+          swal.fire({
+              title: "Error",
+              text: error,
+              icon: "error",
+              dangerMode: true
+          });
+        } else if(item) {
+            location.reload()
+        }
+    
+    }
 
     const handleEditClose = () => {
         setEditOpen(false);
@@ -66,7 +110,7 @@ export default function AssignedTasksPage() {
         history.push(`/admin/dashboard`);
     }
 
-    const teamleads = [
+    const statuses = [
         {
             value: '1',
             label: 'Not Started',
@@ -99,6 +143,7 @@ export default function AssignedTasksPage() {
                                 <TableHead className={classes.tableHeader}>
                                     <TableRow>
                                         <TableCell>Management Actions</TableCell>
+                                        <TableCell>Description </TableCell>
                                         <TableCell>Assigned By</TableCell>
                                         <TableCell>Start Date</TableCell>
                                         <TableCell>Due Date</TableCell>
@@ -106,48 +151,24 @@ export default function AssignedTasksPage() {
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    <TableRow key='' >
-                                        <TableCell>Add more customers</TableCell>
-                                        <TableCell onClick={handleClickOpen} > <img src={avatar} alt="..." style={{ maxWidth: '50px', maxHeight: '50px', borderRadius: '50%', marginRight: '160px', marginTop: '35px' }} />  </TableCell>
-                                        <TableCell>12/12/2020</TableCell>
-                                        <TableCell>12/12/2021</TableCell>
-                                        <TableCell>
-                                            <CustomLinearProgress
-                                                variant="determinate"
-                                                color="primary"
-                                                value={30}
-                                            />
-                                        </TableCell>
-                                        <TableCell onClick={handleOpen} > <ArrowForward /> </TableCell>
-                                    </TableRow>
-                                    <TableRow key=''>
-                                        <TableCell>Add more customers</TableCell>
-                                        <TableCell onClick={handleClickOpen} > <img src={avatar} alt="..." style={{ maxWidth: '50px', maxHeight: '50px', borderRadius: '50%', marginRight: '160px', marginTop: '35px' }} />  </TableCell>
-                                        <TableCell>12/12/2020</TableCell>
-                                        <TableCell>12/12/2021</TableCell>
-                                        <TableCell>
-                                            <CustomLinearProgress
-                                                variant="determinate"
-                                                color="primary"
-                                                value={70}
-                                            /> </TableCell>
-                                        <TableCell onClick={handleOpen} > <ArrowForward /> </TableCell>
-
-                                    </TableRow>
-                                    <TableRow key=''>
-                                        <TableCell>Add more customers</TableCell>
-                                        <TableCell onClick={handleClickOpen} > <img src={avatar} alt="..." style={{ maxWidth: '50px', maxHeight: '50px', borderRadius: '50%', marginRight: '160px', marginTop: '35px' }} />  </TableCell>
-                                        <TableCell>12/12/2020</TableCell>
-                                        <TableCell>12/12/2021</TableCell>
-                                        <TableCell>
-                                            <CustomLinearProgress
-                                                variant="determinate"
-                                                color="primary"
-                                                value={50}
-                                            /></TableCell>
-                                        <TableCell onClick={handleOpen} > <ArrowForward /> </TableCell>
-                                    </TableRow>
-                                </TableBody>
+                                    {items ? ( items.map((list, index) => (
+                                        <TableRow key={index}>
+                                                <TableCell>Add more customers</TableCell>
+                                                <TableCell>{list.description}</TableCell>
+                                                <TableCell onClick={handleClickOpen} > <img src={avatar} alt="..." style={{ maxWidth: '50px', maxHeight: '50px', borderRadius: '50%', marginRight: '160px', marginTop: '35px' }} />  </TableCell>
+                                                <TableCell>{list.start_date}</TableCell>
+                                                <TableCell>{list.end_date}</TableCell>
+                                                <TableCell>
+                                                    <CustomLinearProgress
+                                                        variant="determinate"
+                                                        color="primary"
+                                                        value={30}
+                                                    />
+                                                </TableCell>
+                                                <TableCell onClick={handleOpen} > <ArrowForward /> </TableCell>
+                                            </TableRow>
+                                    ))) : error ? (<TableRow> <TableCell> {error} </TableCell></TableRow> ) : null }
+                                </TableBody>    
                             </Table>
 
                             <Dialog open={addopen} onClose={handleAddClose}>
@@ -159,17 +180,32 @@ export default function AssignedTasksPage() {
                                     <TextField
                                         autoFocus
                                         margin="dense"
-                                        id="name"
-                                        label="Name"
+                                        id="description"
+                                        label="Description"
                                         type="text"
                                         fullWidth
                                         style={{ marginBottom: '15px' }}
-                                        value={name}
+                                        value={description}
                                         variant="standard"
                                         onChange={(event) => {
-                                            setName(event.target.value);
+                                            setDescription(event.target.value);
                                         }}
                                     />
+
+                                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                        <KeyboardDatePicker
+                                            margin="normal"
+                                            id="date-picker-dialog"
+                                            helperText="Set start date"
+                                            format="yyyy/dd/MM"
+                                            fullWidth
+                                            value={start_date}
+                                            onChange={setStartDate}
+                                            KeyboardButtonProps={{
+                                                'aria-label': 'change date',
+                                            }}
+                                        />
+                                    </MuiPickersUtilsProvider>
 
                                     <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                         <KeyboardDatePicker
@@ -178,8 +214,8 @@ export default function AssignedTasksPage() {
                                             helperText="Set due date"
                                             format="yyyy/dd/MM"
                                             fullWidth
-                                            value={duedate}
-                                            onChange={setDueDate}
+                                            value={end_date}
+                                            onChange={setEndDate}
                                             KeyboardButtonProps={{
                                                 'aria-label': 'change date',
                                             }}
@@ -188,18 +224,38 @@ export default function AssignedTasksPage() {
 
                                     <label style={{ fontWeight: 'bold', color: 'black' }}> Status : </label>
                                     <TextField
-                                        id="outlined-select-teamlead"
+                                        id="outlined-select-status"
                                         select
                                         fullWidth
                                         variant="outlined"
                                         label="Select"
-                                        value={teamlead}
+                                        value={status}
                                         onChange={(event) => {
-                                            setTeamLead(event.target.value);
+                                            setStatus(event.target.value);
                                         }}
                                         helperText="Please select the status"
                                     >
-                                        {teamleads.map((option) => (
+                                        {statuses.map((option) => (
+                                            <MenuItem key={option.value} value={option.value}>
+                                                {option.label}
+                                            </MenuItem>
+                                        ))}
+                                    </TextField>
+
+                                    <label style={{ fontWeight: 'bold', color: 'black' }}> Status : </label>
+                                    <TextField
+                                        id="outlined-select-status"
+                                        select
+                                        fullWidth
+                                        variant="outlined"
+                                        label="Select"
+                                        value={status}
+                                        onChange={(event) => {
+                                            setStatus(event.target.value);
+                                        }}
+                                        helperText="Please select the status"
+                                    >
+                                        {statuses.map((option) => (
                                             <MenuItem key={option.value} value={option.value}>
                                                 {option.label}
                                             </MenuItem>
@@ -209,7 +265,19 @@ export default function AssignedTasksPage() {
                                 </DialogContent>
                                 <DialogActions>
                                     <Button color="danger" onClick={handleAddClose}>Cancel</Button>
-                                    <Button color="primary" onClick={handleAddClose}>Save</Button>
+                                    { isLoading === true || showloader === true  ? (
+                                        <div style={{ textAlign: "center", marginTop: 10 }}>
+                                            <Loader
+                                                type="Puff"
+                                                color="#00BFFF"
+                                                height={150}
+                                                width={150}
+                                            />
+                                        </div>
+                                        ) :
+                                        (
+                                            <Button color="primary" onClick={(e) => { handleAddClose(); saveTask(e)}}>Save</Button>
+                                        )}
                                 </DialogActions>
                             </Dialog>
 
@@ -222,17 +290,32 @@ export default function AssignedTasksPage() {
                                     <TextField
                                         autoFocus
                                         margin="dense"
-                                        id="name"
-                                        label="Name"
+                                        id="description"
+                                        label="Description"
                                         type="text"
                                         fullWidth
                                         style={{ marginBottom: '15px' }}
-                                        value={name}
+                                        value={description}
                                         variant="standard"
                                         onChange={(event) => {
-                                            setName(event.target.value);
+                                            setDescription(event.target.value);
                                         }}
                                     />
+
+                                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                        <KeyboardDatePicker
+                                            margin="normal"
+                                            id="date-picker-dialog"
+                                            helperText="Set start date"
+                                            format="yyyy/dd/MM"
+                                            fullWidth
+                                            value={start_date}
+                                            onChange={setStartDate}
+                                            KeyboardButtonProps={{
+                                                'aria-label': 'change date',
+                                            }}
+                                        />
+                                    </MuiPickersUtilsProvider>
 
                                     <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                         <KeyboardDatePicker
@@ -241,8 +324,8 @@ export default function AssignedTasksPage() {
                                             helperText="Set due date"
                                             format="yyyy/dd/MM"
                                             fullWidth
-                                            value={duedate}
-                                            onChange={setDueDate}
+                                            value={end_date}
+                                            onChange={setEndDate}
                                             KeyboardButtonProps={{
                                                 'aria-label': 'change date',
                                             }}
@@ -251,18 +334,18 @@ export default function AssignedTasksPage() {
 
                                     <label style={{ fontWeight: 'bold', color: 'black' }}> Status : </label>
                                     <TextField
-                                        id="outlined-select-teamlead"
+                                        id="outlined-select-status"
                                         select
                                         fullWidth
                                         variant="outlined"
                                         label="Select"
-                                        value={teamlead}
+                                        value={status}
                                         onChange={(event) => {
-                                            setTeamLead(event.target.value);
+                                            setStatus(event.target.value);
                                         }}
                                         helperText="Please select the status"
                                     >
-                                        {teamleads.map((option) => (
+                                        {statuses.map((option) => (
                                             <MenuItem key={option.value} value={option.value}>
                                                 {option.label}
                                             </MenuItem>
@@ -272,7 +355,19 @@ export default function AssignedTasksPage() {
                                 </DialogContent>
                                 <DialogActions>
                                     <Button color="danger" onClick={handleEditClose}>Cancel</Button>
-                                    <Button color="primary" onClick={handleEditClose}>Save</Button>
+                                    { showloader === true || isLoading === true ? (
+                                        <div style={{ textAlign: "center", marginTop: 10 }}>
+                                            <Loader
+                                                type="Puff"
+                                                color="#00BFFF"
+                                                height={150}
+                                                width={150}
+                                            />
+                                        </div>
+                                        ) :
+                                        (
+                                        <Button color="primary" onClick={(e) => { handleEditClose(); editTask(e)}}>Save</Button>
+                                    )}
                                 </DialogActions>
                             </Dialog>
 

@@ -6,6 +6,10 @@ import {
     ALL_TASKS_FETCH_REQUEST,
     ALL_TASKS_FAIL,
 
+    ALL_ASSIGNED_TASKS_SUCCESS,
+    ALL_ASSIGNED_TASKS_FAIL,
+    ALL_ASSIGNED_TASKS_FETCH_REQUEST,
+
     TASK_SUCCESS,
     TASK_FAIL,
     TASK_FETCH_REQUEST,
@@ -24,7 +28,7 @@ import {
 
 } from '../actions/types';
 
-export const getTasks = () => {
+export const getTasks = (id) => {
 
     return async function (dispatch) {
 
@@ -32,15 +36,40 @@ export const getTasks = () => {
 
         try {
 
-            let response = await axios.get('/tasks')
+            let response = await axios.get(`/tasks/findTasksByUserId?user_id=${id}`)
             if (response.status == 200) {
                 dispatch({ type: ALL_TASKS_SUCCESS, payload: response.data })
             } else {
+                console.log("error1",response.data)
                 dispatch({ type: ALL_TASKS_FAIL, payload: response.data })
             }
 
         } catch (error) {
-            dispatch({ type: ALL_TASKS_FAIL, payload: error.response.data.message })
+            console.log("error2",error.response.data)
+
+            dispatch({ type: ALL_TASKS_FAIL, payload: error.response.data })
+        }
+    }
+}
+
+export const getAssignedTasks = (id) => {
+
+    return async function (dispatch) {
+
+        dispatch({ type: ALL_ASSIGNED_TASKS_FETCH_REQUEST });
+
+        try {
+
+            let response = await axios.get(`/assignedtasks/findTasksAssigned?user_id=${id}`)
+            if (response.status == 200) {
+                dispatch({ type: ALL_ASSIGNED_TASKS_SUCCESS, payload: response.data.data })
+            } else {
+                dispatch({ type: ALL_ASSIGNED_TASKS_FAIL, payload: response.data })
+            }
+
+        } catch (error) {
+
+            dispatch({ type: ALL_ASSIGNED_TASKS_FAIL, payload: error.response.data })
         }
     }
 }
@@ -69,11 +98,11 @@ export const getTask = (id) => {
 }
 
 //add specific task
-export const addTask = (user_id, target, start_date, kpi_id, end_date, description, created_by ) => {
+export const addTask = (description, end_date, start_date, objective_id, user_id ) => {
 
     const config = { headers: { 'Content-Type': 'application/json' } }
     
-    const body = JSON.stringify({ user_id, target, start_date, kpi_id, end_date, description, created_by });
+    const body = JSON.stringify({ description, end_date, start_date, objective_id, user_id });
     console.log("task", body);
 
     return async function (dispatch) {
@@ -96,11 +125,39 @@ export const addTask = (user_id, target, start_date, kpi_id, end_date, descripti
 
 }
 
+//add assigned task
+export const addAssignedTask = (description, end_date, start_date, objective_id, user_id ) => {
+
+    const config = { headers: { 'Content-Type': 'application/json' } }
+    
+    const body = JSON.stringify({ description, end_date, start_date, objective_id, user_id });
+    console.log("task", body);
+
+    return async function (dispatch) {
+
+        dispatch({ type: ADD_TASK_FETCH_REQUEST});
+
+        try {
+
+            let response = await axios.post('/tasks/create', body, config)
+            if (response.status == 200) {
+                dispatch({ type: ADD_TASK_SUCCESS, payload: response.data})
+            } else {
+                dispatch({ type: ADD_TASK_FAIL, payload: response.data })
+            }
+        } catch (error) {
+            dispatch({ type: ADD_TASK_FAIL, payload: error.response.data.message })
+        }
+
+    }
+
+}
+
 //edit specific task
-export const editTask = (id, description, kpi_id, user_id, start_date, end_date,  target, target_achieved, target_achieved_on_review, created_by, updated_by ) => {
+export const editTask = (description, end_date, start_date, objective_id, user_id, status ) => {
     const config = { headers: { 'Content-Type': 'application/json' } }
 
-    const body = JSON.stringify({ id, description, kpi_id, user_id, start_date, end_date,  target, target_achieved, target_achieved_on_review, created_by, updated_by });
+    const body = JSON.stringify({ description, end_date, start_date, objective_id, user_id, status });
     console.log("task", body);
 
     return async function (dispatch) {

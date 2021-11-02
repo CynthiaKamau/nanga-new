@@ -1,5 +1,5 @@
 import React from "react";
-// import { useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
 import classNames from "classnames";
 import PropTypes from "prop-types";
@@ -15,7 +15,6 @@ import Grow from "@material-ui/core/Grow";
 import Hidden from "@material-ui/core/Hidden";
 import Popper from "@material-ui/core/Popper";
 import Divider from "@material-ui/core/Divider";
-import JsonData from "../../data/data.json";
 import avatar from "assets/img/faces/marc.jpg";
 
 // core components
@@ -26,9 +25,8 @@ import styles from "assets/jss/material-dashboard-pro-react/components/adminNavb
 const useStyles = makeStyles(styles);
 
 export default function HeaderLinks(props) {
-  // const { user : currentUser } = useSelector(state => state.auth);
+  const { user : currentUser } = useSelector(state => state.auth);
 
-  const currentUser = JsonData.User;
   const [openProfile, setOpenProfile] = React.useState(null);
   const handleClickProfile = (event) => {
     if (openProfile && openProfile.contains(event.target)) {

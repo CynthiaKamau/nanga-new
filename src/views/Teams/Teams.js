@@ -1,6 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-
 // @material-ui/core
 import { makeStyles } from "@material-ui/core/styles";
 // core components
@@ -27,7 +26,7 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
 import JsonData from "../../data/data.json";
-import { addTeam, editTeam } from "../../actions/teams"
+import { getTeams, addTeam, editTeam } from "../../actions/teams"
 import swal from "sweetalert2";
 import Loader from "react-loader-spinner";
 
@@ -42,9 +41,11 @@ export default function TeamsPage() {
 
     const { item } = useSelector(state => state.team)
     const { error } = useSelector(state => state.team);
-    // const { user : currentUser } = useSelector(state => state.auth);
+    const { user : currentUser } = useSelector(state => state.auth);
 
-    const currentUser = JsonData.User;
+    useEffect(() => {
+        dispatch(getTeams());
+      }, []);
 
     const [addopen, setAddOpen] = useState(false);
     const [editopen, setEditOpen] = useState(false);

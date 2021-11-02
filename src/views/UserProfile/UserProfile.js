@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
 // import { useSelector } from "react-redux";
 
 // @material-ui/core components
@@ -17,7 +18,6 @@ import CardBody from "components/Card/CardBody.js";
 import CardHeader from "components/Card/CardHeader.js";
 import CardIcon from "components/Card/CardIcon.js";
 import CardAvatar from "components/Card/CardAvatar.js";
-import JsonData from "../../data/data.json";
 
 import styles from "assets/jss/material-dashboard-pro-react/views/userProfileStyles.js";
 
@@ -28,9 +28,9 @@ const useStyles = makeStyles(styles);
 export default function UserProfile() {
   const classes = useStyles();
 
-  // const { user : currentUser } = useSelector(state => state.auth);
+  const { user : currentUser } = useSelector(state => state.auth);
 
-  const currentUser = JsonData.User;
+  console.log(currentUser)
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");

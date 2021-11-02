@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 // @material-ui/core
 import { makeStyles } from "@material-ui/core/styles";
@@ -26,7 +26,7 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
 import JsonData from "../../data/data.json";
-import { editUser, addUser } from "../../actions/users";
+import { getUsers, editUser, addUser } from "../../actions/users";
 import swal from "sweetalert2";
 import Loader from "react-loader-spinner";
 
@@ -40,12 +40,15 @@ export default function UsersPage() {
   const classes = useStyles();
   const dispatch = useDispatch();
 
+  const { items } = useSelector(state => state.user)
   const { item } = useSelector(state => state.user)
   const { error } = useSelector(state => state.user);
-  // const { user : currentUser } = useSelector(state => state.auth);
-  const currentUser = JsonData.User;
+  const { user : currentUser } = useSelector(state => state.auth);
 
-  const items = JsonData.Users;
+  useEffect(() => {
+    dispatch(getUsers());
+  }, []);
+
   const teams = JsonData.Teams;
   const roles = JsonData.Roles;
 
@@ -63,7 +66,7 @@ export default function UsersPage() {
 
   // const statuses = JsonData.Status;
 
-  console.log(items);
+  console.log("here1",items);
 
   const statuses = [
     {

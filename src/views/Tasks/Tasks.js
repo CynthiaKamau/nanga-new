@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import React, { useState , useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+
 // @material-ui/core
 import { makeStyles } from "@material-ui/core/styles";
 // core components
@@ -26,32 +28,105 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
-
+import { getTasks, addTask, editTask } from "actions/tasks";
 import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
+import swal from "sweetalert2";
+import Loader from "react-loader-spinner";
 
 const useStyles = makeStyles(styles);
 
 export default function TasksPage() {
     const classes = useStyles();
 
+    const dispatch = useDispatch();
+
+    const { user: currentUser } = useSelector(state => state.auth)
+    const { items, item , error, isLoading } = useSelector(state => state.task)
+
     const [addopen, setAddOpen] = useState(false);
     const [editopen, setEditOpen] = useState(false);
     const [deleteopen, setDeleteOpen] = useState(false);
-    const [name, setName] = useState("");
-    const [teamlead, setTeamLead] = useState("");
-    const [duedate, setDueDate] = useState("");
+    const [description, setDescription] = useState("");
+    const [end_date, setEndDate] = useState("");
+    const [start_date, setStartDate] = useState("");
+    const [objective_id, setObjectiveId] = useState("");
+    const [user_id, setUserId] = useState("");
+    const [status, setStatus] = useState("");
+    const [showloader, setshowloader] = useState(false);  
+
+
+    useEffect(() => {
+        dispatch(getTasks(currentUser.id))
+    }, []);
 
     const handleAddClickOpen = () => {
         setAddOpen(true);
     };
 
+    const saveTask = e => {
+        e.preventDefault();
+        setshowloader(true);
+
+        console.log("save values", description, end_date, start_date, objective_id, user_id)
+    
+        dispatch(addTask( description, end_date, start_date, objective_id, user_id ))
+        if (error) {
+          setshowloader(false);
+          swal.fire({
+              title: "Error",
+              text: error,
+              icon: "error",
+              dangerMode: true
+          });
+        } else if(item) {
+            location.reload()
+        }
+    
+    }
+
     const handleEditClickOpen = () => {
         setEditOpen(true);
     };
 
+    const setEditing = (list) => {
+        console.log(list);
+
+        setDescription(list.description)
+        setStatus(list.status);
+        setStartDate(list.start_date);
+        setEndDate(list.end_date);
+        setObjectiveId(list.objective_id);
+        setUserId(list.user_id)
+    }
+
+    const saveEdited = e => {
+        e.preventDefault();
+        setshowloader(true);
+
+        console.log("edit values",  description, end_date, start_date, objective_id, user_id, status)
+    
+        dispatch(editTask(description, end_date, start_date, objective_id, user_id, status))
+        if (!item && error) {
+          setshowloader(false);
+          swal.fire({
+              title: "Error",
+              text: error,
+              icon: "error",
+              dangerMode: true
+          });
+        } else if(item) {
+            location.reload()
+        }
+    
+    }
+
     const handleDeleteClickOpen = () => {
         setDeleteOpen(true);
     };
+
+    const setDelete = (list) => {
+        console.log(list)
+    }
 
     const handleAddClose = () => {
         setAddOpen(false);
@@ -65,7 +140,7 @@ export default function TasksPage() {
         setDeleteOpen(false);
     };
 
-    const teamleads = [
+    const statuses = [
         {
             value: '1',
             label: 'Not Started',
@@ -97,46 +172,28 @@ export default function TasksPage() {
                             <Table>
                                 <TableHead className={classes.tableHeader}>
                                     <TableRow>
-                                        <TableCell>Name</TableCell>
+                                        <TableCell>Description</TableCell>
+                                        <TableCell>Start Date</TableCell>
                                         <TableCell>Due Date</TableCell>
                                         <TableCell>Status</TableCell>
                                         <TableCell>Action</TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    <TableRow key=''>
-                                        <TableCell>Add more customers</TableCell>
-                                        <TableCell>12/12/2021</TableCell>
-                                        <TableCell>Ongoing</TableCell>
-                                        <TableCell>
-                                            <IconButton aria-label="view" color="error" onClick={handleAddClickOpen} ><ControlPointIcon /></IconButton>
-                                            <IconButton aria-label="edit" color="primary" onClick={handleEditClickOpen} ><EditIcon /></IconButton>
-                                            <IconButton aria-label="delete" color="secondary" onClick={handleDeleteClickOpen} ><DeleteIcon /></IconButton>
-                                        </TableCell>
+                                    {items ? ( items.map((list, index) => (
+                                        <TableRow key={index}>
+                                            <TableCell>{list.description}</TableCell>
+                                            <TableCell>{list.start_date}</TableCell>
+                                            <TableCell>{list.end_date}</TableCell>
+                                            <TableCell>{list.status}</TableCell>
+                                            <TableCell>
+                                                <IconButton aria-label="view" color="error" onClick={handleAddClickOpen} ><ControlPointIcon /></IconButton>
+                                                <IconButton aria-label="edit" color="primary" onClick={() => { handleEditClickOpen(); setEditing(list) }} ><EditIcon /></IconButton>
+                                                <IconButton aria-label="delete" color="secondary" onClick={() => { handleDeleteClickOpen(); setDelete(list) }} ><DeleteIcon /></IconButton>
+                                            </TableCell>
 
-                                    </TableRow>
-                                    <TableRow key=''>
-                                        <TableCell>Add more customers</TableCell>
-                                        <TableCell>12/12/2021</TableCell>
-                                        <TableCell>Ongoing</TableCell>
-                                        <TableCell>
-                                            <IconButton aria-label="view" color="error" onClick={handleAddClickOpen} ><ControlPointIcon /></IconButton>
-                                            <IconButton aria-label="edit" color="primary" onClick={handleEditClickOpen} ><EditIcon /></IconButton>
-                                            <IconButton aria-label="delete" color="secondary" onClick={handleDeleteClickOpen} ><DeleteIcon /></IconButton>
-                                        </TableCell>
-
-                                    </TableRow>
-                                    <TableRow key=''>
-                                        <TableCell>Add more customers</TableCell>
-                                        <TableCell>12/12/2021</TableCell>
-                                        <TableCell>Ongoing</TableCell>
-                                        <TableCell>
-                                            <IconButton aria-label="view" color="error" onClick={handleAddClickOpen} ><ControlPointIcon /></IconButton>
-                                            <IconButton aria-label="edit" color="primary" onClick={handleEditClickOpen} ><EditIcon /></IconButton>
-                                            <IconButton aria-label="delete" color="secondary" onClick={handleDeleteClickOpen} ><DeleteIcon /></IconButton>
-                                        </TableCell>
-
-                                    </TableRow>
+                                        </TableRow>
+                                    ))) : error ? (<TableRow> <TableCell> {error} </TableCell></TableRow> ) : null }
                                 </TableBody>
                             </Table>
 
@@ -149,17 +206,32 @@ export default function TasksPage() {
                                     <TextField
                                         autoFocus
                                         margin="dense"
-                                        id="name"
-                                        label="Name"
+                                        id="description"
+                                        label="Description"
                                         type="text"
                                         fullWidth
                                         style={{ marginBottom: '15px' }}
-                                        value={name}
+                                        value={description}
                                         variant="standard"
                                         onChange={(event) => {
-                                            setName(event.target.value);
+                                            setDescription(event.target.value);
                                         }}
                                     />
+
+                                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                        <KeyboardDatePicker
+                                            margin="normal"
+                                            id="date-picker-dialog"
+                                            helperText="Set start date"
+                                            format="yyyy/dd/MM"
+                                            fullWidth
+                                            value={start_date}
+                                            onChange={setStartDate}
+                                            KeyboardButtonProps={{
+                                                'aria-label': 'change date',
+                                            }}
+                                        />
+                                    </MuiPickersUtilsProvider>
 
                                     <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                         <KeyboardDatePicker
@@ -168,8 +240,8 @@ export default function TasksPage() {
                                             helperText="Set due date"
                                             format="yyyy/dd/MM"
                                             fullWidth
-                                            value={duedate}
-                                            onChange={setDueDate}
+                                            value={end_date}
+                                            onChange={setEndDate}
                                             KeyboardButtonProps={{
                                                 'aria-label': 'change date',
                                             }}
@@ -178,18 +250,18 @@ export default function TasksPage() {
 
                                     <label style={{ fontWeight: 'bold', color: 'black' }}> Status : </label>
                                     <TextField
-                                        id="outlined-select-teamlead"
+                                        id="outlined-select-status"
                                         select
                                         fullWidth
                                         variant="outlined"
                                         label="Select"
-                                        value={teamlead}
+                                        value={status}
                                         onChange={(event) => {
-                                            setTeamLead(event.target.value);
+                                            setStatus(event.target.value);
                                         }}
                                         helperText="Please select the status"
                                     >
-                                        {teamleads.map((option) => (
+                                        {statuses.map((option) => (
                                             <MenuItem key={option.value} value={option.value}>
                                                 {option.label}
                                             </MenuItem>
@@ -199,7 +271,19 @@ export default function TasksPage() {
                                 </DialogContent>
                                 <DialogActions>
                                     <Button color="danger" onClick={handleAddClose}>Cancel</Button>
-                                    <Button color="primary" onClick={handleAddClose}>Save</Button>
+                                    { showloader === true || isLoading === true ? (
+                                        <div style={{ textAlign: "center", marginTop: 10 }}>
+                                            <Loader
+                                                type="Puff"
+                                                color="#00BFFF"
+                                                height={150}
+                                                width={150}
+                                            />
+                                        </div>
+                                        ) :
+                                        (
+                                            <Button color="primary" onClick={(e) => { handleAddClose(); saveTask(e)}}>Save</Button>
+                                        )}
                                 </DialogActions>
                             </Dialog>
 
@@ -212,17 +296,32 @@ export default function TasksPage() {
                                     <TextField
                                         autoFocus
                                         margin="dense"
-                                        id="name"
-                                        label="Name"
+                                        id="description"
+                                        label="Description"
                                         type="text"
                                         fullWidth
                                         style={{ marginBottom: '15px' }}
-                                        value={name}
+                                        value={description}
                                         variant="standard"
                                         onChange={(event) => {
-                                            setName(event.target.value);
+                                            setDescription(event.target.value);
                                         }}
                                     />
+
+<                                   MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                        <KeyboardDatePicker
+                                            margin="normal"
+                                            id="date-picker-dialog"
+                                            helperText="Set start date"
+                                            format="yyyy/dd/MM"
+                                            fullWidth
+                                            value={start_date}
+                                            onChange={setStartDate}
+                                            KeyboardButtonProps={{
+                                                'aria-label': 'change date',
+                                            }}
+                                        />
+                                    </MuiPickersUtilsProvider>
 
                                     <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                         <KeyboardDatePicker
@@ -231,8 +330,8 @@ export default function TasksPage() {
                                             helperText="Set due date"
                                             format="yyyy/dd/MM"
                                             fullWidth
-                                            value={duedate}
-                                            onChange={setDueDate}
+                                            value={end_date}
+                                            onChange={setEndDate}
                                             KeyboardButtonProps={{
                                                 'aria-label': 'change date',
                                             }}
@@ -241,18 +340,18 @@ export default function TasksPage() {
 
                                     <label style={{ fontWeight: 'bold', color: 'black' }}> Status : </label>
                                     <TextField
-                                        id="outlined-select-teamlead"
+                                        id="outlined-select-status"
                                         select
                                         fullWidth
                                         variant="outlined"
                                         label="Select"
-                                        value={teamlead}
+                                        value={status}
                                         onChange={(event) => {
-                                            setTeamLead(event.target.value);
+                                            setStatus(event.target.value);
                                         }}
                                         helperText="Please select the status"
                                     >
-                                        {teamleads.map((option) => (
+                                        {statuses.map((option) => (
                                             <MenuItem key={option.value} value={option.value}>
                                                 {option.label}
                                             </MenuItem>
@@ -262,7 +361,7 @@ export default function TasksPage() {
                                 </DialogContent>
                                 <DialogActions>
                                     <Button color="danger" onClick={handleEditClose}>Cancel</Button>
-                                    <Button color="primary" onClick={handleEditClose}>Save</Button>
+                                    <Button color="primary" onClick={(e) => { handleEditClose(); saveEdited(e) }}>Save</Button>
                                 </DialogActions>
                             </Dialog>
 

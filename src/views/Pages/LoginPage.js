@@ -38,6 +38,7 @@ const useStyles = makeStyles(styles);
 
 export default function LoginPage() {
     const { isAuthenticated } = useSelector(state => state.auth);
+    const { isLoading } = useSelector(state => state.auth);
     const { error } = useSelector(state => state.auth);
     const [showloader, setshowloader] = useState(false);
 
@@ -76,7 +77,7 @@ export default function LoginPage() {
             // setPassworderror("Password is required");
         } else {
             dispatch(login(username, password))
-            if (!isAuthenticated && error) {
+            if (error) {
                 setshowloader(false);
                 swal.fire({
                     title: "Error",
@@ -84,7 +85,7 @@ export default function LoginPage() {
                     icon: "error",
                     dangerMode: true
                 });
-            } else {
+            } else if(isAuthenticated  === true) {
                 history.push(`/admin/dashboard`);
             }
 
@@ -169,7 +170,7 @@ export default function LoginPage() {
                           </GridItem> */}
 
                                     <GridItem xs={12} sm={12} md={12} lg={12} style={{ textAlign: "center" }}>
-                                        {showloader === true ? (
+                                        {showloader === true || isLoading === true ? (
                                             <div style={{ textAlign: "center", marginTop: 10 }}>
                                                 <Loader
                                                     type="Puff"

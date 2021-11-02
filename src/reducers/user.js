@@ -42,7 +42,7 @@ export default function (state = initialState, action) {
         case ALL_USERS_SUCCESS:
             return {
                 ...state,
-                items: action.payload.message,
+                items: action.payload,
                 isLoading: false
             }
         case USER_SUCCESS:
