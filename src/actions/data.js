@@ -31,7 +31,7 @@ export const getCategories = () => {
             }
 
         } catch (error) {
-            dispatch({ type: ALL_CATEGORIES_FAIL, payload: error.response.data.message })
+            dispatch({ type: ALL_CATEGORIES_FAIL, payload: error.response.data })
         }
     }
 }

@@ -39,30 +39,32 @@ export default function(state = initialState, action) {
                 isLoading: true
             }
 
+        case OBJECTIVE_SUCCESS :
         case ALL_OBJECTIVES_SUCCESS :
             return {
                 ...state,
-                items : action.payload.message,
+                items : action.payload.data,
                 isLoading : false
             }
-        case OBJECTIVE_SUCCESS :
+        
         case ADD_OBJECTIVE_SUCCESS :
         case EDIT_OBJECTIVE_SUCCESS :
         case DELETE_OBJECTIVE_SUCCESS :
             return {
                 ...state,
-                item : action.payload.message,
+                item : action.payload,
                 isLoading : false
             }
 
+        case OBJECTIVE_FAIL :
         case ALL_OBJECTIVES_FAIL :
             return {
                 ...state,
                 isLoading: false,
                 items : null,
-                error: action.payload
+                error: action.payload.message
             }
-        case OBJECTIVE_FAIL :
+        
         case ADD_OBJECTIVE_FAIL :
         case EDIT_OBJECTIVE_FAIL :
         case DELETE_OBJECTIVE_FAIL :
@@ -70,7 +72,7 @@ export default function(state = initialState, action) {
                 ...state,
                 isLoading: false,
                 item : null,
-                error: action.payload
+                error: action.payload.message
             }
         
         default : return state;

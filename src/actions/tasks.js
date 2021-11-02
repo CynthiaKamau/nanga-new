@@ -38,7 +38,7 @@ export const getTasks = (id) => {
 
             let response = await axios.get(`/tasks/findTasksByUserId?user_id=${id}`)
             if (response.status == 200) {
-                dispatch({ type: ALL_TASKS_SUCCESS, payload: response.data })
+                dispatch({ type: ALL_TASKS_SUCCESS, payload: response.data.data })
             } else {
                 console.log("error1",response.data)
                 dispatch({ type: ALL_TASKS_FAIL, payload: response.data })

@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import axios from "axios";
 // @material-ui/core
 import { makeStyles } from "@material-ui/core/styles";
 // core components
@@ -23,10 +25,14 @@ import Button from "components/CustomButtons/Button.js";
 import { useHistory } from "react-router";
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
-import JsonData from "../../data/data.json";
-
+// import JsonData from "../../data/data.json";
+import { getUserObjectives } from "actions/objectives";
+import { getKpis } from "actions/kpis";
+import { getCategories } from "actions/data";
+import swal from "sweetalert2";
+import Loader from "react-loader-spinner";
 import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
-
+import moment from "moment";
 import CardFooter from "components/Card/CardFooter";
 
 const useStyles = makeStyles(styles);
@@ -35,26 +41,133 @@ export default function Dashboard() {
   const classes = useStyles();
   const history = useHistory();
 
+  const dispatch = useDispatch();
+
+  const { user: currentUser } = useSelector(state => state.auth);
+  const { items } = useSelector(state => state.objective);
+  const {  categories } = useSelector(state => state.data);
+  const {  items : kpis } = useSelector(state => state.kpi);
+
+  useEffect(() => {
+    dispatch(getUserObjectives(currentUser.id));
+    dispatch(getCategories());
+    dispatch(getKpis());
+    setUserId(currentUser.id);
+    setCreatedBy(currentUser.id);
+  }, [])
+
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
   const [target, setTarget] = useState("");
-  const [kpi, setKpi] = useState("");
+  const [kpi_id, setKpi] = useState("");
   const [addopen, setAddOpen] = useState(false);
   const [addopentask, setAddOpenTask] = useState("");
-  const [taskdescription, setTaskDescription] = useState("");
+  const [task_description, setTaskDescription] = useState("");
   const [start_date, setStartDate] = useState("");
   const [end_date, setEndDate] = useState("");
   const [task_start_date, setTaskStartDate] = useState("");
   const [task_end_date, setTaskEndDate] = useState("");
-  const [objective, setObjective] = useState("");
+  const [user_id, setUserId] = useState("");
+  const [showloader, setshowloader] = useState(false); 
+  const [created_by, setCreatedBy] = useState("");
   // const [newuser, setNewUser] = useState(true);
 
-  const categories = JsonData.Categories;
-  const kpis = JsonData.KPIS;
+  // const categories = JsonData.Categories;
+  // const kpis = JsonData.KPIS;
 
   const handleAddClickOpen = () => {
     setAddOpen(true);
   };
+
+  const saveObjective = async () => {
+    // e.preventDefault();
+    setshowloader(true);
+
+    let end_date = moment(end_date).format('YYYY-MM-DD');
+    let start_date = moment(start_date).format('YYYY-MM-DD');
+
+    console.log("save objective", description, end_date, kpi_id, start_date, target, user_id, created_by);
+
+    const config = { headers: { 'Content-Type': 'application/json' } }
+
+    let body = {description, end_date, kpi_id, start_date, target, user_id, created_by};
+
+    try {
+      let response = await axios.post('/objectives/create', body, config);
+    
+        if (response.data.success === false) {
+          setshowloader(false);
+          swal.fire({
+              title: "Error",
+              text: "An error occurred, please try again!",
+              icon: "error",
+              dangerMode: true
+          });
+
+          console.log(response)
+        } else {
+          setshowloader(false);
+
+          console.log("objective id", response.data.data.id)
+
+          let task_end_date = moment(task_end_date).format('YYYY-MM-DD');
+          let task_start_date = moment(task_start_date).format('YYYY-MM-DD');
+
+          let task = {
+            description: task_description,
+            start_date: task_start_date,
+            end_date: task_end_date,
+            user_id: user_id,
+            created_by: created_by,
+            objective_id: response.data.data.id
+          }
+
+          console.log("task", task)
+
+          let response1 = await axios.post('/tasks/create', task, config);
+
+          if (response1.data.success === false) {
+            setshowloader(false);
+            swal.fire({
+                title: "Error",
+                text: "An error occurred, please try again!",
+                icon: "error",
+                dangerMode: true
+            });
+
+          console.log(response1)
+          } else {
+            console.log("task", response1.data.data)
+
+            swal.fire({
+              title: "Success",
+              text: "Objective and task added successfully!",
+              icon: "success",
+              dangerMode: false
+          });
+
+          }
+
+        }
+    } catch (error) {
+      console.log(error);
+    }
+
+
+    // dispatch(addUserObjective(description, end_date, kpi_id, start_date, target, user_id))
+    // if (error) {
+    //     setshowloader(false);
+    //     swal.fire({
+    //         title: "Error",
+    //         text: error,
+    //         icon: "error",
+    //         dangerMode: true
+    //     });
+    // } else if (item) {
+    //     location.reload()
+    // }
+
+  }
 
   const handleAddClose = () => {
     setAddOpen(false);
@@ -68,8 +181,6 @@ export default function Dashboard() {
   const handleRedirect = () => {
     history.push('/admin/tasks');
   }
-
-  const newuser = false;
 
   return (
     <div>
@@ -146,7 +257,7 @@ export default function Dashboard() {
               variant="outlined"
               label="Select"
               className={classes.textInput}
-              value={kpi}
+              value={kpi_id}
               onChange={(event) => {
                 setKpi(event.target.value);
               }}
@@ -209,7 +320,19 @@ export default function Dashboard() {
           </DialogContent>
           <DialogActions>
             <Button color="danger" onClick={handleAddClose}>Cancel</Button>
-            <Button color="primary" onClick={handleAddClose}>Save</Button>
+            { showloader === true  ? (
+              <div style={{ textAlign: "center", marginTop: 10 }}>
+                  <Loader
+                      type="Puff"
+                      color="#00BFFF"
+                      height={150}
+                      width={150}
+                  />
+              </div>
+              ) :
+              (
+              <Button color="primary" onClick={() => {handleAddClose();}}>Save</Button>
+              )}
           </DialogActions>
         </Dialog>
 
@@ -226,12 +349,8 @@ export default function Dashboard() {
               id="objective"
               type="text"
               disabled
-              value={objective}
+              value={description}
               className={classes.textInput}
-              onChange={(event) => {
-                const value = event.target.value;
-                setObjective(value)
-              }}
             />
             <TextField
               fullWidth
@@ -241,7 +360,7 @@ export default function Dashboard() {
               maxRows={4}
               className={classes.textInput}
               type="text"
-              value={taskdescription}
+              value={task_description}
               onChange={(event) => {
                 const value = event.target.value;
                 setTaskDescription(value)
@@ -281,13 +400,105 @@ export default function Dashboard() {
           </DialogContent>
           <DialogActions>
             <Button color="danger" onClick={handleAddTaskClose}>Cancel</Button>
-            <Button color="primary" onClick={handleAddTaskClose}>Save</Button>
+            { showloader === true  ? (
+              <div style={{ textAlign: "center", marginTop: 10 }}>
+                  <Loader
+                      type="Puff"
+                      color="#00BFFF"
+                      height={150}
+                      width={150}
+                  />
+              </div>
+              ) :
+              (
+                <Button color="primary" onClick={(e) => { handleAddTaskClose(); saveObjective(e); }}>Save</Button>
+              )}
           </DialogActions>
         </Dialog>
 
       </GridContainer>
 
-      {newuser ? (
+      { items && items.length >= 1 ? (
+        
+        <div>
+          <GridContainer>
+
+            <Grid container justify="flex-end">
+              <Button color="primary" onClick={handleAddClickOpen}> Create New Objective</Button>
+            </Grid>
+
+            {items ? ( items.map((list, index) => (
+              <Card className={classes.cardBodyRed} key={index}>
+                <GridItem xs={12} sm={12} md={12}>
+                  <h4 className={classes.textBold}> {list.description} </h4>
+                  <h6 className={classes.textGreen}> 6. Management actions</h6>
+                </GridItem>
+                <CardBody className={classes.cardBody}>
+                  <GridItem xs={12} sm={6} md={2}>
+                    <Card>
+                      <CardBody className={classes.cardBodyRed} >
+                        <h3 className={classes.cardTitle}>
+                          2 <small>Off Ttack</small>
+                        </h3>
+                      </CardBody>
+                    </Card>
+                  </GridItem>
+                  <GridItem xs={12} sm={6} md={2}>
+                    <Card>
+                      <CardBody className={classes.cardBodyRed}>
+                        <h3 className={classes.cardTitle}>
+                          1 <small>Cancelled</small>
+                        </h3>
+                      </CardBody>
+                    </Card>
+                  </GridItem >
+                  <GridItem xs={12} sm={6} md={2}>
+                    <Card className={classes.cardBodyRed}>
+                      <CardBody>
+                        <h3 className={classes.cardTitle}>
+                          0 <small>Postponed</small>
+                        </h3>
+                      </CardBody>
+                    </Card>
+                  </GridItem>
+                  <GridItem xs={12} sm={6} md={2}>
+                    <Card className={classes.cardBodyGreen}>
+                      <CardBody>
+                        <h3 className={classes.cardTitle}>
+                          3 <small>Ongoing</small>
+                        </h3>
+                      </CardBody>
+                    </Card>
+                  </GridItem>
+                  <GridItem xs={12} sm={6} md={2}>
+                    <Card>
+                      <CardBody className={classes.cardBodyGreen}>
+                        <h3 className={classes.cardTitle}>
+                          1 <small>Completed</small>
+                        </h3>
+                      </CardBody>
+                    </Card>
+                  </GridItem>
+                  <GridItem xs={12} sm={6} md={2}>
+                    <Card className={classes.cardBodyGreen}>
+                      <CardBody>
+                        <h3 className={classes.cardTitle}>
+                          0 <small>Not Started</small>
+                        </h3>
+                      </CardBody>
+                    </Card>
+                  </GridItem>
+                </CardBody>
+                <CardFooter className={classes.cardFooter} >
+                  <IconButton> <ExpandMoreIcon className={classes.iconBottom} onClick={() => handleRedirect()} /> </IconButton>
+                </CardFooter>
+              </Card>
+            ))) : null }
+          </GridContainer>
+        </div>
+
+      ) : (
+
         <div>
 
           <GridContainer>
@@ -303,84 +514,7 @@ export default function Dashboard() {
           </GridContainer>
 
         </div>
-
-      ) : (
-
-        <div>
-          <GridContainer>
-
-            <Grid container justify="flex-end">
-              <Button color="primary" onClick={handleAddClickOpen}> Create New Objective</Button>
-            </Grid>
-
-            <Card className={classes.cardBodyRed} >
-              <GridItem xs={12} sm={12} md={12}>
-                <h4 className={classes.textBold}> 1. Grow Topline Growth </h4>
-                <h6 className={classes.textGreen}> 6. Management actions</h6>
-              </GridItem>
-              <CardBody className={classes.cardBody}>
-                <GridItem xs={12} sm={6} md={2}>
-                  <Card>
-                    <CardBody className={classes.cardBodyRed} >
-                      <h3 className={classes.cardTitle}>
-                        2 <small>Off Ttack</small>
-                      </h3>
-                    </CardBody>
-                  </Card>
-                </GridItem>
-                <GridItem xs={12} sm={6} md={2}>
-                  <Card>
-                    <CardBody className={classes.cardBodyRed}>
-                      <h3 className={classes.cardTitle}>
-                        1 <small>Cancelled</small>
-                      </h3>
-                    </CardBody>
-                  </Card>
-                </GridItem >
-                <GridItem xs={12} sm={6} md={2}>
-                  <Card className={classes.cardBodyRed}>
-                    <CardBody>
-                      <h3 className={classes.cardTitle}>
-                        0 <small>Postponed</small>
-                      </h3>
-                    </CardBody>
-                  </Card>
-                </GridItem>
-                <GridItem xs={12} sm={6} md={2}>
-                  <Card className={classes.cardBodyGreen}>
-                    <CardBody>
-                      <h3 className={classes.cardTitle}>
-                        3 <small>Ongoing</small>
-                      </h3>
-                    </CardBody>
-                  </Card>
-                </GridItem>
-                <GridItem xs={12} sm={6} md={2}>
-                  <Card>
-                    <CardBody className={classes.cardBodyGreen}>
-                      <h3 className={classes.cardTitle}>
-                        1 <small>Completed</small>
-                      </h3>
-                    </CardBody>
-                  </Card>
-                </GridItem>
-                <GridItem xs={12} sm={6} md={2}>
-                  <Card className={classes.cardBodyGreen}>
-                    <CardBody>
-                      <h3 className={classes.cardTitle}>
-                        0 <small>Not Started</small>
-                      </h3>
-                    </CardBody>
-                  </Card>
-                </GridItem>
-              </CardBody>
-              <CardFooter className={classes.cardFooter} >
-                <IconButton> <ExpandMoreIcon className={classes.iconBottom} onClick={() => handleRedirect()} /> </IconButton>
-              </CardFooter>
-            </Card>
-          </GridContainer>
-        </div>
-
+        
       )}
     </div>
   );

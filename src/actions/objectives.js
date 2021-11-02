@@ -54,7 +54,7 @@ export const getUserObjectives = (id) => {
 
         try {
 
-            let response = await axios.get(`objectives/findObjectiveByUserId?${id}`)
+            let response = await axios.get(`/objectives/findObjectiveByUserId?user_id=${id}`)
             if (response.status == 200) {
                 dispatch({ type: OBJECTIVE_SUCCESS, payload: response.data })
             } else {

@@ -47,8 +47,6 @@ export default function AssignedTasksPage() {
     const { user: currentUser } = useSelector(state => state.auth);
     const { items, item , error, isLoading } = useSelector(state => state.task);
 
-    console.log("at", items)
-
     const [addopen, setAddOpen] = useState(false);
     const [editopen, setEditOpen] = useState(false);
     const [deleteopen, setDeleteOpen] = useState(false);

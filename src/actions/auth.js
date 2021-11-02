@@ -47,17 +47,13 @@ export const login = (username, password ) => {
 
             let response = await axios.post('/authenticate', body, config)
             if (response.status == 200) {
-                console.log("login response", response)
                 dispatch({ type: LOGIN_SUCCESS, payload: response.data })
             } else {
                 dispatch({ type: LOGIN_FAIL, payload: response.data })
             }
         } catch (error) {
-            console.log("login response", error)
-            dispatch({ type: LOGIN_FAIL, payload: error})
 
-
-            // dispatch({ type: LOGIN_FAIL, payload: error.response.data.message })
+            dispatch({ type: LOGIN_FAIL, payload: error.response.data })
         }
 
     }

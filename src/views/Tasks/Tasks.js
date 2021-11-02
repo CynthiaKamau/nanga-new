@@ -59,6 +59,8 @@ export default function TasksPage() {
         dispatch(getTasks(currentUser.id))
     }, []);
 
+    console.log("tasks", items)
+
     const handleAddClickOpen = () => {
         setAddOpen(true);
     };

@@ -10,7 +10,8 @@ const initialState = {
 token : localStorage.getItem('token'),
 isAuthenticated : null,
 isLoading : null,
-user : null
+user : null,
+error : null
 }
 export default function(state = initialState, action) {
 switch(action.type) {
@@ -45,7 +46,8 @@ switch(action.type) {
             ...state,
             isAuthenticated: null,
             token: null,
-            user : null
+            user : null,
+            error : action.payload.message
         }
 
     default : return state;

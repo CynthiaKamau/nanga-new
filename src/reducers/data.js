@@ -13,8 +13,12 @@ import {
 } from '../actions/types';
 
 const initialState = {
-    items : [],
-    item: [],
+    categories : [],
+    category : [],
+    roles : [],
+    role : [],
+    statuses : [],
+    status : [],
     error : [],
     isLoading : false
 }
@@ -25,26 +29,48 @@ export default function(state = initialState, action) {
         case ALL_ROLES_FETCH_REQUEST :
         case ALL_STATUS_FETCH_REQUEST :
             return {
-                ...status,
+                ...state,
                 isLoading: true
             }
 
         case ALL_CATEGORIES_SUCCESS :
-        case ALL_ROLES_SUCCESS :
+            return {
+                ...state,
+                categories : action.payload
+            }
+        case ALL_ROLES_SUCCESS : 
+            return {
+                ...state,
+                roles : action.payload
+            }
         case ALL_STATUS_SUCCESS :
             return {
                 ...state,
-                items : action.payload.message
+                statuses : action.payload
             }
 
         case ALL_CATEGORIES_FAIL :
+            return {
+                ...state,
+                isLoading: false,
+                categories : null,
+                error: action.payload.message
+            }
+        
         case ALL_ROLES_FAIL :
+            return {
+                ...state,
+                isLoading: false,
+                roles: null,
+                error: action.payload.message
+            }
+        
         case ALL_STATUS_FAIL :
             return {
                 ...state,
                 isLoading: false,
-                item : null,
-                error: action.payload
+                statuses : null,
+                error: action.payload.message
             }
         
         default : return state;

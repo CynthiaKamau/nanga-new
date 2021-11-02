@@ -37,17 +37,22 @@ import styles from "assets/jss/material-dashboard-pro-react/views/loginPageStyle
 const useStyles = makeStyles(styles);
 
 export default function LoginPage() {
-    const { isAuthenticated } = useSelector(state => state.auth);
-    const { isLoading } = useSelector(state => state.auth);
-    const { error } = useSelector(state => state.auth);
-    const [showloader, setshowloader] = useState(false);
+    const { isAuthenticated, isLoading, error  } = useSelector(state => state.auth);
+
+    const dispatch = useDispatch();
+
+    const classes = useStyles();
+
+    const history = useHistory();
+
+    if(isAuthenticated === true) {
+        history.push(`/admin/dashboard`);
+    }
 
     const [username, setusername] = useState("");
     const [password, setPassword] = useState("");
     const [values, setValues] = useState({ showPassword: false });
-
-    // const [usernameerror, setusernameerror] = useState("");
-    // const [passworderror, setPassworderror] = useState("");
+    const [showloader, setshowloader] = useState(false);
 
     const handleClickShowPassword = () => {
         setValues({
@@ -59,37 +64,24 @@ export default function LoginPage() {
     const handleMouseDownPassword = (event) => {
         event.preventDefault();
     };
-    //   const { isLoggedIn } = useSelector(state => state.auth);
-
-    const dispatch = useDispatch();
-
-    const classes = useStyles();
-
-    const history = useHistory();
-
 
     const handleLogin = e => {
         e.preventDefault();
         setshowloader(true);
 
-        if (username === "" || password === "") {
-            // setusernameerror("Username is required");
-            // setPassworderror("Password is required");
-        } else {
-            dispatch(login(username, password))
-            if (error) {
-                setshowloader(false);
-                swal.fire({
-                    title: "Error",
-                    text: error,
-                    icon: "error",
-                    dangerMode: true
-                });
-            } else if(isAuthenticated  === true) {
-                history.push(`/admin/dashboard`);
-            }
-
+        dispatch(login(username, password))
+        if (error) {
+            setshowloader(false);
+            swal.fire({
+                title: "Error",
+                text: error,
+                icon: "error",
+                dangerMode: true
+            });
+        } else if(isAuthenticated  === true) {
+            history.push(`/admin/dashboard`);
         }
+
     }
 
 
@@ -125,6 +117,7 @@ export default function LoginPage() {
                                         style={{ marginBottom: '15px' }}
                                         variant="outlined"
                                         label="Username"
+                                        required
                                         value={username}
                                         onChange={(event) => {
                                             setusername(event.target.value);
@@ -138,6 +131,7 @@ export default function LoginPage() {
                                         type={values.showPassword ? 'text' : 'password'}
                                         value={values.password}
                                         fullWidth
+                                        required
                                         onChange={(event) => {
                                             setPassword(event.target.value)
                                         }}
