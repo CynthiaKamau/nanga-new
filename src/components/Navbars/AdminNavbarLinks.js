@@ -1,6 +1,6 @@
 import React from "react";
-import { useSelector } from "react-redux";
-
+import { useSelector, useDispatch } from "react-redux";
+import { useHistory } from "react-router";
 import classNames from "classnames";
 import PropTypes from "prop-types";
 // import { Manager, Target, Popper } from "react-popper";
@@ -16,6 +16,7 @@ import Hidden from "@material-ui/core/Hidden";
 import Popper from "@material-ui/core/Popper";
 import Divider from "@material-ui/core/Divider";
 import avatar from "assets/img/faces/marc.jpg";
+import { logout } from "actions/auth";
 
 // core components
 import Button from "components/CustomButtons/Button.js";
@@ -26,6 +27,18 @@ const useStyles = makeStyles(styles);
 
 export default function HeaderLinks(props) {
   const { user : currentUser } = useSelector(state => state.auth);
+  const dispatch = useDispatch();
+  const history = useHistory();
+
+  const logoutHandler = () => {
+    dispatch(logout)
+    history.push('/')
+    // Also the custom logic like for the rest of the logout handler
+  }
+
+  const handleClickProf = () => {
+    history.push('/admin/user-profile')
+  }
 
   const [openProfile, setOpenProfile] = React.useState(null);
   const handleClickProfile = (event) => {
@@ -104,14 +117,14 @@ export default function HeaderLinks(props) {
                       {rtlActive ? "الملف الشخصي" : "Profile"}
                     </MenuItem>
                     <MenuItem
-                      onClick={handleCloseProfile}
+                      onClick={() => {handleCloseProfile(); handleClickProf()}}
                       className={dropdownItem}
                     >
                       {rtlActive ? "الإعدادات" : "Settings"}
                     </MenuItem>
                     <Divider light />
                     <MenuItem
-                      onClick={handleCloseProfile}
+                      onClick={() => {handleCloseProfile(); logoutHandler()}}
                       className={dropdownItem}
                     >
                       {rtlActive ? "الخروج" : "Log out"}

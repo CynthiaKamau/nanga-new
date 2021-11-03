@@ -25,6 +25,7 @@ const rootReducer = combineReducers({
     user : user,
     team : team,
     data : data
-})
+});
+
 
 export default persistReducer(persistConfig, rootReducer);

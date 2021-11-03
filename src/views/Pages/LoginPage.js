@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useHistory } from "react-router";
 // @material-ui/core components
@@ -53,6 +53,22 @@ export default function LoginPage() {
     const [password, setPassword] = useState("");
     const [values, setValues] = useState({ showPassword: false });
     const [showloader, setshowloader] = useState(false);
+
+    useEffect(() => {
+        if (isLoading) {
+          setTimeout(() => {
+          setshowloader(false);
+        }, 2000);
+        }
+    }, [isLoading]);
+
+    useEffect(() => {
+        if (showloader) {
+          setTimeout(() => {
+          setshowloader(false);
+        }, 2000);
+        }
+    }, [showloader]);
 
     const handleClickShowPassword = () => {
         setValues({

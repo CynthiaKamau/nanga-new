@@ -47,7 +47,7 @@ switch(action.type) {
             isAuthenticated: null,
             token: null,
             user : null,
-            error : action.payload.message
+            error : null
         }
 
     default : return state;

@@ -1,7 +1,8 @@
 import React from "react";
 import { createBrowserHistory } from "history";
-import { BrowserRouter, Route, Switch } from "react-router-dom";
+import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
 import axios from "axios";
+import { useSelector } from "react-redux";
 
 // core components
 import AuthLayout from "layouts/Auth.js";
@@ -15,9 +16,11 @@ const App = () => {
 
   const hist = createBrowserHistory();
 
-  const { REACT_APP_SERVER_URL } = process.env;
+  const { user : currentUser } = useSelector(state => state.auth);
 
-  axios.defaults.baseURL = `http://${REACT_APP_SERVER_URL}:5406/strategy/api/`;
+  // const { REACT_APP_SERVER_URL } = process.env;
+
+  axios.defaults.baseURL = `http://172.27.11.20:5406/strategy/api/`;
 
   return (
     <BrowserRouter history={hist}>
@@ -26,7 +29,7 @@ const App = () => {
       <Route path="/auth" component={AuthLayout} />
       <Route path="/admin" component={AdminLayout} />
       <Route path="/" component={LoginPage} />
-      {/* <Redirect from="/" to="/admin/dashboard" /> */}
+      { !currentUser ? ( <Redirect from="/" to="/admin/dashboard" />) : null} 
     </Switch>
   </BrowserRouter>
   );

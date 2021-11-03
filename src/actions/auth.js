@@ -61,8 +61,8 @@ export const login = (username, password ) => {
 }
 
 //logout
-export const logout = () => {
-    return { type: LOGOUT }
+export const logout = (dispatch) => {
+    return dispatch({ type: LOGOUT });
 }
 
 export const tokenConfig = getState => {
