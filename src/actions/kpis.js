@@ -69,11 +69,16 @@ export const getUserKpis = (id) => {
 }
 
 //add specific kpi
-export const addKpi = (kpi, uom, category) => {
+export const addKpi = (kpi, uom, category,created_by) => {
 
     const config = { headers: { 'Content-Type': 'application/json' } }
     
-    const body = JSON.stringify({ kpi, uom, category });
+    const body = JSON.stringify({ 
+        title : kpi,
+        kpiUnitofMeasure : uom,
+        categoryId : category,
+        createdBy : created_by 
+    });
     console.log("kpi", body);
 
     return async function (dispatch) {
@@ -83,7 +88,7 @@ export const addKpi = (kpi, uom, category) => {
         try {
 
             let response = await axios.post('/kpi/create', body, config)
-            if (response.status == 200) {
+            if (response.status == 201) {
                 dispatch({ type: ADD_KPI_SUCCESS, payload: response.data })
             } else {
                 dispatch({ type: ADD_KPI_FAIL, payload: response.data })
@@ -97,10 +102,18 @@ export const addKpi = (kpi, uom, category) => {
 }
 
 //edit specific kpi
-export const editKpi = (id, kpi, uom, category ) => {
+export const editKpi = (id, kpi, uom, category, created_by, updated_by ) => {
+
     const config = { headers: { 'Content-Type': 'application/json' } }
 
-    const body = JSON.stringify({ id, kpi, uom, category });
+    const body = JSON.stringify({ 
+        title : kpi,
+        kpiUnitOfMeasure : uom,
+        categoryId : category,
+        createdBy : created_by,
+        updatedBy : updated_by,
+        id: id 
+    });
     console.log("kpi", body);
 
     return async function (dispatch) {
@@ -110,13 +123,15 @@ export const editKpi = (id, kpi, uom, category ) => {
         try {
 
             let response = await axios.post('/kpi/update', body, config)
-            if (response.status == 200) {
+            if (response.status == 201) {
                 dispatch({ type: EDIT_KPI_SUCCESS, payload: response.data })
             } else {
+                console.log("error", response.data)
+
                 dispatch({ type: EDIT_KPI_FAIL, payload: response.data })
             }
         } catch (error) {
-            dispatch({ type: EDIT_KPI_FAIL, payload: error.response.data.message })
+            dispatch({ type: EDIT_KPI_FAIL, payload: error.response.data})
         }
 
     }

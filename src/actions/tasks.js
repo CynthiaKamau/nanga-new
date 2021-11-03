@@ -38,7 +38,7 @@ export const getTasks = (id) => {
 
             let response = await axios.get(`/tasks/findTasksByUserId?user_id=${id}`)
             if (response.status == 200) {
-                dispatch({ type: ALL_TASKS_SUCCESS, payload: response.data.data })
+                dispatch({ type: ALL_TASKS_SUCCESS, payload: response.data})
             } else {
                 console.log("error1",response.data)
                 dispatch({ type: ALL_TASKS_FAIL, payload: response.data })
@@ -98,11 +98,11 @@ export const getTask = (id) => {
 }
 
 //add specific task
-export const addTask = (description, end_date, start_date, objective_id, user_id ) => {
+export const addTask = (description, end_date, start_date, objective_id, user_id, created_by ) => {
 
     const config = { headers: { 'Content-Type': 'application/json' } }
     
-    const body = JSON.stringify({ description, end_date, start_date, objective_id, user_id });
+    const body = JSON.stringify({ description, end_date, start_date, objective_id, user_id, created_by });
     console.log("task", body);
 
     return async function (dispatch) {
@@ -112,7 +112,7 @@ export const addTask = (description, end_date, start_date, objective_id, user_id
         try {
 
             let response = await axios.post('/tasks/create', body, config)
-            if (response.status == 200) {
+            if (response.status == 201) {
                 dispatch({ type: ADD_TASK_SUCCESS, payload: response.data })
             } else {
                 dispatch({ type: ADD_TASK_FAIL, payload: response.data })
@@ -140,7 +140,7 @@ export const addAssignedTask = (description, end_date, start_date, objective_id,
         try {
 
             let response = await axios.post('/tasks/create', body, config)
-            if (response.status == 200) {
+            if (response.status == 201) {
                 dispatch({ type: ADD_TASK_SUCCESS, payload: response.data})
             } else {
                 dispatch({ type: ADD_TASK_FAIL, payload: response.data })
@@ -154,10 +154,10 @@ export const addAssignedTask = (description, end_date, start_date, objective_id,
 }
 
 //edit specific task
-export const editTask = (description, end_date, start_date, objective_id, user_id, status ) => {
+export const editTask = (description, end_date, start_date, objective_id, user_id, created_by, updated_by, id, status ) => {
     const config = { headers: { 'Content-Type': 'application/json' } }
 
-    const body = JSON.stringify({ description, end_date, start_date, objective_id, user_id, status });
+    const body = JSON.stringify({ description, end_date, start_date, objective_id, user_id, created_by, updated_by, id, status });
     console.log("task", body);
 
     return async function (dispatch) {
@@ -167,7 +167,7 @@ export const editTask = (description, end_date, start_date, objective_id, user_i
         try {
 
             let response = await axios.post('/tasks/update', body, config)
-            if (response.status == 200) {
+            if (response.status == 201) {
                 dispatch({ type: EDIT_TASK_SUCCESS, payload: response.data })
             } else {
                 dispatch({ type: EDIT_TASK_FAIL, payload: response.data })

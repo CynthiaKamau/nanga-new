@@ -72,6 +72,7 @@ export default function StrategicObjectives() {
     const [created_by, setCreatedBy] = useState("");
     const [editopen, setEditOpen] = useState(false);
     const [id, setId] = useState("");
+    const [updated_by, setUpdatedBy] = useState(currentUser.id);
 
 
     const handleAddClickOpen = () => {
@@ -187,9 +188,12 @@ export default function StrategicObjectives() {
         setUserId();
         setId();
 
-        console.log("save objective", id, description, end_date, kpi_id, start_date, target, user_id, targetAchieved, targetAtReview)
+        let end_date = moment(end_date).format('YYYY-MM-DD');
+        let start_date = moment(start_date).format('YYYY-MM-DD');
 
-        dispatch(editUserObjective(id, description, end_date, kpi_id, start_date, target, user_id, targetAchieved, targetAtReview))
+        console.log("save objective", id, description, end_date, kpi_id, start_date, target, user_id, targetAchieved, targetAtReview, setUpdatedBy())
+
+        dispatch(editUserObjective(id, description, end_date, kpi_id, start_date, target, user_id, targetAchieved, targetAtReview, created_by, updated_by))
         if (error) {
             setshowloader(false);
             swal.fire({
@@ -199,7 +203,12 @@ export default function StrategicObjectives() {
                 dangerMode: true
             });
         } else if (item) {
-            location.reload()
+            setshowloader(false);
+            swal.fire({
+                title: "Success",
+                text: "Objective updated successfully.",
+                icon: "success",
+            });
         }
 
     }

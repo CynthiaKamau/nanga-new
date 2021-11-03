@@ -32,6 +32,9 @@ import { getTasks, addTask, editTask } from "actions/tasks";
 import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
 import swal from "sweetalert2";
 import Loader from "react-loader-spinner";
+import moment from "moment";
+import { getUserObjectives } from "actions/objectives";
+
 
 const useStyles = makeStyles(styles);
 
@@ -41,7 +44,10 @@ export default function TasksPage() {
     const dispatch = useDispatch();
 
     const { user: currentUser } = useSelector(state => state.auth)
+    const { items : objectives } = useSelector(state => state.objective)
     const { items, item , error, isLoading } = useSelector(state => state.task)
+
+    console.log(objectives)
 
     const [addopen, setAddOpen] = useState(false);
     const [editopen, setEditOpen] = useState(false);
@@ -50,13 +56,16 @@ export default function TasksPage() {
     const [end_date, setEndDate] = useState("");
     const [start_date, setStartDate] = useState("");
     const [objective_id, setObjectiveId] = useState("");
-    const [user_id, setUserId] = useState("");
+    const [user_id, setUserId] = useState(currentUser.id);
     const [status, setStatus] = useState("");
     const [showloader, setshowloader] = useState(false);  
-
+    const [created_by, setCreatedBy] = useState(currentUser.id);
+    const [updated_by, setUpdatedBy] = useState(currentUser.id);
+    const [id, setId] = useState("");
 
     useEffect(() => {
         dispatch(getTasks(currentUser.id))
+        dispatch(getUserObjectives(currentUser.id));
     }, []);
 
     console.log("tasks", items)
@@ -69,9 +78,9 @@ export default function TasksPage() {
         e.preventDefault();
         setshowloader(true);
 
-        console.log("save values", description, end_date, start_date, objective_id, user_id)
+        console.log("save values", description, end_date, start_date, objective_id, user_id, setUserId(), setCreatedBy(), setUpdatedBy())
     
-        dispatch(addTask( description, end_date, start_date, objective_id, user_id ))
+        dispatch(addTask( description, end_date, start_date, objective_id, user_id, created_by ))
         if (error) {
           setshowloader(false);
           swal.fire({
@@ -81,7 +90,12 @@ export default function TasksPage() {
               dangerMode: true
           });
         } else if(item) {
-            location.reload()
+            setshowloader(false);
+            swal.fire({
+                title: "Success",
+                text: "Task added successfully.",
+                icon: "success",
+            });
         }
     
     }
@@ -98,17 +112,18 @@ export default function TasksPage() {
         setStartDate(list.start_date);
         setEndDate(list.end_date);
         setObjectiveId(list.objective_id);
-        setUserId(list.user_id)
+        setUserId(list.user_id);
+        setId(list.id)
     }
 
     const saveEdited = e => {
         e.preventDefault();
         setshowloader(true);
 
-        console.log("edit values",  description, end_date, start_date, objective_id, user_id, status)
+        console.log("edit values",  description, end_date, start_date, objective_id, user_id, created_by, updated_by, id, status)
     
-        dispatch(editTask(description, end_date, start_date, objective_id, user_id, status))
-        if (!item && error) {
+        dispatch(editTask(description, end_date, start_date, objective_id, user_id, created_by, updated_by, id, status))
+        if (error) {
           setshowloader(false);
           swal.fire({
               title: "Error",
@@ -117,7 +132,12 @@ export default function TasksPage() {
               dangerMode: true
           });
         } else if(item) {
-            location.reload()
+            setshowloader(false);
+            swal.fire({
+                title: "Success",
+                text: "Task updated successfully.",
+                icon: "success",
+            });
         }
     
     }
@@ -185,8 +205,8 @@ export default function TasksPage() {
                                     {items ? ( items.map((list, index) => (
                                         <TableRow key={index}>
                                             <TableCell>{list.description}</TableCell>
-                                            <TableCell>{list.start_date}</TableCell>
-                                            <TableCell>{list.end_date}</TableCell>
+                                            <TableCell>{moment(list.start_date).format('YYYY-MM-DD')}</TableCell>
+                                            <TableCell>{moment(list.end_date).format('YYYY-MM-DD')}</TableCell>
                                             <TableCell>{list.status}</TableCell>
                                             <TableCell>
                                                 <IconButton aria-label="view" color="error" onClick={handleAddClickOpen} ><ControlPointIcon /></IconButton>
@@ -205,6 +225,26 @@ export default function TasksPage() {
                                     <DialogContentText>
                                         Create New Strategic Intitative
                                     </DialogContentText>
+                                    <label style={{ fontWeight: 'bold', color: 'black' }}> Objective : </label>
+                                    <TextField
+                                        id="outlined-select-objective"
+                                        select
+                                        fullWidth
+                                        variant="outlined"
+                                        label="Select"
+                                        value={objective_id}
+                                        onChange={(event) => {
+                                            setObjectiveId(event.target.value);
+                                        }}
+                                        helperText="Please select the objective"
+                                    >
+                                        {objectives.map((option) => (
+                                            <MenuItem key={option.id} value={option.id}>
+                                                {option.description}
+                                            </MenuItem>
+                                        ))}
+                                    </TextField>
+
                                     <TextField
                                         autoFocus
                                         margin="dense"

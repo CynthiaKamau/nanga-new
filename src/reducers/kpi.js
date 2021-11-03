@@ -60,7 +60,7 @@ export default function(state = initialState, action) {
                 ...state,
                 isLoading: false,
                 items : null,
-                error: action.payload
+                error: action.payload.message
             }
         case KPI_FAIL :
         case ADD_KPI_FAIL :
@@ -70,7 +70,7 @@ export default function(state = initialState, action) {
                 ...state,
                 isLoading: false,
                 item : null,
-                error: action.payload
+                error: action.payload.message
             }
         
         default : return state;

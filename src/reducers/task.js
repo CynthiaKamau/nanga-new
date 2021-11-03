@@ -69,7 +69,7 @@ export default function(state = initialState, action) {
         case ALL_ASSIGNED_TASKS_SUCCESS :
             return {
                 ...state,
-                items : action.payload,
+                items : action.payload.data ,
                 isLoading : false
             }
         case TASK_SUCCESS :
@@ -82,7 +82,7 @@ export default function(state = initialState, action) {
         case DELETE_ASSIGNED_TASK_SUCCESS :
             return {
                 ...state,
-                item : action.payload.message,
+                item : action.payload,
                 isLoading : false
             }
 

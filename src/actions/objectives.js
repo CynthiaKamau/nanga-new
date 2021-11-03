@@ -83,7 +83,7 @@ export const addUserObjective = (user_id, target, start_date, kpi_id, end_date, 
         try {
 
             let response = await axios.post('/objectives/create', body, config)
-            if (response.status == 200) {
+            if (response.status == 201) {
                 dispatch({ type: ADD_OBJECTIVE_SUCCESS, payload: response.data })
             } else {
                 dispatch({ type: ADD_OBJECTIVE_FAIL, payload: response.data })
@@ -109,14 +109,14 @@ export const editUserObjective = (id, description, kpi_id, user_id, start_date, 
 
         try {
 
-            let response = await axios.post('/objectives/UPDATE', body, config)
-            if (response.status == 200) {
+            let response = await axios.post('/objectives/update', body, config)
+            if (response.status == 201) {
                 dispatch({ type: EDIT_OBJECTIVE_SUCCESS, payload: response.data })
             } else {
                 dispatch({ type: EDIT_OBJECTIVE_FAIL, payload: response.data })
             }
         } catch (error) {
-            dispatch({ type: EDIT_OBJECTIVE_FAIL, payload: error.response.data.message })
+            dispatch({ type: EDIT_OBJECTIVE_FAIL, payload: error.response.data })
         }
 
     }

@@ -39,9 +39,7 @@ export default function KPIs() {
     const classes = useStyles();
     const dispatch = useDispatch();
 
-    const { items } = useSelector(state => state.kpi)
-    const { item } = useSelector(state => state.user)
-    const { error } = useSelector(state => state.user);
+    const { items, item , error } = useSelector(state => state.kpi);
     const { user : currentUser } = useSelector(state => state.auth);
 
     useEffect(() => {
@@ -58,6 +56,9 @@ export default function KPIs() {
     const [category, setCategory] = useState("");
     const [showloader, setshowloader] = useState(false);  
     const [id, setId] = useState("");
+    const [created_by, setCreatedBy] = useState(currentUser.id);
+    const [updated_by, setUpdatedBy] = useState(currentUser.id);
+
 
     const handleAddClickOpen = () => {
         setAddOpen(true);
@@ -66,10 +67,11 @@ export default function KPIs() {
     const saveKpi = e => {
         e.preventDefault();
         setshowloader(true);
+        console.log(setCreatedBy())
 
-        console.log("save values", kpi, uom, category)
+        console.log("save values", kpi, uom, category, created_by)
     
-        dispatch(addKpi(kpi, uom, category ))
+        dispatch(addKpi(kpi, uom, category,created_by ))
         if (error) {
           setshowloader(false);
           swal.fire({
@@ -79,7 +81,13 @@ export default function KPIs() {
               dangerMode: true
           });
         } else if(item) {
-            location.reload()
+            setshowloader(false);
+            swal.fire({
+                title: "Success",
+                text: item.message,
+                icon: "success",
+                dangerMode: false
+            });
         }
     
     }
@@ -101,19 +109,27 @@ export default function KPIs() {
         e.preventDefault();
         setshowloader(true);
 
-        console.log("edit values", id, kpi, uom, category)
+        console.log(setUpdatedBy());
+
+        console.log("edit values", id, kpi, uom, category, created_by, updated_by)
     
-        dispatch(editKpi(id, kpi, uom, category ))
-        if (!item && error) {
+        dispatch(editKpi(id, kpi, uom, category, created_by, updated_by ))
+        if (error) {
+            console.log("error", error)
           setshowloader(false);
           swal.fire({
               title: "Error",
               text: error,
               icon: "error",
-              dangerMode: true
           });
         } else if(item) {
-            location.reload()
+            setshowloader(false);
+            swal.fire({
+                title: "Success",
+                text: item.message,
+                icon: "success",
+                dangerMode: false
+            });
         }
     
     }

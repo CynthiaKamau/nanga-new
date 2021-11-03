@@ -32,6 +32,7 @@ import { useHistory } from "react-router";
 import { getAssignedTasks, addAssignedTask } from "actions/tasks";
 import swal from "sweetalert2";
 import Loader from "react-loader-spinner";
+import moment from "moment";
 
 import styles from "assets/jss/material-dashboard-pro-react/views/assignedTasksStyle.js";
 import { editTask } from "actions/tasks";
@@ -154,8 +155,8 @@ export default function AssignedTasksPage() {
                                                 <TableCell>Add more customers</TableCell>
                                                 <TableCell>{list.description}</TableCell>
                                                 <TableCell onClick={handleClickOpen} > <img src={avatar} alt="..." style={{ maxWidth: '50px', maxHeight: '50px', borderRadius: '50%', marginRight: '160px', marginTop: '35px' }} />  </TableCell>
-                                                <TableCell>{list.start_date}</TableCell>
-                                                <TableCell>{list.end_date}</TableCell>
+                                                <TableCell>{moment(list.start_date).format('YYYY-MM-DD')}</TableCell>
+                                                <TableCell>{moment(list.end_date).format('YYYY-MM-DD')}</TableCell>
                                                 <TableCell>
                                                     <CustomLinearProgress
                                                         variant="determinate"
