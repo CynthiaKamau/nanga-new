@@ -62,7 +62,7 @@ export const getAssignedTasks = (id) => {
 
             let response = await axios.get(`/assignedtasks/findTasksAssigned?user_id=${id}`)
             if (response.status == 200) {
-                dispatch({ type: ALL_ASSIGNED_TASKS_SUCCESS, payload: response.data.data })
+                dispatch({ type: ALL_ASSIGNED_TASKS_SUCCESS, payload: response.data })
             } else {
                 dispatch({ type: ALL_ASSIGNED_TASKS_FAIL, payload: response.data })
             }

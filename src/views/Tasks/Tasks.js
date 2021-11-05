@@ -34,7 +34,7 @@ import swal from "sweetalert2";
 import Loader from "react-loader-spinner";
 import moment from "moment";
 import { getUserObjectives } from "actions/objectives";
-
+import { LinearProgress } from "@material-ui/core";
 
 const useStyles = makeStyles(styles);
 
@@ -165,15 +165,15 @@ export default function TasksPage() {
     const statuses = [
         {
             value: '1',
-            label: 'Not Started',
+            label: 'NOT-STARTED',
         },
         {
             value: '2',
-            label: 'Started',
+            label: 'STARTED',
         },
         {
             value: '3',
-            label: 'Ongoing',
+            label: 'ONGOING',
         }
     ]
 
@@ -194,7 +194,7 @@ export default function TasksPage() {
                             <Table>
                                 <TableHead className={classes.tableHeader}>
                                     <TableRow>
-                                        <TableCell>Description</TableCell>
+                                        <TableCell>Management Action</TableCell>
                                         <TableCell>Start Date</TableCell>
                                         <TableCell>Due Date</TableCell>
                                         <TableCell>Status</TableCell>
@@ -215,7 +215,8 @@ export default function TasksPage() {
                                             </TableCell>
 
                                         </TableRow>
-                                    ))) : error ? (<TableRow> <TableCell> {error} </TableCell></TableRow> ) : null }
+                                    ))) : error ? (<TableRow> <TableCell> {error} </TableCell></TableRow>
+                                    ) : isLoading ? (<TableRow> <LinearProgress color="success" /> </TableRow>) : null }
                                 </TableBody>
                             </Table>
 

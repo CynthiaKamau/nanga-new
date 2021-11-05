@@ -16,7 +16,6 @@ import Card from "components/Card/Card.js";
 import CardHeader from "components/Card/CardHeader.js";
 import CardBody from "components/Card/CardBody.js";
 import { ArrowForward } from "@material-ui/icons";
-import CustomLinearProgress from "components/CustomLinearProgress/CustomLinearProgress.js";
 
 import MenuItem from '@material-ui/core/MenuItem';
 import Dialog from '@material-ui/core/Dialog';
@@ -33,9 +32,12 @@ import { getAssignedTasks, addAssignedTask } from "actions/tasks";
 import swal from "sweetalert2";
 import Loader from "react-loader-spinner";
 import moment from "moment";
-
+import { LinearProgress } from "@material-ui/core";
 import styles from "assets/jss/material-dashboard-pro-react/views/assignedTasksStyle.js";
 import { editTask } from "actions/tasks";
+import IconButton from '@material-ui/core/Button';
+import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
 
 const useStyles = makeStyles(styles);
 
@@ -48,6 +50,8 @@ export default function AssignedTasksPage() {
     const { user: currentUser } = useSelector(state => state.auth);
     const { items, item , error, isLoading } = useSelector(state => state.task);
 
+    console.log(items)
+
     const [addopen, setAddOpen] = useState(false);
     const [editopen, setEditOpen] = useState(false);
     const [deleteopen, setDeleteOpen] = useState(false);
@@ -58,6 +62,7 @@ export default function AssignedTasksPage() {
     const [user_id, setUserId] = useState("");
     const [status, setStatus] = useState("");
     const [showloader, setshowloader] = useState(false); 
+    const [id, setId] = useState("");
 
     useEffect(() => {
         dispatch(getAssignedTasks(currentUser.id))
@@ -95,6 +100,22 @@ export default function AssignedTasksPage() {
     
     }
 
+    const handleEditClickOpen = () => {
+        setEditOpen(true);
+    };
+
+    const setEditing = (list) => {
+        console.log(list, id);
+
+        setDescription(list.description)
+        setStatus(list.status);
+        setStartDate(list.start_date);
+        setEndDate(list.end_date);
+        setObjectiveId(list.objective_id);
+        setUserId(list.user_id);
+        setId(list.id)
+    }
+
     const handleEditClose = () => {
         setEditOpen(false);
     };
@@ -102,6 +123,14 @@ export default function AssignedTasksPage() {
     const handleDeleteClose = () => {
         setDeleteOpen(false);
     };
+
+    const handleDeleteClickOpen = () => {
+        setDeleteOpen(true);
+    };
+
+    const setDelete = (list) => {
+        console.log(list)
+    }
 
     const handleOpen = e => {
         e.preventDefault();
@@ -112,15 +141,15 @@ export default function AssignedTasksPage() {
     const statuses = [
         {
             value: '1',
-            label: 'Not Started',
+            label: 'NOT-STARTED',
         },
         {
             value: '2',
-            label: 'Started',
+            label: 'STARTED',
         },
         {
             value: '3',
-            label: 'Ongoing',
+            label: 'ONGOING',
         }
     ]
 
@@ -142,31 +171,29 @@ export default function AssignedTasksPage() {
                                 <TableHead className={classes.tableHeader}>
                                     <TableRow>
                                         <TableCell>Management Actions</TableCell>
-                                        <TableCell>Description </TableCell>
-                                        <TableCell>Assigned By</TableCell>
-                                        <TableCell>Start Date</TableCell>
+                                        <TableCell>Resources</TableCell>
+                                        {/* <TableCell>Start Date</TableCell> */}
                                         <TableCell>Due Date</TableCell>
                                         <TableCell>Progress</TableCell>
+                                        <TableCell>Actions</TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
                                     {items ? ( items.map((list, index) => (
                                         <TableRow key={index}>
-                                                <TableCell>Add more customers</TableCell>
                                                 <TableCell>{list.description}</TableCell>
-                                                <TableCell onClick={handleClickOpen} > <img src={avatar} alt="..." style={{ maxWidth: '50px', maxHeight: '50px', borderRadius: '50%', marginRight: '160px', marginTop: '35px' }} />  </TableCell>
-                                                <TableCell>{moment(list.start_date).format('YYYY-MM-DD')}</TableCell>
-                                                <TableCell>{moment(list.end_date).format('YYYY-MM-DD')}</TableCell>
-                                                <TableCell>
-                                                    <CustomLinearProgress
-                                                        variant="determinate"
-                                                        color="primary"
-                                                        value={30}
-                                                    />
-                                                </TableCell>
-                                                <TableCell onClick={handleOpen} > <ArrowForward /> </TableCell>
-                                            </TableRow>
-                                    ))) : error ? (<TableRow> <TableCell> {error} </TableCell></TableRow> ) : null }
+                                            <TableCell onClick={handleClickOpen} > <img src={avatar} alt="..." style={{ maxWidth: '50px', maxHeight: '50px', borderRadius: '50%', marginRight: '160px', marginTop: '35px' }} />  </TableCell>
+                                            {/* <TableCell>{moment(list.start_date).format('YYYY-MM-DD')}</TableCell> */}
+                                            <TableCell>{moment(list.end_date).format('YYYY-MM-DD')}</TableCell>
+                                            <TableCell>{list.status}</TableCell>
+                                            <TableCell>
+                                                <IconButton aria-label="edit" color="primary" onClick={() => { handleEditClickOpen(); setEditing(list) }} ><EditIcon /></IconButton>
+                                                <IconButton aria-label="delete" color="secondary" onClick={() => { handleDeleteClickOpen(); setDelete(list) }} ><DeleteIcon /></IconButton>
+                                                <IconButton aria-label="view" color="error" onClick={handleOpen} ><ArrowForward /></IconButton>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))) : error ? (<TableRow> <TableCell> {error} </TableCell></TableRow> 
+                                    ) : isLoading ? (<TableRow> <LinearProgress color="success" /> </TableRow>) : null }
                                 </TableBody>    
                             </Table>
 

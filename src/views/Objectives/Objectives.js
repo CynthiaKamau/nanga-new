@@ -4,10 +4,10 @@ import { useSelector, useDispatch } from "react-redux";
 // @material-ui/core
 import { makeStyles } from "@material-ui/core/styles";
 import GridItem from "components/Grid/GridItem.js";
-import GridContainer from "components/Grid/GridContainer.js";
 import Card from "components/Card/Card.js";
 import CardBody from "components/Card/CardBody.js";
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import { ExpandLess } from "@material-ui/icons";
 import CardFooter from "components/Card/CardFooter";
 import { IconButton } from "@material-ui/core";
 import TextField from '@material-ui/core/TextField';
@@ -18,10 +18,15 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
-import { useHistory } from "react-router";
+// import { useHistory } from "react-router";
 import {  editUserObjective } from "actions/objectives";
 import swal from "sweetalert2";
 import Loader from "react-loader-spinner";
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
 import { Grid } from "@material-ui/core";
 import Button from "components/CustomButtons/Button.js";
 import DateFnsUtils from '@date-io/date-fns';
@@ -30,24 +35,22 @@ import EditIcon from '@material-ui/icons/Edit';
 import moment from "moment";
 import axios from "axios";
 import { getUserObjectives } from "actions/objectives";
-import { getCategories } from "actions/data";
 import { getKpis } from "actions/kpis";
+
 const useStyles = makeStyles(styles);
 
 export default function StrategicObjectives() {
     const classes = useStyles();
     const dispatch = useDispatch();
 
-    const history = useHistory();
+    // const history = useHistory();
 
     const { user: currentUser } = useSelector(state => state.auth);
     const { items, error, item} = useSelector(state => state.objective);
-    const {  categories } = useSelector(state => state.data);
     const {  items : kpis } = useSelector(state => state.kpi);
 
     useEffect(() => {
         dispatch(getUserObjectives(currentUser.id));
-        dispatch(getCategories());
         dispatch(getKpis());
         setUserId(currentUser.id);
         setCreatedBy(currentUser.id);
@@ -56,7 +59,7 @@ export default function StrategicObjectives() {
     const [addopen, setAddOpen] = useState(false);
     const [showloader, setshowloader] = useState(false);
     const [description, setDescription] = useState("");
-    const [category, setCategory] = useState("");
+    const [kpi_unit_of_measure, setKpiUom] = useState("");
 
     const [start_date, setStartDate] = useState("");
     const [end_date, setEndDate] = useState("");
@@ -73,6 +76,8 @@ export default function StrategicObjectives() {
     const [editopen, setEditOpen] = useState(false);
     const [id, setId] = useState("");
     const [updated_by, setUpdatedBy] = useState(currentUser.id);
+    const [show_tasks, setShowTasks] = useState(false);
+    const [setIndex, setSelectedIndex] = useState("");
 
 
     const handleAddClickOpen = () => {
@@ -82,6 +87,7 @@ export default function StrategicObjectives() {
     const saveObjective = async () => {
         // e.preventDefault();
         setshowloader(true);
+        console.log("kpi uom", kpi_unit_of_measure)
     
         let end_date = moment(end_date).format('YYYY-MM-DD');
         let start_date = moment(start_date).format('YYYY-MM-DD');
@@ -171,7 +177,7 @@ export default function StrategicObjectives() {
     const setEditing = (list) => {
 
         setDescription(list.description);
-        setCategory(list.categoryId);
+        setKpiUom(list.kpi.kpi_unit_of_measure);
         setKpiId(list.kpi_id);
         setId(list.id);
         setTarget(list.target);
@@ -217,9 +223,9 @@ export default function StrategicObjectives() {
         setEditOpen(false);
     };
 
-    const handleRedirect = () => {
-        history.push('/admin/tasks');
-    }
+    // const handleRedirect = () => {
+    //     history.push('/admin/tasks');
+    // }
 
     return (
         <div>
@@ -228,10 +234,9 @@ export default function StrategicObjectives() {
                 <Button color="primary" onClick={handleAddClickOpen}> Create New Objective</Button>
             </Grid>
 
-            <div>
-                <GridContainer>
-                {items ? ( items.map((list, index) => (
-                    <Card className={classes.cardBodyRed} key={index}>
+            {items ? ( items.map((list, index) => (
+                <div key={index} style={{ justifyContent: 'center' }} >
+                    <Card className={classes.cardBodyRed} key={index} style={{ marginBottom: '0'}} >
                         <Grid container justify="flex-end">
                             <IconButton aria-label="edit" className={classes.textGreen} onClick={() => { handleEditClickOpen(); setEditing(list); }} ><EditIcon /></IconButton>
                         </Grid>
@@ -287,7 +292,7 @@ export default function StrategicObjectives() {
                                 </Card>
                             </GridItem>
                             <GridItem xs={12} sm={6} md={2}>
-                                <Card className={classes.cardBodyGreen}>
+                                <Card className={classes.cardBodyRed}>
                                     <CardBody>
                                         <h3 className={classes.cardTitle}>
                                             0 <small>Not Started</small>
@@ -297,12 +302,60 @@ export default function StrategicObjectives() {
                             </GridItem>
                         </CardBody>
                         <CardFooter className={classes.cardFooter}>
-                            <IconButton> <ExpandMoreIcon className={classes.iconBottom} onClick={() => handleRedirect()} /> </IconButton>
+                            {/* <IconButton> <ExpandMoreIcon className={classes.iconBottom} onClick={() => handleRedirect()} /> </IconButton> */}
+                            { show_tasks === false ? (
+                                <IconButton> <ExpandMoreIcon className={classes.iconBottom} onClick={() => { setShowTasks(true); setSelectedIndex(index)}} /> </IconButton>
+                            ) : show_tasks === true ? ( <IconButton> <ExpandLess className={classes.iconBottom} onClick={() => setShowTasks(false)} /> </IconButton> 
+                            ) : null}
                         </CardFooter>
+                        
                     </Card>
-                ))) : null}
-                </GridContainer>
-            </div>
+
+                    {/* tasks card */}
+                    { show_tasks === true && setIndex === index ? (
+
+                    
+                        <Card style={{ width: "95%", margin: '0', marginLeft: '5%'}} >
+                            <CardBody>
+                                <h3 className={classes.textBold}>Management Actions </h3>
+                                <Table>
+                                    <TableHead className={classes.tableHeader}>
+                                        <TableRow >
+                                            <TableCell>Management Action</TableCell>
+                                            <TableCell>Resource</TableCell>
+                                            <TableCell>Due Date</TableCell>
+                                            <TableCell>Status</TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        <TableRow key=''>
+                                            <TableCell>Task One</TableCell>
+                                            <TableCell>John Doe</TableCell>
+                                            <TableCell>2021-10-01</TableCell>
+                                            <TableCell>Pending</TableCell>
+                                        </TableRow>
+                                        {/* { items ? (items.kpi.map((list, index) => (
+                                            <TableRow key={index}>
+                                                <TableCell>{list.description}</TableCell>
+                                                <TableCell>{moment(list.start_date).format('YYYY-MM-DD')}</TableCell>
+                                                <TableCell>{moment(list.end_date).format('YYYY-MM-DD')}</TableCell>
+                                                <TableCell>{list.status}</TableCell>
+                                            </TableRow>
+                                        ))) : error ? (<TableRow> <TableCell> {error} </TableCell></TableRow>) : null } */}
+                                    </TableBody>
+                                </Table>
+                            </CardBody>
+                            <CardFooter>
+                                <Grid container justify="center">
+                                    <Button simple onClick={() => setShowTasks(false)}><p style={{ color: '#388e3c' }}> Add New Task</p> </Button>
+                                </Grid>
+                            </CardFooter>
+                        </Card>
+
+                    ) : null }
+                </div>
+                
+            ))) : null}
 
             <Dialog open={addopen} onClose={handleAddClose}>
                 <DialogTitle>Strategic Objective</DialogTitle>
@@ -325,27 +378,6 @@ export default function StrategicObjectives() {
                         }}
                     />
 
-                    <label> Category : </label>
-                    <TextField
-                    id="outlined-select-category"
-                    select
-                    fullWidth
-                    variant="outlined"
-                    label="Select"
-                    className={classes.textInput}
-                    value={category}
-                    onChange={(event) => {
-                        setCategory(event.target.value);
-                    }}
-                    helperText="Please select your category"
-                    >
-                    {categories.map((option) => (
-                        <MenuItem key={option.id} value={option.id}>
-                        {option.description}
-                        </MenuItem>
-                    ))}
-                    </TextField> 
-
                     <label> KPI : </label>
                     <TextField
                         id="outlined-select-kpi"
@@ -357,6 +389,8 @@ export default function StrategicObjectives() {
                         value={kpi_id}
                         onChange={(event) => {
                             setKpiId(event.target.value);
+                            setKpiUom(event);
+                            console.log("uom search", event.target)
                         }}
                         helperText="Please select your kpi"
                     >
@@ -532,27 +566,6 @@ export default function StrategicObjectives() {
                         }}
                     />
 
-                    {/* <label> Category : </label>
-            <TextField
-              id="outlined-select-category"
-              select
-              fullWidth
-              variant="outlined"
-              label="Select"
-              className={classes.textInput}
-              value={category}
-              onChange={(event) => {
-                setCategory(event.target.value);
-              }}
-              helperText="Please select your category"
-            >
-              {categories.map((option) => (
-                <MenuItem key={option.id} value={option.id}>
-                  {option.description}
-                </MenuItem>
-              ))}
-            </TextField> */}
-
                     <label> KPI : </label>
                     <TextField
                         id="outlined-select-kpi"
@@ -574,7 +587,27 @@ export default function StrategicObjectives() {
                         ))}
                     </TextField>
 
-                    <TextField
+                    { kpi_unit_of_measure === 'numeric' ? (
+
+                        <TextField
+                        autoFocus
+                        margin="dense"
+                        id="target"
+                        label="Target"
+                        className={classes.textInput}
+                        type="number"
+                        fullWidth
+                        style={{ marginBottom: '15px' }}
+                        value={target}
+                        variant="standard"
+                        onChange={(event) => {
+                            setTarget(event.target.value);
+                        }}
+                        />
+
+                    ) : kpi_unit_of_measure === '%' ? (
+
+                        <TextField
                         autoFocus
                         margin="dense"
                         id="target"
@@ -589,6 +622,8 @@ export default function StrategicObjectives() {
                             setTarget(event.target.value);
                         }}
                     />
+
+                    ) : null}  
 
                     <TextField
                         autoFocus
