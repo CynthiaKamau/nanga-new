@@ -39,7 +39,7 @@ export const getUsers = () => {
             }
 
         } catch (error) {
-            dispatch({ type: ALL_USERS_FAIL, payload: error.response.data.message })
+            dispatch({ type: ALL_USERS_FAIL, payload: error.response.data })
         }
     }
 }
@@ -96,10 +96,22 @@ export const addUser = (name, status, team, role ) => {
 }
 
 //edit specific user
-export const editUser = (user_id, name, status, team, role ) => {
-    const config = { headers: { 'Content-Type': 'application/json' } }
+export const editUser = (user_id, name, status, team, role, updated_by, view, extension, email, disabled ) => {
+    const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
 
-    const body = JSON.stringify({ user_id, name, status, team, role });
+    const body = JSON.stringify({ 
+        id : user_id,
+        fullnames : name,
+        email : email,
+        status : status,
+        extension : extension,
+        disabled : disabled,
+        team_id : team, 
+        role_id : role,
+        updated_by_id : updated_by,
+        view : view,
+        
+        });
     console.log("user", body);
 
     return async function (dispatch) {
@@ -109,13 +121,16 @@ export const editUser = (user_id, name, status, team, role ) => {
         try {
 
             let response = await axios.post('/users/update', body, config)
-            if (response.status == 200) {
+            if (response.status == 201) {
+                console.log("success", response.data)
                 dispatch({ type: EDIT_USER_SUCCESS, payload: response.data })
             } else {
+                console.log("fail", response.data)
                 dispatch({ type: EDIT_USER_FAIL, payload: response.data })
             }
         } catch (error) {
-            dispatch({ type: EDIT_USER_FAIL, payload: error.response.data.message })
+            console.log("fail", error)
+            dispatch({ type: EDIT_USER_FAIL, payload: error.response.data })
         }
 
     }

@@ -43,7 +43,8 @@ export default function(state = initialState, action) {
             return {
                 ...state,
                 items : action.payload,
-                isLoading : false
+                isLoading : false,
+                error : null
             }
         case TEAM_SUCCESS :
         case ADD_TEAM_SUCCESS :
@@ -51,8 +52,9 @@ export default function(state = initialState, action) {
         case DELETE_TEAM_SUCCESS :
             return {
                 ...state,
-                item : action.payload.message,
-                isLoading : false
+                item : action.payload,
+                isLoading : false,
+                error : null
             }
 
         case ALL_TEAMS_FAIL :
@@ -60,7 +62,7 @@ export default function(state = initialState, action) {
                 ...state,
                 isLoading: false,
                 items : null,
-                error: action.payload
+                error: action.payload.message
             }
         case TEAM_FAIL :
         case ADD_TEAM_FAIL :
@@ -70,7 +72,7 @@ export default function(state = initialState, action) {
                 ...state,
                 isLoading: false,
                 item : null,
-                error: action.payload
+                error: action.payload.message
             }
         
         default : return state;

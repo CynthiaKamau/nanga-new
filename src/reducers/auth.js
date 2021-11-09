@@ -9,7 +9,7 @@ import { LOGIN_SUCCESS,
 const initialState = {
 token : localStorage.getItem('token'),
 isAuthenticated : null,
-isLoading : null,
+isLoading : false,
 user : null,
 error : null
 }
@@ -28,7 +28,8 @@ switch(action.type) {
             isAuthenticated : true,
             isLoading : false,
             user : action.payload.user,
-            token : action.payload.token
+            token : action.payload.token,
+            error : null
         }
     case USER_FETCHED :
         return {

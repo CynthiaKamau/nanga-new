@@ -14,9 +14,8 @@ import TableRow from '@material-ui/core/TableRow';
 import Card from "components/Card/Card.js";
 import CardHeader from "components/Card/CardHeader.js";
 import CardBody from "components/Card/CardBody.js";
-import DeleteIcon from '@material-ui/icons/Delete';
+// import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
-import ControlPointIcon from '@material-ui/icons/ControlPoint';
 import IconButton from '@material-ui/core/Button';
 import MenuItem from '@material-ui/core/MenuItem';
 import Dialog from '@material-ui/core/Dialog';
@@ -40,9 +39,7 @@ export default function UsersPage() {
   const classes = useStyles();
   const dispatch = useDispatch();
 
-  const { items } = useSelector(state => state.user)
-  const { item } = useSelector(state => state.user)
-  const { error } = useSelector(state => state.user);
+  const { items ,item, error } = useSelector(state => state.user);
   const { user : currentUser } = useSelector(state => state.auth);
 
   useEffect(() => {
@@ -54,19 +51,23 @@ export default function UsersPage() {
 
   const [addopen, setAddOpen] = useState(false);
   const [editopen, setEditOpen] = useState(false);
-  const [deleteopen, setDeleteOpen] = useState(false);
+  // const [deleteopen, setDeleteOpen] = useState(false);
   const [name, setName] = useState("");
   const [status, setStatus] = useState("");
   const [team, setTeam] = useState("");
   const [role, setRole] = useState("");
   const [user_id, SetUserId] = useState("");
   const [showloader, setshowloader] = useState(false);
-
+  const [updated_by, setUpdated_by] = useState(currentUser.id);
+  const [email, setEmail] = useState("");
+  const [extension, setExtension] = useState("");
+  const [view, setView] = useState(true);
+  const [disabled, setDisabled] = useState(false);
   // const [selectedUser, setSelectedUser] = useState("");
 
   // const statuses = JsonData.Status;
 
-  console.log("here1",items);
+  console.log("here1",item);
 
   const statuses = [
     {
@@ -116,22 +117,28 @@ export default function UsersPage() {
 
   const setEditing = (list) => {
 
-    console.log(list)
-
     setName(list.fullnames);
     setTeam(list.teams.id);
     setRole(list.roles.id);
     setStatus(list.status);
-    SetUserId(list.id)
+    SetUserId(list.id);
+    setEmail(list.email);
+    setExtension(list.extension);
+    setView(list.view)
 
   }
 
   const saveEdited = e => {
     e.preventDefault();
     setshowloader(true);
-    console.log("edit user", user_id, name, status, team, role)
+    setView(true);
 
-    dispatch(editUser(user_id, name, status, team, role))
+    if(status === "Disabled") {
+      setDisabled(true);
+    } else { setDisabled(false)}
+    console.log("edit user", user_id, name, status, team, role, updated_by, setUpdated_by, view, extension, email, disabled)
+
+    dispatch(editUser(user_id, name, status, team, role, updated_by, view, extension, email, disabled))
     if (error) {
       setshowloader(false);
       swal.fire({
@@ -141,19 +148,24 @@ export default function UsersPage() {
         dangerMode: true
       });
     } else if(item) {
-      location.reload()
+      setshowloader(false);
+      swal.fire({
+        title: "Success",
+        text: item,
+        icon: "success",
+      });
     }
 
   }
 
-  const handleDeleteClickOpen = () => {
-    setDeleteOpen(true);
-  };
+  // const handleDeleteClickOpen = () => {
+  //   setDeleteOpen(true);
+  // };
 
-  const setDelete = (list) => {
-    // setSelectedUser(list);
-    console.log(list)
-  }
+  // const setDelete = (list) => {
+  //   // setSelectedUser(list);
+  //   console.log(list)
+  // }
 
   const handleAddClose = () => {
     setAddOpen(false);
@@ -163,15 +175,15 @@ export default function UsersPage() {
     setEditOpen(false);
   };
 
-  const handleDeleteClose = () => {
-    setDeleteOpen(false);
-  };
+  // const handleDeleteClose = () => {
+  //   setDeleteOpen(false);
+  // };
 
-  const handleDelete = (user) => {
-    setDeleteOpen(false);
+  // const handleDelete = (user) => {
+  //   setDeleteOpen(false);
 
-    console.log(user);
-  };
+  //   console.log(user);
+  // };
 
 
   return (
@@ -208,9 +220,8 @@ export default function UsersPage() {
                       <TableCell>{list.teams.name}</TableCell>
                       <TableCell>{list.roles.role_name}</TableCell>
                       { currentUser.role_id=== 0 ? ( <TableCell>
-                        <IconButton aria-label="view" color="error" onClick={handleAddClickOpen} ><ControlPointIcon /></IconButton>
                         <IconButton aria-label="edit" color="primary" onClick={() => { handleEditClickOpen(); setEditing(list) }} ><EditIcon /></IconButton>
-                        <IconButton aria-label="delete" color="secondary" onClick={() => { handleDeleteClickOpen(); setDelete(list) }} ><DeleteIcon /></IconButton>
+                        {/* <IconButton aria-label="delete" color="secondary" onClick={() => { handleDeleteClickOpen(); setDelete(list) }} ><DeleteIcon /></IconButton> */}
                       </TableCell> ) : null }
                     </TableRow>
 
@@ -417,7 +428,7 @@ export default function UsersPage() {
                 </DialogActions>
               </Dialog>
 
-              <Dialog
+              {/* <Dialog
                 open={deleteopen}
                 onClose={handleDeleteClose}
                 aria-labelledby="alert-dialog-title"
@@ -437,7 +448,7 @@ export default function UsersPage() {
                     Agree
                   </Button>
                 </DialogActions>
-              </Dialog>
+              </Dialog> */}
 
             </CardBody>
           </Card>

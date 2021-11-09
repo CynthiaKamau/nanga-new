@@ -43,7 +43,8 @@ export default function (state = initialState, action) {
             return {
                 ...state,
                 items: action.payload,
-                isLoading: false
+                isLoading: false,
+                error: null
             }
         case USER_SUCCESS:
         case ADD_USER_SUCCESS:
@@ -52,7 +53,8 @@ export default function (state = initialState, action) {
             return {
                 ...state,
                 item: action.payload.message,
-                isLoading: false
+                isLoading: false,
+                error: null
             }
 
         case ALL_USERS_FAIL:
@@ -60,7 +62,7 @@ export default function (state = initialState, action) {
                 ...state,
                 isLoading: false,
                 items: null,
-                error: action.payload
+                error: action.payload.message
             }
         case USER_FAIL:
         case ADD_USER_FAIL:
@@ -70,7 +72,7 @@ export default function (state = initialState, action) {
                 ...state,
                 isLoading: false,
                 item: null,
-                error: action.payload
+                error: action.payload.message
             }
 
         default: return state;

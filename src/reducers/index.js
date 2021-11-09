@@ -13,7 +13,7 @@ import data from "./data";
 const persistConfig = {
     key: 'root',
     storage,
-    whitelist: ['auth', 'kpi', 'objective', 'task', 'user', 'team', 'data']
+    whitelist: ['auth', 'kpi', 'user', 'team', 'data']
 }
 
 const rootReducer = combineReducers({

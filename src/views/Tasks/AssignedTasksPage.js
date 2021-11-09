@@ -38,6 +38,7 @@ import { editTask } from "actions/tasks";
 import IconButton from '@material-ui/core/Button';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
+import { getStatus } from "actions/data";
 
 const useStyles = makeStyles(styles);
 
@@ -49,8 +50,9 @@ export default function AssignedTasksPage() {
 
     const { user: currentUser } = useSelector(state => state.auth);
     const { items, item , error, isLoading } = useSelector(state => state.task);
+    const { statuses } = useSelector(state => state.data);
 
-    console.log(items)
+    console.log("ststuses", statuses)
 
     const [addopen, setAddOpen] = useState(false);
     const [editopen, setEditOpen] = useState(false);
@@ -66,6 +68,7 @@ export default function AssignedTasksPage() {
 
     useEffect(() => {
         dispatch(getAssignedTasks(currentUser.id))
+        dispatch(getStatus())
     }, []);
 
 
@@ -137,21 +140,6 @@ export default function AssignedTasksPage() {
 
         history.push(`/admin/dashboard`);
     }
-
-    const statuses = [
-        {
-            value: '1',
-            label: 'NOT-STARTED',
-        },
-        {
-            value: '2',
-            label: 'STARTED',
-        },
-        {
-            value: '3',
-            label: 'ONGOING',
-        }
-    ]
 
     return (
         <div>
@@ -262,8 +250,8 @@ export default function AssignedTasksPage() {
                                         helperText="Please select the status"
                                     >
                                         {statuses.map((option) => (
-                                            <MenuItem key={option.value} value={option.value}>
-                                                {option.label}
+                                            <MenuItem key={option.status} value={option.status}>
+                                                {option.status}
                                             </MenuItem>
                                         ))}
                                     </TextField>
@@ -372,8 +360,8 @@ export default function AssignedTasksPage() {
                                         helperText="Please select the status"
                                     >
                                         {statuses.map((option) => (
-                                            <MenuItem key={option.value} value={option.value}>
-                                                {option.label}
+                                            <MenuItem key={option.status} value={option.status}>
+                                                {option.status}
                                             </MenuItem>
                                         ))}
                                     </TextField>

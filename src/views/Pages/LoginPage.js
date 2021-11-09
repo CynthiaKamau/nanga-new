@@ -39,6 +39,8 @@ const useStyles = makeStyles(styles);
 export default function LoginPage() {
     const { isAuthenticated, isLoading, error  } = useSelector(state => state.auth);
 
+    console.log("loader", isLoading)
+
     const dispatch = useDispatch();
 
     const classes = useStyles();
@@ -95,6 +97,7 @@ export default function LoginPage() {
                 dangerMode: true
             });
         } else if(isAuthenticated  === true) {
+            setshowloader(false);
             history.push(`/admin/dashboard`);
         }
 
@@ -180,7 +183,7 @@ export default function LoginPage() {
                           </GridItem> */}
 
                                     <GridItem xs={12} sm={12} md={12} lg={12} style={{ textAlign: "center" }}>
-                                        {showloader === true || isLoading === true ? (
+                                        {showloader === true ? (
                                             <div style={{ textAlign: "center", marginTop: 10 }}>
                                                 <Loader
                                                     type="Puff"

@@ -44,7 +44,8 @@ export default function(state = initialState, action) {
             return {
                 ...state,
                 items : action.payload.data,
-                isLoading : false
+                isLoading : false,
+                error : null
             }
         
         case ADD_OBJECTIVE_SUCCESS :

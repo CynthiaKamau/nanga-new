@@ -34,6 +34,7 @@ import Loader from "react-loader-spinner";
 import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
 import moment from "moment";
 import CardFooter from "components/Card/CardFooter";
+import EditIcon from '@material-ui/icons/Edit';
 
 const useStyles = makeStyles(styles);
 
@@ -62,6 +63,7 @@ export default function Dashboard() {
   const [kpi_id, setKpi] = useState("");
   const [addopen, setAddOpen] = useState(false);
   const [addopentask, setAddOpenTask] = useState("");
+  const [editopenmission, setEditMissionOpen] = useState(false);
   const [task_description, setTaskDescription] = useState("");
   const [start_date, setStartDate] = useState("");
   const [end_date, setEndDate] = useState("");
@@ -70,10 +72,13 @@ export default function Dashboard() {
   const [user_id, setUserId] = useState("");
   const [showloader, setshowloader] = useState(false); 
   const [created_by, setCreatedBy] = useState("");
+  const [mission, setMission] = useState("");
   // const [newuser, setNewUser] = useState(true);
 
   // const categories = JsonData.Categories;
   // const kpis = JsonData.KPIS;
+
+  console.log("user mission", mission)
 
   const handleAddClickOpen = () => {
     setAddOpen(true);
@@ -178,30 +183,52 @@ export default function Dashboard() {
     setAddOpenTask(false);
   };
 
+  const handleEditMissionClose = () => {
+    setEditMissionOpen(false);
+  };
+
   const handleRedirect = () => {
     history.push('/admin/tasks');
+  }
+
+  const handleEditMissionClickOpen = () => {
+    setEditMissionOpen(true);
+  };
+
+  const setEditingMission = () => {
+    setMission()
+  }
+
+  const editMission = () => {
+
   }
 
   return (
     <div>
 
       <GridContainer>
-        <GridItem xs={12} sm={12} md={12}>
-          <h3 className={classes.textBold}> THE MISSION </h3>
-          <Card>
-            <CardBody className={classes.cardGrey}>
-              <h4>
-                Provide Exceptional Strategic Support to the Group in order to Profitably Grow our Customer Base off a Solid Foundation.
-              </h4>
-            </CardBody>
-          </Card>
-        </GridItem>
-        <GridItem xs={12} sm={12} md={12}>
+
+      <GridItem xs={12} sm={12} md={12}>
           <h3 className={classes.textBold}> THE VISION</h3>
           <Card>
             <CardBody className={classes.cardGrey}>
               <h4 >
                 Build the most valuable financial services business in our industry in Africa by delivering on the 6X more strategy.
+              </h4>
+            </CardBody>
+          </Card>
+        </GridItem>
+
+        <GridItem xs={12} sm={12} md={12}>
+          <h3 className={classes.textBold}> PERSONAL MISSION </h3>
+          <Card>
+            <Grid container justify="flex-end" className={classes.cardGrey}>
+              <IconButton aria-label="edit" color="primary" onClick={() => { handleEditMissionClickOpen(); setEditingMission() }} ><EditIcon style={{ color : '#000000'}}/></IconButton>
+            </Grid>
+
+            <CardBody className={classes.cardGrey}>
+              <h4>
+                Provide Exceptional Strategic Support to the Group in order to Profitably Grow our Customer Base off a Solid Foundation.
               </h4>
             </CardBody>
           </Card>
@@ -415,6 +442,47 @@ export default function Dashboard() {
               )}
           </DialogActions>
         </Dialog>
+
+        <Dialog open={editopenmission} onClose={handleEditMissionClose}>
+          <DialogTitle>Personal Mission</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Edit Personal Mission
+            </DialogContentText>
+
+            <TextField
+              id="outlined-multiline-static"
+              fullWidth
+              label="Mission"
+              type="text"
+              multiline
+              rows={4}
+              value={mission}
+              className={classes.textInput}
+              onChange={(event) => {
+                setMission(event.target.value);
+            }}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button color="danger" onClick={handleEditMissionClose}>Cancel</Button>
+            { showloader === true  ? (
+              <div style={{ textAlign: "center", marginTop: 10 }}>
+                  <Loader
+                      type="Puff"
+                      color="#00BFFF"
+                      height={150}
+                      width={150}
+                  />
+              </div>
+              ) :
+              (
+                <Button color="primary" onClick={(e) => { handleEditMissionClose(); editMission(e); }}>Save</Button>
+              )}
+          </DialogActions>
+        </Dialog>
+
+
 
       </GridContainer>
 

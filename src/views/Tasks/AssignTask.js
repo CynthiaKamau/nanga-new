@@ -1,4 +1,4 @@
-import React, { useState , useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
 // @material-ui/core
@@ -15,10 +15,8 @@ import TableRow from '@material-ui/core/TableRow';
 import Card from "components/Card/Card.js";
 import CardHeader from "components/Card/CardHeader.js";
 import CardBody from "components/Card/CardBody.js";
-import DeleteIcon from '@material-ui/icons/Delete';
-import EditIcon from '@material-ui/icons/Edit';
-import ControlPointIcon from '@material-ui/icons/ControlPoint';
-import IconButton from '@material-ui/core/Button';
+import { ArrowForward } from "@material-ui/icons";
+
 import MenuItem from '@material-ui/core/MenuItem';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -28,29 +26,33 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
-import { getTasks, addTask, editTask } from "actions/tasks";
-import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
+import avatar from "assets/img/faces/marc.jpg";
+import { useHistory } from "react-router";
+import { getAssignedTasks, addAssignedTask } from "actions/tasks";
 import swal from "sweetalert2";
 import Loader from "react-loader-spinner";
 import moment from "moment";
-import { getUserObjectives } from "actions/objectives";
 import { LinearProgress } from "@material-ui/core";
+import styles from "assets/jss/material-dashboard-pro-react/views/assignedTasksStyle.js";
+import { editTask } from "actions/tasks";
+import IconButton from '@material-ui/core/Button';
+import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
 import { getStatus } from "actions/data";
-
 
 const useStyles = makeStyles(styles);
 
-export default function TasksPage() {
+export default function AssignTasksPage() {
     const classes = useStyles();
+    const history = useHistory();
 
     const dispatch = useDispatch();
 
-    const { user: currentUser } = useSelector(state => state.auth)
-    const { items : objectives } = useSelector(state => state.objective)
-    const { items, item , error, isLoading } = useSelector(state => state.task)
+    const { user: currentUser } = useSelector(state => state.auth);
+    const { items, item , error, isLoading } = useSelector(state => state.task);
     const { statuses } = useSelector(state => state.data);
 
-    console.log(objectives)
+    console.log("ststuses", statuses)
 
     const [addopen, setAddOpen] = useState(false);
     const [editopen, setEditOpen] = useState(false);
@@ -59,32 +61,34 @@ export default function TasksPage() {
     const [end_date, setEndDate] = useState("");
     const [start_date, setStartDate] = useState("");
     const [objective_id, setObjectiveId] = useState("");
-    const [user_id, setUserId] = useState(currentUser.id);
+    const [user_id, setUserId] = useState("");
     const [status, setStatus] = useState("");
-    const [showloader, setshowloader] = useState(false);  
-    const [created_by, setCreatedBy] = useState(currentUser.id);
-    const [updated_by, setUpdatedBy] = useState(currentUser.id);
+    const [showloader, setshowloader] = useState(false); 
     const [id, setId] = useState("");
 
     useEffect(() => {
-        dispatch(getTasks(currentUser.id))
-        dispatch(getUserObjectives(currentUser.id));
+        dispatch(getAssignedTasks(currentUser.id))
         dispatch(getStatus())
     }, []);
 
-    console.log("tasks", items)
 
-    const handleAddClickOpen = () => {
+    const handleClickOpen = () => {
         setAddOpen(true);
+    };
+
+    const handleAddClose = () => {
+        setAddOpen(false);
     };
 
     const saveTask = e => {
         e.preventDefault();
         setshowloader(true);
+        setObjectiveId();
+        setUserId(currentUser.id);
 
-        console.log("save values", description, end_date, start_date, objective_id, user_id, setUserId(), setCreatedBy(), setUpdatedBy())
+        console.log("save values", description, end_date, start_date, objective_id, user_id)
     
-        dispatch(addTask( description, end_date, start_date, objective_id, user_id, created_by ))
+        dispatch(addAssignedTask( description, end_date, start_date, objective_id, user_id ))
         if (error) {
           setshowloader(false);
           swal.fire({
@@ -94,12 +98,7 @@ export default function TasksPage() {
               dangerMode: true
           });
         } else if(item) {
-            setshowloader(false);
-            swal.fire({
-                title: "Success",
-                text: "Task added successfully.",
-                icon: "success",
-            });
+            location.reload()
         }
     
     }
@@ -109,7 +108,7 @@ export default function TasksPage() {
     };
 
     const setEditing = (list) => {
-        console.log(list);
+        console.log(list, id);
 
         setDescription(list.description)
         setStatus(list.status);
@@ -120,31 +119,13 @@ export default function TasksPage() {
         setId(list.id)
     }
 
-    const saveEdited = e => {
-        e.preventDefault();
-        setshowloader(true);
+    const handleEditClose = () => {
+        setEditOpen(false);
+    };
 
-        console.log("edit values",  description, end_date, start_date, objective_id, user_id, created_by, updated_by, id, status)
-    
-        dispatch(editTask(description, end_date, start_date, objective_id, user_id, created_by, updated_by, id, status))
-        if (error) {
-          setshowloader(false);
-          swal.fire({
-              title: "Error",
-              text: error,
-              icon: "error",
-              dangerMode: true
-          });
-        } else if(item) {
-            setshowloader(false);
-            swal.fire({
-                title: "Success",
-                text: "Task updated successfully.",
-                icon: "success",
-            });
-        }
-    
-    }
+    const handleDeleteClose = () => {
+        setDeleteOpen(false);
+    };
 
     const handleDeleteClickOpen = () => {
         setDeleteOpen(true);
@@ -154,18 +135,26 @@ export default function TasksPage() {
         console.log(list)
     }
 
-    const handleAddClose = () => {
-        setAddOpen(false);
-    };
+    const handleOpen = e => {
+        e.preventDefault();
 
-    const handleEditClose = () => {
-        setEditOpen(false);
-    };
+        history.push(`/admin/dashboard`);
+    }
 
-    const handleDeleteClose = () => {
-        setDeleteOpen(false);
-    };
-
+    // const statuses = [
+    //     {
+    //         value: '1',
+    //         label: 'NOT-STARTED',
+    //     },
+    //     {
+    //         value: '2',
+    //         label: 'STARTED',
+    //     },
+    //     {
+    //         value: '3',
+    //         label: 'ONGOING',
+    //     }
+    // ]
 
     return (
         <div>
@@ -173,41 +162,42 @@ export default function TasksPage() {
                 <GridItem xs={12} sm={12} md={12}>
                     <Card>
                         <CardHeader color="primary">
-                            <h4>Tasks</h4>
+                            <h4>Assigned Tasks</h4>
                             <p>
-                                Tasks details.
+                                Assigned Tasks details.
                             </p>
                         </CardHeader>
                         <CardBody>
-                            <div className={classes.btnRight}><Button color="primary" size="lg" onClick={handleAddClickOpen}> Add Task </Button> </div>
+                            {/* <div className="pull-right"><Button color="primary" size="lg" onClick={handleAddClickOpen}> Add Task </Button> </div> */}
 
-                            <Table>
+                            <Table className={classes.tableBorder}>
                                 <TableHead className={classes.tableHeader}>
                                     <TableRow>
-                                        <TableCell>Management Action</TableCell>
-                                        <TableCell>Start Date</TableCell>
+                                        <TableCell>Management Actions</TableCell>
+                                        <TableCell>Resources</TableCell>
+                                        {/* <TableCell>Start Date</TableCell> */}
                                         <TableCell>Due Date</TableCell>
-                                        <TableCell>Status</TableCell>
-                                        <TableCell>Action</TableCell>
+                                        <TableCell>Progress</TableCell>
+                                        <TableCell>Actions</TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
                                     {items ? ( items.map((list, index) => (
                                         <TableRow key={index}>
-                                            <TableCell>{list.description}</TableCell>
-                                            <TableCell>{moment(list.start_date).format('YYYY-MM-DD')}</TableCell>
+                                                <TableCell>{list.description}</TableCell>
+                                            <TableCell onClick={handleClickOpen} > <img src={avatar} alt="..." style={{ maxWidth: '50px', maxHeight: '50px', borderRadius: '50%', marginRight: '160px', marginTop: '35px' }} />  </TableCell>
+                                            {/* <TableCell>{moment(list.start_date).format('YYYY-MM-DD')}</TableCell> */}
                                             <TableCell>{moment(list.end_date).format('YYYY-MM-DD')}</TableCell>
                                             <TableCell>{list.status}</TableCell>
                                             <TableCell>
-                                                <IconButton aria-label="view" color="error" onClick={handleAddClickOpen} ><ControlPointIcon /></IconButton>
                                                 <IconButton aria-label="edit" color="primary" onClick={() => { handleEditClickOpen(); setEditing(list) }} ><EditIcon /></IconButton>
                                                 <IconButton aria-label="delete" color="secondary" onClick={() => { handleDeleteClickOpen(); setDelete(list) }} ><DeleteIcon /></IconButton>
+                                                <IconButton aria-label="view" color="error" onClick={handleOpen} ><ArrowForward /></IconButton>
                                             </TableCell>
-
                                         </TableRow>
-                                    ))) : error ? (<TableRow> <TableCell> {error} </TableCell></TableRow>
+                                    ))) : error ? (<TableRow> <TableCell> {error} </TableCell></TableRow> 
                                     ) : isLoading ? (<TableRow> <LinearProgress color="success" /> </TableRow>) : null }
-                                </TableBody>
+                                </TableBody>    
                             </Table>
 
                             <Dialog open={addopen} onClose={handleAddClose}>
@@ -216,26 +206,6 @@ export default function TasksPage() {
                                     <DialogContentText>
                                         Create New Strategic Intitative
                                     </DialogContentText>
-                                    <label style={{ fontWeight: 'bold', color: 'black' }}> Objective : </label>
-                                    <TextField
-                                        id="outlined-select-objective"
-                                        select
-                                        fullWidth
-                                        variant="outlined"
-                                        label="Select"
-                                        value={objective_id}
-                                        onChange={(event) => {
-                                            setObjectiveId(event.target.value);
-                                        }}
-                                        helperText="Please select the objective"
-                                    >
-                                        {objectives.map((option) => (
-                                            <MenuItem key={option.id} value={option.id}>
-                                                {option.description}
-                                            </MenuItem>
-                                        ))}
-                                    </TextField>
-
                                     <TextField
                                         autoFocus
                                         margin="dense"
@@ -301,10 +271,30 @@ export default function TasksPage() {
                                         ))}
                                     </TextField>
 
+                                    <label style={{ fontWeight: 'bold', color: 'black' }}> Status : </label>
+                                    <TextField
+                                        id="outlined-select-status"
+                                        select
+                                        fullWidth
+                                        variant="outlined"
+                                        label="Select"
+                                        value={status}
+                                        onChange={(event) => {
+                                            setStatus(event.target.value);
+                                        }}
+                                        helperText="Please select the status"
+                                    >
+                                        {statuses.map((option) => (
+                                            <MenuItem key={option.value} value={option.value}>
+                                                {option.label}
+                                            </MenuItem>
+                                        ))}
+                                    </TextField>
+
                                 </DialogContent>
                                 <DialogActions>
                                     <Button color="danger" onClick={handleAddClose}>Cancel</Button>
-                                    { showloader === true || isLoading === true ? (
+                                    { isLoading === true || showloader === true  ? (
                                         <div style={{ textAlign: "center", marginTop: 10 }}>
                                             <Loader
                                                 type="Puff"
@@ -341,7 +331,7 @@ export default function TasksPage() {
                                         }}
                                     />
 
-<                                   MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                         <KeyboardDatePicker
                                             margin="normal"
                                             id="date-picker-dialog"
@@ -394,7 +384,19 @@ export default function TasksPage() {
                                 </DialogContent>
                                 <DialogActions>
                                     <Button color="danger" onClick={handleEditClose}>Cancel</Button>
-                                    <Button color="primary" onClick={(e) => { handleEditClose(); saveEdited(e) }}>Save</Button>
+                                    { showloader === true || isLoading === true ? (
+                                        <div style={{ textAlign: "center", marginTop: 10 }}>
+                                            <Loader
+                                                type="Puff"
+                                                color="#00BFFF"
+                                                height={150}
+                                                width={150}
+                                            />
+                                        </div>
+                                        ) :
+                                        (
+                                        <Button color="primary" onClick={(e) => { handleEditClose(); editTask(e)}}>Save</Button>
+                                    )}
                                 </DialogActions>
                             </Dialog>
 

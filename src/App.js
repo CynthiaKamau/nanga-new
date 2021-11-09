@@ -29,7 +29,7 @@ const App = () => {
       <Route path="/auth" component={AuthLayout} />
       <Route path="/admin" component={AdminLayout} />
       <Route path="/" component={LoginPage} />
-      { !currentUser ? ( <Redirect from="/" to="/admin/dashboard" />) : null} 
+      { !currentUser ? ( <Redirect from="/admin/dashboard" to="/" />) : null} 
     </Switch>
   </BrowserRouter>
   );

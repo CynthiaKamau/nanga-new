@@ -70,7 +70,8 @@ export default function(state = initialState, action) {
             return {
                 ...state,
                 items : action.payload.data ,
-                isLoading : false
+                isLoading : false,
+                error : null
             }
         case TASK_SUCCESS :
         case ASSIGNED_TASK_SUCCESS :
@@ -83,7 +84,8 @@ export default function(state = initialState, action) {
             return {
                 ...state,
                 item : action.payload,
-                isLoading : false
+                isLoading : false,
+                error : null
             }
 
         case ALL_TASKS_FAIL :
