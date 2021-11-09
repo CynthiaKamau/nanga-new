@@ -70,7 +70,7 @@ export const getUser = (id) => {
 //add specific user
 export const addUser = (name, status, team, role ) => {
 
-    const config = { headers: { 'Content-Type': 'application/json' } }
+    const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
     
     const body = JSON.stringify({ name, status, team, role });
     console.log("user", body);

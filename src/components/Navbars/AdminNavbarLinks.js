@@ -111,16 +111,10 @@ export default function HeaderLinks(props) {
                 <ClickAwayListener onClickAway={handleCloseProfile}>
                   <MenuList role="menu">
                     <MenuItem
-                      onClick={handleCloseProfile}
-                      className={dropdownItem}
-                    >
-                      {rtlActive ? "الملف الشخصي" : "Profile"}
-                    </MenuItem>
-                    <MenuItem
                       onClick={() => {handleCloseProfile(); handleClickProf()}}
                       className={dropdownItem}
                     >
-                      {rtlActive ? "الإعدادات" : "Settings"}
+                      {rtlActive ? "الملف الشخصي" : "Profile"}
                     </MenuItem>
                     <Divider light />
                     <MenuItem

@@ -17,7 +17,13 @@ import {
 
     DELETE_OBJECTIVE_SUCCESS,
     DELETE_OBJECTIVE_FETCH_REQUEST,
-    DELETE_OBJECTIVE_FAIL
+    DELETE_OBJECTIVE_FAIL,
+
+    OBJECTIVE_TASKS_SUCCESS,
+    OBJECTIVE_TASKS_FETCH_REQUEST,
+    OBJECTIVE_TASKS_FAIL
+
+
 } from '../actions/types';
 
 const initialState = {
@@ -34,6 +40,7 @@ export default function(state = initialState, action) {
         case ADD_OBJECTIVE_FETCH_REQUEST :
         case EDIT_OBJECTIVE_FETCH_REQUEST :
         case DELETE_OBJECTIVE_FETCH_REQUEST :
+        case OBJECTIVE_TASKS_FETCH_REQUEST :
             return {
                 ...state,
                 isLoading: true
@@ -41,6 +48,7 @@ export default function(state = initialState, action) {
 
         case OBJECTIVE_SUCCESS :
         case ALL_OBJECTIVES_SUCCESS :
+        case OBJECTIVE_TASKS_SUCCESS :
             return {
                 ...state,
                 items : action.payload.data,
@@ -53,12 +61,13 @@ export default function(state = initialState, action) {
         case DELETE_OBJECTIVE_SUCCESS :
             return {
                 ...state,
-                item : action.payload,
+                item : action.payload.message,
                 isLoading : false
             }
 
         case OBJECTIVE_FAIL :
         case ALL_OBJECTIVES_FAIL :
+        case OBJECTIVE_TASKS_FAIL :
             return {
                 ...state,
                 isLoading: false,

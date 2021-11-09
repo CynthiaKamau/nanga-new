@@ -22,6 +22,10 @@ import {
     DELETE_OBJECTIVE_FETCH_REQUEST,
     DELETE_OBJECTIVE_FAIL,
 
+    OBJECTIVE_TASKS_SUCCESS,
+    OBJECTIVE_TASKS_FETCH_REQUEST,
+    OBJECTIVE_TASKS_FAIL
+
 } from '../actions/types';
 
 export const getObjectives = () => {
@@ -92,6 +96,28 @@ export const addUserObjective = (user_id, target, start_date, kpi_id, end_date, 
             dispatch({ type: ADD_OBJECTIVE_FAIL, payload: error.response.data.message })
         }
 
+    }
+
+}
+
+//get tasks in objective
+export const getObjectiveTasks = (id) => {
+    return async function (dispatch) {
+
+        dispatch({ type: OBJECTIVE_TASKS_FETCH_REQUEST });
+
+        try {
+
+            let response = await axios.get(`tasks/fetchTasksbyObjectiveId?objective_id=${id}`)
+            if (response.status == 200) {
+                dispatch({ type: OBJECTIVE_TASKS_SUCCESS, payload: response.data })
+            } else {
+                dispatch({ type: OBJECTIVE_TASKS_FAIL, payload: response.data })
+            }
+
+        } catch (error) {
+            dispatch({ type: OBJECTIVE_TASKS_FAIL, payload: error.response.data.message })
+        }
     }
 
 }

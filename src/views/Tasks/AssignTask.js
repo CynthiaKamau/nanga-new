@@ -33,7 +33,7 @@ import swal from "sweetalert2";
 import Loader from "react-loader-spinner";
 import moment from "moment";
 import { LinearProgress } from "@material-ui/core";
-import styles from "assets/jss/material-dashboard-pro-react/views/assignedTasksStyle.js";
+import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
 import { editTask } from "actions/tasks";
 import IconButton from '@material-ui/core/Button';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -119,6 +119,10 @@ export default function AssignTasksPage() {
         setId(list.id)
     }
 
+    const handleAddClickOpen = () => {
+        setAddOpen(true);
+    };
+
     const handleEditClose = () => {
         setEditOpen(false);
     };
@@ -162,13 +166,13 @@ export default function AssignTasksPage() {
                 <GridItem xs={12} sm={12} md={12}>
                     <Card>
                         <CardHeader color="primary">
-                            <h4>Assigned Tasks</h4>
+                            <h4>Tasks Assigned To Team Members</h4>
                             <p>
-                                Assigned Tasks details.
+                                Details Of Tasks Assigned To Team Members.
                             </p>
                         </CardHeader>
                         <CardBody>
-                            {/* <div className="pull-right"><Button color="primary" size="lg" onClick={handleAddClickOpen}> Add Task </Button> </div> */}
+                        <div className={classes.btnRight}><Button color="primary" size="lg" onClick={handleAddClickOpen}> Assign Task </Button> </div>
 
                             <Table className={classes.tableBorder}>
                                 <TableHead className={classes.tableHeader}>

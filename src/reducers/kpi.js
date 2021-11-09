@@ -52,7 +52,7 @@ export default function(state = initialState, action) {
         case DELETE_KPI_SUCCESS :
             return {
                 ...state,
-                item : action.payload,
+                item : action.payload.message,
                 isLoading : false,
                 error : null
             }

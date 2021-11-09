@@ -97,10 +97,17 @@ export const addTeam = (name, teamlead, isparent, parentId) => {
 }
 
 //edit specific team
-export const editTeam = (id, name, teamlead, isparent, parentId ) => {
-    const config = { headers: { 'Content-Type': 'application/json' } }
+export const editTeam = (id, name, teamlead, isparent, parentId, updated_by ) => {
 
-    const body = JSON.stringify({ id, name, teamlead, isparent, parentId });
+    const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
+
+    const body = JSON.stringify({ 
+        id : id,
+        team_name : name,
+        team_lead : teamlead,
+        is_parent : isparent,
+        parent_team_id : parentId,
+        updated_by_id : updated_by });
     console.log("team", body);
 
     return async function (dispatch) {
@@ -110,13 +117,13 @@ export const editTeam = (id, name, teamlead, isparent, parentId ) => {
         try {
 
             let response = await axios.post('/teams/update', body, config)
-            if (response.status == 200) {
+            if (response.status == 201) {
                 dispatch({ type: EDIT_TEAM_SUCCESS, payload: response.data })
             } else {
-                dispatch({ type: EDIT_TEAM_FAIL, payload: response.data })
+                dispatch({ type: EDIT_TEAM_SUCCESS, payload: response.data })
             }
         } catch (error) {
-            dispatch({ type: EDIT_TEAM_FAIL, payload: error.response.data.message })
+            dispatch({ type: EDIT_TEAM_FAIL, payload: error.response.data })
         }
 
     }

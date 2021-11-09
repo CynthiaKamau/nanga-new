@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
 // @material-ui/core
@@ -15,9 +15,8 @@ import TableRow from '@material-ui/core/TableRow';
 import Card from "components/Card/Card.js";
 import CardHeader from "components/Card/CardHeader.js";
 import CardBody from "components/Card/CardBody.js";
-import DeleteIcon from '@material-ui/icons/Delete';
+// import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
-import ControlPointIcon from '@material-ui/icons/ControlPoint';
 import IconButton from '@material-ui/core/Button';
 import MenuItem from '@material-ui/core/MenuItem';
 import Dialog from '@material-ui/core/Dialog';
@@ -26,10 +25,18 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
-import JsonData from "../../data/data.json";
-import { editKpi, addKpi } from "actions/kpis";
+import { addKpi } from "actions/kpis";
+import { editUserObjective } from "actions/objectives";
 import swal from "sweetalert2";
 import Loader from "react-loader-spinner";
+import { getUserObjectives } from "actions/objectives";
+import { getCategories } from "actions/data";
+import { getKpis } from "actions/kpis";
+import { LinearProgress } from "@material-ui/core";
+import DateFnsUtils from '@date-io/date-fns';
+import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
+import moment from "moment";
+
 
 import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
 
@@ -39,18 +46,22 @@ export default function myKpis() {
     const classes = useStyles();
     const dispatch = useDispatch();
 
-    const { item } = useSelector(state => state.user)
-    const { error } = useSelector(state => state.user);
+    const { items, item, error, isLoading } = useSelector(state => state.objective);
+    const {  categories } = useSelector(state => state.data);
+    const { user: currentUser } = useSelector(state => state.auth);
+    const {  items : kpis } = useSelector(state => state.kpi);
 
-    const items = JsonData.Objectives;
+    console.log("sumbua",item)
 
-    console.log("obj", items)
-    const categories = JsonData.Categories;
+    useEffect(() => {
+        dispatch(getUserObjectives(currentUser.id));
+        dispatch(getCategories());
+        dispatch(getKpis());
+    }, [])
 
     const [addopen, setAddOpen] = useState(false);
     const [editopen, setEditOpen] = useState(false);
-    const [deleteopen, setDeleteOpen] = useState(false);
-    const [kpi, setKPI] = useState("");
+    const [description, setDescription] = useState("");
     const [uom, setUnitOfMeasure] = useState("");
     const [category, setCategory] = useState("");
     const [target, setTarget] = useState("");
@@ -58,6 +69,12 @@ export default function myKpis() {
     const [targetAchieved, setTargetAchieved] = useState("");
     const [showloader, setshowloader] = useState(false);  
     const [id, setId] = useState("");
+    const [created_by, setCreatedBy] = useState(currentUser.id);
+    const [updated_by, setUpdatedBy] = useState(currentUser.id);
+    const [start_date, setStartDate] = useState("");
+    const [end_date, setEndDate] = useState("");
+    const [kpi_id, setKpiId] = useState("");
+    const [user_id, setUserId] = useState(currentUser.id);
 
     const handleAddClickOpen = () => {
         setAddOpen(true);
@@ -67,9 +84,9 @@ export default function myKpis() {
         e.preventDefault();
         setshowloader(true);
 
-        console.log("save values", kpi, uom, category, target, targetAchieved, targetAtReview)
+        console.log("save values", description, uom, category, target, targetAchieved, targetAtReview, created_by, setCreatedBy)
     
-        dispatch(addKpi(kpi, uom, category, target, targetAchieved, targetAtReview ))
+        dispatch(addKpi(description, uom, category, target, targetAchieved, targetAtReview, created_by ))
         if (error) {
           setshowloader(false);
           swal.fire({
@@ -79,7 +96,12 @@ export default function myKpis() {
               dangerMode: true
           });
         } else if(item) {
-            location.reload()
+            setshowloader(false);
+            swal.fire({
+                title: "Success",
+                text: item,
+                icon: "success",
+            });
         }
     
       }
@@ -89,25 +111,27 @@ export default function myKpis() {
     };
 
     const setEditing = (list) => {
-        console.log(list);
 
-        setKPI(list.title);
-        setUnitOfMeasure(list.kpiUnitOfMeasure);
-        setCategory(list.categoryId);
+        setDescription(list.kpi.title);
+        setKpiId(list.kpi.id);
         setId(list.id);
         setTarget(list.target);
         setTargetAchieved(list.target_achieved);
         setTargetAtReview(list.target_achieved_on_review);
+        setStartDate(list.start_date);
+        setEndDate(list.end_date)
     }
 
     const saveEdited = e => {
         e.preventDefault();
         setshowloader(true);
+        let end_date = moment(end_date).format('YYYY-MM-DD');
+        let start_date = moment(start_date).format('YYYY-MM-DD');
 
-        console.log("edit values", id, kpi, uom, category)
+        console.log("edit values", id, description, end_date, kpi_id, start_date, target, user_id, targetAchieved, targetAtReview, setUpdatedBy(), setUserId)
     
-        dispatch(editKpi(id, kpi, uom, category ))
-        if (!item && error) {
+        dispatch(editUserObjective(id, description, end_date, kpi_id, start_date, target, user_id, targetAchieved, targetAtReview, created_by, updated_by))
+        if (item === null && error) {
           setshowloader(false);
           swal.fire({
               title: "Error",
@@ -116,18 +140,23 @@ export default function myKpis() {
               dangerMode: true
           });
         } else if(item) {
-            location.reload()
+            setshowloader(false);
+            swal.fire({
+                title: "Success",
+                text: item,
+                icon: "success",
+            });
         }
     
     }
 
-    const handleDeleteClickOpen = () => {
-        setDeleteOpen(true);
-    };
+    // const handleDeleteClickOpen = () => {
+    //     setDeleteOpen(true);
+    // };
 
-    const setDelete = (list) => {
-        console.log(list)
-    }
+    // const setDelete = (list) => {
+    //     console.log(list)
+    // }
 
     const handleAddClose = () => {
         setAddOpen(false);
@@ -137,9 +166,9 @@ export default function myKpis() {
         setEditOpen(false);
     };
 
-    const handleDeleteClose = () => {
-        setDeleteOpen(false);
-    };
+    // const handleDeleteClose = () => {
+    //     setDeleteOpen(false);
+    // };
 
     const uoms = [
         {
@@ -147,14 +176,23 @@ export default function myKpis() {
           label: '%',
         },
         {
+        value: '<%',
+        label: '<%',
+        },
+        {
+        value: '%>',
+        label: '%>',
+        },
+        {
           value: 'numeric',
           label: 'numeric',
         },
         {
-          value: 'Ksh',
-          label: 'Ksh',
+          value: 'KES M',
+          label: 'KES M',
         }
     ]
+
 
   return (
     <div>
@@ -183,21 +221,21 @@ export default function myKpis() {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {items && items.map((list, index) => (
+                        {items ? ( items.map((list, index) => (
                             <TableRow key={index}>
                                 <TableCell>{list.description}</TableCell>
-                                <TableCell>{list.kpiUnitOfMeasure}</TableCell>
-                                <TableCell>{list.categoryId} </TableCell>
+                                <TableCell>{list.kpi.kpi_unit_of_measure}</TableCell>
+                                <TableCell>{list.kpi.categories.description} </TableCell>
                                 <TableCell>{list.target} </TableCell>
                                 <TableCell>{list.target_achieved} </TableCell>
                                 <TableCell>{list.target_achieved_on_review} </TableCell>
                                 <TableCell>
-                                <IconButton aria-label="view" color="error" onClick={handleAddClickOpen} ><ControlPointIcon /></IconButton>
                                 <IconButton aria-label="edit" color="primary" onClick={() => { handleEditClickOpen(); setEditing(list) }} ><EditIcon/></IconButton>
-                                <IconButton aria-label="delete" color="secondary" onClick={() => { handleDeleteClickOpen(); setDelete(list) }} ><DeleteIcon /></IconButton>
+                                {/* <IconButton aria-label="delete" color="secondary" onClick={() => { handleDeleteClickOpen(); setDelete(list) }} ><DeleteIcon /></IconButton> */}
                                 </TableCell>
                             </TableRow>
-                        ))}
+                        ))) : error ? (<TableRow> <TableCell> {error} </TableCell></TableRow>
+                        ) : isLoading ? (<TableRow> <LinearProgress color="success" /> </TableRow>) : null }
 
                     </TableBody>
                 </Table>
@@ -216,10 +254,10 @@ export default function myKpis() {
                             type="text"
                             fullWidth
                             style={{marginBottom : '15px'}}
-                            value={kpi}
+                            value={description}
                             variant="standard"
                             onChange = {(event) => {
-                                setKPI(event.target.value);
+                                setDescription(event.target.value);
                             }}
                         />
 
@@ -336,57 +374,67 @@ export default function myKpis() {
                         <TextField
                             autoFocus
                             margin="dense"
-                            id="kpi"
-                            label="KPI"
+                            id="objective"
+                            label="Objective"
                             type="text"
                             fullWidth
                             style={{marginBottom : '15px'}}
-                            value={kpi}
+                            value={description}
                             variant="standard"
                             onChange = {(event) => {
-                                setKPI(event.target.value);
+                                setDescription(event.target.value);
                             }}
                         />
 
-                        <label style={{ fontWeight: 'bold', color: 'black'}}> Unit Of Measure : </label>
+                        <label style={{ fontWeight: 'bold', color: 'black'}}> KPI : </label>
                         <TextField
-                            id="outlined-select-uom"
+                            id="outlined-select-kpi"
                             select
                             fullWidth
                             variant="outlined"
                             label="Select"
-                            value={uom}
+                            value={kpi_id}
                             onChange = {(event) => {
-                            setUnitOfMeasure(event.target.value);
+                            setKpiId(event.target.value);
                             }}
-                            helperText="Please select your unit of measure"
+                            helperText="Please select your Kpi"
                         >
-                            {uoms.map((option) => (
-                            <MenuItem key={option.value} value={option.value}>
-                                {option.label}
+                            {kpis.map((option) => (
+                            <MenuItem key={option.id} value={option.id}>
+                                {option.title}
                             </MenuItem>
                             ))}
                         </TextField>
 
-                        <label style={{ fontWeight: 'bold', color: 'black'}}> Category : </label>
-                        <TextField
-                            id="outlined-select-category"
-                            select
+                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                        <KeyboardDatePicker
+                            margin="normal"
+                            id="date-picker-dialog"
+                            helperText="Set start date"
+                            format="yyyy/dd/MM"
                             fullWidth
-                            variant="outlined"
-                            label="Select"
-                            value={category}
-                            onChange = {(event) => {
-                            setCategory(event.target.value);
+                            value={start_date}
+                            onChange={setStartDate}
+                            KeyboardButtonProps={{
+                                'aria-label': 'change date',
                             }}
-                            helperText="Please select your category"
-                        >
-                            {categories.map((option) => (
-                            <MenuItem key={option.id} value={option.id}>
-                                {option.description}
-                            </MenuItem>
-                            ))}
-                        </TextField>
+                        />
+                    </MuiPickersUtilsProvider>
+
+                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                        <KeyboardDatePicker
+                            margin="normal"
+                            id="date-picker-dialog"
+                            helperText="Set end date"
+                            format="yyyy/dd/MM"
+                            fullWidth
+                            value={end_date}
+                            onChange={setEndDate}
+                            KeyboardButtonProps={{
+                                'aria-label': 'change date',
+                            }}
+                        />
+                    </MuiPickersUtilsProvider>
 
                         <TextField
                             autoFocus
@@ -402,6 +450,7 @@ export default function myKpis() {
                                 setTarget(event.target.value);
                             }}
                         />
+
 
                         <TextField
                             autoFocus
@@ -451,7 +500,7 @@ export default function myKpis() {
                     </DialogActions>
                 </Dialog>
 
-                <Dialog
+                {/* <Dialog
                     open={deleteopen}
                     onClose={handleDeleteClose}
                     aria-labelledby="alert-dialog-title"
@@ -471,7 +520,7 @@ export default function myKpis() {
                         Agree
                     </Button>
                     </DialogActions>
-                </Dialog>
+                </Dialog> */}
 
               </CardBody>
             </Card>

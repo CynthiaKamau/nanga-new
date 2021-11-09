@@ -4,6 +4,7 @@ import MyTeamPage from "views/Teams/MyTeam";
 import Objectives from "@material-ui/icons/DoneAll";
 import DashboardPage from "views/Dashboard/Dashboard.js";
 import TasksPage from "views/Tasks/Tasks";
+import AssignTasksPage from "views/Tasks/AssignTask";
 import AssignedTasksPage from "views/Tasks/AssignedTasksPage";
 import StrategicObjectives from "views/Objectives/Objectives";
 import KPIsPage from "views/KPI/kpi";
@@ -119,6 +120,15 @@ var dashRoutes = [
         mini: "TM",
         rtlMini: "ع",
         component: AssignedTasksPage,
+        layout: "/admin",
+      },
+      {
+        path: "/assign-tasks",
+        name: "Assign Tasks",
+        rtlName: "عالتسعير",
+        mini: "AT",
+        rtlMini: "ع",
+        component: AssignTasksPage,
         layout: "/admin",
       },
     ],

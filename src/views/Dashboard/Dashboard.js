@@ -482,8 +482,6 @@ export default function Dashboard() {
           </DialogActions>
         </Dialog>
 
-
-
       </GridContainer>
 
       { items && items.length >= 1 ? (
@@ -502,60 +500,60 @@ export default function Dashboard() {
                   <h6 className={classes.textGreen}> 6. Management actions</h6>
                 </GridItem>
                 <CardBody className={classes.cardBody}>
-                  <GridItem xs={12} sm={6} md={2}>
-                    <Card>
-                      <CardBody className={classes.cardBodyRed} >
-                        <h3 className={classes.cardTitle}>
-                          2 <small>Off Ttack</small>
-                        </h3>
-                      </CardBody>
-                    </Card>
-                  </GridItem>
-                  <GridItem xs={12} sm={6} md={2}>
-                    <Card>
-                      <CardBody className={classes.cardBodyRed}>
-                        <h3 className={classes.cardTitle}>
-                          1 <small>Cancelled</small>
-                        </h3>
-                      </CardBody>
-                    </Card>
-                  </GridItem >
-                  <GridItem xs={12} sm={6} md={2}>
-                    <Card className={classes.cardBodyRed}>
-                      <CardBody>
-                        <h3 className={classes.cardTitle}>
-                          0 <small>Postponed</small>
-                        </h3>
-                      </CardBody>
-                    </Card>
-                  </GridItem>
-                  <GridItem xs={12} sm={6} md={2}>
-                    <Card className={classes.cardBodyGreen}>
-                      <CardBody>
-                        <h3 className={classes.cardTitle}>
-                          3 <small>Ongoing</small>
-                        </h3>
-                      </CardBody>
-                    </Card>
-                  </GridItem>
-                  <GridItem xs={12} sm={6} md={2}>
-                    <Card>
-                      <CardBody className={classes.cardBodyGreen}>
-                        <h3 className={classes.cardTitle}>
-                          1 <small>Completed</small>
-                        </h3>
-                      </CardBody>
-                    </Card>
-                  </GridItem>
-                  <GridItem xs={12} sm={6} md={2}>
-                    <Card className={classes.cardBodyGreen}>
-                      <CardBody>
-                        <h3 className={classes.cardTitle}>
-                          0 <small>Not Started</small>
-                        </h3>
-                      </CardBody>
-                    </Card>
-                  </GridItem>
+                    <GridItem xs={12} sm={6} md={2}>
+                        <Card className={classes.cardBodyRed}>
+                            <CardBody>
+                                <h3 className={classes.cardTitle}>
+                                    2 <small>Off Ttack</small>
+                                </h3>
+                            </CardBody>
+                        </Card>
+                    </GridItem>
+                    <GridItem xs={12} sm={6} md={2}>
+                        <Card className={classes.cardBodyPurple}>
+                            <CardBody>
+                                    <h3 className={classes.cardTitle}>
+                                        1 <small>Cancelled</small>
+                                    </h3>
+                            </CardBody>
+                        </Card>
+                    </GridItem >
+                    <GridItem xs={12} sm={6} md={2}>
+                        <Card className={classes.cardBodyYellow}>
+                            <CardBody>
+                                <h3 className={classes.cardTitle}>
+                                    0 <small>Postponed</small>
+                                </h3>
+                            </CardBody>
+                        </Card>
+                    </GridItem>
+                    <GridItem xs={12} sm={6} md={2}>
+                        <Card className={classes.cardBodyOrange}>
+                            <CardBody>
+                                <h3 className={classes.cardTitle}>
+                                    3 <small>Ongoing</small>
+                                </h3>
+                            </CardBody>
+                        </Card>
+                    </GridItem>
+                    <GridItem xs={12} sm={6} md={2}>
+                        <Card  className={classes.cardBodyGreen}>
+                            <CardBody>
+                                <h3 className={classes.cardTitle}>
+                                    1 <small>Completed</small>
+                                </h3>
+                            </CardBody>
+                        </Card>
+                    </GridItem>
+                    <GridItem xs={12} sm={6} md={2}>
+                        <Card className={classes.cardBodyBlack}>
+                            <CardBody>
+                                <h3 className={classes.cardTitle}>
+                                    0 <small>Not Started</small>
+                                </h3>
+                            </CardBody>
+                        </Card>
+                    </GridItem>
                 </CardBody>
                 <CardFooter className={classes.cardFooter} >
                   <IconButton> <ExpandMoreIcon className={classes.iconBottom} onClick={() => handleRedirect()} /> </IconButton>

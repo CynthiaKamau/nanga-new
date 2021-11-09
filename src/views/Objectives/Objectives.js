@@ -34,7 +34,7 @@ import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/picker
 import EditIcon from '@material-ui/icons/Edit';
 import moment from "moment";
 import axios from "axios";
-import { getUserObjectives } from "actions/objectives";
+import { getUserObjectives, getObjectiveTasks } from "actions/objectives";
 import { getKpis } from "actions/kpis";
 
 const useStyles = makeStyles(styles);
@@ -48,12 +48,14 @@ export default function StrategicObjectives() {
     const { user: currentUser } = useSelector(state => state.auth);
     const { items, error, item} = useSelector(state => state.objective);
     const {  items : kpis } = useSelector(state => state.kpi);
+    const { items : objtasks} = useSelector(state => state.objective);
 
     useEffect(() => {
         dispatch(getUserObjectives(currentUser.id));
         dispatch(getKpis());
         setUserId(currentUser.id);
         setCreatedBy(currentUser.id);
+        dispatch(getObjectiveTasks(objectiveId));
     }, [])
 
     const [addopen, setAddOpen] = useState(false);
@@ -67,7 +69,7 @@ export default function StrategicObjectives() {
     const [target, setTarget] = useState("");
     const [targetAtReview, setTargetAtReview] = useState("");
     const [targetAchieved, setTargetAchieved] = useState("");
-    const [user_id, setUserId] = useState("");
+    const [user_id, setUserId] = useState(currentUser.id);
     const [task_description, setTaskDescription] = useState("");
     const [task_start_date, setTaskStartDate] = useState("");
     const [task_end_date, setTaskEndDate] = useState("");
@@ -78,7 +80,7 @@ export default function StrategicObjectives() {
     const [updated_by, setUpdatedBy] = useState(currentUser.id);
     const [show_tasks, setShowTasks] = useState(false);
     const [setIndex, setSelectedIndex] = useState("");
-
+    const [objectiveId, setObjectiveId] = useState("");
 
     const handleAddClickOpen = () => {
         setAddOpen(true);
@@ -212,7 +214,7 @@ export default function StrategicObjectives() {
             setshowloader(false);
             swal.fire({
                 title: "Success",
-                text: "Objective updated successfully.",
+                text: item,
                 icon: "success",
             });
         }
@@ -222,6 +224,14 @@ export default function StrategicObjectives() {
     const handleEditClose = () => {
         setEditOpen(false);
     };
+
+    const setShowObjectivesTask = (id) => {
+
+        setObjectiveId(id);
+        // useEffect(() => {
+        //     dispatch(getObjectiveTasks(id))
+        // }, []);
+    }
 
     // const handleRedirect = () => {
     //     history.push('/admin/tasks');
@@ -247,8 +257,8 @@ export default function StrategicObjectives() {
                         </GridItem>
                         <CardBody className={classes.cardBody}>
                             <GridItem xs={12} sm={6} md={2}>
-                                <Card>
-                                    <CardBody className={classes.cardBodyRed}>
+                                <Card className={classes.cardBodyRed}>
+                                    <CardBody>
                                         <h3 className={classes.cardTitle}>
                                             2 <small>Off Ttack</small>
                                         </h3>
@@ -256,16 +266,16 @@ export default function StrategicObjectives() {
                                 </Card>
                             </GridItem>
                             <GridItem xs={12} sm={6} md={2}>
-                                <Card>
-                                    <CardBody className={classes.cardBodyRed}>
-                                        <h3 className={classes.cardTitle}>
-                                            1 <small>Cancelled</small>
-                                        </h3>
+                                <Card className={classes.cardBodyPurple}>
+                                    <CardBody>
+                                            <h3 className={classes.cardTitle}>
+                                                1 <small>Cancelled</small>
+                                            </h3>
                                     </CardBody>
                                 </Card>
                             </GridItem >
                             <GridItem xs={12} sm={6} md={2}>
-                                <Card className={classes.cardBodyRed}>
+                                <Card className={classes.cardBodyYellow}>
                                     <CardBody>
                                         <h3 className={classes.cardTitle}>
                                             0 <small>Postponed</small>
@@ -274,7 +284,7 @@ export default function StrategicObjectives() {
                                 </Card>
                             </GridItem>
                             <GridItem xs={12} sm={6} md={2}>
-                                <Card className={classes.cardBodyGreen}>
+                                <Card className={classes.cardBodyOrange}>
                                     <CardBody>
                                         <h3 className={classes.cardTitle}>
                                             3 <small>Ongoing</small>
@@ -283,8 +293,8 @@ export default function StrategicObjectives() {
                                 </Card>
                             </GridItem>
                             <GridItem xs={12} sm={6} md={2}>
-                                <Card>
-                                    <CardBody className={classes.cardBodyGreen}>
+                                <Card  className={classes.cardBodyGreen}>
+                                    <CardBody>
                                         <h3 className={classes.cardTitle}>
                                             1 <small>Completed</small>
                                         </h3>
@@ -292,7 +302,7 @@ export default function StrategicObjectives() {
                                 </Card>
                             </GridItem>
                             <GridItem xs={12} sm={6} md={2}>
-                                <Card className={classes.cardBodyRed}>
+                                <Card className={classes.cardBodyBlack}>
                                     <CardBody>
                                         <h3 className={classes.cardTitle}>
                                             0 <small>Not Started</small>
@@ -304,7 +314,7 @@ export default function StrategicObjectives() {
                         <CardFooter className={classes.cardFooter}>
                             {/* <IconButton> <ExpandMoreIcon className={classes.iconBottom} onClick={() => handleRedirect()} /> </IconButton> */}
                             { show_tasks === false ? (
-                                <IconButton> <ExpandMoreIcon className={classes.iconBottom} onClick={() => { setShowTasks(true); setSelectedIndex(index)}} /> </IconButton>
+                                <IconButton> <ExpandMoreIcon className={classes.iconBottom} onClick={() => { setShowTasks(true); setSelectedIndex(index); setShowObjectivesTask(list.id)}} /> </IconButton>
                             ) : show_tasks === true ? ( <IconButton> <ExpandLess className={classes.iconBottom} onClick={() => setShowTasks(false)} /> </IconButton> 
                             ) : null}
                         </CardFooter>
@@ -328,20 +338,20 @@ export default function StrategicObjectives() {
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
-                                        <TableRow key=''>
+                                        {/* <TableRow key=''>
                                             <TableCell>Task One</TableCell>
                                             <TableCell>John Doe</TableCell>
                                             <TableCell>2021-10-01</TableCell>
                                             <TableCell>Pending</TableCell>
-                                        </TableRow>
-                                        {/* { items ? (items.kpi.map((list, index) => (
+                                        </TableRow> */}
+                                        { objtasks ? (objtasks.map((list, index) => (
                                             <TableRow key={index}>
                                                 <TableCell>{list.description}</TableCell>
                                                 <TableCell>{moment(list.start_date).format('YYYY-MM-DD')}</TableCell>
                                                 <TableCell>{moment(list.end_date).format('YYYY-MM-DD')}</TableCell>
                                                 <TableCell>{list.status}</TableCell>
                                             </TableRow>
-                                        ))) : error ? (<TableRow> <TableCell> {error} </TableCell></TableRow>) : null } */}
+                                        ))) : error ? (<TableRow> <TableCell> {error} </TableCell></TableRow>) : null }
                                     </TableBody>
                                 </Table>
                             </CardBody>

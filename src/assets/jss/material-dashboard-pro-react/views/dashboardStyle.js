@@ -103,6 +103,18 @@ const dashboardStyle = {
   cardBodyGreen: {
     borderLeft: ' solid 5px #39af56'
   },
+  cardBodyBlack: {
+    borderLeft: ' solid 5px #000000'
+  },
+  cardBodyPurple: {
+    borderLeft: ' solid 5px #9c27b0'
+  },
+  cardBodyOrange: {
+    borderLeft: ' solid 5px #ff9800'
+  },
+  cardBodyYellow: {
+    borderLeft: ' solid 5px #ffeb3b'
+  },
   textGreen: {
     color: '#39af56',
     fontWeight: 'bold'

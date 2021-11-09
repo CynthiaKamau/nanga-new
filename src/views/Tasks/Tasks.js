@@ -15,9 +15,8 @@ import TableRow from '@material-ui/core/TableRow';
 import Card from "components/Card/Card.js";
 import CardHeader from "components/Card/CardHeader.js";
 import CardBody from "components/Card/CardBody.js";
-import DeleteIcon from '@material-ui/icons/Delete';
+// import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
-import ControlPointIcon from '@material-ui/icons/ControlPoint';
 import IconButton from '@material-ui/core/Button';
 import MenuItem from '@material-ui/core/MenuItem';
 import Dialog from '@material-ui/core/Dialog';
@@ -54,7 +53,7 @@ export default function TasksPage() {
 
     const [addopen, setAddOpen] = useState(false);
     const [editopen, setEditOpen] = useState(false);
-    const [deleteopen, setDeleteOpen] = useState(false);
+    // const [deleteopen, setDeleteOpen] = useState(false);
     const [description, setDescription] = useState("");
     const [end_date, setEndDate] = useState("");
     const [start_date, setStartDate] = useState("");
@@ -146,13 +145,13 @@ export default function TasksPage() {
     
     }
 
-    const handleDeleteClickOpen = () => {
-        setDeleteOpen(true);
-    };
+    // const handleDeleteClickOpen = () => {
+    //     setDeleteOpen(true);
+    // };
 
-    const setDelete = (list) => {
-        console.log(list)
-    }
+    // const setDelete = (list) => {
+    //     console.log(list)
+    // }
 
     const handleAddClose = () => {
         setAddOpen(false);
@@ -162,9 +161,9 @@ export default function TasksPage() {
         setEditOpen(false);
     };
 
-    const handleDeleteClose = () => {
-        setDeleteOpen(false);
-    };
+    // const handleDeleteClose = () => {
+    //     setDeleteOpen(false);
+    // };
 
 
     return (
@@ -199,9 +198,8 @@ export default function TasksPage() {
                                             <TableCell>{moment(list.end_date).format('YYYY-MM-DD')}</TableCell>
                                             <TableCell>{list.status}</TableCell>
                                             <TableCell>
-                                                <IconButton aria-label="view" color="error" onClick={handleAddClickOpen} ><ControlPointIcon /></IconButton>
                                                 <IconButton aria-label="edit" color="primary" onClick={() => { handleEditClickOpen(); setEditing(list) }} ><EditIcon /></IconButton>
-                                                <IconButton aria-label="delete" color="secondary" onClick={() => { handleDeleteClickOpen(); setDelete(list) }} ><DeleteIcon /></IconButton>
+                                                {/* <IconButton aria-label="delete" color="secondary" onClick={() => { handleDeleteClickOpen(); setDelete(list) }} ><DeleteIcon /></IconButton> */}
                                             </TableCell>
 
                                         </TableRow>
@@ -398,7 +396,7 @@ export default function TasksPage() {
                                 </DialogActions>
                             </Dialog>
 
-                            <Dialog
+                            {/* <Dialog
                                 open={deleteopen}
                                 onClose={handleDeleteClose}
                                 aria-labelledby="alert-dialog-title"
@@ -418,7 +416,7 @@ export default function TasksPage() {
                                         Agree
                                     </Button>
                                 </DialogActions>
-                            </Dialog>
+                            </Dialog> */}
 
                         </CardBody>
                     </Card>

@@ -14,9 +14,8 @@ import TableRow from '@material-ui/core/TableRow';
 import Card from "components/Card/Card.js";
 import CardHeader from "components/Card/CardHeader.js";
 import CardBody from "components/Card/CardBody.js";
-import DeleteIcon from '@material-ui/icons/Delete';
+// import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
-import ControlPointIcon from '@material-ui/icons/ControlPoint';
 import IconButton from '@material-ui/core/Button';
 import MenuItem from '@material-ui/core/MenuItem';
 import Dialog from '@material-ui/core/Dialog';
@@ -25,10 +24,10 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
-import JsonData from "../../data/data.json";
 import { getTeams, addTeam, editTeam } from "../../actions/teams"
 import swal from "sweetalert2";
 import Loader from "react-loader-spinner";
+import JsonData from "../../data/data.json"
 
 
 import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
@@ -39,8 +38,7 @@ export default function TeamsPage() {
     const classes = useStyles();
     const dispatch = useDispatch();
 
-    const { item } = useSelector(state => state.team)
-    const { error } = useSelector(state => state.team);
+    const { item ,error, items } = useSelector(state => state.team);
     const { user : currentUser } = useSelector(state => state.auth);
 
     useEffect(() => {
@@ -49,13 +47,14 @@ export default function TeamsPage() {
 
     const [addopen, setAddOpen] = useState(false);
     const [editopen, setEditOpen] = useState(false);
-    const [deleteopen, setDeleteOpen] = useState(false);
+    // const [deleteopen, setDeleteOpen] = useState(false);
     const [name, setName] = useState("");
     const [teamlead, setTeamLead] = useState("");
     const [isparent, setIsParent] = useState(true);
     const [parentId, setParentId] = useState("");
     const [id, setId] = useState("");
     const [showloader, setshowloader] = useState(false);
+    const [updated_by, setUpdated_by] = useState(currentUser.id);
 
 
     const handleAddClickOpen = () => {
@@ -100,9 +99,9 @@ export default function TeamsPage() {
         e.preventDefault();
         setshowloader(true);
     
-        console.log("save user", id, name, teamlead, isparent, parentId )
+        console.log("save user", id, name, teamlead, isparent, parentId,updated_by, setUpdated_by )
     
-        dispatch(editTeam(id, name, teamlead, isparent, parentId))
+        dispatch(editTeam(id, name, teamlead, isparent, parentId, updated_by))
         if (error) {
           setshowloader(false);
             swal.fire({
@@ -113,17 +112,22 @@ export default function TeamsPage() {
             });
     
         } else if(item) {
-          location.reload();
+            setshowloader(false);
+            swal.fire({
+                title: "Success",
+                text: item,
+                icon: "success",
+            });
         }
     }
 
-    const setDelete = (list) => {
-        console.log(list)
-    }
+    // const setDelete = (list) => {
+    //     console.log(list)
+    // }
 
-    const handleDeleteClickOpen = () => {
-        setDeleteOpen(true);
-    };
+    // const handleDeleteClickOpen = () => {
+    //     setDeleteOpen(true);
+    // };
 
     const handleAddClose = () => {
         setAddOpen(false);
@@ -133,11 +137,10 @@ export default function TeamsPage() {
         setEditOpen(false);
     };
 
-    const handleDeleteClose = () => {
-        setDeleteOpen(false);
-    };
+    // const handleDeleteClose = () => {
+    //     setDeleteOpen(false);
+    // };
 
-    const items = JsonData.Teams;
     const teamleads = JsonData.Users;
 
     const options = [
@@ -150,22 +153,6 @@ export default function TeamsPage() {
             label: 'Child Team',
         },
     ]
-
-
-    // const teamleads = [
-    //     {
-    //       value: '1',
-    //       label: 'John Doe',
-    //     },
-    //     {
-    //       value: '2',
-    //       label: 'Ann Claire',
-    //     },
-    //     {
-    //       value: '3',
-    //       label: 'Patrick Newton',
-    //     }
-    // ]
 
     return (
         <div>
@@ -195,9 +182,8 @@ export default function TeamsPage() {
                                             <TableCell>{list.team_name}</TableCell>
                                             <TableCell>{list.team_lead}</TableCell>
                                             { currentUser.role_id === 0 ? ( <TableCell>
-                                                <IconButton aria-label="view" color="error" onClick={handleAddClickOpen} ><ControlPointIcon /></IconButton>
                                                 <IconButton aria-label="edit" color="primary" onClick={() => { handleEditClickOpen(); setEditing(list) }} ><EditIcon /></IconButton>
-                                                <IconButton aria-label="delete" color="secondary" onClick={() => { handleDeleteClickOpen(); setDelete(list) }} ><DeleteIcon /></IconButton>
+                                                {/* <IconButton aria-label="delete" color="secondary" onClick={() => { handleDeleteClickOpen(); setDelete(list) }} ><DeleteIcon /></IconButton> */}
                                             </TableCell> ) : null }
 
                                         </TableRow>
@@ -416,7 +402,7 @@ export default function TeamsPage() {
                                 </DialogActions>
                             </Dialog>
 
-                            <Dialog
+                            {/* <Dialog
                                 open={deleteopen}
                                 onClose={handleDeleteClose}
                                 aria-labelledby="alert-dialog-title"
@@ -436,7 +422,7 @@ export default function TeamsPage() {
                                         Agree
                                     </Button>
                                 </DialogActions>
-                            </Dialog>
+                            </Dialog> */}
 
                         </CardBody>
                     </Card>

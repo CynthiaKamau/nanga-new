@@ -15,9 +15,8 @@ import TableRow from '@material-ui/core/TableRow';
 import Card from "components/Card/Card.js";
 import CardHeader from "components/Card/CardHeader.js";
 import CardBody from "components/Card/CardBody.js";
-import DeleteIcon from '@material-ui/icons/Delete';
+// import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
-import ControlPointIcon from '@material-ui/icons/ControlPoint';
 import IconButton from '@material-ui/core/Button';
 import MenuItem from '@material-ui/core/MenuItem';
 import Dialog from '@material-ui/core/Dialog';
@@ -30,6 +29,8 @@ import JsonData from "../../data/data.json";
 import { getKpis, editKpi, addKpi } from "actions/kpis";
 import swal from "sweetalert2";
 import Loader from "react-loader-spinner";
+import { LinearProgress } from "@material-ui/core";
+
 
 import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
 
@@ -39,7 +40,7 @@ export default function KPIs() {
     const classes = useStyles();
     const dispatch = useDispatch();
 
-    const { items, item , error } = useSelector(state => state.kpi);
+    const { items, item , error, isLoading } = useSelector(state => state.kpi);
     const { user : currentUser } = useSelector(state => state.auth);
 
     useEffect(() => {
@@ -50,7 +51,7 @@ export default function KPIs() {
 
     const [addopen, setAddOpen] = useState(false);
     const [editopen, setEditOpen] = useState(false);
-    const [deleteopen, setDeleteOpen] = useState(false);
+    // const [deleteopen, setDeleteOpen] = useState(false);
     const [kpi, setKPI] = useState("");
     const [uom, setUnitOfMeasure] = useState("");
     const [category, setCategory] = useState("");
@@ -84,7 +85,7 @@ export default function KPIs() {
             setshowloader(false);
             swal.fire({
                 title: "Success",
-                text: item.message,
+                text: item,
                 icon: "success",
                 dangerMode: false
             });
@@ -134,13 +135,13 @@ export default function KPIs() {
     
     }
 
-    const handleDeleteClickOpen = () => {
-        setDeleteOpen(true);
-    };
+    // const handleDeleteClickOpen = () => {
+    //     setDeleteOpen(true);
+    // };
 
-    const setDelete = (list) => {
-        console.log(list)
-    }
+    // const setDelete = (list) => {
+    //     console.log(list)
+    // }
 
     const handleAddClose = () => {
         setAddOpen(false);
@@ -150,9 +151,9 @@ export default function KPIs() {
         setEditOpen(false);
     };
 
-    const handleDeleteClose = () => {
-        setDeleteOpen(false);
-    };
+    // const handleDeleteClose = () => {
+    //     setDeleteOpen(false);
+    // };
 
     const uoms = [
         {
@@ -160,12 +161,20 @@ export default function KPIs() {
           label: '%',
         },
         {
+        value: '<%',
+        label: '<%',
+        },
+        {
+        value: '%>',
+        label: '%>',
+        },
+        {
           value: 'numeric',
           label: 'numeric',
         },
         {
-          value: 'Ksh',
-          label: 'Ksh',
+          value: 'KES M',
+          label: 'KES M',
         }
     ]
 
@@ -193,18 +202,18 @@ export default function KPIs() {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {items && items.map((list, index) => (
+                        {items ? ( items.map((list, index) => (
                             <TableRow key={index}>
                                 <TableCell>{list.title}</TableCell>
                                 <TableCell>{list.kpi_unit_of_measure}</TableCell>
                                 <TableCell>{list.categories.description} </TableCell>
                                 { currentUser.role_id=== 0 ? ( <TableCell>
-                                <IconButton aria-label="view" color="error" onClick={handleAddClickOpen} ><ControlPointIcon /></IconButton>
                                 <IconButton aria-label="edit" color="primary" onClick={() => { handleEditClickOpen(); setEditing(list) }} ><EditIcon/></IconButton>
-                                <IconButton aria-label="delete" color="secondary" onClick={() => { handleDeleteClickOpen(); setDelete(list) }} ><DeleteIcon /></IconButton>
+                                {/* <IconButton aria-label="delete" color="secondary" onClick={() => { handleDeleteClickOpen(); setDelete(list) }} ><DeleteIcon /></IconButton> */}
                                 </TableCell> ) : null }
                             </TableRow>
-                        ))}
+                        ))) : error ? (<TableRow> <TableCell> {error} </TableCell></TableRow> 
+                        ) : isLoading ? (<TableRow> <LinearProgress color="success" /> </TableRow>) : null }
 
                     </TableBody>
                 </Table>
@@ -369,7 +378,7 @@ export default function KPIs() {
                     </DialogActions>
                 </Dialog>
 
-                <Dialog
+                {/* <Dialog
                     open={deleteopen}
                     onClose={handleDeleteClose}
                     aria-labelledby="alert-dialog-title"
@@ -389,7 +398,7 @@ export default function KPIs() {
                         Agree
                     </Button>
                     </DialogActions>
-                </Dialog>
+                </Dialog> */}
 
               </CardBody>
             </Card>
