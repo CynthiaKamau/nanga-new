@@ -28,9 +28,10 @@ import JsonData from "../../data/data.json";
 import { getUsers, editUser, addUser } from "../../actions/users";
 import swal from "sweetalert2";
 import Loader from "react-loader-spinner";
-
-
+import { CircularProgress } from "@material-ui/core";
+import axios from "axios";
 import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
+import { Grid } from "@material-ui/core";
 // import classNames from "classnames";
 
 const useStyles = makeStyles(styles);
@@ -63,11 +64,13 @@ export default function UsersPage() {
   const [extension, setExtension] = useState("");
   const [view, setView] = useState(true);
   const [disabled, setDisabled] = useState(false);
+  const [search_user, setSearchUser] = useState("");
+  const [showSearchLoading, setShowSearchLoading] = useState("");
+  const [setUserError, setShowUserError] = useState("");
+  
   // const [selectedUser, setSelectedUser] = useState("");
 
   // const statuses = JsonData.Status;
-
-  console.log("here1",item);
 
   const statuses = [
     {
@@ -175,6 +178,52 @@ export default function UsersPage() {
     setEditOpen(false);
   };
 
+  const handleSearchUser = async (e) => {
+    if (e.key === "Enter") {
+
+      setShowSearchLoading(true)
+
+      console.log("name", name)
+
+      const config = { headers: { 'Content-Type': 'application/json' } }
+
+      let body = JSON.stringify({ username : name});
+
+      try {
+        let response = await axios.post('/searchldap', body, config);
+
+        if (response.data.success === false) {
+          setShowSearchLoading(false);
+          setShowUserError("User not found!")
+        } else {
+
+          setShowSearchLoading(false);
+
+          if(response.data.accountname === null) {
+
+            setSearchUser(false)
+            setShowUserError("User not found!");
+
+          } else {
+            setSearchUser(response.data.firstname + ' ' + response.data.lastname);
+          }
+
+        }
+      } catch (error) {
+        setShowSearchLoading(false);
+          swal.fire({
+              title: "Error",
+              text: "User not found!",
+              icon: "error",
+              dangerMode: true
+          });
+          console.log(error.message)
+      }
+    }
+  }
+
+
+
   // const handleDeleteClose = () => {
   //   setDeleteOpen(false);
   // };
@@ -236,11 +285,12 @@ export default function UsersPage() {
                   <DialogContentText>
                     Register A New User
                   </DialogContentText>
+
                   <TextField
                     autoFocus
                     margin="dense"
                     id="name"
-                    label="Name"
+                    label="Enter AD Username"
                     type="text"
                     fullWidth
                     value={name}
@@ -248,84 +298,116 @@ export default function UsersPage() {
                     onChange={(event) => {
                       setName(event.target.value);
                     }}
+                    onKeyDown={(e) => {handleSearchUser(e)}}
                   />
 
-                  <label style={{ fontWeight: 'bold', color: 'black' }}> Role : </label>
-                  <TextField
-                    id="outlined-select-role"
-                    select
-                    fullWidth
-                    variant="outlined"
-                    label="Select"
-                    value={role}
-                    onChange={(event) => {
-                      setRole(event.target.value);
-                    }}
-                    helperText="Please select your role"
-                  >
-                    {roles.map((option) => (
-                      <MenuItem key={option.id} value={option.id}>
-                        {option.role_name}
-                      </MenuItem>
-                    ))}
-                  </TextField>
+                  {showSearchLoading ? (
+                    <Grid container justify="flex-center"> <CircularProgress /> </Grid>
+                  ) : null}
 
-                  <label style={{ fontWeight: 'bold', color: 'black' }}> Team : </label>
-                  <TextField
-                    id="outlined-select-team"
-                    select
-                    fullWidth
-                    variant="outlined"
-                    label="Select"
-                    value={team}
-                    onChange={(event) => {
-                      setTeam(event.target.value);
-                    }}
-                    helperText="Please select your team"
-                  >
-                    {teams.map((option) => (
-                      <MenuItem key={option.id} value={option.id}>
-                        {option.team_name}
-                      </MenuItem>
-                    ))}
-                  </TextField>
+                  { search_user ? (
+                    <div>
 
-                  <label style={{ fontWeight: 'bold', color: 'black' }}> Status : </label>
-                  <TextField
-                    id="outlined-select-status"
-                    select
-                    fullWidth
-                    variant="outlined"
-                    label="Select"
-                    value={status}
-                    onChange={(event) => {
-                      setStatus(event.target.value);
-                    }}
-                    helperText="Please select your status"
-                  >
-                    {statuses.map((option) => (
-                      <MenuItem key={option.label} value={option.label}>
-                        {option.label}
-                      </MenuItem>
-                    ))}
-                  </TextField>
+                      <label style={{ fontWeight: 'bold', color: 'black' }}> Names : </label>
+                      <TextField
+                        autoFocus
+                        margin="dense"
+                        id="name"
+                        label="Name"
+                        type="text"
+                        fullWidth
+                        value={search_user}
+                        variant="outlined"
+                      />  
 
+                      <label style={{ fontWeight: 'bold', color: 'black' }}> Role : </label>
+                      <TextField
+                        id="outlined-select-role"
+                        select
+                        fullWidth
+                        variant="outlined"
+                        label="Select"
+                        value={role}
+                        onChange={(event) => {
+                          setRole(event.target.value);
+                        }}
+                        helperText="Please select your role"
+                      >
+                      {roles.map((option) => (
+                        <MenuItem key={option.id} value={option.id}>
+                          {option.role_name}
+                        </MenuItem>
+                      ))}
+                      </TextField>
+
+                      <label style={{ fontWeight: 'bold', color: 'black' }}> Team : </label>
+                      <TextField
+                        id="outlined-select-team"
+                        select
+                        fullWidth
+                        variant="outlined"
+                        label="Select"
+                        value={team}
+                        onChange={(event) => {
+                          setTeam(event.target.value);
+                        }}
+                        helperText="Please select your team"
+                      >
+                      {teams.map((option) => (
+                        <MenuItem key={option.id} value={option.id}>
+                          {option.team_name}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+
+                    <label style={{ fontWeight: 'bold', color: 'black' }}> Status : </label>
+                    <TextField
+                      id="outlined-select-status"
+                      select
+                      fullWidth
+                      variant="outlined"
+                      label="Select"
+                      value={status}
+                      onChange={(event) => {
+                        setStatus(event.target.value);
+                      }}
+                      helperText="Please select your status"
+                    >
+                      {statuses.map((option) => (
+                        <MenuItem key={option.label} value={option.label}>
+                          {option.label}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+
+                  </div>
+                  ) 
+                  : search_user === false ? (<h6 style={{ color : 'red'}}> {setUserError} </h6>
+                    ): null}
+                  
                 </DialogContent>
                 <DialogActions>
-                  <Button color="danger" onClick={handleAddClose}>Cancel</Button>
-                  {showloader === true ? (
-                    <div style={{ textAlign: "center", marginTop: 10 }}>
-                      <Loader
-                        type="Puff"
-                        color="#00BFFF"
-                        height={150}
-                        width={150}
-                      />
+
+                  { search_user ? (
+                    <div>
+                      <Button color="danger" onClick={handleAddClose}>Cancel</Button>
+                      {showloader === true ? (
+                        <div style={{ textAlign: "center", marginTop: 10 }}>
+                          <Loader
+                            type="Puff"
+                            color="#00BFFF"
+                            height={150}
+                            width={150}
+                          />
                     </div>
-                  ) :
-                  (
-                  <Button color="primary" onClick={(e) => { handleAddClose(); saveUser(e) }}>Save</Button>
-                  )}
+                    ) :
+                    (
+                      <Button color="primary" onClick={(e) => { handleAddClose(); saveUser(e) }}>Save</Button>
+                    )}
+ 
+                    </div>
+                  ) : null}
+
                 </DialogActions>
               </Dialog>
 
