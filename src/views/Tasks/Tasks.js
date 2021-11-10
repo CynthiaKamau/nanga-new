@@ -37,7 +37,6 @@ import { getUserObjectives } from "actions/objectives";
 import { LinearProgress } from "@material-ui/core";
 import { getStatus } from "actions/data";
 
-
 const useStyles = makeStyles(styles);
 
 export default function TasksPage() {
@@ -185,6 +184,7 @@ export default function TasksPage() {
                                 <TableHead className={classes.tableHeader}>
                                     <TableRow>
                                         <TableCell>Management Action</TableCell>
+                                        <TableCell>Resources</TableCell>
                                         <TableCell>Start Date</TableCell>
                                         <TableCell>Due Date</TableCell>
                                         <TableCell>Status</TableCell>
@@ -195,6 +195,7 @@ export default function TasksPage() {
                                     {items ? ( items.map((list, index) => (
                                         <TableRow key={index}>
                                             <TableCell>{list.description}</TableCell>
+                                            <TableCell>To Add</TableCell>
                                             <TableCell>{moment(list.start_date).format('YYYY-MM-DD')}</TableCell>
                                             <TableCell>{moment(list.end_date).format('YYYY-MM-DD')}</TableCell>
                                             <TableCell>{list.status}</TableCell>
@@ -204,6 +205,7 @@ export default function TasksPage() {
                                             </TableCell>
 
                                         </TableRow>
+
                                     ))) : error ? (<TableRow> <TableCell> {error} </TableCell></TableRow>
                                     ) : isLoading ? (<TableRow> <LinearProgress color="success" /> </TableRow>) : null }
                                 </TableBody>

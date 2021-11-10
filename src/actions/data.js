@@ -118,8 +118,7 @@ export const getMission = () => {
 //edit user mission
 export const editMission = (id) => {
 
-    const config = { headers: { 'Content-Type': 'application/json' } }
-
+    const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
 
     return async function (dispatch) {
 

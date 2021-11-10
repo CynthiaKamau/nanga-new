@@ -155,8 +155,7 @@ export const addAssignedTask = (description, end_date, start_date, objective_id,
 
 //edit specific task
 export const editTask = (description, end_date, start_date, objective_id, user_id, created_by, updated_by, id, status ) => {
-    const config = { headers: { 'Content-Type': 'application/json' } }
-
+    const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
     const body = JSON.stringify({ description, end_date, start_date, objective_id, user_id, created_by, updated_by, id, status });
     console.log("task", body);
 
@@ -183,8 +182,7 @@ export const editTask = (description, end_date, start_date, objective_id, user_i
 //delete specific task
 export const deleteTask = (id) => {
 
-    const config = { headers: { 'Content-Type': 'application/json' } }
-
+    const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
     const body = JSON.stringify({ id });
     console.log("task", body);
 

@@ -132,8 +132,7 @@ export const editTeam = (id, name, teamlead, isparent, parentId, updated_by ) =>
 
 //delete specific team
 export const deleteTeam = (id) => {
-    const config = { headers: { 'Content-Type': 'application/json' } }
-
+    const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
     const body = JSON.stringify({ id });
     console.log("team", body);
 

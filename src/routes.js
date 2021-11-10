@@ -4,12 +4,12 @@ import MyTeamPage from "views/Teams/MyTeam";
 import Objectives from "@material-ui/icons/DoneAll";
 import DashboardPage from "views/Dashboard/Dashboard.js";
 import TasksPage from "views/Tasks/Tasks";
-import AssignTasksPage from "views/Tasks/AssignTask";
 import AssignedTasksPage from "views/Tasks/AssignedTasksPage";
 import StrategicObjectives from "views/Objectives/Objectives";
 import KPIsPage from "views/KPI/kpi";
 import MyKpis from "views/KPI/mykpi"; 
 import UserProfile from "views/UserProfile/UserProfile";
+import UserDashboard from "views/Dashboard/UserDashboard";
 
 // @material-ui/icons
 import DashboardIcon from "@material-ui/icons/Dashboard";
@@ -121,16 +121,7 @@ var dashRoutes = [
         rtlMini: "ع",
         component: AssignedTasksPage,
         layout: "/admin",
-      },
-      {
-        path: "/assign-tasks",
-        name: "Assign Tasks",
-        rtlName: "عالتسعير",
-        mini: "AT",
-        rtlMini: "ع",
-        component: AssignTasksPage,
-        layout: "/admin",
-      },
+      }
     ],
   },
   {
@@ -139,6 +130,14 @@ var dashRoutes = [
     rtlName: "التقويم",
     icon: PersonOutline,
     component: UserProfile,
+    layout: "/admin",
+  },
+  {
+    path: "/user-dashboard/:id",
+    name: "User Dashboard",
+    rtlName: "التقويم",
+    icon: PersonOutline,
+    component: UserDashboard,
     layout: "/admin",
   },
 ];

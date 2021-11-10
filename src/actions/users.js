@@ -139,8 +139,7 @@ export const editUser = (user_id, name, status, team, role, updated_by, view, ex
 
 //delete specific user
 export const deleteUser = (id) => {
-    const config = { headers: { 'Content-Type': 'application/json' } }
-
+    const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
     const body = JSON.stringify({ id });
     console.log("user", body);
 

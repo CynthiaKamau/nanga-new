@@ -71,8 +71,8 @@ export const getUserKpis = (id) => {
 //add specific kpi
 export const addKpi = (kpi, uom, category,created_by) => {
 
-    const config = { headers: { 'Content-Type': 'application/json' } }
-    
+    const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
+        
     const body = JSON.stringify({ 
         title : kpi,
         kpiUnitofMeasure : uom,
@@ -104,8 +104,7 @@ export const addKpi = (kpi, uom, category,created_by) => {
 //edit specific kpi
 export const editKpi = (id, kpi, uom, category, created_by, updated_by ) => {
 
-    const config = { headers: { 'Content-Type': 'application/json' } }
-
+    const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
     const body = JSON.stringify({ 
         title : kpi,
         kpiUnitOfMeasure : uom,
@@ -140,8 +139,7 @@ export const editKpi = (id, kpi, uom, category, created_by, updated_by ) => {
 
 //delete specific kpi
 export const deleteKpi = (id) => {
-    const config = { headers: { 'Content-Type': 'application/json' } }
-
+    const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
     const body = JSON.stringify({ id });
     console.log("kpi", body);
 

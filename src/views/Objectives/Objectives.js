@@ -62,6 +62,7 @@ export default function StrategicObjectives() {
     }, [])
 
     const [addopen, setAddOpen] = useState(false);
+    const [addopenindividualtask, setAddOpenIndividualTask] = useState(false);
     const [showloader, setshowloader] = useState(false);
     const [description, setDescription] = useState("");
     const [kpi_unit_of_measure, setKpiUom] = useState("");
@@ -177,7 +178,7 @@ export default function StrategicObjectives() {
 
     const handleAddClose = () => {
         setAddOpen(false);
-        setAddOpenTask(true);
+        setAddOpenTask(false);
     };
 
     const handleAddTaskClose = () => {
@@ -237,19 +238,7 @@ export default function StrategicObjectives() {
         setEditOpen(false);
     };
 
-    // const setShowObjectivesTask = (id) => {
-
-    //     setObjectiveId(id);
-
-    //     if(objectiveId !== null) {
-    //         dispatch(getObjectiveTasks)
-    //     }
-        
-    // }
-
-    // const setShowObjectivesTask = (id) => async () => {
-
-        const setShowObjectivesTask = (id) => {
+    const setShowObjectivesTask = (id) => {
 
         setObjectiveId(id);
         console.log("obj id", objectiveId)
@@ -259,6 +248,58 @@ export default function StrategicObjectives() {
             .catch(error => setError("No tasks found", console.log(error))
             )
     
+    }
+
+    const handleAddIndividualTaskOpen = () => {
+        setAddOpenIndividualTask(true);
+    }
+
+    const handleAddIndividualTaskClose = () => {
+        setAddOpenIndividualTask(false);
+    }
+
+    const saveIndividualTask = async (e) => {
+        e.preventDefault();
+        setshowloader(true);
+
+        const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
+    
+        let task_end_date = moment(task_end_date).format('YYYY-MM-DD');
+        let task_start_date = moment(task_start_date).format('YYYY-MM-DD');
+
+        let task = {
+        description: task_description,
+        start_date: task_start_date,
+        end_date: task_end_date,
+        user_id: user_id,
+        created_by: created_by,
+        objective_id: 17
+        }
+
+        console.log("individual task", task)
+    
+        let response = await axios.post('/tasks/create', task, config);
+
+        console.log("resp", response)
+
+        if (response.data.success === false) {
+            setshowloader(false);
+            swal.fire({
+                title: "Error",
+                text: "An error occurred, please try again!",
+                icon: "error",
+                dangerMode: true
+            });
+
+        } else {
+
+            swal.fire({
+                title: "Success",
+                text: "Task added successfully!",
+                icon: "success",
+                dangerMode: false
+            });
+        }
     }
 
     // const handleRedirect = () => {
@@ -351,7 +392,6 @@ export default function StrategicObjectives() {
 
                     {/* tasks card */}
                     { show_tasks === true && setIndex === index ? (
-
                     
                         <Card style={{ width: "95%", margin: '0', marginLeft: '5%'}} >
                             <CardBody>
@@ -387,7 +427,7 @@ export default function StrategicObjectives() {
                             </CardBody>
                             <CardFooter>
                                 <Grid container justify="center">
-                                    <Button simple onClick={() => setShowTasks(false)}><p style={{ color: '#388e3c' }}> Add New Task</p> </Button>
+                                    <Button simple onClick={() => {setShowTasks(false); handleAddIndividualTaskOpen() }}><p style={{ color: '#388e3c' }}> Add New Task</p> </Button>
                                 </Grid>
                             </CardFooter>
                         </Card>
@@ -606,6 +646,96 @@ export default function StrategicObjectives() {
                         </div>
                     ) : (
                         <Button color="primary" onClick={(e) => { handleAddTaskClose(); saveObjective(e) }}>Save</Button>
+                    )}
+                </DialogActions>
+            </Dialog>
+
+            <Dialog open={addopenindividualtask} onClose={handleAddIndividualTaskClose}>
+                <DialogTitle>Strategic Initiative</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        Add New Strategic Initiative
+                    </DialogContentText>
+
+                    <TextField
+                        fullWidth
+                        label="Objective"
+                        id="objective"
+                        type="text"
+                        variant="outlined"
+                        disabled
+                        value={description}
+                        className={classes.textInput}
+                    />
+                    <TextField
+                        fullWidth
+                        label="Description"
+                        id="task_description"
+                        multiline
+                        rows={4}
+                        required
+                        variant="outlined"
+                        className={classes.textInput}
+                        type="text"
+                        value={task_description}
+                        onChange={(event) => {
+                            const value = event.target.value;
+                            setTaskDescription(value)
+                        }}
+                    />
+
+                    <Grid container spacing={2}>
+                        <Grid item xs={6} lg={6} xl={6} sm={12}>
+                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                <KeyboardDatePicker
+                                    margin="normal"
+                                    id="date-picker-dialog"
+                                    helperText="Set start date"
+                                    format="yyyy/dd/MM"
+                                    fullWidth
+                                    inputVariant="outlined"
+                                    value={task_start_date}
+                                    onChange={setTaskStartDate}
+                                    KeyboardButtonProps={{
+                                        'aria-label': 'change date',
+                                    }}
+                                />
+                            </MuiPickersUtilsProvider>
+                        </Grid>
+
+                        <Grid item xs={6} lg={6} xl={6} sm={12}>
+                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                <KeyboardDatePicker
+                                    margin="normal"
+                                    id="date-picker-dialog"
+                                    helperText="Set end date"
+                                    format="yyyy/dd/MM"
+                                    fullWidth
+                                    inputVariant="outlined"
+                                    value={task_end_date}
+                                    onChange={setTaskEndDate}
+                                    KeyboardButtonProps={{
+                                        'aria-label': 'change date',
+                                    }}
+                                />
+                            </MuiPickersUtilsProvider>
+                        </Grid>
+                    </Grid>
+
+                </DialogContent>
+                <DialogActions>
+                    <Button color="danger" onClick={handleAddIndividualTaskClose}>Cancel</Button>
+                    {showloader === true ? (
+                        <div style={{ textAlign: "center", marginTop: 10 }}>
+                            <Loader
+                                type="Puff"
+                                color="#00BFFF"
+                                height={150}
+                                width={150}
+                            />
+                        </div>
+                    ) : (
+                        <Button color="primary" onClick={(e) => { handleAddIndividualTaskClose(); saveIndividualTask(e) }}>Save</Button>
                     )}
                 </DialogActions>
             </Dialog>

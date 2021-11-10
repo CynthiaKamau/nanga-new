@@ -185,8 +185,7 @@ export default function UsersPage() {
 
       console.log("name", name)
 
-      const config = { headers: { 'Content-Type': 'application/json' } }
-
+      const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
       let body = JSON.stringify({ username : name});
 
       try {

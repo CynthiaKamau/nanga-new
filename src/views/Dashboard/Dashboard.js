@@ -13,7 +13,7 @@ import CardBody from "components/Card/CardBody.js";
 import IconButton from '@material-ui/core/Button';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { Grid } from "@material-ui/core";
+import { ExpandLess } from "@material-ui/icons";import { Grid } from "@material-ui/core";
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
 import Dialog from '@material-ui/core/Dialog';
@@ -22,7 +22,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from "components/CustomButtons/Button.js";
-import { useHistory } from "react-router";
+// import { useHistory } from "react-router";
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 // import JsonData from "../../data/data.json";
@@ -35,12 +35,17 @@ import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle
 import moment from "moment";
 import CardFooter from "components/Card/CardFooter";
 import EditIcon from '@material-ui/icons/Edit';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
 
 const useStyles = makeStyles(styles);
 
 export default function Dashboard() {
   const classes = useStyles();
-  const history = useHistory();
+  // const history = useHistory();
 
   const dispatch = useDispatch();
 
@@ -62,6 +67,7 @@ export default function Dashboard() {
   const [kpi_id, setKpi] = useState("");
   const [addopen, setAddOpen] = useState(false);
   const [addopentask, setAddOpenTask] = useState("");
+  const [addopenindividualtask, setAddOpenIndividualTask] = useState(false);
   const [editopenmission, setEditMissionOpen] = useState(false);
   const [task_description, setTaskDescription] = useState("");
   const [start_date, setStartDate] = useState("");
@@ -72,6 +78,12 @@ export default function Dashboard() {
   const [showloader, setshowloader] = useState(false); 
   const [created_by, setCreatedBy] = useState("");
   const [mission, setMission] = useState("");
+  const [show_tasks, setShowTasks] = useState(false);
+  const [setIndex, setSelectedIndex] = useState("");
+  const [err, setError] = useState("");
+  const [obj_tasks, setObjTasks] = useState("");
+  const [ objectiveId, setObjectiveId] = useState("");
+
   // const [newuser, setNewUser] = useState(true);
 
   // const categories = JsonData.Categories;
@@ -92,8 +104,7 @@ export default function Dashboard() {
 
     console.log("save objective", description, end_date, kpi_id, start_date, target, user_id, created_by);
 
-    const config = { headers: { 'Content-Type': 'application/json' } }
-
+    const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
     let body = {description, end_date, kpi_id, start_date, target, user_id, created_by};
 
     try {
@@ -175,7 +186,7 @@ export default function Dashboard() {
 
   const handleAddClose = () => {
     setAddOpen(false);
-    setAddOpenTask(true);
+    setAddOpenTask(false);
   };
 
   const handleAddTaskClose = () => {
@@ -186,19 +197,83 @@ export default function Dashboard() {
     setEditMissionOpen(false);
   };
 
-  const handleRedirect = () => {
-    history.push('/admin/tasks');
+  // const handleRedirect = () => {
+  //   history.push('/admin/tasks');
+  // }
+
+  const handleAddIndividualTaskOpen = () => {
+    setAddOpenIndividualTask(true);
+  }
+
+  const handleAddIndividualTaskClose = () => {
+      setAddOpenIndividualTask(false);
   }
 
   const handleEditMissionClickOpen = () => {
     setEditMissionOpen(true);
   };
 
+  const saveIndividualTask = async (e) => {
+    e.preventDefault();
+    setshowloader(true);
+
+    const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
+
+    let task_end_date = moment(task_end_date).format('YYYY-MM-DD');
+    let task_start_date = moment(task_start_date).format('YYYY-MM-DD');
+
+    let task = {
+    description: task_description,
+    start_date: task_start_date,
+    end_date: task_end_date,
+    user_id: user_id,
+    created_by: created_by,
+    objective_id: 17
+    }
+
+    console.log("individual task", task)
+
+    let response = await axios.post('/tasks/create', task, config);
+
+    console.log("resp", response)
+
+    if (response.data.success === false) {
+        setshowloader(false);
+        swal.fire({
+            title: "Error",
+            text: "An error occurred, please try again!",
+            icon: "error",
+            dangerMode: true
+        });
+
+    } else {
+
+        swal.fire({
+            title: "Success",
+            text: "Task added successfully!",
+            icon: "success",
+            dangerMode: false
+        });
+    }
+  }
+
   const setEditingMission = () => {
     setMission()
   }
 
   const editMission = () => {
+
+  }
+
+  const setShowObjectivesTask = (id) => {
+
+    setObjectiveId(id);
+      console.log("obj id", objectiveId)
+
+      axios.get(`/tasks/fetchTasksbyObjectiveId?objective_id=${id}`)
+          .then(response => setObjTasks(response.data))
+          .catch(error => setError("No tasks found", console.log(error))
+          )
 
   }
 
@@ -489,6 +564,96 @@ export default function Dashboard() {
           </DialogActions>
         </Dialog>
 
+        <Dialog open={addopenindividualtask} onClose={handleAddIndividualTaskClose}>
+            <DialogTitle>Strategic Initiative</DialogTitle>
+            <DialogContent>
+                <DialogContentText>
+                    Add New Strategic Initiative
+                </DialogContentText>
+
+                <TextField
+                    fullWidth
+                    label="Objective"
+                    id="objective"
+                    type="text"
+                    variant="outlined"
+                    disabled
+                    value={description}
+                    className={classes.textInput}
+                />
+                <TextField
+                    fullWidth
+                    label="Description"
+                    id="task_description"
+                    multiline
+                    rows={4}
+                    required
+                    variant="outlined"
+                    className={classes.textInput}
+                    type="text"
+                    value={task_description}
+                    onChange={(event) => {
+                        const value = event.target.value;
+                        setTaskDescription(value)
+                    }}
+                />
+
+                <Grid container spacing={2}>
+                    <Grid item xs={6} lg={6} xl={6} sm={12}>
+                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                            <KeyboardDatePicker
+                                margin="normal"
+                                id="date-picker-dialog"
+                                helperText="Set start date"
+                                format="yyyy/dd/MM"
+                                fullWidth
+                                inputVariant="outlined"
+                                value={task_start_date}
+                                onChange={setTaskStartDate}
+                                KeyboardButtonProps={{
+                                    'aria-label': 'change date',
+                                }}
+                            />
+                        </MuiPickersUtilsProvider>
+                    </Grid>
+
+                    <Grid item xs={6} lg={6} xl={6} sm={12}>
+                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                            <KeyboardDatePicker
+                                margin="normal"
+                                id="date-picker-dialog"
+                                helperText="Set end date"
+                                format="yyyy/dd/MM"
+                                fullWidth
+                                inputVariant="outlined"
+                                value={task_end_date}
+                                onChange={setTaskEndDate}
+                                KeyboardButtonProps={{
+                                    'aria-label': 'change date',
+                                }}
+                            />
+                        </MuiPickersUtilsProvider>
+                    </Grid>
+                </Grid>
+
+            </DialogContent>
+            <DialogActions>
+                <Button color="danger" onClick={handleAddIndividualTaskClose}>Cancel</Button>
+                {showloader === true ? (
+                    <div style={{ textAlign: "center", marginTop: 10 }}>
+                        <Loader
+                            type="Puff"
+                            color="#00BFFF"
+                            height={150}
+                            width={150}
+                        />
+                    </div>
+                ) : (
+                    <Button color="primary" onClick={(e) => { handleAddIndividualTaskClose(); saveIndividualTask(e) }}>Save</Button>
+                )}
+            </DialogActions>
+        </Dialog>
+
       </GridContainer>
 
       { items && items.length >= 1 ? (
@@ -496,76 +661,126 @@ export default function Dashboard() {
         <div>
           <GridContainer>
 
-            <Grid container justify="flex-end">
+            <GridItem container justify="flex-end">
               <Button color="primary" onClick={handleAddClickOpen}> Create New Objective</Button>
-            </Grid>
+            </GridItem>
 
             {items ? ( items.map((list, index) => (
-              <Card className={classes.cardBodyRed} key={index}>
-                <GridItem xs={12} sm={12} md={12}>
-                  <h4 className={classes.textBold}> {list.description} </h4>
-                  <h6 className={classes.textGreen}> 6. Management actions</h6>
-                </GridItem>
-                <CardBody className={classes.cardBody}>
-                    <GridItem xs={12} sm={6} md={2}>
-                        <Card className={classes.cardBodyRed}>
-                            <CardBody>
-                                <h3 className={classes.cardTitle}>
-                                    2 <small>Off Ttack</small>
-                                </h3>
-                            </CardBody>
-                        </Card>
-                    </GridItem>
-                    <GridItem xs={12} sm={6} md={2}>
-                        <Card className={classes.cardBodyPurple}>
-                            <CardBody>
-                                    <h3 className={classes.cardTitle}>
-                                        1 <small>Cancelled</small>
-                                    </h3>
-                            </CardBody>
-                        </Card>
-                    </GridItem >
-                    <GridItem xs={12} sm={6} md={2}>
-                        <Card className={classes.cardBodyYellow}>
-                            <CardBody>
-                                <h3 className={classes.cardTitle}>
-                                    0 <small>Postponed</small>
-                                </h3>
-                            </CardBody>
-                        </Card>
-                    </GridItem>
-                    <GridItem xs={12} sm={6} md={2}>
-                        <Card className={classes.cardBodyOrange}>
-                            <CardBody>
-                                <h3 className={classes.cardTitle}>
-                                    3 <small>Ongoing</small>
-                                </h3>
-                            </CardBody>
-                        </Card>
-                    </GridItem>
-                    <GridItem xs={12} sm={6} md={2}>
-                        <Card  className={classes.cardBodyGreen}>
-                            <CardBody>
-                                <h3 className={classes.cardTitle}>
-                                    1 <small>Completed</small>
-                                </h3>
-                            </CardBody>
-                        </Card>
-                    </GridItem>
-                    <GridItem xs={12} sm={6} md={2}>
-                        <Card className={classes.cardBodyBlack}>
-                            <CardBody>
-                                <h3 className={classes.cardTitle}>
-                                    0 <small>Not Started</small>
-                                </h3>
-                            </CardBody>
-                        </Card>
-                    </GridItem>
-                </CardBody>
-                <CardFooter className={classes.cardFooter} >
-                  <IconButton> <ExpandMoreIcon className={classes.iconBottom} onClick={() => handleRedirect()} /> </IconButton>
-                </CardFooter>
-              </Card>
+              <GridItem container justify="flex-end" key={index}  >
+
+                <Card className={classes.cardBodyRed} key={index} style={{ marginBottom: '0'}} >
+                  <GridItem xs={12} sm={12} md={12}>
+                    <h4 className={classes.textBold}> {list.description} </h4>
+                    <h6 className={classes.textGreen}> 6. Management actions</h6>
+                  </GridItem>
+                  <CardBody className={classes.cardBody}>
+                      <GridItem xs={12} sm={6} md={2}>
+                          <Card className={classes.cardBodyRed}>
+                              <CardBody>
+                                  <h3 className={classes.cardTitle}>
+                                      2 <small>Off Ttack</small>
+                                  </h3>
+                              </CardBody>
+                          </Card>
+                      </GridItem>
+                      <GridItem xs={12} sm={6} md={2}>
+                          <Card className={classes.cardBodyPurple}>
+                              <CardBody>
+                                      <h3 className={classes.cardTitle}>
+                                          1 <small>Cancelled</small>
+                                      </h3>
+                              </CardBody>
+                          </Card>
+                      </GridItem >
+                      <GridItem xs={12} sm={6} md={2}>
+                          <Card className={classes.cardBodyYellow}>
+                              <CardBody>
+                                  <h3 className={classes.cardTitle}>
+                                      0 <small>Postponed</small>
+                                  </h3>
+                              </CardBody>
+                          </Card>
+                      </GridItem>
+                      <GridItem xs={12} sm={6} md={2}>
+                          <Card className={classes.cardBodyOrange}>
+                              <CardBody>
+                                  <h3 className={classes.cardTitle}>
+                                      3 <small>Ongoing</small>
+                                  </h3>
+                              </CardBody>
+                          </Card>
+                      </GridItem>
+                      <GridItem xs={12} sm={6} md={2}>
+                          <Card  className={classes.cardBodyGreen}>
+                              <CardBody>
+                                  <h3 className={classes.cardTitle}>
+                                      1 <small>Completed</small>
+                                  </h3>
+                              </CardBody>
+                          </Card>
+                      </GridItem>
+                      <GridItem xs={12} sm={6} md={2}>
+                          <Card className={classes.cardBodyBlack}>
+                              <CardBody>
+                                  <h3 className={classes.cardTitle}>
+                                      0 <small>Not Started</small>
+                                  </h3>
+                              </CardBody>
+                          </Card>
+                      </GridItem>
+                  </CardBody>
+                  <CardFooter className={classes.cardFooter} >
+                    { show_tasks === false ? (
+                        <IconButton onClick={() => { setShowTasks(true); setSelectedIndex(index); setShowObjectivesTask(list.id)}} > <ExpandMoreIcon className={classes.iconBottom} /> </IconButton>
+                    ) : show_tasks === true ? ( <IconButton> <ExpandLess className={classes.iconBottom} onClick={() => setShowTasks(false)} /> </IconButton> 
+                    ) : null}
+                  </CardFooter>
+                </Card>
+
+                {/* tasks card */}
+                { show_tasks === true && setIndex === index ? (
+                      
+                  <Card style={{ width: "95%", margin: '0', marginLeft: '5%'}} >
+                      <CardBody>
+                          <h3 className={classes.textBold}>Management Actions </h3>
+                          <Table>
+                              <TableHead className={classes.tableHeader}>
+                                  <TableRow >
+                                      <TableCell>Management Action</TableCell>
+                                      <TableCell>Resource</TableCell>
+                                      <TableCell>Due Date</TableCell>
+                                      <TableCell>Status</TableCell>
+                                  </TableRow>
+                              </TableHead>
+                              <TableBody>
+                                  {/* <TableRow key=''>
+                                      <TableCell>Task One</TableCell>
+                                      <TableCell>John Doe</TableCell>
+                                      <TableCell>2021-10-01</TableCell>
+                                      <TableCell>Pending</TableCell>
+                                  </TableRow> */}
+                                  { obj_tasks ? obj_tasks.length === 0 ? (<TableRow> <TableCell> No tasks available </TableCell></TableRow>)
+                                  : (obj_tasks.map((list, index) => (
+                                      <TableRow key={index}>
+                                          <TableCell>{list.description}</TableCell>
+                                          <TableCell>{moment(list.start_date).format('YYYY-MM-DD')}</TableCell>
+                                          <TableCell>{moment(list.end_date).format('YYYY-MM-DD')}</TableCell>
+                                          <TableCell>{list.status}</TableCell>
+                                      </TableRow>
+                                  ))) : err ? (<TableRow> <TableCell> {err} </TableCell></TableRow>) 
+                                  : null }
+                              </TableBody>
+                          </Table>
+                      </CardBody>
+                      <CardFooter>
+                          <Grid container justify="center">
+                              <Button simple onClick={() => {setShowTasks(false); handleAddIndividualTaskOpen() }}><p style={{ color: '#388e3c' }}> Add New Task</p> </Button>
+                          </Grid>
+                      </CardFooter>
+                  </Card>
+
+                ) : null }
+            </GridItem>
             ))) : null }
           </GridContainer>
         </div>

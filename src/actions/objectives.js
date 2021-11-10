@@ -126,8 +126,7 @@ export const getObjectiveTasks = (id) => {
 
 //edit specific objective
 export const editUserObjective = (id, description, kpi_id, user_id, start_date, end_date,  target, target_achieved, target_achieved_on_review, created_by, updated_by ) => {
-    const config = { headers: { 'Content-Type': 'application/json' } }
-
+    const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
     const body = JSON.stringify({ id, description, kpi_id, user_id, start_date, end_date,  target, target_achieved, target_achieved_on_review, created_by, updated_by });
     console.log("objective", body);
 
@@ -154,8 +153,7 @@ export const editUserObjective = (id, description, kpi_id, user_id, start_date, 
 //delete specific objective
 export const deleteUserObjective = (id) => {
 
-    const config = { headers: { 'Content-Type': 'application/json' } }
-
+    const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
     const body = JSON.stringify({ id });
     console.log("objective", body);
 
