@@ -102,13 +102,15 @@ export const addUserObjective = (user_id, target, start_date, kpi_id, end_date, 
 
 //get tasks in objective
 export const getObjectiveTasks = (id) => {
+
+    console.log("id here", id)
     return async function (dispatch) {
 
         dispatch({ type: OBJECTIVE_TASKS_FETCH_REQUEST });
 
         try {
 
-            let response = await axios.get(`tasks/fetchTasksbyObjectiveId?objective_id=${id}`)
+            let response = await axios.get(`/tasks/fetchTasksbyObjectiveId?objective_id=${id}`)
             if (response.status == 200) {
                 dispatch({ type: OBJECTIVE_TASKS_SUCCESS, payload: response.data })
             } else {

@@ -34,8 +34,9 @@ import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/picker
 import EditIcon from '@material-ui/icons/Edit';
 import moment from "moment";
 import axios from "axios";
-import { getUserObjectives, getObjectiveTasks } from "actions/objectives";
+import { getUserObjectives } from "actions/objectives";
 import { getKpis } from "actions/kpis";
+import { getObjectiveTasks } from "actions/objectives";
 
 const useStyles = makeStyles(styles);
 
@@ -46,17 +47,21 @@ export default function StrategicObjectives() {
     // const history = useHistory();
 
     const { user: currentUser } = useSelector(state => state.auth);
-    const { items, error, item} = useSelector(state => state.objective);
+    const { items, error, item, obj_tasks } = useSelector(state => state.objective);
     const {  items : kpis } = useSelector(state => state.kpi);
-    const { items : objtasks} = useSelector(state => state.objective);
+
+    const [ objectiveId, setObjectiveId] = useState("");
+
 
     useEffect(() => {
         dispatch(getUserObjectives(currentUser.id));
         dispatch(getKpis());
         setUserId(currentUser.id);
         setCreatedBy(currentUser.id);
-        dispatch(getObjectiveTasks(objectiveId));
+
     }, [])
+
+    console.log("obj tasks", obj_tasks)
 
     const [addopen, setAddOpen] = useState(false);
     const [showloader, setshowloader] = useState(false);
@@ -80,7 +85,8 @@ export default function StrategicObjectives() {
     const [updated_by, setUpdatedBy] = useState(currentUser.id);
     const [show_tasks, setShowTasks] = useState(false);
     const [setIndex, setSelectedIndex] = useState("");
-    const [objectiveId, setObjectiveId] = useState("");
+    // const [err, setError] = useState("");
+    // const [obj_tasks, setObjTasks] = useState("");
 
     const handleAddClickOpen = () => {
         setAddOpen(true);
@@ -228,10 +234,33 @@ export default function StrategicObjectives() {
     const setShowObjectivesTask = (id) => {
 
         setObjectiveId(id);
-        // useEffect(() => {
-        //     dispatch(getObjectiveTasks(id))
-        // }, []);
+
+        if(objectiveId !== null) {
+            dispatch(getObjectiveTasks)
+        }
+        
     }
+
+    // const setShowObjectivesTask = (id) => async () => {
+
+    //     setObjectiveId(id);
+    //     console.log("obj id", objectiveId)
+
+    //     try {
+
+    //         let response = await axios.get(`/tasks/fetchTasksbyObjectiveId?objective_id=${id}`)
+    //         if (response.status == 200) {
+    //             setObjTasks(response.data)
+    //             console.log("tasks", obj_tasks )
+    //         } else {
+    //             setError("No tasks found")
+    //         }
+
+    //     } catch (error) {
+    //         setError("No tasks found")
+    //     } 
+    
+    // }
 
     // const handleRedirect = () => {
     //     history.push('/admin/tasks');
@@ -314,7 +343,7 @@ export default function StrategicObjectives() {
                         <CardFooter className={classes.cardFooter}>
                             {/* <IconButton> <ExpandMoreIcon className={classes.iconBottom} onClick={() => handleRedirect()} /> </IconButton> */}
                             { show_tasks === false ? (
-                                <IconButton> <ExpandMoreIcon className={classes.iconBottom} onClick={() => { setShowTasks(true); setSelectedIndex(index); setShowObjectivesTask(list.id)}} /> </IconButton>
+                                <IconButton onClick={() => { setShowTasks(true); setSelectedIndex(index); setShowObjectivesTask(list.id)}} > <ExpandMoreIcon className={classes.iconBottom} /> </IconButton>
                             ) : show_tasks === true ? ( <IconButton> <ExpandLess className={classes.iconBottom} onClick={() => setShowTasks(false)} /> </IconButton> 
                             ) : null}
                         </CardFooter>
@@ -338,20 +367,20 @@ export default function StrategicObjectives() {
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
-                                        {/* <TableRow key=''>
+                                        <TableRow key=''>
                                             <TableCell>Task One</TableCell>
                                             <TableCell>John Doe</TableCell>
                                             <TableCell>2021-10-01</TableCell>
                                             <TableCell>Pending</TableCell>
-                                        </TableRow> */}
-                                        { objtasks ? (objtasks.map((list, index) => (
+                                        </TableRow>
+                                        {/* { obj_tasks ? (obj_tasks.map((list, index) => (
                                             <TableRow key={index}>
                                                 <TableCell>{list.description}</TableCell>
                                                 <TableCell>{moment(list.start_date).format('YYYY-MM-DD')}</TableCell>
                                                 <TableCell>{moment(list.end_date).format('YYYY-MM-DD')}</TableCell>
                                                 <TableCell>{list.status}</TableCell>
                                             </TableRow>
-                                        ))) : error ? (<TableRow> <TableCell> {error} </TableCell></TableRow>) : null }
+                                        ))) : error ? (<TableRow> <TableCell> {error} </TableCell></TableRow>) : null } */}
                                     </TableBody>
                                 </Table>
                             </CardBody>

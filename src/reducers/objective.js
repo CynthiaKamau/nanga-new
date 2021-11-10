@@ -29,6 +29,7 @@ import {
 const initialState = {
     items : [],
     item: [],
+    obj_tasks: [],
     error : [],
     isLoading : false
 }
@@ -48,10 +49,18 @@ export default function(state = initialState, action) {
 
         case OBJECTIVE_SUCCESS :
         case ALL_OBJECTIVES_SUCCESS :
-        case OBJECTIVE_TASKS_SUCCESS :
             return {
                 ...state,
                 items : action.payload.data,
+                isLoading : false,
+                error : null,
+                obj_tasks : null
+            }
+
+        case OBJECTIVE_TASKS_SUCCESS :
+            return {
+                ...state,
+                obj_tasks : action.payload,
                 isLoading : false,
                 error : null
             }
@@ -66,12 +75,26 @@ export default function(state = initialState, action) {
             }
 
         case OBJECTIVE_FAIL :
-        case ALL_OBJECTIVES_FAIL :
-        case OBJECTIVE_TASKS_FAIL :
             return {
                 ...state,
                 isLoading: false,
                 items : null,
+                error: action.payload.message
+            }
+
+        case OBJECTIVE_TASKS_FAIL :
+            return {
+                ...state,
+                isLoading: false,
+                obj_tasks : null,
+                error: action.payload.message
+            }
+
+        case ALL_OBJECTIVES_FAIL :
+            return {
+                ...state,
+                isLoading: false,
+                obj_tasks : null,
                 error: action.payload.message
             }
         

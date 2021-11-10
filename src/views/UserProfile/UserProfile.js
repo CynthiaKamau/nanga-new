@@ -21,7 +21,7 @@ import CardAvatar from "components/Card/CardAvatar.js";
 
 import styles from "assets/jss/material-dashboard-pro-react/views/userProfileStyles.js";
 
-import avatar from "assets/img/faces/marc.jpg";
+import avatar from "../../assets/img/faces/marc.jpg";
 
 const useStyles = makeStyles(styles);
 
