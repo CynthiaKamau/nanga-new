@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
 // @material-ui/core
-import { makeStyles } from "@material-ui/core/styles";
+// import { makeStyles } from "@material-ui/core/styles";
 // core components
 import GridItem from "components/Grid/GridItem.js";
 import GridContainer from "components/Grid/GridContainer.js";
@@ -36,14 +36,15 @@ import { LinearProgress } from "@material-ui/core";
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import moment from "moment";
+import { Grid } from "@material-ui/core";
 
 
-import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
+// import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
 
-const useStyles = makeStyles(styles);
+// const useStyles = makeStyles(styles);
 
 export default function myKpis() {
-    const classes = useStyles();
+    // const classes = useStyles();
     const dispatch = useDispatch();
 
     const { items, item, error, isLoading } = useSelector(state => state.objective);
@@ -76,9 +77,9 @@ export default function myKpis() {
     const [kpi_id, setKpiId] = useState("");
     const [user_id, setUserId] = useState(currentUser.id);
 
-    const handleAddClickOpen = () => {
-        setAddOpen(true);
-    };
+    // const handleAddClickOpen = () => {
+    //     setAddOpen(true);
+    // };
 
     const saveKpi = e => {
         e.preventDefault();
@@ -206,7 +207,7 @@ export default function myKpis() {
                 </p>
               </CardHeader>
               <CardBody>
-              <div className={classes.btnRight}><Button color="primary" size="lg" onClick={handleAddClickOpen}> Add KPI </Button> </div>
+              {/* <div className={classes.btnRight}><Button color="primary" size="lg" onClick={handleAddClickOpen}> Add KPI </Button> </div> */}
 
                 <Table>
                     <TableHead>
@@ -255,7 +256,7 @@ export default function myKpis() {
                             fullWidth
                             style={{marginBottom : '15px'}}
                             value={description}
-                            variant="standard"
+                            variant="outlined"
                             onChange = {(event) => {
                                 setDescription(event.target.value);
                             }}
@@ -380,7 +381,7 @@ export default function myKpis() {
                             fullWidth
                             style={{marginBottom : '15px'}}
                             value={description}
-                            variant="standard"
+                            variant="outlined"
                             onChange = {(event) => {
                                 setDescription(event.target.value);
                             }}
@@ -406,35 +407,44 @@ export default function myKpis() {
                             ))}
                         </TextField>
 
-                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                        <KeyboardDatePicker
-                            margin="normal"
-                            id="date-picker-dialog"
-                            helperText="Set start date"
-                            format="yyyy/dd/MM"
-                            fullWidth
-                            value={start_date}
-                            onChange={setStartDate}
-                            KeyboardButtonProps={{
-                                'aria-label': 'change date',
-                            }}
-                        />
-                    </MuiPickersUtilsProvider>
+                        <Grid container spacing={2}>
+                            <Grid item xs={6} lg={6} xl={6} sm={12}>
+                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                <KeyboardDatePicker
+                                    margin="normal"
+                                    id="date-picker-dialog"
+                                    helperText="Set start date"
+                                    format="yyyy/dd/MM"
+                                    fullWidth
+                                    inputVariant="outlined"
+                                    value={start_date}
+                                    onChange={setStartDate}
+                                    KeyboardButtonProps={{
+                                        'aria-label': 'change date',
+                                    }}
+                                />
+                                </MuiPickersUtilsProvider>
+                            </Grid>
 
-                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                        <KeyboardDatePicker
-                            margin="normal"
-                            id="date-picker-dialog"
-                            helperText="Set end date"
-                            format="yyyy/dd/MM"
-                            fullWidth
-                            value={end_date}
-                            onChange={setEndDate}
-                            KeyboardButtonProps={{
-                                'aria-label': 'change date',
-                            }}
-                        />
-                    </MuiPickersUtilsProvider>
+                            <Grid item xs={6} lg={6} xl={6} sm={12}>
+                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                <KeyboardDatePicker
+                                    margin="normal"
+                                    id="date-picker-dialog"
+                                    helperText="Set end date"
+                                    format="yyyy/dd/MM"
+                                    fullWidth
+                                    inputVariant="outlined"
+                                    value={end_date}
+                                    onChange={setEndDate}
+                                    KeyboardButtonProps={{
+                                        'aria-label': 'change date',
+                                    }}
+                                />
+                            </MuiPickersUtilsProvider>
+                            </Grid>
+                        </Grid>
+
 
                         <TextField
                             autoFocus
@@ -445,42 +455,47 @@ export default function myKpis() {
                             fullWidth
                             style={{marginBottom : '15px'}}
                             value={target}
-                            variant="standard"
+                            variant="outlined"
                             onChange = {(event) => {
                                 setTarget(event.target.value);
                             }}
                         />
 
+                        <Grid container spacing={2}>
+                            <Grid item xs={6} lg={6} xl={6} sm={12}>
+                                <TextField
+                                    autoFocus
+                                    margin="dense"
+                                    id="target_at_review"
+                                    label="Target At Review"
+                                    type="text"
+                                    fullWidth
+                                    style={{marginBottom : '15px'}}
+                                    value={targetAtReview}
+                                    variant="outlined"
+                                    onChange = {(event) => {
+                                        setTargetAtReview(event.target.value);
+                                    }}
+                                />
+                            </Grid>
 
-                        <TextField
-                            autoFocus
-                            margin="dense"
-                            id="target_at_review"
-                            label="Target At Review"
-                            type="text"
-                            fullWidth
-                            style={{marginBottom : '15px'}}
-                            value={targetAtReview}
-                            variant="standard"
-                            onChange = {(event) => {
-                                setTargetAtReview(event.target.value);
-                            }}
-                        />
-
-                        <TextField
-                            autoFocus
-                            margin="dense"
-                            id="target_achieved"
-                            label="Target Achieved"
-                            type="text"
-                            fullWidth
-                            style={{marginBottom : '15px'}}
-                            value={targetAchieved}
-                            variant="standard"
-                            onChange = {(event) => {
-                                setTargetAchieved(event.target.value);
-                            }}
-                        />
+                            <Grid item xs={6} lg={6} xl={6} sm={12}>
+                                <TextField
+                                autoFocus
+                                margin="dense"
+                                id="target_achieved"
+                                label="Target Achieved"
+                                type="text"
+                                fullWidth
+                                style={{marginBottom : '15px'}}
+                                value={targetAchieved}
+                                variant="outlined"
+                                onChange = {(event) => {
+                                    setTargetAchieved(event.target.value);
+                                }}
+                                />
+                            </Grid>
+                        </Grid>
 
                     </DialogContent>
                     <DialogActions>

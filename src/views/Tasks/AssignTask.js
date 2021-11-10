@@ -16,6 +16,7 @@ import Card from "components/Card/Card.js";
 import CardHeader from "components/Card/CardHeader.js";
 import CardBody from "components/Card/CardBody.js";
 import { ArrowForward } from "@material-ui/icons";
+import { Grid } from "@material-ui/core";
 
 import MenuItem from '@material-ui/core/MenuItem';
 import Dialog from '@material-ui/core/Dialog';
@@ -39,12 +40,16 @@ import IconButton from '@material-ui/core/Button';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import { getStatus } from "actions/data";
+import JsonData from "../../data/data.json"
+
 
 const useStyles = makeStyles(styles);
 
 export default function AssignTasksPage() {
     const classes = useStyles();
     const history = useHistory();
+
+    const teamleads = JsonData.Users;
 
     const dispatch = useDispatch();
 
@@ -65,6 +70,8 @@ export default function AssignTasksPage() {
     const [status, setStatus] = useState("");
     const [showloader, setshowloader] = useState(false); 
     const [id, setId] = useState("");
+    const [teamlead, setTeamLead] = useState("");
+
 
     useEffect(() => {
         dispatch(getAssignedTasks(currentUser.id))
@@ -210,6 +217,26 @@ export default function AssignTasksPage() {
                                     <DialogContentText>
                                         Create New Strategic Intitative
                                     </DialogContentText>
+                                    <label style={{ fontWeight: 'bold', color: 'black' }}> User : </label>
+                                    <TextField
+                                        id="outlined-select-user"
+                                        select
+                                        fullWidth
+                                        variant="outlined"
+                                        label="Select"
+                                        value={teamlead}
+                                        onChange={(event) => {
+                                            setTeamLead(event.target.value);
+                                        }}
+                                        helperText="Please select a user"
+                                    >
+                                        {teamleads.map((option) => (
+                                            <MenuItem key={option.id} value={option.id}>
+                                                {option.fullnames}
+                                            </MenuItem>
+                                        ))}
+                                    </TextField>
+
                                     <TextField
                                         autoFocus
                                         margin="dense"
@@ -219,41 +246,49 @@ export default function AssignTasksPage() {
                                         fullWidth
                                         style={{ marginBottom: '15px' }}
                                         value={description}
-                                        variant="standard"
+                                        variant="outlined"
                                         onChange={(event) => {
                                             setDescription(event.target.value);
                                         }}
                                     />
 
-                                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                        <KeyboardDatePicker
-                                            margin="normal"
-                                            id="date-picker-dialog"
-                                            helperText="Set start date"
-                                            format="yyyy/dd/MM"
-                                            fullWidth
-                                            value={start_date}
-                                            onChange={setStartDate}
-                                            KeyboardButtonProps={{
-                                                'aria-label': 'change date',
-                                            }}
-                                        />
-                                    </MuiPickersUtilsProvider>
+                                <Grid container spacing={2}>
+                                    <Grid item xs={6} lg={6} xl={6} sm={12}>
+                                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                            <KeyboardDatePicker
+                                                margin="normal"
+                                                id="date-picker-dialog"
+                                                helperText="Set start date"
+                                                format="yyyy/dd/MM"
+                                                fullWidth
+                                                inputVariant="outlined"
+                                                value={start_date}
+                                                onChange={setStartDate}
+                                                KeyboardButtonProps={{
+                                                    'aria-label': 'change date',
+                                                }}
+                                            />
+                                        </MuiPickersUtilsProvider>
+                                    </Grid>
 
-                                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                        <KeyboardDatePicker
-                                            margin="normal"
-                                            id="date-picker-dialog"
-                                            helperText="Set due date"
-                                            format="yyyy/dd/MM"
-                                            fullWidth
-                                            value={end_date}
-                                            onChange={setEndDate}
-                                            KeyboardButtonProps={{
-                                                'aria-label': 'change date',
-                                            }}
-                                        />
-                                    </MuiPickersUtilsProvider>
+                                    <Grid item xs={6} lg={6} xl={6} sm={12}>
+                                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                            <KeyboardDatePicker
+                                                margin="normal"
+                                                id="date-picker-dialog"
+                                                helperText="Set due date"
+                                                format="yyyy/dd/MM"
+                                                fullWidth
+                                                inputVariant="outlined"
+                                                value={end_date}
+                                                onChange={setEndDate}
+                                                KeyboardButtonProps={{
+                                                    'aria-label': 'change date',
+                                                }}
+                                            />
+                                        </MuiPickersUtilsProvider>
+                                    </Grid>
+                                </Grid>
 
                                     <label style={{ fontWeight: 'bold', color: 'black' }}> Status : </label>
                                     <TextField
@@ -271,26 +306,6 @@ export default function AssignTasksPage() {
                                         {statuses.map((option) => (
                                             <MenuItem key={option.status} value={option.status}>
                                                 {option.status}
-                                            </MenuItem>
-                                        ))}
-                                    </TextField>
-
-                                    <label style={{ fontWeight: 'bold', color: 'black' }}> Status : </label>
-                                    <TextField
-                                        id="outlined-select-status"
-                                        select
-                                        fullWidth
-                                        variant="outlined"
-                                        label="Select"
-                                        value={status}
-                                        onChange={(event) => {
-                                            setStatus(event.target.value);
-                                        }}
-                                        helperText="Please select the status"
-                                    >
-                                        {statuses.map((option) => (
-                                            <MenuItem key={option.value} value={option.value}>
-                                                {option.label}
                                             </MenuItem>
                                         ))}
                                     </TextField>
@@ -320,6 +335,26 @@ export default function AssignTasksPage() {
                                     <DialogContentText>
                                         Edit Strategic Intitative Details
                                     </DialogContentText>
+
+                                    <TextField
+                                        id="outlined-select-user"
+                                        select
+                                        fullWidth
+                                        variant="outlined"
+                                        label="Select"
+                                        value={teamlead}
+                                        onChange={(event) => {
+                                            setTeamLead(event.target.value);
+                                        }}
+                                        helperText="Please select a user"
+                                    >
+                                        {teamleads.map((option) => (
+                                            <MenuItem key={option.id} value={option.id}>
+                                                {option.fullnames}
+                                            </MenuItem>
+                                        ))}
+                                    </TextField>
+                                    
                                     <TextField
                                         autoFocus
                                         margin="dense"
@@ -329,41 +364,48 @@ export default function AssignTasksPage() {
                                         fullWidth
                                         style={{ marginBottom: '15px' }}
                                         value={description}
-                                        variant="standard"
+                                        variant="outlined"
                                         onChange={(event) => {
                                             setDescription(event.target.value);
                                         }}
                                     />
+                                    <Grid container spacing={2}>
+                                        <Grid item xs={6} lg={6} xl={6} sm={12}>
+                                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                                <KeyboardDatePicker
+                                                    margin="normal"
+                                                    id="date-picker-dialog"
+                                                    helperText="Set start date"
+                                                    format="yyyy/dd/MM"
+                                                    fullWidth
+                                                    inputVariant="outlined"
+                                                    value={start_date}
+                                                    onChange={setStartDate}
+                                                    KeyboardButtonProps={{
+                                                        'aria-label': 'change date',
+                                                    }}
+                                                />
+                                            </MuiPickersUtilsProvider>
+                                        </Grid>
 
-                                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                        <KeyboardDatePicker
-                                            margin="normal"
-                                            id="date-picker-dialog"
-                                            helperText="Set start date"
-                                            format="yyyy/dd/MM"
-                                            fullWidth
-                                            value={start_date}
-                                            onChange={setStartDate}
-                                            KeyboardButtonProps={{
-                                                'aria-label': 'change date',
-                                            }}
-                                        />
-                                    </MuiPickersUtilsProvider>
-
-                                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                        <KeyboardDatePicker
-                                            margin="normal"
-                                            id="date-picker-dialog"
-                                            helperText="Set due date"
-                                            format="yyyy/dd/MM"
-                                            fullWidth
-                                            value={end_date}
-                                            onChange={setEndDate}
-                                            KeyboardButtonProps={{
-                                                'aria-label': 'change date',
-                                            }}
-                                        />
-                                    </MuiPickersUtilsProvider>
+                                        <Grid item xs={6} lg={6} xl={6} sm={12}>
+                                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                                <KeyboardDatePicker
+                                                    margin="normal"
+                                                    id="date-picker-dialog"
+                                                    helperText="Set due date"
+                                                    format="yyyy/dd/MM"
+                                                    inputVariant="outlined"
+                                                    fullWidth
+                                                    value={end_date}
+                                                    onChange={setEndDate}
+                                                    KeyboardButtonProps={{
+                                                        'aria-label': 'change date',
+                                                    }}
+                                                />
+                                            </MuiPickersUtilsProvider>
+                                        </Grid>
+                                    </Grid>
 
                                     <label style={{ fontWeight: 'bold', color: 'black' }}> Status : </label>
                                     <TextField

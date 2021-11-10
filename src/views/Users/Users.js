@@ -244,7 +244,7 @@ export default function UsersPage() {
                     type="text"
                     fullWidth
                     value={name}
-                    variant="standard"
+                    variant="outlined"
                     onChange={(event) => {
                       setName(event.target.value);
                     }}
@@ -343,7 +343,7 @@ export default function UsersPage() {
                     type="text"
                     fullWidth
                     value={name}
-                    variant="standard"
+                    variant="outlined"
                     onChange={(event) => {
                       setName(event.target.value);
                     }}

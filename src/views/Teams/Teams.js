@@ -207,7 +207,7 @@ export default function TeamsPage() {
                                         fullWidth
                                         style={{ marginBottom: '15px' }}
                                         value={name}
-                                        variant="standard"
+                                        variant="outlined"
                                         onChange={(event) => {
                                             setName(event.target.value);
                                         }}
@@ -312,7 +312,7 @@ export default function TeamsPage() {
                                         type="text"
                                         fullWidth
                                         value={name}
-                                        variant="standard"
+                                        variant="outlined"
                                         onChange={(event) => {
                                             setName(event.target.value);
                                         }}

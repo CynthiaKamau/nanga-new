@@ -233,7 +233,7 @@ export default function KPIs() {
                             fullWidth
                             style={{marginBottom : '15px'}}
                             value={kpi}
-                            variant="standard"
+                            variant="outlined"
                             onChange = {(event) => {
                                 setKPI(event.target.value);
                             }}
@@ -313,7 +313,7 @@ export default function KPIs() {
                             fullWidth
                             style={{marginBottom : '15px'}}
                             value={kpi}
-                            variant="standard"
+                            variant="outlined"
                             onChange = {(event) => {
                                 setKPI(event.target.value);
                             }}

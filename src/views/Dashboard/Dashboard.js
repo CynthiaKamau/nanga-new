@@ -46,7 +46,7 @@ export default function Dashboard() {
 
   const { user: currentUser } = useSelector(state => state.auth);
   const { items } = useSelector(state => state.objective);
-  const {  categories } = useSelector(state => state.data);
+  // const {  categories } = useSelector(state => state.data);
   const {  items : kpis } = useSelector(state => state.kpi);
 
   useEffect(() => {
@@ -58,7 +58,6 @@ export default function Dashboard() {
   }, [])
 
   const [description, setDescription] = useState("");
-  const [category, setCategory] = useState("");
   const [target, setTarget] = useState("");
   const [kpi_id, setKpi] = useState("");
   const [addopen, setAddOpen] = useState(false);
@@ -240,108 +239,100 @@ export default function Dashboard() {
             <DialogContentText>
               Create New  Strategic Objective
             </DialogContentText>
-            <TextField
-              fullWidth
-              label="Description"
-              id="description"
-              multiline
-              maxRows={4}
-              className={classes.textInput}
-              type="text"
-              value={description}
-              onChange={(event) => {
-                const value = event.target.value;
-                setDescription(value)
-              }}
-            />
-
-            <label> Category : </label>
-            <TextField
-              id="outlined-select-category"
-              select
-              fullWidth
-              variant="outlined"
-              label="Select"
-              className={classes.textInput}
-              value={category}
-              onChange={(event) => {
-                setCategory(event.target.value);
-              }}
-              helperText="Please select your category"
-            >
-              {categories.map((option) => (
-                <MenuItem key={option.id} value={option.id}>
-                  {option.description}
-                </MenuItem>
-              ))}
-            </TextField>
-
-            <label> KPI : </label>
-            <TextField
-              id="outlined-select-kpi"
-              select
-              fullWidth
-              variant="outlined"
-              label="Select"
-              className={classes.textInput}
-              value={kpi_id}
-              onChange={(event) => {
-                setKpi(event.target.value);
-              }}
-              helperText="Please select your kpi"
-            >
-              {kpis.map((option) => (
-                <MenuItem key={option.id} value={option.id}>
-                  {option.title}
-                </MenuItem>
-              ))}
-            </TextField>
-
-            <TextField
-              autoFocus
-              margin="dense"
-              id="target"
-              label="Target"
-              className={classes.textInput}
-              type="text"
-              fullWidth
-              style={{ marginBottom: '15px' }}
-              value={target}
-              variant="standard"
-              onChange={(event) => {
-                setTarget(event.target.value);
-              }}
-            />
-
-            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-              <KeyboardDatePicker
-                margin="normal"
-                id="date-picker-dialog"
-                helperText="Set start date"
-                format="yyyy/dd/MM"
+              <TextField
+                id="outlined-multiline-static"
                 fullWidth
-                value={start_date}
-                onChange={setStartDate}
-                KeyboardButtonProps={{
-                  'aria-label': 'change date',
+                label="Description"
+                multiline
+                rows={4}
+                variant="outlined"
+                className={classes.textInput}
+                type="text"
+                value={description}
+                onChange={(event) => {
+                  const value = event.target.value;
+                  setDescription(value)
                 }}
               />
-            </MuiPickersUtilsProvider>
 
-            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-              <KeyboardDatePicker
-                margin="normal"
-                id="date-picker-dialog"
-                helperText="Set end date"
-                format="yyyy/dd/MM"
+            <Grid item xs={6} lg={6} xl={6} sm={12}>
+              <label> KPI : </label>
+              <TextField
+                id="outlined-select-kpi"
+                select
                 fullWidth
-                value={end_date}
-                onChange={setEndDate}
-                KeyboardButtonProps={{
-                  'aria-label': 'change date',
+                variant="outlined"
+                label="Select"
+                className={classes.textInput}
+                value={kpi_id}
+                onChange={(event) => {
+                  setKpi(event.target.value);
+                }}
+                helperText="Please select your kpi"
+              >
+                {kpis.map((option) => (
+                  <MenuItem key={option.id} value={option.id}>
+                    {option.title}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Grid>
+
+            <Grid item xs={6} lg={6} xl={6} sm={12}>
+              <TextField
+                autoFocus
+                margin="dense"
+                id="target"
+                label="Target"
+                variant="outlined"
+                className={classes.textInput}
+                type="text"
+                fullWidth
+                style={{ marginBottom: '15px' }}
+                value={target}
+                onChange={(event) => {
+                  setTarget(event.target.value);
                 }}
               />
-            </MuiPickersUtilsProvider>
+            </Grid>
+
+            <Grid container spacing={2}>
+              <Grid item xs={6} lg={6} xl={6} sm={12}>
+                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                  <KeyboardDatePicker
+                    margin="normal"
+                    id="date-picker-dialog"
+                    helperText="Set start date"
+                    format="yyyy/dd/MM"
+                    fullWidth
+                    inputVariant="outlined"
+                    value={start_date}
+                    onChange={setStartDate}
+                    KeyboardButtonProps={{
+                      'aria-label': 'change date',
+                    }}
+                  />
+                </MuiPickersUtilsProvider>
+              </Grid>
+
+              <Grid item xs={6} lg={6} xl={6} sm={12}>
+                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                  <KeyboardDatePicker
+                    margin="normal"
+                    id="date-picker-dialog"
+                    helperText="Set end date"
+                    format="yyyy/dd/MM"
+                    fullWidth
+                    inputVariant="outlined"
+                    value={end_date}
+                    onChange={setEndDate}
+                    KeyboardButtonProps={{
+                      'aria-label': 'change date',
+                    }}
+                  />
+                </MuiPickersUtilsProvider>
+              </Grid>
+            </Grid>  
 
 
           </DialogContent>
@@ -375,54 +366,69 @@ export default function Dashboard() {
               label="Objective"
               id="objective"
               type="text"
+              multiline
+              rows={4}
+              variant="outlined"
               disabled
               value={description}
               className={classes.textInput}
             />
-            <TextField
-              fullWidth
-              label="Description"
-              id="taskdescription"
-              multiline
-              maxRows={4}
-              className={classes.textInput}
-              type="text"
-              value={task_description}
-              onChange={(event) => {
-                const value = event.target.value;
-                setTaskDescription(value)
-              }}
-            />
 
-            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-              <KeyboardDatePicker
-                margin="normal"
-                id="date-picker-dialog"
-                helperText="Set start date"
-                format="yyyy/dd/MM"
+            <Grid item xs={6} lg={6} xl={6} sm={12}>
+              <TextField
                 fullWidth
-                value={task_start_date}
-                onChange={setTaskStartDate}
-                KeyboardButtonProps={{
-                  'aria-label': 'change date',
+                label="Description"
+                id="taskdescription"
+                multiline
+                maxRows={4}
+                variant="outlined"
+                className={classes.textInput}
+                type="text"
+                value={task_description}
+                onChange={(event) => {
+                  const value = event.target.value;
+                  setTaskDescription(value)
                 }}
               />
-            </MuiPickersUtilsProvider>
+            </Grid>
 
-            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-              <KeyboardDatePicker
-                margin="normal"
-                id="date-picker-dialog"
-                helperText="Set end date"
-                format="yyyy/dd/MM"
-                fullWidth
-                value={task_end_date}
-                onChange={setTaskEndDate}
-                KeyboardButtonProps={{
-                  'aria-label': 'change date',
-                }}
-              />
-            </MuiPickersUtilsProvider>
+            <Grid container spacing={2}>
+              <Grid item xs={6} lg={6} xl={6} sm={12}>
+                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                <KeyboardDatePicker
+                  margin="normal"
+                  id="date-picker-dialog"
+                  helperText="Set start date"
+                  format="yyyy/dd/MM"
+                  fullWidth
+                  inputVariant="outlined"
+                  value={task_start_date}
+                  onChange={setTaskStartDate}
+                  KeyboardButtonProps={{
+                    'aria-label': 'change date',
+                  }}
+                />
+                </MuiPickersUtilsProvider>
+              </Grid>
+
+              <Grid item xs={6} lg={6} xl={6} sm={12}>
+                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                <KeyboardDatePicker
+                  margin="normal"
+                  id="date-picker-dialog"
+                  helperText="Set end date"
+                  format="yyyy/dd/MM"
+                  fullWidth
+                  inputVariant="outlined"
+                  value={task_end_date}
+                  onChange={setTaskEndDate}
+                  KeyboardButtonProps={{
+                    'aria-label': 'change date',
+                  }}
+                />
+                </MuiPickersUtilsProvider>
+              </Grid>
+            </Grid>
 
           </DialogContent>
           <DialogActions>
@@ -456,6 +462,7 @@ export default function Dashboard() {
               label="Mission"
               type="text"
               multiline
+              variant="outlined"
               rows={4}
               value={mission}
               className={classes.textInput}

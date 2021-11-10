@@ -6,6 +6,7 @@ import { makeStyles } from "@material-ui/core/styles";
 // core components
 import GridItem from "components/Grid/GridItem.js";
 import GridContainer from "components/Grid/GridContainer.js";
+import { Grid } from "@material-ui/core";
 import Button from "components/CustomButtons/Button.js";
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -243,41 +244,49 @@ export default function TasksPage() {
                                         fullWidth
                                         style={{ marginBottom: '15px' }}
                                         value={description}
-                                        variant="standard"
+                                        variant="outlined"
                                         onChange={(event) => {
                                             setDescription(event.target.value);
                                         }}
                                     />
 
-                                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                        <KeyboardDatePicker
-                                            margin="normal"
-                                            id="date-picker-dialog"
-                                            helperText="Set start date"
-                                            format="yyyy/dd/MM"
-                                            fullWidth
-                                            value={start_date}
-                                            onChange={setStartDate}
-                                            KeyboardButtonProps={{
-                                                'aria-label': 'change date',
-                                            }}
-                                        />
-                                    </MuiPickersUtilsProvider>
+                                    <Grid container spacing={2}>
+                                        <Grid item xs={6} lg={6} xl={6} sm={12}>
+                                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                                <KeyboardDatePicker
+                                                    margin="normal"
+                                                    id="date-picker-dialog"
+                                                    helperText="Set start date"
+                                                    format="yyyy/dd/MM"
+                                                    fullWidth
+                                                    inputVariant="outlined"
+                                                    value={start_date}
+                                                    onChange={setStartDate}
+                                                    KeyboardButtonProps={{
+                                                        'aria-label': 'change date',
+                                                    }}
+                                                />
+                                            </MuiPickersUtilsProvider>
+                                        </Grid>   
 
-                                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                        <KeyboardDatePicker
-                                            margin="normal"
-                                            id="date-picker-dialog"
-                                            helperText="Set due date"
-                                            format="yyyy/dd/MM"
-                                            fullWidth
-                                            value={end_date}
-                                            onChange={setEndDate}
-                                            KeyboardButtonProps={{
-                                                'aria-label': 'change date',
-                                            }}
-                                        />
-                                    </MuiPickersUtilsProvider>
+                                        <Grid item xs={6} lg={6} xl={6} sm={12}>
+                                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                            <KeyboardDatePicker
+                                                margin="normal"
+                                                id="date-picker-dialog"
+                                                helperText="Set due date"
+                                                format="yyyy/dd/MM"
+                                                fullWidth
+                                                inputVariant="outlined"
+                                                value={end_date}
+                                                onChange={setEndDate}
+                                                KeyboardButtonProps={{
+                                                    'aria-label': 'change date',
+                                                }}
+                                            />
+                                            </MuiPickersUtilsProvider>
+                                        </Grid> 
+                                    </Grid>    
 
                                     <label style={{ fontWeight: 'bold', color: 'black' }}> Status : </label>
                                     <TextField
@@ -333,41 +342,49 @@ export default function TasksPage() {
                                         fullWidth
                                         style={{ marginBottom: '15px' }}
                                         value={description}
-                                        variant="standard"
+                                        variant="outlined"
                                         onChange={(event) => {
                                             setDescription(event.target.value);
                                         }}
                                     />
 
-<                                   MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                        <KeyboardDatePicker
-                                            margin="normal"
-                                            id="date-picker-dialog"
-                                            helperText="Set start date"
-                                            format="yyyy/dd/MM"
-                                            fullWidth
-                                            value={start_date}
-                                            onChange={setStartDate}
-                                            KeyboardButtonProps={{
-                                                'aria-label': 'change date',
-                                            }}
-                                        />
-                                    </MuiPickersUtilsProvider>
+                                <Grid container spacing={2}>
+                                    <Grid item xs={6} lg={6} xl={6} sm={12}>
+                                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                            <KeyboardDatePicker
+                                                margin="normal"
+                                                id="date-picker-dialog"
+                                                helperText="Set start date"
+                                                format="yyyy/dd/MM"
+                                                fullWidth
+                                                inputVariant="outlined"
+                                                value={start_date}
+                                                onChange={setStartDate}
+                                                KeyboardButtonProps={{
+                                                    'aria-label': 'change date',
+                                                }}
+                                            />
+                                        </MuiPickersUtilsProvider>
+                                    </Grid>
 
-                                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                        <KeyboardDatePicker
-                                            margin="normal"
-                                            id="date-picker-dialog"
-                                            helperText="Set due date"
-                                            format="yyyy/dd/MM"
-                                            fullWidth
-                                            value={end_date}
-                                            onChange={setEndDate}
-                                            KeyboardButtonProps={{
-                                                'aria-label': 'change date',
-                                            }}
-                                        />
-                                    </MuiPickersUtilsProvider>
+                                    <Grid item xs={6} lg={6} xl={6} sm={12}>
+                                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                            <KeyboardDatePicker
+                                                margin="normal"
+                                                id="date-picker-dialog"
+                                                helperText="Set due date"
+                                                format="yyyy/dd/MM"
+                                                fullWidth
+                                                inputVariant="outlined"
+                                                value={end_date}
+                                                onChange={setEndDate}
+                                                KeyboardButtonProps={{
+                                                    'aria-label': 'change date',
+                                                }}
+                                            />
+                                        </MuiPickersUtilsProvider>
+                                    </Grid>
+                                </Grid>
 
                                     <label style={{ fontWeight: 'bold', color: 'black' }}> Status : </label>
                                     <TextField
