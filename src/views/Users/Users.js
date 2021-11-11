@@ -24,7 +24,6 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
-import JsonData from "../../data/data.json";
 import { getUsers, editUser } from "../../actions/users";
 import swal from "sweetalert2";
 import Loader from "react-loader-spinner";
@@ -32,6 +31,9 @@ import { CircularProgress } from "@material-ui/core";
 import axios from "axios";
 import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
 import { Grid } from "@material-ui/core";
+import { getTeams} from "actions/teams"
+import { getRoles } from "actions/data";
+
 // import classNames from "classnames";
 
 const useStyles = makeStyles(styles);
@@ -42,16 +44,18 @@ export default function UsersPage() {
 
   const { items , item, error } = useSelector(state => state.user);
   const { user : currentUser } = useSelector(state => state.auth);
+  const { roles} = useSelector(state => state.data);
+  const { items : teams} = useSelector(state => state.team);
 
-  console.log("here error", error)
+  console.log("here error", teams)
   console.log("here item", item)
 
   useEffect(() => {
     dispatch(getUsers());
+    dispatch(getTeams());
+    dispatch(getRoles())
   }, []);
 
-  const teams = JsonData.Teams;
-  const roles = JsonData.Roles;
 
   const [addopen, setAddOpen] = useState(false);
   const [editopen, setEditOpen] = useState(false);
@@ -179,6 +183,9 @@ export default function UsersPage() {
     console.log("edit user", user_id, name, status, team, role, updated_by, setUpdated_by, view, extension, email, disabled)
 
     dispatch(editUser(user_id, name, status, team, role, updated_by, view, extension, email, disabled))
+  }
+
+  useEffect(() => {
     if (error) {
       setshowloader(false);
       swal.fire({
@@ -187,7 +194,11 @@ export default function UsersPage() {
         icon: "error",
         dangerMode: true
       });
-    } else if(item) {
+    }
+  }, [error]);
+
+  useEffect(() => {
+    if(item) {
       setshowloader(false);
       swal.fire({
         title: "Success",
@@ -195,8 +206,8 @@ export default function UsersPage() {
         icon: "success",
       });
     }
+  }, [item]);
 
-  }
 
   // const handleDeleteClickOpen = () => {
   //   setDeleteOpen(true);

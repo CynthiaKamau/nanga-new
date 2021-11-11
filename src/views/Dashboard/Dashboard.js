@@ -325,8 +325,6 @@ export default function Dashboard() {
   }
 
 
-  // }
-
   const setShowObjectivesTask = (id) => {
 
     setObjectiveId(id);
@@ -414,7 +412,7 @@ export default function Dashboard() {
             </Grid>
 
             <CardBody className={classes.cardGrey}>
-              { mission === undefined || mission === null ? (
+              { mission === undefined || mission === null|| mission.length === 0 ? (
                 <h4>Please update your mission</h4>
               ) : mission ? (
                 <h4>{mission[0].description}</h4>

@@ -36,6 +36,9 @@ import moment from "moment";
 import { getUserObjectives } from "actions/objectives";
 import { LinearProgress } from "@material-ui/core";
 import { getStatus } from "actions/data";
+import { getUsers } from "actions/users";
+import axios from "axios";
+
 
 const useStyles = makeStyles(styles);
 
@@ -48,11 +51,13 @@ export default function TasksPage() {
     const { items : objectives } = useSelector(state => state.objective)
     const { items, item , error, isLoading } = useSelector(state => state.task)
     const { statuses } = useSelector(state => state.data);
+    const { items : sysusers} = useSelector(state => state.user)
 
-    console.log(objectives)
+    console.log("system users",sysusers)
 
     const [addopen, setAddOpen] = useState(false);
     const [editopen, setEditOpen] = useState(false);
+    const [addassigntaskopen, setAddAssignTaskOpen] = useState(false);
     // const [deleteopen, setDeleteOpen] = useState(false);
     const [description, setDescription] = useState("");
     const [end_date, setEndDate] = useState("");
@@ -64,11 +69,14 @@ export default function TasksPage() {
     const [created_by, setCreatedBy] = useState(currentUser.id);
     const [updated_by, setUpdatedBy] = useState(currentUser.id);
     const [id, setId] = useState("");
+    const [task_id, setTaskId] = useState("");
+    const [assignee_id, setAssigneeId] = useState("");
 
     useEffect(() => {
         dispatch(getTasks(currentUser.id))
         dispatch(getUserObjectives(currentUser.id));
-        dispatch(getStatus())
+        dispatch(getStatus());
+        dispatch(getUsers())
     }, []);
 
     console.log("tasks", items)
@@ -161,6 +169,70 @@ export default function TasksPage() {
         setEditOpen(false);
     };
 
+    const handleAUClickOpen = () => {
+        setAddAssignTaskOpen(true);
+    }
+
+    const handleAUClose = () => {
+        setAddAssignTaskOpen(false);
+    }
+
+    const setAssignUser = (list) => {
+        setTaskId(list.id)
+        setAssigneeId(list.user_id)
+        setDescription(list.description)
+    }
+
+    const assignTask = async (e) => {
+        e.preventDefault();
+        setshowloader(true);
+
+        const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
+        
+        const body = JSON.stringify({
+            task_id : task_id ,
+            assigner_id : created_by,
+            user_id : assignee_id
+        })
+
+        console.log(body, setAssigneeId)
+
+        try {
+
+            let response = await axios.post('/assignedtasks/update', body, config)
+            if (response.status == 201) {
+              let item = response.data.message
+              setshowloader(false);
+              swal.fire({
+                  title: "Success",
+                  text: item,
+                  icon: "success",
+              });
+            } else {
+      
+                let error = response.data.message
+                setshowloader(false);
+                swal.fire({
+                    title: "Error",
+                    text: error,
+                    icon: "error",
+                    dangerMode: true
+                });
+            }
+          } catch (error) {
+      
+            let err = error.response.data.message
+                setshowloader(false);
+                swal.fire({
+                    title: "Error",
+                    text: err,
+                    icon: "error",
+                    dangerMode: true
+                });
+          }
+
+    }
+
     // const handleDeleteClose = () => {
     //     setDeleteOpen(false);
     // };
@@ -201,6 +273,8 @@ export default function TasksPage() {
                                             <TableCell>{list.status}</TableCell>
                                             <TableCell>
                                                 <IconButton aria-label="edit" color="primary" onClick={() => { handleEditClickOpen(); setEditing(list) }} ><EditIcon /></IconButton>
+                                                <Button color="primary" simple onClick={() => { handleAUClickOpen(); setAssignUser(list) }} >ASSIGN OTHER USER</Button>
+
                                                 {/* <IconButton aria-label="delete" color="secondary" onClick={() => { handleDeleteClickOpen(); setDelete(list) }} ><DeleteIcon /></IconButton> */}
                                             </TableCell>
 
@@ -412,6 +486,54 @@ export default function TasksPage() {
                                 <DialogActions>
                                     <Button color="danger" onClick={handleEditClose}>Cancel</Button>
                                     <Button color="primary" onClick={(e) => { handleEditClose(); saveEdited(e) }}>Save</Button>
+                                </DialogActions>
+                            </Dialog>
+
+                            <Dialog open={addassigntaskopen} onClose={handleAUClose}>
+                                <DialogTitle>Strategic Intitative</DialogTitle>
+                                <DialogContent>
+                                    <DialogContentText>
+                                        Assign User To A Task
+                                    </DialogContentText>
+                                    <TextField
+                                        autoFocus
+                                        margin="dense"
+                                        id="description"
+                                        label="Description"
+                                        type="text"
+                                        fullWidth
+                                        style={{ marginBottom: '15px' }}
+                                        value={description}
+                                        variant="outlined"
+                                        onChange={(event) => {
+                                            setDescription(event.target.value);
+                                        }}
+                                    />
+
+                                    <label style={{ fontWeight: 'bold', color: 'black' }}> User : </label>
+                                    <TextField
+                                        id="outlined-select-user"
+                                        select
+                                        fullWidth
+                                        variant="outlined"
+                                        label="Select"
+                                        value={assignee_id}
+                                        onChange={(event) => {
+                                            setAssigneeId(event.target.value);
+                                        }}
+                                        helperText="Please select a user"
+                                    >
+                                        {sysusers.map((option) => (
+                                            <MenuItem key={option.id} value={option.id}>
+                                                {option.fullnames}
+                                            </MenuItem>
+                                        ))}
+                                    </TextField>
+
+                                </DialogContent>
+                                <DialogActions>
+                                    <Button color="danger" onClick={handleAUClose}>Cancel</Button>
+                                    <Button color="primary" onClick={(e) => { handleAUClose(); assignTask(e) }}>Save</Button>
                                 </DialogActions>
                             </Dialog>
 

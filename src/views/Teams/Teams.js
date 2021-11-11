@@ -27,8 +27,8 @@ import TextField from '@material-ui/core/TextField';
 import { getTeams, editTeam } from "../../actions/teams"
 import swal from "sweetalert2";
 import Loader from "react-loader-spinner";
-import JsonData from "../../data/data.json"
 import axios from "axios";
+import { getUsers } from "actions/users";
 
 import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
 
@@ -40,9 +40,11 @@ export default function TeamsPage() {
 
     const { item ,error, items } = useSelector(state => state.team);
     const { user : currentUser } = useSelector(state => state.auth);
+    const { items : teamleads} = useSelector(state => state.user)
 
     useEffect(() => {
         dispatch(getTeams());
+        dispatch(getUsers())
       }, []);
 
     const [addopen, setAddOpen] = useState(false);
@@ -111,7 +113,6 @@ export default function TeamsPage() {
         }
 
     }
-    
 
     const handleEditClickOpen = () => {
         setEditOpen(true);
@@ -171,8 +172,6 @@ export default function TeamsPage() {
     // const handleDeleteClose = () => {
     //     setDeleteOpen(false);
     // };
-
-    const teamleads = JsonData.Users;
 
     const options = [
         {

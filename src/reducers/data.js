@@ -68,6 +68,7 @@ export default function(state = initialState, action) {
                 roles : action.payload,
                 error : null
             }
+
         case ALL_STATUS_SUCCESS :
             return {
                 ...state,
@@ -133,6 +134,7 @@ export default function(state = initialState, action) {
                 vision: null,
                 error: action.payload.message
             }
+  
         
         default : return state;
 

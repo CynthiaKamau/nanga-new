@@ -1,6 +1,5 @@
 {
   "name": "uapom",
-  "homepage": "./",
   "version": "1.10.0",
   "private": true,
   "dependencies": {

@@ -16,7 +16,6 @@ import CardHeader from "components/Card/CardHeader.js";
 import CardBody from "components/Card/CardBody.js";
 import { ArrowForward } from "@material-ui/icons";
 import IconButton from '@material-ui/core/Button';
-import JsonData from "../../data/data.json";
 import { LinearProgress } from "@material-ui/core";
 import { useHistory } from "react-router";
 import { getUsers } from "actions/users";
@@ -30,7 +29,7 @@ export default function MyTeamPage() {
     const history = useHistory();
     const dispatch = useDispatch();
 
-    const { items } = useSelector(state => state.team)
+    const { items } = useSelector(state => state.user)
 
     useEffect(() => {
         dispatch(getUsers())
@@ -39,12 +38,9 @@ export default function MyTeamPage() {
     console.log("team members", items)
     // const { error } = useSelector(state => state.team);
 
-    const users = JsonData.Users;
+    const handleClickOpen = (user) => {
 
-    const handleClickOpen = e => {
-        e.preventDefault();
-
-        history.push(`/admin/dashboard`);
+        history.push(`/admin/user-dashboard/id=${user}`);
     }
     
     return (
@@ -70,14 +66,13 @@ export default function MyTeamPage() {
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {users ? (
-                                        users.map((list, index) => (
+                                    {items ? ( items.map((list, index) => (
                                         <TableRow key={index}>
                                             <TableCell>{list.fullnames}</TableCell>
                                             <TableCell>{list.roles.role_name}</TableCell>
                                             <TableCell>{list.status}</TableCell>
                                             <TableCell>
-                                                <IconButton aria-label="view" color="error" onClick={handleClickOpen} ><ArrowForward /></IconButton>
+                                                <IconButton aria-label="view" color="error" onClick={() => {handleClickOpen(list.id)}} ><ArrowForward /></IconButton>
                                             </TableCell>
 
                                         </TableRow>

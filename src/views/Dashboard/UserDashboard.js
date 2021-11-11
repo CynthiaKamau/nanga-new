@@ -30,12 +30,13 @@ import Loader from "react-loader-spinner";
 import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
 import moment from "moment";
 import CardFooter from "components/Card/CardFooter";
-import EditIcon from '@material-ui/icons/Edit';
+// import EditIcon from '@material-ui/icons/Edit';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import { getMission, getVision } from "actions/data";
 
 const useStyles = makeStyles(styles);
 
@@ -45,15 +46,13 @@ export default function UserDashboard() {
 
   const dispatch = useDispatch();
 
-  const { user: currentUser } = useSelector(state => state.auth);
   const { items } = useSelector(state => state.objective);
+  const {  mission, vision } = useSelector(state => state.data);
+
   // const {  categories } = useSelector(state => state.data);
 
   const str = window.location.pathname;
   const chars = str.slice(25, 1000);
-
-console.log("here", chars);
-console.log("here", currentUser);
 
 
   useEffect(() => {
@@ -62,18 +61,21 @@ console.log("here", currentUser);
         dispatch(getUserObjectives(chars));
         dispatch(getCategories());
         dispatch(getKpis());
+        dispatch(getMission(chars));
+        dispatch(getVision());
     }
     
   }, [chars])
 
   const [editopenmission, setEditMissionOpen] = useState(false);
   const [showloader, setshowloader] = useState(false); 
-  const [mission, setMission] = useState("");
   const [show_tasks, setShowTasks] = useState(false);
   const [setIndex, setSelectedIndex] = useState("");
   const [err, setError] = useState("");
   const [obj_tasks, setObjTasks] = useState("");
   const [ objectiveId, setObjectiveId] = useState("");
+  const [usermission, setUserMission] = useState("");
+
 
   // const [newuser, setNewUser] = useState(true);
 
@@ -84,18 +86,19 @@ console.log("here", currentUser);
 
   const handleEditMissionClose = () => {
     setEditMissionOpen(false);
+    setEditingMission
   };
 
   // const handleRedirect = () => {
   //   history.push('/admin/tasks');
   // }
 
-  const handleEditMissionClickOpen = () => {
-    setEditMissionOpen(true);
-  };
+  // const handleEditMissionClickOpen = () => {
+  //   setEditMissionOpen(true);
+  // };
 
   const setEditingMission = () => {
-    setMission()
+    setUserMission();
   }
 
   const editMission = () => {
@@ -124,9 +127,7 @@ console.log("here", currentUser);
           <h3 className={classes.textBold}> THE VISION</h3>
           <Card>
             <CardBody className={classes.cardGrey}>
-              <h4 >
-                Build the most valuable financial services business in our industry in Africa by delivering on the 6X more strategy.
-              </h4>
+              <h4 > {vision[0].description} </h4>
             </CardBody>
           </Card>
         </GridItem>
@@ -135,13 +136,15 @@ console.log("here", currentUser);
           <h3 className={classes.textBold}> MISSION </h3>
           <Card>
             <Grid container justify="flex-end" className={classes.cardGrey}>
-              <IconButton aria-label="edit" color="primary" onClick={() => { handleEditMissionClickOpen(); setEditingMission() }} ><EditIcon style={{ color : '#000000'}}/></IconButton>
+              {/* <IconButton aria-label="edit" color="primary" onClick={() => { handleEditMissionClickOpen(); setEditingMission() }} ><EditIcon style={{ color : '#000000'}}/></IconButton> */}
             </Grid>
 
             <CardBody className={classes.cardGrey}>
-              <h4>
-                Provide Exceptional Strategic Support to the Group in order to Profitably Grow our Customer Base off a Solid Foundation.
-              </h4>
+              { mission === undefined || mission === null || mission.length === 0 ? (
+                <h4>Please update the mission</h4>
+              ) : mission ? (
+                <h4>{mission[0].description}</h4>
+              ) : null}
             </CardBody>
           </Card>
         </GridItem>
@@ -161,10 +164,10 @@ console.log("here", currentUser);
               multiline
               variant="outlined"
               rows={4}
-              value={mission}
+              value={usermission}
               className={classes.textInput}
               onChange={(event) => {
-                setMission(event.target.value);
+                setUserMission(event.target.value);
             }}
             />
           </DialogContent>
