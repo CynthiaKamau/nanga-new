@@ -44,10 +44,9 @@ export default function AssignedTasksPage() {
     }, []);
 
     
-    const handleOpen = e => {
-        e.preventDefault();
+    const handleOpen = (user) => {
 
-        history.push(`/admin/dashboard`);
+        history.push(`/admin/user-dashboard/id=${user}`);
     }
 
     return (
@@ -84,7 +83,7 @@ export default function AssignedTasksPage() {
                                             <TableCell>{moment(list.end_date).format('YYYY-MM-DD')}</TableCell>
                                             <TableCell>{list.status}</TableCell>
                                             <TableCell>
-                                                <IconButton aria-label="view" color="error" onClick={handleOpen} ><ArrowForward /></IconButton>
+                                                <IconButton aria-label="view" color="error" onClick={() => handleOpen(list.user_id)} ><ArrowForward /></IconButton>
                                             </TableCell>
                                         </TableRow>
                                     ))) : error ? (<TableRow> <TableCell> {error} </TableCell></TableRow> 

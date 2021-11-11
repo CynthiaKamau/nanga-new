@@ -24,6 +24,10 @@ import {
     EDIT_MISSION_FETCH_REQUEST,
     EDIT_MISSION_FAIL,
 
+    EDIT_VISION_SUCCESS,
+    EDIT_VISION_FETCH_REQUEST,
+    EDIT_VISION_FAIL,
+
 
 } from './types';
 
@@ -66,7 +70,7 @@ export const getRoles = () => {
             }
 
         } catch (error) {
-            dispatch({ type: ALL_ROLES_FAIL, payload: error.response.data.message })
+            dispatch({ type: ALL_ROLES_FAIL, payload: error.response })
         }
     }
 }
@@ -88,13 +92,13 @@ export const getStatus = () => {
             }
 
         } catch (error) {
-            dispatch({ type: ALL_STATUS_FAIL, payload: error.response.data.message })
+            dispatch({ type: ALL_STATUS_FAIL, payload: error.response })
         }
     }
 }
 
 //user mission
-export const getMission = () => {
+export const getMission = (id) => {
 
     return async function (dispatch) {
 
@@ -102,21 +106,22 @@ export const getMission = () => {
 
         try {
 
-            let response = await axios.get('/statuses/all_statuses')
+            let response = await axios.get(`/missions/fetchMissionbyUserId?user_id=${id}`)
             if (response.status == 200) {
+                console.log("here", response.data)
                 dispatch({ type: MISSION_SUCCESS, payload: response.data })
             } else {
                 dispatch({ type: MISSION_FAIL, payload: response.data })
             }
 
         } catch (error) {
-            dispatch({ type: MISSION_FAIL, payload: error.response.data.message })
+            dispatch({ type: MISSION_FAIL, payload: error.response })
         }
     }
 }
 
 //edit user mission
-export const editMission = (id) => {
+export const editMission = (user_id, usermission) => {
 
     const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
 
@@ -124,11 +129,14 @@ export const editMission = (id) => {
 
         dispatch({ type: EDIT_MISSION_FETCH_REQUEST });
 
-        const body = JSON.stringify({ id });
+        const body = JSON.stringify({
+            id : user_id,
+            description : usermission
+         });
 
         try {
 
-            let response = await axios.post('/statuses/all_statuses', body, config)
+            let response = await axios.post('/missions/update', body, config)
             if (response.status == 200) {
                 dispatch({ type: EDIT_MISSION_SUCCESS, payload: response.data })
             } else {
@@ -136,7 +144,7 @@ export const editMission = (id) => {
             }
 
         } catch (error) {
-            dispatch({ type: EDIT_MISSION_FAIL, payload: error.response.data.message })
+            dispatch({ type: EDIT_MISSION_FAIL, payload: error.response })
         }
     }
 }
@@ -150,7 +158,7 @@ export const getVision = () => {
 
         try {
 
-            let response = await axios.get('/statuses/all_statuses')
+            let response = await axios.get('/vision/all_vision')
             if (response.status == 200) {
                 dispatch({ type: VISION_SUCCESS, payload: response.data })
             } else {
@@ -158,7 +166,36 @@ export const getVision = () => {
             }
 
         } catch (error) {
-            dispatch({ type: VISION_FAIL, payload: error.response.data.message })
+            dispatch({ type: VISION_FAIL, payload: error.response.data })
+        }
+    }
+}
+
+//edit user vision
+export const editVision = (user_id, uservision) => {
+
+    const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
+
+    return async function (dispatch) {
+
+        dispatch({ type: EDIT_VISION_FETCH_REQUEST });
+
+        const body = JSON.stringify({
+            id : user_id,
+            description : uservision
+         });
+
+        try {
+
+            let response = await axios.post('/vision/update', body, config)
+            if (response.status == 200) {
+                dispatch({ type: EDIT_VISION_SUCCESS, payload: response.data })
+            } else {
+                dispatch({ type: EDIT_VISION_FAIL, payload: response.data })
+            }
+
+        } catch (error) {
+            dispatch({ type: EDIT_VISION_FAIL, payload: error.response })
         }
     }
 }

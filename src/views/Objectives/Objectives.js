@@ -93,6 +93,8 @@ export default function StrategicObjectives() {
 
     const saveObjective = async () => {
         // e.preventDefault();
+        setAddOpen(false);
+        setAddOpenTask(false);
         setshowloader(true);
         console.log("kpi uom", kpi_unit_of_measure)
     
@@ -801,7 +803,7 @@ export default function StrategicObjectives() {
                         }}
                         />
 
-                    ) : kpi_unit_of_measure === '%' ? (
+                    ) : kpi_unit_of_measure === '%' || kpi_unit_of_measure === '<%' || kpi_unit_of_measure === '%>' ? (
 
                         <TextField
                         autoFocus

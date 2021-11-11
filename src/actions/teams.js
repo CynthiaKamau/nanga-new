@@ -40,7 +40,7 @@ export const getTeams = () => {
             }
 
         } catch (error) {
-            dispatch({ type: ALL_TEAMS_FAIL, payload: error.response.data.message })
+            dispatch({ type: ALL_TEAMS_FAIL, payload: error.response })
         }
     }
 }
@@ -62,7 +62,7 @@ export const getTeam = (id) => {
             }
 
         } catch (error) {
-            dispatch({ type: TEAM_FAIL, payload: error.response.data.message })
+            dispatch({ type: TEAM_FAIL, payload: error.response })
         }
     }
 
@@ -73,7 +73,12 @@ export const addTeam = (name, teamlead, isparent, parentId) => {
 
     const config = { headers: { 'Content-Type': 'application/json' } }
     
-    const body = JSON.stringify({ name, teamlead, isparent, parentId });
+    const body = JSON.stringify({
+        name : name, 
+        teamlead : teamlead,
+        is_parent : isparent,
+        parent_team : parentId
+    });
     console.log("team", body);
 
     return async function (dispatch) {
@@ -83,7 +88,7 @@ export const addTeam = (name, teamlead, isparent, parentId) => {
         try {
 
             let response = await axios.post('/teams/create', body, config)
-            if (response.status == 200) {
+            if (response.status == 201) {
                 dispatch({ type: ADD_TEAM_SUCCESS, payload: response.data })
             } else {
                 dispatch({ type: ADD_TEAM_FAIL, payload: response.data })
@@ -149,7 +154,7 @@ export const deleteTeam = (id) => {
                 dispatch({ type: DELETE_TEAM_FAIL, payload: response.data })
             }
         } catch (error) {
-            dispatch({ type: ADD_TEAM_FAIL, payload: error.response.data.message })
+            dispatch({ type: ADD_TEAM_FAIL, payload: error.response })
         }
 
     }

@@ -23,6 +23,10 @@ import {
     EDIT_MISSION_FETCH_REQUEST,
     EDIT_MISSION_FAIL,
 
+    EDIT_VISION_SUCCESS,
+    EDIT_VISION_FETCH_REQUEST,
+    EDIT_VISION_FAIL,
+
 } from '../actions/types';
 
 const initialState = {
@@ -46,6 +50,7 @@ export default function(state = initialState, action) {
         case VISION_FETCH_REQUEST :
         case MISSION_FETCH_REQUEST :
         case EDIT_MISSION_FETCH_REQUEST :
+        case EDIT_VISION_FETCH_REQUEST :
             return {
                 ...state,
                 isLoading: true
@@ -70,6 +75,12 @@ export default function(state = initialState, action) {
                 error : null
             }
         case EDIT_MISSION_SUCCESS :
+        case EDIT_VISION_SUCCESS :
+            return {
+                ...state,
+                mission : action.payload.message,
+                error : null
+            }
         case MISSION_SUCCESS :
             return {
                 ...state,
@@ -105,7 +116,7 @@ export default function(state = initialState, action) {
                 statuses : null,
                 error: action.payload.message
             }
-        case EDIT_MISSION_FAIL :    
+        case EDIT_MISSION_FAIL :
         case MISSION_FAIL :
             return {
                 ...state,
@@ -113,7 +124,8 @@ export default function(state = initialState, action) {
                 mission: null,
                 error: action.payload.message
             }
-
+            
+        case EDIT_VISION_FAIL :     
         case VISION_FAIL :
             return {
                 ...state,

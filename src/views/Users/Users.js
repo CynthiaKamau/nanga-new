@@ -25,7 +25,7 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
 import JsonData from "../../data/data.json";
-import { getUsers, editUser, addUser } from "../../actions/users";
+import { getUsers, editUser } from "../../actions/users";
 import swal from "sweetalert2";
 import Loader from "react-loader-spinner";
 import { CircularProgress } from "@material-ui/core";
@@ -40,8 +40,11 @@ export default function UsersPage() {
   const classes = useStyles();
   const dispatch = useDispatch();
 
-  const { items ,item, error } = useSelector(state => state.user);
+  const { items , item, error } = useSelector(state => state.user);
   const { user : currentUser } = useSelector(state => state.auth);
+
+  console.log("here error", error)
+  console.log("here item", item)
 
   useEffect(() => {
     dispatch(getUsers());
@@ -60,11 +63,13 @@ export default function UsersPage() {
   const [user_id, SetUserId] = useState("");
   const [showloader, setshowloader] = useState(false);
   const [updated_by, setUpdated_by] = useState(currentUser.id);
+  const [created_by, setCreatedBy] = useState(currentUser.id);
   const [email, setEmail] = useState("");
   const [extension, setExtension] = useState("");
   const [view, setView] = useState(true);
   const [disabled, setDisabled] = useState(false);
   const [search_user, setSearchUser] = useState("");
+  const [search_email, setSearchEmail] = useState("");
   const [showSearchLoading, setShowSearchLoading] = useState("");
   const [setUserError, setShowUserError] = useState("");
   
@@ -91,24 +96,56 @@ export default function UsersPage() {
     setAddOpen(true);
   };
 
-  const saveUser = e => {
+  const saveUser = async (e) => {
     e.preventDefault();
     setshowloader(true);
 
-    console.log("save user", name, status, team, role )
+    const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
+    
+    const body = JSON.stringify({
+        full_name : search_user ,
+        team : team,
+        role : role,
+        email : search_email,
+        extension : 0,
+        view : true,
+        created_by : created_by
+    });
 
-    dispatch(addUser(name, status, team, role))
-    if (error) {
-      setshowloader(false);
+    console.log("save user", search_user,status, created_by, team, role, search_email, setCreatedBy )
+
+    try {
+
+      let response = await axios.post('/users', body, config)
+      if (response.status == 201) {
+        let item = response.data.message
+        setshowloader(false);
         swal.fire({
-            title: "Error",
-            text: error,
-            icon: "error",
-            dangerMode: true
+            title: "Success",
+            text: item,
+            icon: "success",
         });
+      } else {
 
-    } else if(item) {
-      location.reload();
+          let error = response.data.message
+          setshowloader(false);
+          swal.fire({
+              title: "Error",
+              text: error,
+              icon: "error",
+              dangerMode: true
+          });
+      }
+    } catch (error) {
+
+      let err = error.response.data.message
+          setshowloader(false);
+          swal.fire({
+              title: "Error",
+              text: err,
+              icon: "error",
+              dangerMode: true
+          });
     }
 
   }
@@ -205,6 +242,7 @@ export default function UsersPage() {
 
           } else {
             setSearchUser(response.data.firstname + ' ' + response.data.lastname);
+            setSearchEmail(response.data.email);
           }
 
         }
@@ -246,7 +284,7 @@ export default function UsersPage() {
               </p>
             </CardHeader>
             <CardBody>
-              { currentUser.role_id=== 0 ? (<div className={classes.btnRight}><Button color="primary" size="lg" onClick={handleAddClickOpen}> Add User </Button> </div> ) : null }
+              { currentUser.role_id === 0 ? (<div className={classes.btnRight}><Button color="primary" size="lg" onClick={handleAddClickOpen}> Add User </Button> </div> ) : null }
 
               <Table>
                 <TableHead>
@@ -316,6 +354,18 @@ export default function UsersPage() {
                         type="text"
                         fullWidth
                         value={search_user}
+                        variant="outlined"
+                      />  
+
+                      <label style={{ fontWeight: 'bold', color: 'black' }}> Email : </label>
+                      <TextField
+                        autoFocus
+                        margin="dense"
+                        id="email"
+                        label="Email"
+                        type="text"
+                        fullWidth
+                        value={search_email}
                         variant="outlined"
                       />  
 

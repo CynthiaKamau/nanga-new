@@ -44,7 +44,7 @@ export const getObjectives = () => {
             }
 
         } catch (error) {
-            dispatch({ type: ALL_OBJECTIVES_FAIL, payload: error.response.data.message })
+            dispatch({ type: ALL_OBJECTIVES_FAIL, payload: error.response })
         }
     }
 }
@@ -66,7 +66,7 @@ export const getUserObjectives = (id) => {
             }
 
         } catch (error) {
-            dispatch({ type: OBJECTIVE_FAIL, payload: error.response.data.message })
+            dispatch({ type: OBJECTIVE_FAIL, payload: error.response })
         }
     }
 
@@ -93,7 +93,7 @@ export const addUserObjective = (user_id, target, start_date, kpi_id, end_date, 
                 dispatch({ type: ADD_OBJECTIVE_FAIL, payload: response.data })
             }
         } catch (error) {
-            dispatch({ type: ADD_OBJECTIVE_FAIL, payload: error.response.data.message })
+            dispatch({ type: ADD_OBJECTIVE_FAIL, payload: error.response })
         }
 
     }
@@ -118,7 +118,7 @@ export const getObjectiveTasks = (id) => {
             }
 
         } catch (error) {
-            dispatch({ type: OBJECTIVE_TASKS_FAIL, payload: error.response.data.message })
+            dispatch({ type: OBJECTIVE_TASKS_FAIL, payload: error.response })
         }
     }
 
@@ -170,7 +170,7 @@ export const deleteUserObjective = (id) => {
                 dispatch({ type: DELETE_OBJECTIVE_FAIL, payload: response.data })
             }
         } catch (error) {
-            dispatch({ type: ADD_OBJECTIVE_FAIL, payload: error.response.data.message })
+            dispatch({ type: ADD_OBJECTIVE_FAIL, payload: error.response })
         }
 
     }

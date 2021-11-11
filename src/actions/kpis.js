@@ -40,7 +40,7 @@ export const getKpis = () => {
             }
 
         } catch (error) {
-            dispatch({ type: ALL_KPIS_FAIL, payload: error.response.data.message })
+            dispatch({ type: ALL_KPIS_FAIL, payload: error.response })
         }
     }
 }
@@ -62,7 +62,7 @@ export const getUserKpis = (id) => {
             }
 
         } catch (error) {
-            dispatch({ type: KPI_FAIL, payload: error.response.data.message })
+            dispatch({ type: KPI_FAIL, payload: error.response })
         }
     }
 
@@ -156,7 +156,7 @@ export const deleteKpi = (id) => {
                 dispatch({ type: DELETE_KPI_FAIL, payload: response.data })
             }
         } catch (error) {
-            dispatch({ type: ADD_KPI_FAIL, payload: error.response.data.message })
+            dispatch({ type: ADD_KPI_FAIL, payload: error.response })
         }
 
     }

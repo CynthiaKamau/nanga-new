@@ -28,7 +28,6 @@ import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/picker
 // import JsonData from "../../data/data.json";
 import { getUserObjectives } from "actions/objectives";
 import { getKpis } from "actions/kpis";
-import { getCategories } from "actions/data";
 import swal from "sweetalert2";
 import Loader from "react-loader-spinner";
 import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
@@ -40,6 +39,7 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import { getMission, getVision } from "actions/data";
 
 const useStyles = makeStyles(styles);
 
@@ -51,12 +51,13 @@ export default function Dashboard() {
 
   const { user: currentUser } = useSelector(state => state.auth);
   const { items } = useSelector(state => state.objective);
-  // const {  categories } = useSelector(state => state.data);
+  const {  mission, vision, error } = useSelector(state => state.data);
   const {  items : kpis } = useSelector(state => state.kpi);
 
   useEffect(() => {
     dispatch(getUserObjectives(currentUser.id));
-    dispatch(getCategories());
+    dispatch(getMission(currentUser.id));
+    dispatch(getVision());
     dispatch(getKpis());
     setUserId(currentUser.id);
     setCreatedBy(currentUser.id);
@@ -69,6 +70,7 @@ export default function Dashboard() {
   const [addopentask, setAddOpenTask] = useState("");
   const [addopenindividualtask, setAddOpenIndividualTask] = useState(false);
   const [editopenmission, setEditMissionOpen] = useState(false);
+  const [editopenvision, setEditVisionOpen] = useState(false);
   const [task_description, setTaskDescription] = useState("");
   const [start_date, setStartDate] = useState("");
   const [end_date, setEndDate] = useState("");
@@ -77,27 +79,69 @@ export default function Dashboard() {
   const [user_id, setUserId] = useState("");
   const [showloader, setshowloader] = useState(false); 
   const [created_by, setCreatedBy] = useState("");
-  const [mission, setMission] = useState("");
+  const [usermission, setUserMission] = useState("");
+  const [uservision, setUserVision] = useState("");
   const [show_tasks, setShowTasks] = useState(false);
   const [setIndex, setSelectedIndex] = useState("");
   const [err, setError] = useState("");
   const [obj_tasks, setObjTasks] = useState("");
   const [ objectiveId, setObjectiveId] = useState("");
-
+  const [ missionId, setMissionId] = useState("");
+  const [ visionId, setVisionId] = useState("");
   // const [newuser, setNewUser] = useState(true);
 
   // const categories = JsonData.Categories;
   // const kpis = JsonData.KPIS;
 
   console.log("user mission", mission)
+  console.log("user vision", vision)
+
 
   const handleAddClickOpen = () => {
     setAddOpen(true);
   };
 
-  const saveObjective = async () => {
-    // e.preventDefault();
-    setshowloader(true);
+  const handleAddClose = () => {
+    setAddOpen(false);
+    setAddOpenTask(false);
+  };
+
+  const handleAddTaskClose = () => {
+    setAddOpenTask(false);
+  };
+
+  const handleAddTaskOpen = () => {
+    setAddOpenTask(true);
+  }
+
+  // const handleRedirect = () => {
+  //   history.push('/admin/tasks');
+  // }
+
+  const handleAddIndividualTaskOpen = () => {
+    setAddOpenIndividualTask(true);
+  }
+
+  const handleAddIndividualTaskClose = () => {
+      setAddOpenIndividualTask(false);
+  }
+
+  const handleEditMissionClose = () => {
+    setEditMissionOpen(false);
+  };
+
+  const handleEditVisionClose = () => {
+    setEditVisionOpen(false);
+  };
+
+  const saveObjective = async (e) => {
+    e.preventDefault();
+    // setAddOpen(false);
+    // setAddOpenTask(false);
+
+    if (description == "", end_date == "", kpi_id == "", start_date == "", target == "", user_id == "", created_by == "", task_description == "", task_start_date == "", task_end_date == "" ) {
+      return false;
+    }
 
     let end_date = moment(end_date).format('YYYY-MM-DD');
     let start_date = moment(start_date).format('YYYY-MM-DD');
@@ -111,6 +155,7 @@ export default function Dashboard() {
       let response = await axios.post('/objectives/create', body, config);
     
         if (response.data.success === false) {
+          error(response.data)
           setshowloader(false);
           swal.fire({
               title: "Error",
@@ -119,11 +164,10 @@ export default function Dashboard() {
               dangerMode: true
           });
 
-          console.log(response)
         } else {
           setshowloader(false);
 
-          console.log("objective id", response.data.data.id)
+          console.log("objective ", response.data)
 
           let task_end_date = moment(task_end_date).format('YYYY-MM-DD');
           let task_start_date = moment(task_start_date).format('YYYY-MM-DD');
@@ -143,6 +187,7 @@ export default function Dashboard() {
 
           if (response1.data.success === false) {
             setshowloader(false);
+            error(response1.data)
             swal.fire({
                 title: "Error",
                 text: "An error occurred, please try again!",
@@ -150,7 +195,6 @@ export default function Dashboard() {
                 dangerMode: true
             });
 
-          console.log(response1)
           } else {
             console.log("task", response1.data.data)
 
@@ -168,53 +212,140 @@ export default function Dashboard() {
       console.log(error);
     }
 
-
-    // dispatch(addUserObjective(description, end_date, kpi_id, start_date, target, user_id))
-    // if (error) {
-    //     setshowloader(false);
-    //     swal.fire({
-    //         title: "Error",
-    //         text: error,
-    //         icon: "error",
-    //         dangerMode: true
-    //     });
-    // } else if (item) {
-    //     location.reload()
-    // }
-
-  }
-
-  const handleAddClose = () => {
-    setAddOpen(false);
-    setAddOpenTask(false);
-  };
-
-  const handleAddTaskClose = () => {
-    setAddOpenTask(false);
-  };
-
-  const handleEditMissionClose = () => {
-    setEditMissionOpen(false);
-  };
-
-  // const handleRedirect = () => {
-  //   history.push('/admin/tasks');
-  // }
-
-  const handleAddIndividualTaskOpen = () => {
-    setAddOpenIndividualTask(true);
-  }
-
-  const handleAddIndividualTaskClose = () => {
-      setAddOpenIndividualTask(false);
   }
 
   const handleEditMissionClickOpen = () => {
     setEditMissionOpen(true);
   };
 
+  const handleEditVisionClickOpen = () => {
+    setEditVisionOpen(true);
+  };
+
+  const setEditingMission = (mission) => {
+    setUserMission(mission[0].description)
+    setMissionId(mission[0].id)
+  }
+
+  const setEditingVision = (vision) => {
+    setUserVision(vision[0].description)
+    setVisionId(vision[0].id)
+  }
+
+  const editMission = async (e) => {
+    e.preventDefault();
+    setshowloader(true);
+
+    const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
+
+    const body = JSON.stringify({
+        userId : user_id,
+        updatedBy : user_id,
+        description : usermission,
+        id : missionId
+      });
+
+    console.log("mission", body)
+
+    try {
+
+        let response = await axios.post('/missions/update', body, config)
+        if (response.status == 201) {
+          setshowloader(false);
+            swal.fire({
+              title: "Success",
+              text: mission,
+              icon: "success",
+            });   
+        } else {
+          setshowloader(false);
+          swal.fire({
+            title: "Error",
+            text: "Failed!",
+            icon: "error",
+            dangerMode: true
+          });
+        }
+
+    } catch (error) {
+        setshowloader(false);
+        swal.fire({
+          title: "Error",
+          text: error,
+          icon: "error",
+          dangerMode: true
+        });
+    }
+  }
+
+
+  const editVision = async (e) => {
+    e.preventDefault();
+    setshowloader(true);
+
+    const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
+
+    const body = JSON.stringify({
+        description : uservision,
+        id : visionId
+      });
+
+    console.log("vision", body)
+
+    try {
+
+        let response = await axios.post('vision/update', body, config)
+        if (response.status == 201) {
+          setshowloader(false);
+            swal.fire({
+              title: "Success",
+              text: "Vision updated successfully!",
+              icon: "success",
+            });   
+        } else {
+          setshowloader(false);
+          swal.fire({
+            title: "Error",
+            text: "Failed!",
+            icon: "error",
+            dangerMode: true
+          });
+        }
+
+    } catch (error) {
+        setshowloader(false);
+        swal.fire({
+          title: "Error",
+          text: error,
+          icon: "error",
+          dangerMode: true
+        });
+    }
+
+  }
+
+
+  // }
+
+  const setShowObjectivesTask = (id) => {
+
+    setObjectiveId(id);
+      console.log("obj id", objectiveId)
+
+      axios.get(`/tasks/fetchTasksbyObjectiveId?objective_id=${id}`)
+          .then(response => setObjTasks(response.data))
+          .catch(error => setError("No tasks found", console.log(error))
+          )
+
+  }
+
   const saveIndividualTask = async (e) => {
     e.preventDefault();
+
+    if ( user_id == "", created_by == "", task_description == "", task_start_date == "", task_end_date == "" ) {
+      return false;
+    }
+
     setshowloader(true);
 
     const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
@@ -228,7 +359,7 @@ export default function Dashboard() {
     end_date: task_end_date,
     user_id: user_id,
     created_by: created_by,
-    objective_id: 17
+    objective_id: objectiveId
     }
 
     console.log("individual task", task)
@@ -247,7 +378,7 @@ export default function Dashboard() {
         });
 
     } else {
-
+      setshowloader(false);
         swal.fire({
             title: "Success",
             text: "Task added successfully!",
@@ -257,25 +388,6 @@ export default function Dashboard() {
     }
   }
 
-  const setEditingMission = () => {
-    setMission()
-  }
-
-  const editMission = () => {
-
-  }
-
-  const setShowObjectivesTask = (id) => {
-
-    setObjectiveId(id);
-      console.log("obj id", objectiveId)
-
-      axios.get(`/tasks/fetchTasksbyObjectiveId?objective_id=${id}`)
-          .then(response => setObjTasks(response.data))
-          .catch(error => setError("No tasks found", console.log(error))
-          )
-
-  }
 
   return (
     <div>
@@ -285,10 +397,11 @@ export default function Dashboard() {
       <GridItem xs={12} sm={12} md={12}>
           <h3 className={classes.textBold}> THE VISION</h3>
           <Card>
+            <Grid container justify="flex-end" className={classes.cardGrey}>
+            { currentUser.role_id === 0 ? (<IconButton aria-label="edit" color="primary" onClick={() => { handleEditVisionClickOpen(); setEditingVision(vision) }} ><EditIcon style={{ color : '#000000'}}/></IconButton>) : null}
+            </Grid>
             <CardBody className={classes.cardGrey}>
-              <h4 >
-                Build the most valuable financial services business in our industry in Africa by delivering on the 6X more strategy.
-              </h4>
+              <h4 > {vision[0].description}</h4>
             </CardBody>
           </Card>
         </GridItem>
@@ -297,25 +410,29 @@ export default function Dashboard() {
           <h3 className={classes.textBold}> PERSONAL MISSION </h3>
           <Card>
             <Grid container justify="flex-end" className={classes.cardGrey}>
-              <IconButton aria-label="edit" color="primary" onClick={() => { handleEditMissionClickOpen(); setEditingMission() }} ><EditIcon style={{ color : '#000000'}}/></IconButton>
+              <IconButton aria-label="edit" color="primary" onClick={() => { handleEditMissionClickOpen(); setEditingMission(mission) }} ><EditIcon style={{ color : '#000000'}}/></IconButton>
             </Grid>
 
             <CardBody className={classes.cardGrey}>
-              <h4>
-                Provide Exceptional Strategic Support to the Group in order to Profitably Grow our Customer Base off a Solid Foundation.
-              </h4>
+              { mission === undefined || mission === null ? (
+                <h4>Please update your mission</h4>
+              ) : mission ? (
+                <h4>{mission[0].description}</h4>
+              ) : null}
             </CardBody>
           </Card>
         </GridItem>
 
         <Dialog open={addopen} onClose={handleAddClose}>
-          <DialogTitle>Strategic Objective</DialogTitle>
-          <DialogContent>
+            <DialogTitle>Strategic Objective</DialogTitle>
+            <DialogContent>
             <DialogContentText>
               Create New  Strategic Objective
             </DialogContentText>
+              
               <TextField
                 id="outlined-multiline-static"
+                required
                 fullWidth
                 label="Description"
                 multiline
@@ -330,103 +447,109 @@ export default function Dashboard() {
                 }}
               />
 
-            <Grid item xs={6} lg={6} xl={6} sm={12}>
-              <label> KPI : </label>
-              <TextField
-                id="outlined-select-kpi"
-                select
-                fullWidth
-                variant="outlined"
-                label="Select"
-                className={classes.textInput}
-                value={kpi_id}
-                onChange={(event) => {
-                  setKpi(event.target.value);
-                }}
-                helperText="Please select your kpi"
-              >
-                {kpis.map((option) => (
-                  <MenuItem key={option.id} value={option.id}>
-                    {option.title}
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-
-            <Grid item xs={6} lg={6} xl={6} sm={12}>
-              <TextField
-                autoFocus
-                margin="dense"
-                id="target"
-                label="Target"
-                variant="outlined"
-                className={classes.textInput}
-                type="text"
-                fullWidth
-                style={{ marginBottom: '15px' }}
-                value={target}
-                onChange={(event) => {
-                  setTarget(event.target.value);
-                }}
-              />
-            </Grid>
-
-            <Grid container spacing={2}>
               <Grid item xs={6} lg={6} xl={6} sm={12}>
-                <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                  <KeyboardDatePicker
-                    margin="normal"
-                    id="date-picker-dialog"
-                    helperText="Set start date"
-                    format="yyyy/dd/MM"
-                    fullWidth
-                    inputVariant="outlined"
-                    value={start_date}
-                    onChange={setStartDate}
-                    KeyboardButtonProps={{
-                      'aria-label': 'change date',
-                    }}
-                  />
-                </MuiPickersUtilsProvider>
+                <label> KPI : </label>
+                <TextField
+                  id="outlined-select-kpi"
+                  select
+                  required
+                  fullWidth
+                  variant="outlined"
+                  label="Select"
+                  className={classes.textInput}
+                  value={kpi_id}
+                  onChange={(event) => {
+                    setKpi(event.target.value);
+                    // setUomValue()
+                  }}
+                  helperText="Please select your kpi"
+                >
+                  {kpis.map((option) => (
+                    <MenuItem key={option.id} value={option.id}>
+                      {option.title}
+                    </MenuItem>
+                  ))}
+                </TextField>
               </Grid>
 
               <Grid item xs={6} lg={6} xl={6} sm={12}>
-                <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                  <KeyboardDatePicker
-                    margin="normal"
-                    id="date-picker-dialog"
-                    helperText="Set end date"
-                    format="yyyy/dd/MM"
-                    fullWidth
-                    inputVariant="outlined"
-                    value={end_date}
-                    onChange={setEndDate}
-                    KeyboardButtonProps={{
-                      'aria-label': 'change date',
-                    }}
-                  />
-                </MuiPickersUtilsProvider>
+                <TextField
+                  autoFocus
+                  margin="dense"
+                  helperText="Target is required"
+                  required
+                  id="target"
+                  label="Target"
+                  variant="outlined"
+                  className={classes.textInput}
+                  type="text"
+                  fullWidth
+                  style={{ marginBottom: '15px' }}
+                  value={target}
+                  onChange={(event) => {
+                    setTarget(event.target.value);
+                  }}
+                />
               </Grid>
-            </Grid>  
 
+              <Grid container spacing={2}>
+                <Grid item xs={6} lg={6} xl={6} sm={12}>
+                  <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                    <KeyboardDatePicker
+                      margin="normal"
+                      id="date-picker-dialog"
+                      helperText="Set start date"
+                      required
+                      format="yyyy/dd/MM"
+                      fullWidth
+                      inputVariant="outlined"
+                      value={start_date}
+                      onChange={setStartDate}
+                      KeyboardButtonProps={{
+                        'aria-label': 'change date',
+                      }}
+                    />
+                  </MuiPickersUtilsProvider>
+                </Grid>
 
-          </DialogContent>
-          <DialogActions>
-            <Button color="danger" onClick={handleAddClose}>Cancel</Button>
-            { showloader === true  ? (
-              <div style={{ textAlign: "center", marginTop: 10 }}>
-                  <Loader
-                      type="Puff"
-                      color="#00BFFF"
-                      height={150}
-                      width={150}
-                  />
-              </div>
-              ) :
-              (
-              <Button color="primary" onClick={() => {handleAddClose();}}>Save</Button>
-              )}
-          </DialogActions>
+                <Grid item xs={6} lg={6} xl={6} sm={12}>
+                  <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                    <KeyboardDatePicker
+                      margin="normal"
+                      id="date-picker-dialog"
+                      helperText="Set end date"
+                      required
+                      format="yyyy/dd/MM"
+                      fullWidth
+                      inputVariant="outlined"
+                      value={end_date}
+                      onChange={setEndDate}
+                      KeyboardButtonProps={{
+                        'aria-label': 'change date',
+                      }}
+                    />
+                  </MuiPickersUtilsProvider>
+                </Grid>
+              </Grid>  
+
+            </DialogContent>
+            <DialogActions>
+              <Button color="danger" onClick={handleAddClose}>Cancel</Button>
+              { showloader === true  ? (
+                <div style={{ textAlign: "center", marginTop: 10 }}>
+                    <Loader
+                        type="Puff"
+                        color="#00BFFF"
+                        height={150}
+                        width={150}
+                    />
+                </div>
+                ) :
+                (
+                <Button color="primary" onClick={() => {handleAddTaskOpen();}}>Save</Button>
+                )}
+            </DialogActions>
+
         </Dialog>
 
         <Dialog open={addopentask} onClose={handleAddTaskClose}>
@@ -524,7 +647,7 @@ export default function Dashboard() {
           </DialogActions>
         </Dialog>
 
-        <Dialog open={editopenmission} onClose={handleEditMissionClose}>
+        <Dialog open={editopenmission} onClose={handleEditMissionClose} disableEnforceFocus>
           <DialogTitle>Personal Mission</DialogTitle>
           <DialogContent>
             <DialogContentText>
@@ -539,10 +662,10 @@ export default function Dashboard() {
               multiline
               variant="outlined"
               rows={4}
-              value={mission}
+              value={usermission}
               className={classes.textInput}
               onChange={(event) => {
-                setMission(event.target.value);
+                setUserMission(event.target.value);
             }}
             />
           </DialogContent>
@@ -559,7 +682,48 @@ export default function Dashboard() {
               </div>
               ) :
               (
-                <Button color="primary" onClick={(e) => { handleEditMissionClose(); editMission(e); }}>Save</Button>
+                <Button color="primary" onClick={(e) => { handleEditMissionClose(); editMission(e) }}>Save</Button>
+              )}
+
+          </DialogActions>
+        </Dialog>
+
+        <Dialog open={editopenvision} onClose={handleEditVisionClose}>
+          <DialogTitle>Vision</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Edit Vision
+            </DialogContentText>
+
+            <TextField
+              id="outlined-multiline-static"
+              fullWidth
+              label="Vision"
+              type="text"
+              multiline
+              variant="outlined"
+              rows={4}
+              value={uservision}
+              className={classes.textInput}
+              onChange={(event) => {
+                setUserVision(event.target.value);
+            }}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button color="danger" onClick={handleEditVisionClose}>Cancel</Button>
+            { showloader === true  ? (
+              <div style={{ textAlign: "center", marginTop: 10 }}>
+                  <Loader
+                      type="Puff"
+                      color="#00BFFF"
+                      height={150}
+                      width={150}
+                  />
+              </div>
+              ) :
+              (
+                <Button color="primary" onClick={(e) => { handleEditVisionClose(); editVision(e); }}>Save</Button>
               )}
           </DialogActions>
         </Dialog>
@@ -573,21 +737,12 @@ export default function Dashboard() {
 
                 <TextField
                     fullWidth
-                    label="Objective"
-                    id="objective"
-                    type="text"
-                    variant="outlined"
-                    disabled
-                    value={description}
-                    className={classes.textInput}
-                />
-                <TextField
-                    fullWidth
                     label="Description"
                     id="task_description"
                     multiline
                     rows={4}
-                    required
+                    validators={['required']}
+                    errorMessages={['this field is required']}
                     variant="outlined"
                     className={classes.textInput}
                     type="text"
@@ -604,7 +759,8 @@ export default function Dashboard() {
                             <KeyboardDatePicker
                                 margin="normal"
                                 id="date-picker-dialog"
-                                helperText="Set start date"
+                                validators={['required']}
+                                errorMessages={['this field is required']}
                                 format="yyyy/dd/MM"
                                 fullWidth
                                 inputVariant="outlined"
@@ -622,7 +778,8 @@ export default function Dashboard() {
                             <KeyboardDatePicker
                                 margin="normal"
                                 id="date-picker-dialog"
-                                helperText="Set end date"
+                                validators={['required']}
+                                errorMessages={['this field is required']}
                                 format="yyyy/dd/MM"
                                 fullWidth
                                 inputVariant="outlined"
@@ -652,6 +809,7 @@ export default function Dashboard() {
                     <Button color="primary" onClick={(e) => { handleAddIndividualTaskClose(); saveIndividualTask(e) }}>Save</Button>
                 )}
             </DialogActions>
+
         </Dialog>
 
       </GridContainer>
@@ -671,7 +829,7 @@ export default function Dashboard() {
                 <Card className={classes.cardBodyRed} key={index} style={{ marginBottom: '0'}} >
                   <GridItem xs={12} sm={12} md={12}>
                     <h4 className={classes.textBold}> {list.description} </h4>
-                    <h6 className={classes.textGreen}> 6. Management actions</h6>
+                    {/* <h6 className={classes.textGreen}> 6. Management actions</h6> */}
                   </GridItem>
                   <CardBody className={classes.cardBody}>
                       <GridItem xs={12} sm={6} md={2}>

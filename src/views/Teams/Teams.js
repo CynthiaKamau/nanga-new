@@ -24,11 +24,11 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
-import { getTeams, addTeam, editTeam } from "../../actions/teams"
+import { getTeams, editTeam } from "../../actions/teams"
 import swal from "sweetalert2";
 import Loader from "react-loader-spinner";
 import JsonData from "../../data/data.json"
-
+import axios from "axios";
 
 import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
 
@@ -55,32 +55,63 @@ export default function TeamsPage() {
     const [id, setId] = useState("");
     const [showloader, setshowloader] = useState(false);
     const [updated_by, setUpdated_by] = useState(currentUser.id);
+    const [created_by, setCreatedBy] = useState(currentUser.id);
 
 
     const handleAddClickOpen = () => {
         setAddOpen(true);
     };
 
-    const saveTeam = e => {
+    const saveTeam = async (e) => {
         e.preventDefault();
         setshowloader(true);
+        console.log(setCreatedBy)
+        
+        const config = { headers: { 'Content-Type': 'application/json' } }
     
-        console.log("save user", name, teamlead, isparent, parentId )
-    
-        dispatch(addTeam(name, teamlead, isparent, parentId))
-        if (error) {
-          setshowloader(false);
+        const body = JSON.stringify({
+            name : name, 
+            teamlead : teamlead,
+            is_parent : isparent,
+            parent_team : parentId,
+            created_by : created_by
+        });
+        console.log("team", body);
+
+        try {
+
+            let response = await axios.post('/teams', body, config)
+            if (response.status == 201) {
+                setshowloader(false);
+                let item = response.data.message
+                swal.fire({
+                    title: "Success",
+                    text: item,
+                    icon: "success",
+                });
+            } else {
+                let error = response.data.message
+                setshowloader(false);
+                swal.fire({
+                    title: "Error",
+                    text: error,
+                    icon: "error",
+                    dangerMode: true
+                });
+            }
+        } catch (error) {
+            let err = error.response.data.message
+            setshowloader(false);
             swal.fire({
                 title: "Error",
-                text: error,
+                text: err,
                 icon: "error",
                 dangerMode: true
             });
-    
-        } else if(item) {
-          location.reload();
         }
+
     }
+    
 
     const handleEditClickOpen = () => {
         setEditOpen(true);

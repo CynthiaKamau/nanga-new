@@ -91,7 +91,7 @@ export const getTask = (id) => {
             }
 
         } catch (error) {
-            dispatch({ type: TASK_FAIL, payload: error.response.data.message })
+            dispatch({ type: TASK_FAIL, payload: error.response })
         }
     }
 
@@ -118,7 +118,7 @@ export const addTask = (description, end_date, start_date, objective_id, user_id
                 dispatch({ type: ADD_TASK_FAIL, payload: response.data })
             }
         } catch (error) {
-            dispatch({ type: ADD_TASK_FAIL, payload: error.response.data.message })
+            dispatch({ type: ADD_TASK_FAIL, payload: error.response })
         }
 
     }
@@ -146,7 +146,7 @@ export const addAssignedTask = (description, end_date, start_date, objective_id,
                 dispatch({ type: ADD_TASK_FAIL, payload: response.data })
             }
         } catch (error) {
-            dispatch({ type: ADD_TASK_FAIL, payload: error.response.data.message })
+            dispatch({ type: ADD_TASK_FAIL, payload: error.response })
         }
 
     }
@@ -172,7 +172,7 @@ export const editTask = (description, end_date, start_date, objective_id, user_i
                 dispatch({ type: EDIT_TASK_FAIL, payload: response.data })
             }
         } catch (error) {
-            dispatch({ type: EDIT_TASK_FAIL, payload: error.response.data.message })
+            dispatch({ type: EDIT_TASK_FAIL, payload: error.response })
         }
 
     }
@@ -199,7 +199,7 @@ export const deleteTask = (id) => {
                 dispatch({ type: DELETE_TASK_FAIL, payload: response.data })
             }
         } catch (error) {
-            dispatch({ type: ADD_TASK_FAIL, payload: error.response.data.message })
+            dispatch({ type: ADD_TASK_FAIL, payload: error.response })
         }
 
     }
