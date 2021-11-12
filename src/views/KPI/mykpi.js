@@ -224,14 +224,14 @@ export default function myKpis() {
                     <TableBody>
                         {items ? ( items.map((list, index) => (
                             <TableRow key={index}>
-                                <TableCell>{list.description}</TableCell>
-                                <TableCell>{list.kpi.kpi_unit_of_measure}</TableCell>
-                                <TableCell>{list.kpi.categories.description} </TableCell>
-                                <TableCell>{list.target} </TableCell>
-                                <TableCell>{list.target_achieved} </TableCell>
-                                <TableCell>{list.target_achieved_on_review} </TableCell>
+                                <TableCell>{list.objectives.description}</TableCell>
+                                <TableCell>{list.objectives.kpi.kpi_unit_of_measure}</TableCell>
+                                <TableCell>{list.objectives.kpi.categories.description} </TableCell>
+                                <TableCell>{list.objectives.target} </TableCell>
+                                <TableCell>{list.objectives.target_achieved} </TableCell>
+                                <TableCell>{list.objectives.target_achieved_on_review} </TableCell>
                                 <TableCell>
-                                <IconButton aria-label="edit" color="primary" onClick={() => { handleEditClickOpen(); setEditing(list) }} ><EditIcon/></IconButton>
+                                <IconButton aria-label="edit" color="primary" onClick={() => { handleEditClickOpen(); setEditing(list.objectives) }} ><EditIcon/></IconButton>
                                 {/* <IconButton aria-label="delete" color="secondary" onClick={() => { handleDeleteClickOpen(); setDelete(list) }} ><DeleteIcon /></IconButton> */}
                                 </TableCell>
                             </TableRow>
