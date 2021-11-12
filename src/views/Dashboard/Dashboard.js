@@ -399,7 +399,12 @@ export default function Dashboard() {
             { currentUser.role_id === 0 ? (<IconButton aria-label="edit" color="primary" onClick={() => { handleEditVisionClickOpen(); setEditingVision(vision) }} ><EditIcon style={{ color : '#000000'}}/></IconButton>) : null}
             </Grid>
             <CardBody className={classes.cardGrey}>
-              <h4 > {vision[0].description}</h4>
+              {vision === undefined || vision === null || vision.length === 0 ? (
+                <h4> </h4>
+              ) : vision ? (
+                <h4 > {vision[0].description}</h4>
+              ) : null}
+              
             </CardBody>
           </Card>
         </GridItem>
@@ -826,7 +831,7 @@ export default function Dashboard() {
 
                 <Card className={classes.cardBodyRed} key={index} style={{ marginBottom: '0'}} >
                   <GridItem xs={12} sm={12} md={12}>
-                    <h4 className={classes.textBold}> {list.description} </h4>
+                    <h4 className={classes.textBold}> {list.objectives.description} </h4>
                     {/* <h6 className={classes.textGreen}> 6. Management actions</h6> */}
                   </GridItem>
                   <CardBody className={classes.cardBody}>
@@ -834,7 +839,7 @@ export default function Dashboard() {
                           <Card className={classes.cardBodyRed}>
                               <CardBody>
                                   <h3 className={classes.cardTitle}>
-                                      2 <small>Off Ttack</small>
+                                      {list.offtrack} <small>Off Ttack</small>
                                   </h3>
                               </CardBody>
                           </Card>
@@ -843,7 +848,7 @@ export default function Dashboard() {
                           <Card className={classes.cardBodyPurple}>
                               <CardBody>
                                       <h3 className={classes.cardTitle}>
-                                          1 <small>Cancelled</small>
+                                      {list.cancelled} <small>Cancelled</small>
                                       </h3>
                               </CardBody>
                           </Card>
@@ -852,7 +857,7 @@ export default function Dashboard() {
                           <Card className={classes.cardBodyYellow}>
                               <CardBody>
                                   <h3 className={classes.cardTitle}>
-                                      0 <small>Postponed</small>
+                                  {list.postPoned} <small>Postponed</small>
                                   </h3>
                               </CardBody>
                           </Card>
@@ -861,7 +866,7 @@ export default function Dashboard() {
                           <Card className={classes.cardBodyOrange}>
                               <CardBody>
                                   <h3 className={classes.cardTitle}>
-                                      3 <small>Ongoing</small>
+                                  {list.onGoing} <small>Ongoing</small>
                                   </h3>
                               </CardBody>
                           </Card>
@@ -870,7 +875,7 @@ export default function Dashboard() {
                           <Card  className={classes.cardBodyGreen}>
                               <CardBody>
                                   <h3 className={classes.cardTitle}>
-                                      1 <small>Completed</small>
+                                      {list.done} <small>Completed</small>
                                   </h3>
                               </CardBody>
                           </Card>
@@ -879,7 +884,7 @@ export default function Dashboard() {
                           <Card className={classes.cardBodyBlack}>
                               <CardBody>
                                   <h3 className={classes.cardTitle}>
-                                      0 <small>Not Started</small>
+                                      {list.notStarted}<small>Not Started</small>
                                   </h3>
                               </CardBody>
                           </Card>
@@ -887,7 +892,7 @@ export default function Dashboard() {
                   </CardBody>
                   <CardFooter className={classes.cardFooter} >
                     { show_tasks === false ? (
-                        <IconButton onClick={() => { setShowTasks(true); setSelectedIndex(index); setShowObjectivesTask(list.id)}} > <ExpandMoreIcon className={classes.iconBottom} /> </IconButton>
+                        <IconButton onClick={() => { setShowTasks(true); setSelectedIndex(index); setShowObjectivesTask(list.objectives.id)}} > <ExpandMoreIcon className={classes.iconBottom} /> </IconButton>
                     ) : show_tasks === true ? ( <IconButton> <ExpandLess className={classes.iconBottom} onClick={() => setShowTasks(false)} /> </IconButton> 
                     ) : null}
                   </CardFooter>

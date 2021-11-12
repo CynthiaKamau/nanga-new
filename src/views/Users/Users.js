@@ -24,7 +24,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
-import { getUsers, editUser } from "../../actions/users";
+import { getUsers } from "../../actions/users";
 import swal from "sweetalert2";
 import Loader from "react-loader-spinner";
 import { CircularProgress } from "@material-ui/core";
@@ -42,7 +42,7 @@ export default function UsersPage() {
   const classes = useStyles();
   const dispatch = useDispatch();
 
-  const { items , item, error } = useSelector(state => state.user);
+  const { items , item } = useSelector(state => state.user);
   const { user : currentUser } = useSelector(state => state.auth);
   const { roles} = useSelector(state => state.data);
   const { items : teams} = useSelector(state => state.team);
@@ -66,7 +66,7 @@ export default function UsersPage() {
   const [role, setRole] = useState("");
   const [user_id, SetUserId] = useState("");
   const [showloader, setshowloader] = useState(false);
-  const [updated_by, setUpdated_by] = useState(currentUser.id);
+  const [updated_by, setUpdatedBy] = useState(currentUser.id);
   const [created_by, setCreatedBy] = useState(currentUser.id);
   const [email, setEmail] = useState("");
   const [extension, setExtension] = useState("");
@@ -172,7 +172,7 @@ export default function UsersPage() {
 
   }
 
-  const saveEdited = e => {
+  const saveEdited =  async (e) => {
     e.preventDefault();
     setshowloader(true);
     setView(true);
@@ -180,33 +180,61 @@ export default function UsersPage() {
     if(status === "Disabled") {
       setDisabled(true);
     } else { setDisabled(false)}
-    console.log("edit user", user_id, name, status, team, role, updated_by, setUpdated_by, view, extension, email, disabled)
 
-    dispatch(editUser(user_id, name, status, team, role, updated_by, view, extension, email, disabled))
-  }
+    const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
 
-  useEffect(() => {
-    if (error) {
-      setshowloader(false);
-      swal.fire({
-        title: "Error",
-        text: error,
-        icon: "error",
-        dangerMode: true
-      });
-    }
-  }, [error]);
+    const body = JSON.stringify({ 
+        id : user_id,
+        full_names : name,
+        email : email,
+        // status : status,
+        extension: extension,
+        // disabled : disabled,
+        team_id : team, 
+        role_id : role,
+        updated_by_id : updated_by,
+        view : view,
+        
+        });
+    console.log("user", body, disabled, setUpdatedBy);
 
-  useEffect(() => {
-    if(item) {
-      setshowloader(false);
-      swal.fire({
-        title: "Success",
-        text: item,
-        icon: "success",
-      });
-    }
-  }, [item]);
+        try {
+
+            let response = await axios.post('/users/update', body, config)
+              if (response.status == 201) {
+                let item = response.data.message
+                setEditOpen(false);
+                setshowloader(false);
+                swal.fire({
+                    title: "Success",
+                    text: item,
+                    icon: "success",
+                });
+            } else {
+              let error = response.data.message
+              setEditOpen(false);
+              setshowloader(false);
+              swal.fire({
+                  title: "Error",
+                  text: error,
+                  icon: "error",
+                  dangerMode: true
+              });
+            }
+        } catch (error) {
+          setEditOpen(false);
+          setshowloader(false);
+
+          let err = error.response.data.message
+          swal.fire({
+              title: "Error",
+              text: err,
+              icon: "error",
+              dangerMode: true
+          });
+        }
+
+  }  
 
 
   // const handleDeleteClickOpen = () => {
@@ -565,7 +593,7 @@ export default function UsersPage() {
                     </div>
                   ) :
                   (
-                    <Button color="primary" onClick={(e) => { handleEditClose(); saveEdited(e) }}>Save</Button>
+                    <Button color="primary" onClick={(e) => { saveEdited(e) }}>Save</Button>
                   )}
                 </DialogActions>
               </Dialog>

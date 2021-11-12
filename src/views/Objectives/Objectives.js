@@ -323,7 +323,7 @@ export default function StrategicObjectives() {
                         </Grid>
 
                         <GridItem xs={12} sm={12} md={12}>
-                            <h4 className={classes.textBold}> {list.description} </h4>
+                            <h4 className={classes.textBold}> {list.objectives.description} </h4>
                             <h6 className={classes.textGreen}> 6. Management actions</h6>
                         </GridItem>
                         <CardBody className={classes.cardBody}>
@@ -331,7 +331,7 @@ export default function StrategicObjectives() {
                                 <Card className={classes.cardBodyRed}>
                                     <CardBody>
                                         <h3 className={classes.cardTitle}>
-                                            2 <small>Off Ttack</small>
+                                        {list.offtrack} <small>Off Ttack</small>
                                         </h3>
                                     </CardBody>
                                 </Card>
@@ -340,7 +340,7 @@ export default function StrategicObjectives() {
                                 <Card className={classes.cardBodyPurple}>
                                     <CardBody>
                                             <h3 className={classes.cardTitle}>
-                                                1 <small>Cancelled</small>
+                                            {list.cancelled} <small>Cancelled</small>
                                             </h3>
                                     </CardBody>
                                 </Card>
@@ -349,7 +349,7 @@ export default function StrategicObjectives() {
                                 <Card className={classes.cardBodyYellow}>
                                     <CardBody>
                                         <h3 className={classes.cardTitle}>
-                                            0 <small>Postponed</small>
+                                        {list.postPoned} <small>Postponed</small>
                                         </h3>
                                     </CardBody>
                                 </Card>
@@ -358,7 +358,7 @@ export default function StrategicObjectives() {
                                 <Card className={classes.cardBodyOrange}>
                                     <CardBody>
                                         <h3 className={classes.cardTitle}>
-                                            3 <small>Ongoing</small>
+                                        {list.onGoing}  <small>Ongoing</small>
                                         </h3>
                                     </CardBody>
                                 </Card>
@@ -367,7 +367,7 @@ export default function StrategicObjectives() {
                                 <Card  className={classes.cardBodyGreen}>
                                     <CardBody>
                                         <h3 className={classes.cardTitle}>
-                                            1 <small>Completed</small>
+                                        {list.done} <small>Completed</small>
                                         </h3>
                                     </CardBody>
                                 </Card>
@@ -376,7 +376,7 @@ export default function StrategicObjectives() {
                                 <Card className={classes.cardBodyBlack}>
                                     <CardBody>
                                         <h3 className={classes.cardTitle}>
-                                            0 <small>Not Started</small>
+                                        {list.notStarted} <small>Not Started</small>
                                         </h3>
                                     </CardBody>
                                 </Card>
@@ -385,7 +385,7 @@ export default function StrategicObjectives() {
                         <CardFooter className={classes.cardFooter}>
                             {/* <IconButton> <ExpandMoreIcon className={classes.iconBottom} onClick={() => handleRedirect()} /> </IconButton> */}
                             { show_tasks === false ? (
-                                <IconButton onClick={() => { setShowTasks(true); setSelectedIndex(index); setShowObjectivesTask(list.id)}} > <ExpandMoreIcon className={classes.iconBottom} /> </IconButton>
+                                <IconButton onClick={() => { setShowTasks(true); setSelectedIndex(index); setShowObjectivesTask(list.objectives.id)}} > <ExpandMoreIcon className={classes.iconBottom} /> </IconButton>
                             ) : show_tasks === true ? ( <IconButton> <ExpandLess className={classes.iconBottom} onClick={() => setShowTasks(false)} /> </IconButton> 
                             ) : null}
                         </CardFooter>
