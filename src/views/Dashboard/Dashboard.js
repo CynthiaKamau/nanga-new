@@ -112,6 +112,7 @@ export default function Dashboard() {
 
   const handleAddTaskOpen = () => {
     setAddOpenTask(true);
+    setAddOpen(false);
   }
 
   // const handleRedirect = () => {
@@ -136,6 +137,7 @@ export default function Dashboard() {
 
   const saveObjective = async (e) => {
     e.preventDefault();
+    setshowloader(true);
     // setAddOpen(false);
     // setAddOpenTask(false);
 
@@ -157,6 +159,8 @@ export default function Dashboard() {
         if (response.data.success === false) {
           error(response.data)
           setshowloader(false);
+          setAddOpenTask(false);
+
           swal.fire({
               title: "Error",
               text: "An error occurred, please try again!",
@@ -166,6 +170,7 @@ export default function Dashboard() {
 
         } else {
           setshowloader(false);
+          setAddOpenTask(false);
 
           console.log("objective ", response.data)
 
@@ -251,17 +256,24 @@ export default function Dashboard() {
 
         let response = await axios.post('/missions/update', body, config)
         if (response.status == 201) {
+
+          let res = response.data.message;
           setshowloader(false);
+          setEditMissionOpen(false);
+
             swal.fire({
               title: "Success",
-              text: mission,
+              text: res,
               icon: "success",
             });   
         } else {
           setshowloader(false);
+          setEditMissionOpen(false);
+          let err = response.data.message;
+
           swal.fire({
             title: "Error",
-            text: "Failed!",
+            text: err,
             icon: "error",
             dangerMode: true
           });
@@ -269,15 +281,17 @@ export default function Dashboard() {
 
     } catch (error) {
         setshowloader(false);
+        setEditMissionOpen(false);
+
+        let err = error.response.data.message;
         swal.fire({
           title: "Error",
-          text: error,
+          text: err,
           icon: "error",
           dangerMode: true
         });
     }
   }
-
 
   const editVision = async (e) => {
     e.preventDefault();
@@ -297,16 +311,23 @@ export default function Dashboard() {
         let response = await axios.post('vision/update', body, config)
         if (response.status == 201) {
           setshowloader(false);
+          setEditVisionOpen(false);
+
+          let resp = response.data.message;
             swal.fire({
               title: "Success",
-              text: "Vision updated successfully!",
+              text: resp,
               icon: "success",
             });   
         } else {
           setshowloader(false);
+          setEditVisionOpen(false);
+
+          let err = response.data.message;
+
           swal.fire({
             title: "Error",
-            text: "Failed!",
+            text: err,
             icon: "error",
             dangerMode: true
           });
@@ -314,16 +335,18 @@ export default function Dashboard() {
 
     } catch (error) {
         setshowloader(false);
+        setEditVisionOpen(false);
+
+        let err = error.response.data.message;
         swal.fire({
           title: "Error",
-          text: error,
+          text: err,
           icon: "error",
           dangerMode: true
         });
     }
 
   }
-
 
   const setShowObjectivesTask = (id) => {
 
@@ -639,13 +662,13 @@ export default function Dashboard() {
                   <Loader
                       type="Puff"
                       color="#00BFFF"
-                      height={150}
-                      width={150}
+                      height={100}
+                      width={100}
                   />
               </div>
               ) :
               (
-                <Button color="primary" onClick={(e) => { handleAddTaskClose(); saveObjective(e); }}>Save</Button>
+                <Button color="primary" onClick={(e) => { saveObjective(e); }}>Save</Button>
               )}
           </DialogActions>
         </Dialog>
@@ -679,19 +702,19 @@ export default function Dashboard() {
                   <Loader
                       type="Puff"
                       color="#00BFFF"
-                      height={150}
-                      width={150}
+                      height={100}
+                      width={100}
                   />
               </div>
               ) :
               (
-                <Button color="primary" onClick={(e) => { handleEditMissionClose(); editMission(e) }}>Save</Button>
+                <Button color="primary" onClick={(e) => { editMission(e) }}>Save</Button>
               )}
 
           </DialogActions>
         </Dialog>
 
-        <Dialog open={editopenvision} onClose={handleEditVisionClose}>
+        <Dialog open={editopenvision} onClose={handleEditVisionClose} >
           <DialogTitle>Vision</DialogTitle>
           <DialogContent>
             <DialogContentText>
@@ -701,8 +724,10 @@ export default function Dashboard() {
             <TextField
               id="outlined-multiline-static"
               fullWidth
+              autoFocus
               label="Vision"
               type="text"
+              margin="dense"
               multiline
               variant="outlined"
               rows={4}
@@ -712,6 +737,7 @@ export default function Dashboard() {
                 setUserVision(event.target.value);
             }}
             />
+
           </DialogContent>
           <DialogActions>
             <Button color="danger" onClick={handleEditVisionClose}>Cancel</Button>
@@ -720,13 +746,13 @@ export default function Dashboard() {
                   <Loader
                       type="Puff"
                       color="#00BFFF"
-                      height={150}
-                      width={150}
+                      height={100}
+                      width={100}
                   />
               </div>
               ) :
               (
-                <Button color="primary" onClick={(e) => { handleEditVisionClose(); editVision(e); }}>Save</Button>
+                <Button color="primary" onClick={(e) => { editVision(e); }}>Save</Button>
               )}
           </DialogActions>
         </Dialog>
@@ -832,7 +858,7 @@ export default function Dashboard() {
                 <Card className={classes.cardBodyRed} key={index} style={{ marginBottom: '0'}} >
                   <GridItem xs={12} sm={12} md={12}>
                     <h4 className={classes.textBold}> {list.objectives.description} </h4>
-                    {/* <h6 className={classes.textGreen}> 6. Management actions</h6> */}
+                    <h6 className={classes.textGreen}> {list.totalTasks} Management actions</h6>
                   </GridItem>
                   <CardBody className={classes.cardBody}>
                       <GridItem xs={12} sm={6} md={2}>
@@ -908,7 +934,7 @@ export default function Dashboard() {
                               <TableHead className={classes.tableHeader}>
                                   <TableRow >
                                       <TableCell>Management Action</TableCell>
-                                      <TableCell>Resource</TableCell>
+                                      <TableCell>Start Date</TableCell>
                                       <TableCell>Due Date</TableCell>
                                       <TableCell>Status</TableCell>
                                   </TableRow>

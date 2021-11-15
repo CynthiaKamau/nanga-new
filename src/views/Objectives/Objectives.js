@@ -324,7 +324,7 @@ export default function StrategicObjectives() {
 
                         <GridItem xs={12} sm={12} md={12}>
                             <h4 className={classes.textBold}> {list.objectives.description} </h4>
-                            <h6 className={classes.textGreen}> 6. Management actions</h6>
+                            <h6 className={classes.textGreen}> Management actions</h6>
                         </GridItem>
                         <CardBody className={classes.cardBody}>
                             <GridItem xs={12} sm={6} md={2}>
@@ -402,7 +402,7 @@ export default function StrategicObjectives() {
                                     <TableHead className={classes.tableHeader}>
                                         <TableRow >
                                             <TableCell>Management Action</TableCell>
-                                            <TableCell>Resource</TableCell>
+                                            <TableCell>Start Date</TableCell>
                                             <TableCell>Due Date</TableCell>
                                             <TableCell>Status</TableCell>
                                         </TableRow>

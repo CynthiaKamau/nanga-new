@@ -18,10 +18,12 @@ import CardBody from "components/Card/CardBody.js";
 import CardHeader from "components/Card/CardHeader.js";
 import CardIcon from "components/Card/CardIcon.js";
 import CardAvatar from "components/Card/CardAvatar.js";
+import swal from "sweetalert2";
 
 import styles from "assets/jss/material-dashboard-pro-react/views/userProfileStyles.js";
 
 import avatar from "../../assets/img/faces/marc.jpg";
+import { AirportShuttle } from "@material-ui/icons";
 
 const useStyles = makeStyles(styles);
 
@@ -37,6 +39,7 @@ export default function UserProfile() {
   const [department, setDepartment] = useState("");
   const [team, setTeam] = useState("");
   const [role, setRole] = useState("");
+  const [profile_photo, setProfilePhoto] = useState("");
 
   useEffect(() => {
     setName(currentUser.full_name);
@@ -45,6 +48,37 @@ export default function UserProfile() {
     setTeam(currentUser.team);
     setRole(currentUser.role);
   }, []);
+
+  const handleCapture = async ({ target }) => {
+    const fileReader = new FileReader();
+    const name = target.accept.includes('image') ? 'images' : 'videos';
+
+    fileReader.readAsDataURL(target.files[0]);
+    fileReader.onload = (e) => {
+        setProfilePhoto((prevState) => ({
+            [name]: [...prevState[name], e.target.result]
+        }));
+    };
+
+    let response = await axios.post(profile_photo);
+
+    if(response.data.success === false) {
+      swal.fire({
+        title: "Error",
+        text: "An error occurred, please try again!",
+        icon: "error",
+        dangerMode: true
+    });
+    } else {
+      swal.fire({
+        title: "Success",
+        text: "Profile picture added successfully!",
+        icon: "success",
+        dangerMode: false
+      });
+    }
+    
+};
 
   return (
     <div>
@@ -160,6 +194,26 @@ export default function UserProfile() {
                       fullWidth: true,
                     }}
                   />
+                </GridItem>
+              </GridContainer>
+
+              <GridContainer>
+                <GridItem xs={12} sm={12} md={4}>
+                  <Button
+                    variant="contained"
+                    component="label"
+                    onChange={handleCapture}
+                  >
+                    Upload Profile Photo
+                    <input
+                      type="file"
+                      hidden
+                      accept="image/*"
+                      id="profile_photo"
+                      type="file"
+                      name="profile_photo"
+                    />
+                  </Button>
                 </GridItem>
               </GridContainer>
             

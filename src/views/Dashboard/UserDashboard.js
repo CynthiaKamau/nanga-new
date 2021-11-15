@@ -206,6 +206,7 @@ export default function UserDashboard() {
                 <Card className={classes.cardBodyRed} key={index} style={{ marginBottom: '0'}} >
                   <GridItem xs={12} sm={12} md={12}>
                     <h4 className={classes.textBold}> {list.objectives.description} </h4>
+                    <h6 className={classes.textGreen}> {list.totalTasks} Management actions</h6>
                   </GridItem>
                   <CardBody className={classes.cardBody}>
                       <GridItem xs={12} sm={6} md={2}>
@@ -281,7 +282,7 @@ export default function UserDashboard() {
                               <TableHead className={classes.tableHeader}>
                                   <TableRow >
                                       <TableCell>Management Action</TableCell>
-                                      <TableCell>Resource</TableCell>
+                                      <TableCell>Start Date</TableCell>
                                       <TableCell>Due Date</TableCell>
                                       <TableCell>Status</TableCell>
                                   </TableRow>
