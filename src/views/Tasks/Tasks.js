@@ -28,7 +28,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
-import { getTasks, addTask, editTask } from "actions/tasks";
+import { getTasks} from "actions/tasks";
 import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
 import swal from "sweetalert2";
 import Loader from "react-loader-spinner";
@@ -49,7 +49,7 @@ export default function TasksPage() {
 
     const { user: currentUser } = useSelector(state => state.auth)
     const { items : objectives } = useSelector(state => state.objective)
-    const { items, item , error, isLoading } = useSelector(state => state.task)
+    const { items, error, isLoading } = useSelector(state => state.task)
     const { statuses } = useSelector(state => state.data);
     const { items : sysusers} = useSelector(state => state.user)
 
@@ -85,27 +85,45 @@ export default function TasksPage() {
         setAddOpen(true);
     };
 
-    const saveTask = e => {
+    const saveTask = async (e) => {
         e.preventDefault();
         setshowloader(true);
 
         console.log("save values", description, end_date, start_date, objective_id, user_id, setUserId(), setCreatedBy(), setUpdatedBy())
+
+        const config = { headers: { 'Content-Type': 'application/json' } }
     
-        dispatch(addTask( description, end_date, start_date, objective_id, user_id, created_by ))
-        if (error) {
-          setshowloader(false);
-          swal.fire({
-              title: "Error",
-              text: error,
-              icon: "error",
-              dangerMode: true
-          });
-        } else if(item) {
+        const body = JSON.stringify({ description, end_date, start_date, objective_id, user_id, created_by });
+
+        try {
+
+            let response = await axios.post('/tasks/create', body, config)
+            if (response.status == 201) {
+                setshowloader(false);
+                let item = response.data.message
+                swal.fire({
+                    title: "Success",
+                    text: item,
+                    icon: "success",
+                });
+            } else {
+                let error = response.data.message
+                    setshowloader(false);
+                    swal.fire({
+                        title: "Error",
+                        text: error,
+                        icon: "error",
+                        dangerMode: true
+                    });
+            }
+        } catch (error) {
+            let err = error.response.data.message
             setshowloader(false);
             swal.fire({
-                title: "Success",
-                text: "Task added successfully.",
-                icon: "success",
+                title: "Error",
+                text: err,
+                icon: "error",
+                dangerMode: true
             });
         }
     
@@ -127,27 +145,45 @@ export default function TasksPage() {
         setId(list.id)
     }
 
-    const saveEdited = e => {
+    const saveEdited = async (e) => {
         e.preventDefault();
         setshowloader(true);
 
         console.log("edit values",  description, end_date, start_date, objective_id, user_id, created_by, updated_by, id, status)
-    
-        dispatch(editTask(description, end_date, start_date, objective_id, user_id, created_by, updated_by, id, status))
-        if (error) {
-          setshowloader(false);
-          swal.fire({
-              title: "Error",
-              text: error,
-              icon: "error",
-              dangerMode: true
-          });
-        } else if(item) {
+
+        const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
+        const body = JSON.stringify({ description, end_date, start_date, objective_id, user_id, created_by, updated_by, id, status });
+        console.log("task", body);
+
+        try {
+
+            let response = await axios.post('/tasks/update', body, config)
+            if (response.status == 201) {
+                setshowloader(false);
+                let item = response.data.message
+                swal.fire({
+                    title: "Success",
+                    text: item,
+                    icon: "success",
+                });
+            } else {
+                let error = response.data.message
+                    setshowloader(false);
+                    swal.fire({
+                        title: "Error",
+                        text: error,
+                        icon: "error",
+                        dangerMode: true
+                    });
+            }
+        } catch (error) {
+            let err = error.response.data.message
             setshowloader(false);
             swal.fire({
-                title: "Success",
-                text: "Task updated successfully.",
-                icon: "success",
+                title: "Error",
+                text: err,
+                icon: "error",
+                dangerMode: true
             });
         }
     
@@ -387,7 +423,7 @@ export default function TasksPage() {
                                 </DialogContent>
                                 <DialogActions>
                                     <Button color="danger" onClick={handleAddClose}>Cancel</Button>
-                                    { showloader === true || isLoading === true ? (
+                                    { showloader === true ? (
                                         <div style={{ textAlign: "center", marginTop: 10 }}>
                                             <Loader
                                                 type="Puff"

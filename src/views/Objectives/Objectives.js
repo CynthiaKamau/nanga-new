@@ -19,7 +19,6 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
 // import { useHistory } from "react-router";
-import {  editUserObjective } from "actions/objectives";
 import swal from "sweetalert2";
 import Loader from "react-loader-spinner";
 import Table from '@material-ui/core/Table';
@@ -47,7 +46,7 @@ export default function StrategicObjectives() {
     // const history = useHistory();
 
     const { user: currentUser } = useSelector(state => state.auth);
-    const { items, error, item } = useSelector(state => state.objective);
+    const { items, error} = useSelector(state => state.objective);
     const {  items : kpis } = useSelector(state => state.kpi);
 
     const [ objectiveId, setObjectiveId] = useState("");
@@ -71,8 +70,8 @@ export default function StrategicObjectives() {
     const [end_date, setEndDate] = useState("");
     const [kpi_id, setKpiId] = useState("");
     const [target, setTarget] = useState("");
-    const [targetAtReview, setTargetAtReview] = useState("");
-    const [targetAchieved, setTargetAchieved] = useState("");
+    const [target_achieved_on_review, setTargetAtReview] = useState("");
+    const [target_achieved, setTargetAchieved] = useState("");
     const [user_id, setUserId] = useState(currentUser.id);
     const [task_description, setTaskDescription] = useState("");
     const [task_start_date, setTaskStartDate] = useState("");
@@ -205,7 +204,7 @@ export default function StrategicObjectives() {
 
     }
 
-    const editObjective = e => {
+    const editObjective = async (e) => {
         e.preventDefault();
         setshowloader(true)
         setUserId();
@@ -214,23 +213,39 @@ export default function StrategicObjectives() {
         let end_date = moment(end_date).format('YYYY-MM-DD');
         let start_date = moment(start_date).format('YYYY-MM-DD');
 
-        console.log("save objective", id, description, end_date, kpi_id, start_date, target, user_id, targetAchieved, targetAtReview, setUpdatedBy())
+        console.log("save objective", id, description, end_date, kpi_id, start_date, target, user_id, target_achieved, target_achieved_on_review, setUpdatedBy())
 
-        dispatch(editUserObjective(id, description, end_date, kpi_id, start_date, target, user_id, targetAchieved, targetAtReview, created_by, updated_by))
-        if (error) {
+        const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
+        const body = JSON.stringify({ id, description, kpi_id, user_id, start_date, end_date,  target, target_achieved, target_achieved_on_review, created_by, updated_by });
+
+        try {
+
+            let response = await axios.post('/objectives/update', body, config)
+            if (response.status == 201) {
+                setshowloader(false);
+                let item = response.data.message
+                swal.fire({
+                    title: "Success",
+                    text: item,
+                    icon: "success",
+                });
+            } else {
+                setshowloader(false);
+                    swal.fire({
+                        title: "Error",
+                        text: error,
+                        icon: "error",
+                        dangerMode: true
+                    });
+            }
+        } catch (error) {
+            let err = error.response.data.message
             setshowloader(false);
             swal.fire({
                 title: "Error",
-                text: error,
+                text: err,
                 icon: "error",
                 dangerMode: true
-            });
-        } else if (item) {
-            setshowloader(false);
-            swal.fire({
-                title: "Success",
-                text: item,
-                icon: "success",
             });
         }
 
@@ -833,7 +848,7 @@ export default function StrategicObjectives() {
                             type="text"
                             fullWidth
                             style={{ marginBottom: '15px' }}
-                            value={targetAtReview}
+                            value={target_achieved_on_review}
                             variant="outlined"
                             onChange={(event) => {
                                 setTargetAtReview(event.target.value);
@@ -850,7 +865,7 @@ export default function StrategicObjectives() {
                             type="text"
                             fullWidth
                             style={{ marginBottom: '15px' }}
-                            value={targetAchieved}
+                            value={target_achieved}
                             variant="outlined"
                             onChange={(event) => {
                                 setTargetAchieved(event.target.value);

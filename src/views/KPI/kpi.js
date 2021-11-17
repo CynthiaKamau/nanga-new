@@ -26,11 +26,11 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
 import JsonData from "../../data/data.json";
-import { getKpis, editKpi, addKpi } from "actions/kpis";
+import { getKpis } from "actions/kpis";
 import swal from "sweetalert2";
 import Loader from "react-loader-spinner";
 import { LinearProgress } from "@material-ui/core";
-
+import axios from "axios";
 
 import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
 
@@ -40,7 +40,7 @@ export default function KPIs() {
     const classes = useStyles();
     const dispatch = useDispatch();
 
-    const { items, item , error, isLoading } = useSelector(state => state.kpi);
+    const { items, error, isLoading } = useSelector(state => state.kpi);
     const { user : currentUser } = useSelector(state => state.auth);
 
     useEffect(() => {
@@ -65,29 +65,52 @@ export default function KPIs() {
         setAddOpen(true);
     };
 
-    const saveKpi = e => {
+    const saveKpi = async (e) => {
         e.preventDefault();
         setshowloader(true);
         console.log(setCreatedBy())
 
         console.log("save values", kpi, uom, category, created_by)
-    
-        dispatch(addKpi(kpi, uom, category,created_by ))
-        if (error) {
-          setshowloader(false);
-          swal.fire({
-              title: "Error",
-              text: error,
-              icon: "error",
-              dangerMode: true
-          });
-        } else if(item) {
+
+        const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
+        
+        const body = JSON.stringify({ 
+            title : kpi,
+            kpiUnitofMeasure : uom,
+            categoryId : category,
+            createdBy : created_by 
+        });
+
+        try {
+
+            let response = await axios.post('/kpi/create', body, config)
+                if (response.status == 201) {
+                    getKpis();
+                    setshowloader(false);
+                    let item = response.data.message
+                    swal.fire({
+                        title: "Success",
+                        text: item,
+                        icon: "success",
+                    });
+                } else {
+                    let error = response.data.message
+                    setshowloader(false);
+                    swal.fire({
+                        title: "Error",
+                        text: error,
+                        icon: "error",
+                        dangerMode: true
+                    });
+                }
+        } catch (error) {
+            let err = error.response.data.message
             setshowloader(false);
             swal.fire({
-                title: "Success",
-                text: item,
-                icon: "success",
-                dangerMode: false
+                title: "Error",
+                text: err,
+                icon: "error",
+                dangerMode: true
             });
         }
     
@@ -106,30 +129,54 @@ export default function KPIs() {
         setId(list.id);
     }
 
-    const saveEdited = e => {
+    const saveEdited = async(e) => {
         e.preventDefault();
         setshowloader(true);
 
         console.log(setUpdatedBy());
 
         console.log("edit values", id, kpi, uom, category, created_by, updated_by)
-    
-        dispatch(editKpi(id, kpi, uom, category, created_by, updated_by ))
-        if (error) {
-            console.log("error", error)
-          setshowloader(false);
-          swal.fire({
-              title: "Error",
-              text: error,
-              icon: "error",
-          });
-        } else if(item) {
+
+        const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
+        const body = JSON.stringify({ 
+            title : kpi,
+            kpiUnitOfMeasure : uom,
+            categoryId : category,
+            createdBy : created_by,
+            updatedBy : updated_by,
+            id: id 
+        });
+        console.log("kpi", body);
+
+        try {
+
+            let response = await axios.post('/kpi/update', body, config)
+            if (response.status == 201) {
+                setshowloader(false);
+                    let item = response.data.message
+                    swal.fire({
+                        title: "Success",
+                        text: item,
+                        icon: "success",
+                    });
+            } else {
+                let error = response.data.message
+                    setshowloader(false);
+                    swal.fire({
+                        title: "Error",
+                        text: error,
+                        icon: "error",
+                        dangerMode: true
+                    });
+            }
+        } catch (error) {
+            let err = error.response.data.message
             setshowloader(false);
             swal.fire({
-                title: "Success",
-                text: item.message,
-                icon: "success",
-                dangerMode: false
+                title: "Error",
+                text: err,
+                icon: "error",
+                dangerMode: true
             });
         }
     
@@ -173,8 +220,24 @@ export default function KPIs() {
           label: 'numeric',
         },
         {
-          value: 'KES M',
-          label: 'KES M',
+          value: 'KES',
+          label: 'KES',
+        },
+        {
+            value: 'TSH',
+            label: 'TSH',
+        },
+        {
+            value: 'UGX',
+            label: 'UGX',
+        },
+        {
+            value: 'RWF',
+            label: 'RWF',
+        },
+        {
+            value: 'USD',
+            label: 'USD',
         }
     ]
 

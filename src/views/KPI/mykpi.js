@@ -25,8 +25,6 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
-import { addKpi } from "actions/kpis";
-import { editUserObjective } from "actions/objectives";
 import swal from "sweetalert2";
 import Loader from "react-loader-spinner";
 import { getUserObjectives } from "actions/objectives";
@@ -37,7 +35,7 @@ import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import moment from "moment";
 import { Grid } from "@material-ui/core";
-
+import axios from "axios";
 
 // import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
 
@@ -66,8 +64,8 @@ export default function myKpis() {
     const [uom, setUnitOfMeasure] = useState("");
     const [category, setCategory] = useState("");
     const [target, setTarget] = useState("");
-    const [targetAtReview, setTargetAtReview] = useState("");
-    const [targetAchieved, setTargetAchieved] = useState("");
+    const [target_achieved_on_review, setTargetAtReview] = useState("");
+    const [target_achieved, setTargetAchieved] = useState("");
     const [showloader, setshowloader] = useState(false);  
     const [id, setId] = useState("");
     const [created_by, setCreatedBy] = useState(currentUser.id);
@@ -81,27 +79,45 @@ export default function myKpis() {
     //     setAddOpen(true);
     // };
 
-    const saveKpi = e => {
+    const saveKpi = async (e) => {
         e.preventDefault();
         setshowloader(true);
+        
+        const config = { headers: { 'Content-Type': 'application/json' } }
 
-        console.log("save values", description, uom, category, target, targetAchieved, targetAtReview, created_by, setCreatedBy)
-    
-        dispatch(addKpi(description, uom, category, target, targetAchieved, targetAtReview, created_by ))
-        if (error) {
-          setshowloader(false);
-          swal.fire({
-              title: "Error",
-              text: error,
-              icon: "error",
-              dangerMode: true
-          });
-        } else if(item) {
+        console.log(setCreatedBy)
+
+        const body = JSON.stringify({ user_id, target, start_date, kpi_id, end_date, description, created_by });
+
+        try {
+
+            let response = await axios.post('/objectives/create', body, config)
+            if (response.status == 201) {
+                setshowloader(false);
+                let item = response.data.message
+                swal.fire({
+                    title: "Success",
+                    text: item,
+                    icon: "success",
+                });
+            } else {
+                let error = response.data.message
+                    setshowloader(false);
+                    swal.fire({
+                        title: "Error",
+                        text: error,
+                        icon: "error",
+                        dangerMode: true
+                    });
+            }
+        } catch (error) {
+            let err = error.response.data.message
             setshowloader(false);
             swal.fire({
-                title: "Success",
-                text: item,
-                icon: "success",
+                title: "Error",
+                text: err,
+                icon: "error",
+                dangerMode: true
             });
         }
     
@@ -123,29 +139,46 @@ export default function myKpis() {
         setEndDate(list.end_date)
     }
 
-    const saveEdited = e => {
+    const saveEdited = async (e) => {
         e.preventDefault();
         setshowloader(true);
         let end_date = moment(end_date).format('YYYY-MM-DD');
         let start_date = moment(start_date).format('YYYY-MM-DD');
 
-        console.log("edit values", id, description, end_date, kpi_id, start_date, target, user_id, targetAchieved, targetAtReview, setUpdatedBy(), setUserId)
-    
-        dispatch(editUserObjective(id, description, end_date, kpi_id, start_date, target, user_id, targetAchieved, targetAtReview, created_by, updated_by))
-        if (item === null && error) {
-          setshowloader(false);
-          swal.fire({
-              title: "Error",
-              text: error,
-              icon: "error",
-              dangerMode: true
-          });
-        } else if(item) {
+        console.log("edit values", id, description, end_date, kpi_id, start_date, target, user_id, target_achieved, target_achieved_on_review, setUpdatedBy(), setUserId)
+
+        const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
+        const body = JSON.stringify({ id, description, kpi_id, user_id, start_date, end_date,  target, target_achieved, target_achieved_on_review, created_by, updated_by });
+
+        try {
+
+            let response = await axios.post('/objectives/update', body, config)
+            if (response.status == 201) {
+                setshowloader(false);
+                    let item = response.data.message
+                    swal.fire({
+                        title: "Success",
+                        text: item,
+                        icon: "success",
+                    });
+            } else {
+                let error = response.data.message
+                    setshowloader(false);
+                    swal.fire({
+                        title: "Error",
+                        text: error,
+                        icon: "error",
+                        dangerMode: true
+                    });
+            }
+        } catch (error) {
+            let err = error.response.data.message
             setshowloader(false);
             swal.fire({
-                title: "Success",
-                text: item,
-                icon: "success",
+                title: "Error",
+                text: err,
+                icon: "error",
+                dangerMode: true
             });
         }
     
@@ -189,11 +222,26 @@ export default function myKpis() {
           label: 'numeric',
         },
         {
-          value: 'KES M',
-          label: 'KES M',
+          value: 'KES',
+          label: 'KES',
+        },
+        {
+            value: 'TSH',
+            label: 'TSH',
+        },
+        {
+            value: 'UGX',
+            label: 'UGX',
+        },
+        {
+            value: 'RWF',
+            label: 'RWF',
+        },
+        {
+            value: 'USD',
+            label: 'USD',
         }
     ]
-
 
   return (
     <div>
@@ -213,11 +261,12 @@ export default function myKpis() {
                     <TableHead>
                         <TableRow>
                             <TableCell>KPI</TableCell>
-                            <TableCell>Unit Of Measure</TableCell>
                             <TableCell>Categories</TableCell>
+                            <TableCell>Unit Of Measure</TableCell>
                             <TableCell>Target</TableCell>
                             <TableCell>Target Achieved</TableCell>
                             <TableCell>Target At Review</TableCell>
+                            <TableCell>Variance</TableCell>
                             <TableCell>Action</TableCell>
                         </TableRow>
                     </TableHead>
@@ -225,11 +274,12 @@ export default function myKpis() {
                         {items ? ( items.map((list, index) => (
                             <TableRow key={index}>
                                 <TableCell>{list.objectives.description}</TableCell>
-                                <TableCell>{list.objectives.kpi.kpi_unit_of_measure}</TableCell>
                                 <TableCell>{list.objectives.kpi.categories.description} </TableCell>
+                                <TableCell>{list.objectives.kpi.kpi_unit_of_measure}</TableCell>
                                 <TableCell>{list.objectives.target} </TableCell>
                                 <TableCell>{list.objectives.target_achieved} </TableCell>
                                 <TableCell>{list.objectives.target_achieved_on_review} </TableCell>
+                                <TableCell></TableCell>
                                 <TableCell>
                                 <IconButton aria-label="edit" color="primary" onClick={() => { handleEditClickOpen(); setEditing(list.objectives) }} ><EditIcon/></IconButton>
                                 {/* <IconButton aria-label="delete" color="secondary" onClick={() => { handleDeleteClickOpen(); setDelete(list) }} ><DeleteIcon /></IconButton> */}
@@ -320,12 +370,12 @@ export default function myKpis() {
                         <TextField
                             autoFocus
                             margin="dense"
-                            id="target_at_review"
+                            id="target_achieved_on_review"
                             label="Target At Review"
                             type="text"
                             fullWidth
                             style={{marginBottom : '15px'}}
-                            value={targetAtReview}
+                            value={target_achieved_on_review}
                             variant="standard"
                             onChange = {(event) => {
                                 setTargetAtReview(event.target.value);
@@ -340,7 +390,7 @@ export default function myKpis() {
                             type="text"
                             fullWidth
                             style={{marginBottom : '15px'}}
-                            value={targetAchieved}
+                            value={target_achieved}
                             variant="standard"
                             onChange = {(event) => {
                                 setTargetAchieved(event.target.value);
@@ -466,12 +516,12 @@ export default function myKpis() {
                                 <TextField
                                     autoFocus
                                     margin="dense"
-                                    id="target_at_review"
+                                    id="target_achieved_on_review"
                                     label="Target At Review"
                                     type="text"
                                     fullWidth
                                     style={{marginBottom : '15px'}}
-                                    value={targetAtReview}
+                                    value={target_achieved_on_review}
                                     variant="outlined"
                                     onChange = {(event) => {
                                         setTargetAtReview(event.target.value);
@@ -488,7 +538,7 @@ export default function myKpis() {
                                 type="text"
                                 fullWidth
                                 style={{marginBottom : '15px'}}
-                                value={targetAchieved}
+                                value={target_achieved}
                                 variant="outlined"
                                 onChange = {(event) => {
                                     setTargetAchieved(event.target.value);

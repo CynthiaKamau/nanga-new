@@ -24,7 +24,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
-import { getTeams, editTeam } from "../../actions/teams"
+import { getTeams } from "../../actions/teams"
 import swal from "sweetalert2";
 import Loader from "react-loader-spinner";
 import axios from "axios";
@@ -38,7 +38,7 @@ export default function TeamsPage() {
     const classes = useStyles();
     const dispatch = useDispatch();
 
-    const { item ,error, items } = useSelector(state => state.team);
+    const { items } = useSelector(state => state.team);
     const { user : currentUser } = useSelector(state => state.auth);
     const { items : teamleads} = useSelector(state => state.user)
 
@@ -127,28 +127,53 @@ export default function TeamsPage() {
         setId(list.id)
     }
 
-    const saveEdited = e => {
+    const saveEdited = async (e) => {
         e.preventDefault();
         setshowloader(true);
+
+        const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
+
+        const body = JSON.stringify({ 
+            id : id,
+            team_name : name,
+            team_lead : teamlead,
+            is_parent : isparent,
+            parent_team_id : parentId,
+            updated_by_id : updated_by
+        });
     
         console.log("save user", id, name, teamlead, isparent, parentId,updated_by, setUpdated_by )
-    
-        dispatch(editTeam(id, name, teamlead, isparent, parentId, updated_by))
-        if (error) {
-          setshowloader(false);
-            swal.fire({
-                title: "Error",
-                text: error,
-                icon: "error",
-                dangerMode: true
-            });
-    
-        } else if(item) {
+
+        
+        try {
+
+            let response = await axios.post('/teams/update', body, config)
+            if (response.status == 201) {
+                setshowloader(false);
+                let item = response.data.message;
+                swal.fire({
+                    title: "Success",
+                    text: item,
+                    icon: "success",
+                });
+            } else {
+                let error = response.data.message;
+                setshowloader(false);
+                swal.fire({
+                    title: "Error",
+                    text: error,
+                    icon: "error",
+                    dangerMode: true
+                });
+            }
+        } catch (error) {
+            let err = err.response.data.message
             setshowloader(false);
             swal.fire({
-                title: "Success",
-                text: item,
-                icon: "success",
+                title: "Error",
+                text: err,
+                icon: "error",
+                dangerMode: true
             });
         }
     }

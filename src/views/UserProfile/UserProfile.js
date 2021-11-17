@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, createRef } from "react";
 import { useSelector } from "react-redux";
 // import { useSelector } from "react-redux";
 
@@ -19,11 +19,15 @@ import CardHeader from "components/Card/CardHeader.js";
 import CardIcon from "components/Card/CardIcon.js";
 import CardAvatar from "components/Card/CardAvatar.js";
 import swal from "sweetalert2";
-
+import axios from "axios";
+import { Button } from "@material-ui/core";
 import styles from "assets/jss/material-dashboard-pro-react/views/userProfileStyles.js";
-
-import avatar from "../../assets/img/faces/marc.jpg";
-import { AirportShuttle } from "@material-ui/icons";
+// import avatar from "../../assets/img/faces/marc.jpg";
+import {
+  CloudUpload as UploadIcon,
+  Delete as DeleteIcon,
+} from "@material-ui/icons";
+import Loader from "react-loader-spinner";
 
 const useStyles = makeStyles(styles);
 
@@ -39,7 +43,12 @@ export default function UserProfile() {
   const [department, setDepartment] = useState("");
   const [team, setTeam] = useState("");
   const [role, setRole] = useState("");
-  const [profile_photo, setProfilePhoto] = useState("");
+  const [id, setId] = useState("");
+  const [updated_by, setUpdatedBy] = useState(currentUser.id);
+  const [showloader, setshowloader] = useState(false);  
+  const [image, _setImage] = useState(null);
+  const [avatar, setAvatar] = useState(currentUser.userProfile)
+  const inputFileRef = createRef(null);
 
   useEffect(() => {
     setName(currentUser.full_name);
@@ -47,38 +56,79 @@ export default function UserProfile() {
     setDepartment(currentUser.department);
     setTeam(currentUser.team);
     setRole(currentUser.role);
+    setId(currentUser.id);
   }, []);
 
-  const handleCapture = async ({ target }) => {
-    const fileReader = new FileReader();
-    const name = target.accept.includes('image') ? 'images' : 'videos';
+  const cleanup = () => {
+    URL.revokeObjectURL(image);
+    inputFileRef.current.value = null;
+  };
 
-    fileReader.readAsDataURL(target.files[0]);
-    fileReader.onload = (e) => {
-        setProfilePhoto((prevState) => ({
-            [name]: [...prevState[name], e.target.result]
-        }));
-    };
+  const setImage = (newImage) => {
+    if (image) {
+      cleanup();
+    }
+    _setImage(newImage);
+  };
 
-    let response = await axios.post(profile_photo);
+  const handleOnChange = (event) => {
+    const newImage = event.target?.files?.[0];
+
+    if (newImage) {
+      setImage(URL.createObjectURL(newImage));
+    }
+  };
+
+  /**
+   *
+   * @param {React.MouseEvent<HTMLButtonElement, MouseEvent>} event
+   */
+  const handleClick = (event) => {
+    if (image) {
+      event.preventDefault();
+      setImage(null);
+    }
+  };
+
+  const handleSubmit = async(e) => {
+    e.preventDefault();
+    setshowloader(true);
+
+    console.log("save values", id, name, email, department, team, role, updated_by, setUpdatedBy, setAvatar);
+
+    const config = { headers: { 'Content-Type': 'application/json' } };
+
+    const body = JSON.stringify({ 
+      updated_by_id: updated_by,
+      email: email,
+      extension: 18000,
+      full_names: name,
+      role_id: 0,
+      team_id: 0,
+      view: true,
+      user_picture: image,
+      id: id
+     });
+
+    let response = await axios.post('/users/update', body, config);
 
     if(response.data.success === false) {
+      setshowloader(false)
       swal.fire({
         title: "Error",
         text: "An error occurred, please try again!",
         icon: "error",
         dangerMode: true
-    });
+      });
     } else {
       swal.fire({
         title: "Success",
-        text: "Profile picture added successfully!",
+        text: "Profile updated successfully!",
         icon: "success",
-        dangerMode: false
       });
     }
-    
-};
+
+  }
 
   return (
     <div>
@@ -177,43 +227,46 @@ export default function UserProfile() {
                     }}
                   />
                 </GridItem>
-                <GridItem xs={12} sm={12} md={4}>
-                  <CustomInput
-                    labelText="Country"
-                    id="country"
-                    formControlProps={{
-                      fullWidth: true,
-                    }}
-                  />
-                </GridItem>
-                <GridItem xs={12} sm={12} md={4}>
-                  <CustomInput
-                    labelText="Postal Code"
-                    id="postal-code"
-                    formControlProps={{
-                      fullWidth: true,
-                    }}
-                  />
-                </GridItem>
+              
               </GridContainer>
 
               <GridContainer>
                 <GridItem xs={12} sm={12} md={4}>
+                <input
+                  ref={inputFileRef}
+                  accept="image/*"
+                  hidden
+                  id="avatar-image-upload"
+                  type="file"
+                  onChange={handleOnChange}
+                />
+                <label htmlFor="avatar-image-upload">
                   <Button
                     variant="contained"
-                    component="label"
-                    onChange={handleCapture}
+                    color="primary"
+                    component="span"
+                    mb={2}
+                    onClick={handleClick}
                   >
-                    Upload Profile Photo
-                    <input
-                      type="file"
-                      hidden
-                      accept="image/*"
-                      id="profile_photo"
-                      type="file"
-                      name="profile_photo"
-                    />
+                    {image ? <DeleteIcon mr={2} /> : <UploadIcon mr={2} />}
+                    {image ? "Limpar" : "Upload"}
                   </Button>
+                </label>
+                </GridItem>
+                <GridItem xs={12} sm={12} md={4}>
+                { showloader === true ? (
+                  <div style={{ textAlign: "center", marginTop: 10 }}>
+                      <Loader
+                          type="Puff"
+                          color="#00BFFF"
+                          height={150}
+                          width={150}
+                      />
+                  </div>
+                  ) :
+                  (
+                  <Button simple onClick={(e) => handleSubmit(e)}> Save</Button>
+                  )}
                 </GridItem>
               </GridContainer>
             
