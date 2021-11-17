@@ -93,8 +93,7 @@ export default function StrategicObjectives() {
     const saveObjective = async () => {
         // e.preventDefault();
         setAddOpen(false);
-        setAddOpenTask(false);
-        setshowloader(true);
+        
         console.log("kpi uom", kpi_unit_of_measure)
     
         let end_date = moment(end_date).format('YYYY-MM-DD');
@@ -111,16 +110,20 @@ export default function StrategicObjectives() {
         
             if (response.data.success === false) {
               setshowloader(false);
+              setAddOpenTask(false);
+
+              let error = response.data.message;
+
               swal.fire({
                   title: "Error",
-                  text: "An error occurred, please try again!",
+                  text: error,
                   icon: "error",
                   dangerMode: true
               });
     
-              console.log(response)
             } else {
               setshowloader(false);
+              setAddOpenTask(false);
     
               console.log("objective id", response.data.data.id)
     
@@ -142,9 +145,12 @@ export default function StrategicObjectives() {
     
               if (response1.data.success === false) {
                 setshowloader(false);
+
+                let error = response.data.message;
+
                 swal.fire({
                     title: "Error",
-                    text: "An error occurred, please try again!",
+                    text: error,
                     icon: "error",
                     dangerMode: true
                 });
@@ -166,13 +172,16 @@ export default function StrategicObjectives() {
         } catch (error) {
 
             setshowloader(false);
-              swal.fire({
-                  title: "Error",
-                  text: "An error occurred, please try again!",
-                  icon: "error",
-                  dangerMode: true
-              });
-            console.log(error);
+            setAddOpenTask(false);
+
+            let err = error.response.data.message;
+            
+            swal.fire({
+                title: "Error",
+                text: err,
+                icon: "error",
+                dangerMode: true
+            });
         }
     
       }
@@ -352,7 +361,7 @@ export default function StrategicObjectives() {
                                 </Card>
                             </GridItem>
                             <GridItem xs={12} sm={6} md={2}>
-                                <Card className={classes.cardBodyPurple}>
+                                <Card className={classes.cardBodyRed}>
                                     <CardBody>
                                             <h4 className={classes.cardTitle}>
                                             {list.cancelled} <small>Cancelled</small>
@@ -360,15 +369,15 @@ export default function StrategicObjectives() {
                                     </CardBody>
                                 </Card>
                             </GridItem >
-                            <GridItem xs={12} sm={6} md={2}>
-                                <Card className={classes.cardBodyYellow}>
+                            {/* <GridItem xs={12} sm={6} md={2}>
+                                <Card className={classes.cardBodyRed}>
                                     <CardBody>
                                         <h4 className={classes.cardTitle}>
                                         {list.postPoned} <small>Postponed</small>
                                         </h4>
                                     </CardBody>
                                 </Card>
-                            </GridItem>
+                            </GridItem> */}
                             <GridItem xs={12} sm={6} md={2}>
                                 <Card className={classes.cardBodyOrange}>
                                     <CardBody>
@@ -388,7 +397,7 @@ export default function StrategicObjectives() {
                                 </Card>
                             </GridItem>
                             <GridItem xs={12} sm={6} md={2}>
-                                <Card className={classes.cardBodyBlack}>
+                                <Card className={classes.cardBodyRed}>
                                     <CardBody>
                                         <h4 className={classes.cardTitle}>
                                         {list.notStarted} <small>Not Started</small>
@@ -420,6 +429,7 @@ export default function StrategicObjectives() {
                                             <TableCell>Start Date</TableCell>
                                             <TableCell>Due Date</TableCell>
                                             <TableCell>Status</TableCell>
+                                            <TableCell>Action</TableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
@@ -436,6 +446,8 @@ export default function StrategicObjectives() {
                                                 <TableCell>{moment(list.start_date).format('YYYY-MM-DD')}</TableCell>
                                                 <TableCell>{moment(list.end_date).format('YYYY-MM-DD')}</TableCell>
                                                 <TableCell>{list.status}</TableCell>
+                                                <TableCell> <IconButton aria-label="edit" className={classes.textGreen} onClick={() => { }} ><EditIcon /></IconButton></TableCell>
+
                                             </TableRow>
                                         ))) : err ? (<TableRow> <TableCell> {err} </TableCell></TableRow>) 
                                         : null }
@@ -508,7 +520,7 @@ export default function StrategicObjectives() {
                         id="target"
                         label="Target"
                         className={classes.textInput}
-                        type="text"
+                        type="number"
                         fullWidth
                         style={{ marginBottom: '15px' }}
                         value={target}

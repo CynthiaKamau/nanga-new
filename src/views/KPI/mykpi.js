@@ -36,6 +36,7 @@ import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/picker
 import moment from "moment";
 import { Grid } from "@material-ui/core";
 import axios from "axios";
+import FiberManualRecord from "@material-ui/icons/FiberManualRecord";
 
 // import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
 
@@ -161,7 +162,7 @@ export default function myKpis() {
                         text: item,
                         icon: "success",
                     }).then(() => dispatch(getUserObjectives(currentUser.id)));
-                    
+
             } else {
                 let error = response.data.message
                     setshowloader(false);
@@ -280,7 +281,7 @@ export default function myKpis() {
                                 <TableCell>{list.objectives.target} </TableCell>
                                 <TableCell>{list.objectives.target_achieved} </TableCell>
                                 <TableCell>{list.objectives.target_achieved_on_review} </TableCell>
-                                <TableCell></TableCell>
+                                <TableCell> <FiberManualRecord style={{color : '#29A15B'}}/> </TableCell>
                                 <TableCell>
                                 <IconButton aria-label="edit" color="primary" onClick={() => { handleEditClickOpen(); setEditing(list.objectives) }} ><EditIcon/></IconButton>
                                 {/* <IconButton aria-label="delete" color="secondary" onClick={() => { handleDeleteClickOpen(); setDelete(list) }} ><DeleteIcon /></IconButton> */}
@@ -358,7 +359,7 @@ export default function myKpis() {
                             margin="dense"
                             id="target"
                             label="Target"
-                            type="text"
+                            type="number"
                             fullWidth
                             style={{marginBottom : '15px'}}
                             value={target}
@@ -496,13 +497,12 @@ export default function myKpis() {
                             </Grid>
                         </Grid>
 
-
                         <TextField
                             autoFocus
                             margin="dense"
                             id="target"
                             label="Target"
-                            type="text"
+                            type="number"
                             fullWidth
                             style={{marginBottom : '15px'}}
                             value={target}

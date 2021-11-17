@@ -76,7 +76,7 @@ export default function Dashboard() {
   const [end_date, setEndDate] = useState("");
   const [task_start_date, setTaskStartDate] = useState("");
   const [task_end_date, setTaskEndDate] = useState("");
-  const [user_id, setUserId] = useState("");
+  const [user_id, setUserId] = useState(currentUser.id);
   const [showloader, setshowloader] = useState(false); 
   const [created_by, setCreatedBy] = useState("");
   const [usermission, setUserMission] = useState("");
@@ -152,7 +152,7 @@ export default function Dashboard() {
     try {
       let response = await axios.post('/objectives/create', body, config);
     
-        if (response.data.success === false) {
+        if (response.data.status !== 201) {
           error(response.data)
           setshowloader(false);
           setAddOpenTask(false);
@@ -190,7 +190,6 @@ export default function Dashboard() {
 
           if (response1.data.success === false) {
             setshowloader(false);
-            error(response1.data)
 
             let error = response.data.message;
 
@@ -216,6 +215,8 @@ export default function Dashboard() {
         }
     } catch (error) {
       console.log(error);
+      setshowloader(false);
+      setAddOpenTask(false);
 
       let err = error.response.data.message;
 
@@ -238,8 +239,17 @@ export default function Dashboard() {
   };
 
   const setEditingMission = (mission) => {
-    setUserMission(mission[0].description)
-    setMissionId(mission[0].id)
+
+    console.log("her",mission)
+
+    if(mission[0] === null || mission[0] === undefined) {
+      setUserMission('');
+      setMissionId(null);
+    } else {
+      setUserMission(mission[0].description)
+      setMissionId(mission[0].id)
+    }
+  
   }
 
   const setEditingVision = (vision) => {
@@ -253,7 +263,60 @@ export default function Dashboard() {
 
     const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
 
-    const body = JSON.stringify({
+    if(missionId === null) {
+
+      const body = JSON.stringify({
+        userid : user_id,
+        createdBy : user_id,
+        description : usermission,
+      });
+
+      console.log("mission", body)
+
+      try {
+
+          let response = await axios.post('/missions/create', body, config)
+          if (response.status == 201) {
+
+            let res = response.data.message;
+            setshowloader(false);
+            setEditMissionOpen(false);
+
+              swal.fire({
+                title: "Success",
+                text: res,
+                icon: "success",
+              }).then(() => dispatch(getMission(currentUser.id)));
+
+          } else {
+            setshowloader(false);
+            setEditMissionOpen(false);
+            let err = response.data.message;
+
+            swal.fire({
+              title: "Error",
+              text: err,
+              icon: "error",
+              dangerMode: true
+            });
+          }
+
+      } catch (error) {
+          setshowloader(false);
+          setEditMissionOpen(false);
+
+          let err = error.response.data.message;
+          swal.fire({
+            title: "Error",
+            text: err,
+            icon: "error",
+            dangerMode: true
+          });
+      }
+
+    } else {
+
+      const body = JSON.stringify({
         userId : user_id,
         updatedBy : user_id,
         description : usermission,
@@ -262,46 +325,48 @@ export default function Dashboard() {
 
     console.log("mission", body)
 
-    try {
+      try {
+          let response = await axios.post('/missions/update', body, config)
+          if (response.status == 201) {
 
-        let response = await axios.post('/missions/update', body, config)
-        if (response.status == 201) {
+            let res = response.data.message;
+            setshowloader(false);
+            setEditMissionOpen(false);
 
-          let res = response.data.message;
-          setshowloader(false);
-          setEditMissionOpen(false);
+              swal.fire({
+                title: "Success",
+                text: res,
+                icon: "success",
+              }).then(() => dispatch(getMission(currentUser.id)));
+
+          } else {
+            setshowloader(false);
+            setEditMissionOpen(false);
+            let err = response.data.message;
 
             swal.fire({
-              title: "Success",
-              text: res,
-              icon: "success",
-            }).then(() => dispatch(getMission(currentUser.id)));
+              title: "Error",
+              text: err,
+              icon: "error",
+              dangerMode: true
+            });
+          }
 
-        } else {
+      } catch (error) {
           setshowloader(false);
           setEditMissionOpen(false);
-          let err = response.data.message;
 
+          let err = error.response.data.message;
           swal.fire({
             title: "Error",
             text: err,
             icon: "error",
             dangerMode: true
           });
-        }
+      }
 
-    } catch (error) {
-        setshowloader(false);
-        setEditMissionOpen(false);
-
-        let err = error.response.data.message;
-        swal.fire({
-          title: "Error",
-          text: err,
-          icon: "error",
-          dangerMode: true
-        });
     }
+
   }
 
   const editVision = async (e) => {
@@ -520,7 +585,7 @@ export default function Dashboard() {
                   label="Target"
                   variant="outlined"
                   className={classes.textInput}
-                  type="text"
+                  type="number"
                   fullWidth
                   style={{ marginBottom: '15px' }}
                   value={target}
@@ -881,21 +946,21 @@ export default function Dashboard() {
                           </Card>
                       </GridItem>
                       <GridItem xs={12} sm={6} md={2}>
-                          <Card className={classes.cardBodyPurple}>
+                          <Card className={classes.cardBodyRed}>
                               <CardBody>
                                 <h4 className={classes.cardTitle}>{list.cancelled} <small>Cancelled</small></h4>
                               </CardBody>
                           </Card>
                       </GridItem >
-                      <GridItem xs={12} sm={6} md={2}>
-                          <Card className={classes.cardBodyYellow}>
+                      {/* <GridItem xs={12} sm={6} md={2}>
+                          <Card className={classes.cardBodyRed}>
                               <CardBody>
                                   <h4 className={classes.cardTitle}>
                                   {list.postPoned} <small>Postponed</small>
                                   </h4>
                               </CardBody>
                           </Card>
-                      </GridItem>
+                      </GridItem> */}
                       <GridItem xs={12} sm={6} md={2}>
                           <Card className={classes.cardBodyOrange}>
                               <CardBody>
@@ -915,7 +980,7 @@ export default function Dashboard() {
                           </Card>
                       </GridItem>
                       <GridItem xs={12} sm={6} md={2}>
-                          <Card className={classes.cardBodyBlack}>
+                          <Card className={classes.cardBodyRed}>
                               <CardBody>
                                   <h4 className={classes.cardTitle}>
                                       {list.notStarted}<small>Not Started</small>
@@ -945,6 +1010,7 @@ export default function Dashboard() {
                                       <TableCell>Start Date</TableCell>
                                       <TableCell>Due Date</TableCell>
                                       <TableCell>Status</TableCell>
+                                      <TableCell>Action</TableCell>
                                   </TableRow>
                               </TableHead>
                               <TableBody>
@@ -961,6 +1027,7 @@ export default function Dashboard() {
                                           <TableCell>{moment(list.start_date).format('YYYY-MM-DD')}</TableCell>
                                           <TableCell>{moment(list.end_date).format('YYYY-MM-DD')}</TableCell>
                                           <TableCell>{list.status}</TableCell>
+                                          <TableCell> <IconButton aria-label="edit" className={classes.textGreen} onClick={() => { }} ><EditIcon /></IconButton></TableCell>
                                       </TableRow>
                                   ))) : err ? (<TableRow> <TableCell> {err} </TableCell></TableRow>) 
                                   : null }

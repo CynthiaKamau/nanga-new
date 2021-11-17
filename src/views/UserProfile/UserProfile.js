@@ -50,6 +50,10 @@ export default function UserProfile() {
   const [avatar, setAvatar] = useState(currentUser.userProfile)
   const inputFileRef = createRef(null);
 
+  // var urlCreator = window.URL || window.webkitURL;
+
+  // var imageUrl = urlCreator.createObjectURL(avatar);
+
   useEffect(() => {
     setName(currentUser.full_name);
     setEmail(currentUser.email);

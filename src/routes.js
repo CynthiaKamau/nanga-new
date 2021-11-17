@@ -3,7 +3,6 @@ import TeamsPage from "views/Teams/Teams.js";
 import MyTeamPage from "views/Teams/MyTeam";
 import Objectives from "@material-ui/icons/DoneAll";
 import DashboardPage from "views/Dashboard/Dashboard.js";
-import TasksPage from "views/Tasks/Tasks";
 import AssignedTasksPage from "views/Tasks/AssignedTasksPage";
 import StrategicObjectives from "views/Objectives/Objectives";
 import KPIsPage from "views/KPI/kpi";
@@ -99,20 +98,11 @@ var dashRoutes = [
   },
   {
     collapse: true,
-    name: "Tasks",
+    name: "MAS",
     rtlName: "صفحات",
     icon: DateRange,
     state: "formsCollapse",
     views: [
-      {
-        path: "/tasks",
-        name: "My Tasks",
-        rtlName: "عالتسعير",
-        mini: "T",
-        rtlMini: "ع",
-        component: TasksPage,
-        layout: "/admin",
-      },
       {
         path: "/shared-tasks",
         name: "Assigned Tasks",

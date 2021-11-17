@@ -219,7 +219,7 @@ export default function UserDashboard() {
                           </Card>
                       </GridItem>
                       <GridItem xs={12} sm={6} md={2}>
-                          <Card className={classes.cardBodyPurple}>
+                          <Card className={classes.cardBodyRed}>
                               <CardBody>
                                       <h4 className={classes.cardTitle}>
                                       {list.cancelled}  <small>Cancelled</small>
@@ -227,7 +227,7 @@ export default function UserDashboard() {
                               </CardBody>
                           </Card>
                       </GridItem >
-                      <GridItem xs={12} sm={6} md={2}>
+                      {/* <GridItem xs={12} sm={6} md={2}>
                           <Card className={classes.cardBodyYellow}>
                               <CardBody>
                                   <h4 className={classes.cardTitle}>
@@ -235,7 +235,7 @@ export default function UserDashboard() {
                                   </h4>
                               </CardBody>
                           </Card>
-                      </GridItem>
+                      </GridItem> */}
                       <GridItem xs={12} sm={6} md={2}>
                           <Card className={classes.cardBodyOrange}>
                               <CardBody>
@@ -255,7 +255,7 @@ export default function UserDashboard() {
                           </Card>
                       </GridItem>
                       <GridItem xs={12} sm={6} md={2}>
-                          <Card className={classes.cardBodyBlack}>
+                          <Card className={classes.cardBodyRed}>
                               <CardBody>
                                   <h4 className={classes.cardTitle}>
                                   {list.notStarted} <small>Not Started</small>
