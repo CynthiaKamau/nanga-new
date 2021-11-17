@@ -160,7 +160,8 @@ export default function myKpis() {
                         title: "Success",
                         text: item,
                         icon: "success",
-                    });
+                    }).then(() => dispatch(getUserObjectives(currentUser.id)));
+                    
             } else {
                 let error = response.data.message
                     setshowloader(false);

@@ -158,7 +158,7 @@ export default function StrategicObjectives() {
                   text: "Objective and task added successfully!",
                   icon: "success",
                   dangerMode: false
-                }).then(() => dispatch(getUserObjectives()));
+                }).then(() => dispatch(getUserObjectives(currentUser.id)));
     
               }
     
@@ -228,7 +228,8 @@ export default function StrategicObjectives() {
                     title: "Success",
                     text: item,
                     icon: "success",
-                });
+                }).then(() => dispatch(getUserObjectives(currentUser.id)));
+
             } else {
                 setshowloader(false);
                     swal.fire({
@@ -314,7 +315,6 @@ export default function StrategicObjectives() {
                 title: "Success",
                 text: "Task added successfully!",
                 icon: "success",
-                dangerMode: false
             });
         }
     }

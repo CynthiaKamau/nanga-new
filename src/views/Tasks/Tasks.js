@@ -106,7 +106,8 @@ export default function TasksPage() {
                     title: "Success",
                     text: item,
                     icon: "success",
-                });
+                }).then(() => dispatch(getTasks(currentUser.id)));
+
             } else {
                 let error = response.data.message
                     setshowloader(false);
@@ -166,7 +167,8 @@ export default function TasksPage() {
                     title: "Success",
                     text: item,
                     icon: "success",
-                });
+                }).then(() => dispatch(getTasks(currentUser.id)));
+
             } else {
                 let error = response.data.message
                     setshowloader(false);
@@ -244,7 +246,8 @@ export default function TasksPage() {
                   title: "Success",
                   text: item,
                   icon: "success",
-              });
+              }).then(() => dispatch(getTasks(currentUser.id)));
+              
             } else {
       
                 let error = response.data.message

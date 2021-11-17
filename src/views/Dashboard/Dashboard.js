@@ -275,7 +275,8 @@ export default function Dashboard() {
               title: "Success",
               text: res,
               icon: "success",
-            });   
+            }).then(() => dispatch(getMission(currentUser.id)));
+
         } else {
           setshowloader(false);
           setEditMissionOpen(false);
@@ -328,7 +329,8 @@ export default function Dashboard() {
               title: "Success",
               text: resp,
               icon: "success",
-            });   
+            }).then(() => dispatch(getVision(currentUser.id)));
+
         } else {
           setshowloader(false);
           setEditVisionOpen(false);

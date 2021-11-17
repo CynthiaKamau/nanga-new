@@ -44,7 +44,7 @@ export default function TeamsPage() {
 
     useEffect(() => {
         dispatch(getTeams());
-        dispatch(getUsers())
+        dispatch(getUsers());
       }, []);
 
     const [addopen, setAddOpen] = useState(false);
@@ -90,7 +90,8 @@ export default function TeamsPage() {
                     title: "Success",
                     text: item,
                     icon: "success",
-                });
+                }).then(() => dispatch(getTeams()));
+
             } else {
                 let error = response.data.message
                 setshowloader(false);
@@ -155,7 +156,8 @@ export default function TeamsPage() {
                     title: "Success",
                     text: item,
                     icon: "success",
-                });
+                }).then(() => dispatch(getTeams()));
+                
             } else {
                 let error = response.data.message;
                 setshowloader(false);

@@ -92,7 +92,8 @@ export default function KPIs() {
                         title: "Success",
                         text: item,
                         icon: "success",
-                    });
+                    }).then(() =>dispatch(getKpis()));
+
                 } else {
                     let error = response.data.message
                     setshowloader(false);
@@ -158,7 +159,8 @@ export default function KPIs() {
                         title: "Success",
                         text: item,
                         icon: "success",
-                    });
+                    }).then(() =>dispatch(getKpis()));
+                    
             } else {
                 let error = response.data.message
                     setshowloader(false);
