@@ -51,7 +51,7 @@ export default function Dashboard() {
 
   const { user: currentUser } = useSelector(state => state.auth);
   const { items } = useSelector(state => state.objective);
-  const {  mission, vision, error } = useSelector(state => state.data);
+  const {  mission, vision } = useSelector(state => state.data);
   const {  items : kpis } = useSelector(state => state.kpi);
 
   useEffect(() => {
@@ -141,10 +141,6 @@ export default function Dashboard() {
     // setAddOpen(false);
     // setAddOpenTask(false);
 
-    if (description == "", end_date == "", kpi_id == "", start_date == "", target == "", user_id == "", created_by == "", task_description == "", task_start_date == "", task_end_date == "" ) {
-      return false;
-    }
-
     let end_date = moment(end_date).format('YYYY-MM-DD');
     let start_date = moment(start_date).format('YYYY-MM-DD');
 
@@ -161,9 +157,11 @@ export default function Dashboard() {
           setshowloader(false);
           setAddOpenTask(false);
 
+          let error = response.data.message;
+
           swal.fire({
               title: "Error",
-              text: "An error occurred, please try again!",
+              text: error,
               icon: "error",
               dangerMode: true
           });
@@ -193,9 +191,12 @@ export default function Dashboard() {
           if (response1.data.success === false) {
             setshowloader(false);
             error(response1.data)
+
+            let error = response.data.message;
+
             swal.fire({
                 title: "Error",
-                text: "An error occurred, please try again!",
+                text: error,
                 icon: "error",
                 dangerMode: true
             });
@@ -215,6 +216,15 @@ export default function Dashboard() {
         }
     } catch (error) {
       console.log(error);
+
+      let err = error.response.data.message;
+
+      swal.fire({
+        title: "Error",
+        text: err,
+        icon: "error",
+        dangerMode: true
+    });
     }
 
   }
@@ -857,61 +867,57 @@ export default function Dashboard() {
 
                 <Card className={classes.cardBodyRed} key={index} style={{ marginBottom: '0'}} >
                   <GridItem xs={12} sm={12} md={12}>
-                    <h4 className={classes.textBold}> {list.objectives.description} </h4>
+                    <h3 className={classes.textBold}> {list.objectives.description} </h3>
                     <h6 className={classes.textGreen}> {list.totalTasks} Management actions</h6>
                   </GridItem>
                   <CardBody className={classes.cardBody}>
                       <GridItem xs={12} sm={6} md={2}>
                           <Card className={classes.cardBodyRed}>
                               <CardBody>
-                                  <h3 className={classes.cardTitle}>
-                                      {list.offtrack} <small>Off Ttack</small>
-                                  </h3>
+                                  <h4 className={classes.cardTitle}>{list.offtrack} <small>Off Ttack</small></h4>
                               </CardBody>
                           </Card>
                       </GridItem>
                       <GridItem xs={12} sm={6} md={2}>
                           <Card className={classes.cardBodyPurple}>
                               <CardBody>
-                                      <h3 className={classes.cardTitle}>
-                                      {list.cancelled} <small>Cancelled</small>
-                                      </h3>
+                                <h4 className={classes.cardTitle}>{list.cancelled} <small>Cancelled</small></h4>
                               </CardBody>
                           </Card>
                       </GridItem >
                       <GridItem xs={12} sm={6} md={2}>
                           <Card className={classes.cardBodyYellow}>
                               <CardBody>
-                                  <h3 className={classes.cardTitle}>
+                                  <h4 className={classes.cardTitle}>
                                   {list.postPoned} <small>Postponed</small>
-                                  </h3>
+                                  </h4>
                               </CardBody>
                           </Card>
                       </GridItem>
                       <GridItem xs={12} sm={6} md={2}>
                           <Card className={classes.cardBodyOrange}>
                               <CardBody>
-                                  <h3 className={classes.cardTitle}>
+                                  <h4 className={classes.cardTitle}>
                                   {list.onGoing} <small>Ongoing</small>
-                                  </h3>
+                                  </h4>
                               </CardBody>
                           </Card>
                       </GridItem>
                       <GridItem xs={12} sm={6} md={2}>
                           <Card  className={classes.cardBodyGreen}>
                               <CardBody>
-                                  <h3 className={classes.cardTitle}>
+                                  <h4 className={classes.cardTitle}>
                                       {list.done} <small>Completed</small>
-                                  </h3>
+                                  </h4>
                               </CardBody>
                           </Card>
                       </GridItem>
                       <GridItem xs={12} sm={6} md={2}>
                           <Card className={classes.cardBodyBlack}>
                               <CardBody>
-                                  <h3 className={classes.cardTitle}>
+                                  <h4 className={classes.cardTitle}>
                                       {list.notStarted}<small>Not Started</small>
-                                  </h3>
+                                  </h4>
                               </CardBody>
                           </Card>
                       </GridItem>

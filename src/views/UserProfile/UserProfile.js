@@ -20,7 +20,7 @@ import CardIcon from "components/Card/CardIcon.js";
 import CardAvatar from "components/Card/CardAvatar.js";
 import swal from "sweetalert2";
 import axios from "axios";
-import { Button } from "@material-ui/core";
+import Button from "components/CustomButtons/Button.js";
 import styles from "assets/jss/material-dashboard-pro-react/views/userProfileStyles.js";
 // import avatar from "../../assets/img/faces/marc.jpg";
 import {
@@ -265,7 +265,7 @@ export default function UserProfile() {
                   </div>
                   ) :
                   (
-                  <Button simple onClick={(e) => handleSubmit(e)}> Save</Button>
+                  <Button color="primary" onClick={(e) => handleSubmit(e)}> Save</Button>
                   )}
                 </GridItem>
               </GridContainer>

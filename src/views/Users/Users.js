@@ -89,10 +89,6 @@ export default function UsersPage() {
     {
       value: 'disabled',
       label: 'Disabled',
-    },
-    {
-      value: 'pending',
-      label: 'Pending',
     }
   ]
 
@@ -128,7 +124,8 @@ export default function UsersPage() {
             title: "Success",
             text: item,
             icon: "success",
-        });
+        }).then(() => dispatch(getUsers()));
+        
       } else {
 
           let error = response.data.message
@@ -187,7 +184,7 @@ export default function UsersPage() {
         id : user_id,
         full_names : name,
         email : email,
-        // status : status,
+        status : status,
         extension: extension,
         // disabled : disabled,
         team_id : team, 
@@ -205,15 +202,20 @@ export default function UsersPage() {
                 let item = response.data.message
                 setEditOpen(false);
                 setshowloader(false);
+                // dispatch(getUsers());
+
+
                 swal.fire({
                     title: "Success",
                     text: item,
                     icon: "success",
-                });
+                }).then(() => dispatch(getUsers()));
+
             } else {
               let error = response.data.message
               setEditOpen(false);
               setshowloader(false);
+
               swal.fire({
                   title: "Error",
                   text: error,
@@ -338,7 +340,7 @@ export default function UsersPage() {
                 <TableBody>
                   {items && items.map((list, index) => (
                     <TableRow key={index}>
-                      <TableCell>{list.id}</TableCell>
+                      <TableCell>{index}</TableCell>
                       <TableCell>{list.fullnames}</TableCell>
                       <TableCell>{list.status}</TableCell>
                       <TableCell>{list.teams.name}</TableCell>
