@@ -56,7 +56,7 @@ export default function myKpis() {
     useEffect(() => {
         dispatch(getUserObjectives(currentUser.id));
         dispatch(getCategories());
-        dispatch(getKpis());
+        dispatch(getKpis(currentUser.id));
     }, [])
 
     const [addopen, setAddOpen] = useState(false);
@@ -452,7 +452,7 @@ export default function myKpis() {
                             }}
                             helperText="Please select your Kpi"
                         >
-                            {kpis.map((option) => (
+                            {kpis && kpis.map((option) => (
                             <MenuItem key={option.id} value={option.id}>
                                 {option.title}
                             </MenuItem>

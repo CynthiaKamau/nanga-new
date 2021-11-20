@@ -25,12 +25,12 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
-import JsonData from "../../data/data.json";
 import { getKpis } from "actions/kpis";
 import swal from "sweetalert2";
 import Loader from "react-loader-spinner";
 import { LinearProgress } from "@material-ui/core";
 import axios from "axios";
+import { getCategories } from "actions/data";
 
 import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
 
@@ -42,12 +42,15 @@ export default function KPIs() {
 
     const { items, error, isLoading } = useSelector(state => state.kpi);
     const { user : currentUser } = useSelector(state => state.auth);
+    const { categories }  = useSelector(state => state.data);
+    // const { error : category_error, isLoading : category_loading}  = useSelector(state => state.data);
+
+    console.log("categories", categories)
 
     useEffect(() => {
-        dispatch(getKpis());
+        dispatch(getKpis(currentUser.id));
+        dispatch(getCategories());
       }, []);
-
-    const categories = JsonData.Categories;
 
     const [addopen, setAddOpen] = useState(false);
     const [editopen, setEditOpen] = useState(false);
@@ -267,7 +270,9 @@ export default function KPIs() {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {items ? ( items.map((list, index) => (
+                        { items === null || items === undefined ? (
+                            <TableRow> <TableCell> No KPIs available </TableCell></TableRow>
+                        ) : items ? ( items.map((list, index) => (
                             <TableRow key={index}>
                                 <TableCell>{list.title}</TableCell>
                                 <TableCell>{list.kpi_unit_of_measure}</TableCell>

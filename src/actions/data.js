@@ -12,6 +12,10 @@ import {
     ALL_STATUS_FETCH_REQUEST,
     ALL_STATUS_FAIL,
 
+    ALL_PILLARS_SUCCESS,
+    ALL_PILLARS_FETCH_REQUEST,
+    ALL_PILLARS_FAIL,
+
     MISSION_SUCCESS,
     MISSION_FETCH_REQUEST,
     MISSION_FAIL,
@@ -93,6 +97,28 @@ export const getStatus = () => {
 
         } catch (error) {
             dispatch({ type: ALL_STATUS_FAIL, payload: error.response })
+        }
+    }
+}
+
+//all pillars
+export const getPillars = () => {
+
+    return async function (dispatch) {
+
+        dispatch({ type: ALL_PILLARS_FETCH_REQUEST });
+
+        try {
+
+            let response = await axios.get('/pillarObjectives/all_pillarObjectives')
+            if (response.status == 200) {
+                dispatch({ type: ALL_PILLARS_SUCCESS, payload: response.data })
+            } else {
+                dispatch({ type: ALL_PILLARS_FAIL, payload: response.data })
+            }
+
+        } catch (error) {
+            dispatch({ type: ALL_PILLARS_FAIL, payload: error.response })
         }
     }
 }

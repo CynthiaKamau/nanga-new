@@ -24,7 +24,7 @@ import {
 
 } from '../actions/types';
 
-export const getKpis = () => {
+export const getKpis = (id) => {
 
     return async function (dispatch) {
 
@@ -32,7 +32,7 @@ export const getKpis = () => {
 
         try {
 
-            let response = await axios.get('/kpi/all_kpis')
+            let response = await axios.get(`kpi/findKpiByUserId?user_id=${id}`)
             if (response.status == 200) {
                 dispatch({ type: ALL_KPIS_SUCCESS, payload: response.data })
             } else {

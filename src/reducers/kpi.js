@@ -42,7 +42,7 @@ export default function(state = initialState, action) {
         case ALL_KPIS_SUCCESS :
             return {
                 ...state,
-                items : action.payload,
+                items : action.payload.data,
                 isLoading : false,
                 error : null
             }

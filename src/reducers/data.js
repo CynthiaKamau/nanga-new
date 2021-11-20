@@ -11,6 +11,10 @@ import {
     ALL_STATUS_FETCH_REQUEST,
     ALL_STATUS_FAIL,
 
+    ALL_PILLARS_SUCCESS,
+    ALL_PILLARS_FETCH_REQUEST,
+    ALL_PILLARS_FAIL,
+
     MISSION_SUCCESS,
     MISSION_FETCH_REQUEST,
     MISSION_FAIL,
@@ -35,6 +39,7 @@ const initialState = {
     roles : [],
     role : [],
     statuses : [],
+    pillars : [],
     status : [],
     mission : [],
     vision : [],
@@ -51,6 +56,7 @@ export default function(state = initialState, action) {
         case MISSION_FETCH_REQUEST :
         case EDIT_MISSION_FETCH_REQUEST :
         case EDIT_VISION_FETCH_REQUEST :
+        case ALL_PILLARS_FETCH_REQUEST :
             return {
                 ...state,
                 isLoading: true
@@ -73,6 +79,12 @@ export default function(state = initialState, action) {
             return {
                 ...state,
                 statuses : action.payload,
+                error : null
+            }
+        case ALL_PILLARS_SUCCESS :
+            return {
+                ...state,
+                pillars : action.payload,
                 error : null
             }
         case EDIT_MISSION_SUCCESS :
@@ -115,6 +127,13 @@ export default function(state = initialState, action) {
                 ...state,
                 isLoading: false,
                 statuses : null,
+                error: action.payload.message
+            }
+        case ALL_PILLARS_FAIL :
+            return {
+                ...state,
+                isLoading: false,
+                pillars : null,
                 error: action.payload.message
             }
         case EDIT_MISSION_FAIL :

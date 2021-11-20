@@ -35,6 +35,8 @@ import moment from "moment";
 import axios from "axios";
 import { getUserObjectives } from "actions/objectives";
 import { getKpis } from "actions/kpis";
+import { getStatus, getPillars } from "actions/data";
+
 // import { getObjectiveTasks } from "actions/objectives";
 
 const useStyles = makeStyles(styles);
@@ -48,15 +50,18 @@ export default function StrategicObjectives() {
     const { user: currentUser } = useSelector(state => state.auth);
     const { items, error} = useSelector(state => state.objective);
     const {  items : kpis } = useSelector(state => state.kpi);
+    const { statuses, pillars } = useSelector(state => state.data);
 
     const [ objectiveId, setObjectiveId] = useState("");
 
 
     useEffect(() => {
         dispatch(getUserObjectives(currentUser.id));
-        dispatch(getKpis());
+        dispatch(getKpis(currentUser.id));
         setUserId(currentUser.id);
         setCreatedBy(currentUser.id);
+        dispatch(getStatus());
+        dispatch(getPillars());
 
     }, [])
 
@@ -85,6 +90,11 @@ export default function StrategicObjectives() {
     const [setIndex, setSelectedIndex] = useState("");
     const [err, setError] = useState("");
     const [obj_tasks, setObjTasks] = useState("");
+    const [ task_objective_id, setTaskObjectiveId] = useState("");
+    const [editopenindividualtask, setEditOpenIndividualTask] = useState(false);
+    const [task_status, setTaskStatus] = useState("");
+    const [ pillar_id, setPillar] = useState("");
+
 
     const handleAddClickOpen = () => {
         setAddOpen(true);
@@ -99,11 +109,11 @@ export default function StrategicObjectives() {
         let end_date = moment(end_date).format('YYYY-MM-DD');
         let start_date = moment(start_date).format('YYYY-MM-DD');
     
-        console.log("save objective", description, end_date, kpi_id, start_date, target, user_id, created_by);
+        console.log("save objective", description, end_date, kpi_id, start_date, target, user_id, created_by, pillar_id);
     
         const config = { headers: { 'Content-Type': 'application/json' } }
     
-        let body = {description, end_date, kpi_id, start_date, target, user_id, created_by};
+        let body = {description, end_date, kpi_id, start_date, target, user_id, created_by, pillar_id};
     
         try {
           let response = await axios.post('/objectives/create', body, config);
@@ -210,6 +220,7 @@ export default function StrategicObjectives() {
         setTargetAtReview(list.target_achieved_on_review);
         setStartDate(list.start_date);
         setEndDate(list.end_date)
+        setPillar(list.pillar_id)
 
     }
 
@@ -222,10 +233,10 @@ export default function StrategicObjectives() {
         let end_date = moment(end_date).format('YYYY-MM-DD');
         let start_date = moment(start_date).format('YYYY-MM-DD');
 
-        console.log("save objective", id, description, end_date, kpi_id, start_date, target, user_id, target_achieved, target_achieved_on_review, setUpdatedBy())
+        console.log("save objective", id, description, end_date, kpi_id, start_date, target, user_id, target_achieved, target_achieved_on_review, pillar_id, setUpdatedBy())
 
         const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
-        const body = JSON.stringify({ id, description, kpi_id, user_id, start_date, end_date,  target, target_achieved, target_achieved_on_review, created_by, updated_by });
+        const body = JSON.stringify({ id, description, kpi_id, user_id, start_date, end_date,  target, target_achieved, target_achieved_on_review, created_by, updated_by, pillar_id });
 
         try {
 
@@ -328,6 +339,88 @@ export default function StrategicObjectives() {
         }
     }
 
+    const handleEditIndividualTaskOpen = () => {
+        setEditOpenIndividualTask(true);
+    }
+    
+    const handleEditIndividualTaskClose = () => {
+        setEditOpenIndividualTask(false);
+    }
+
+    const setEditingIndividualTask = (list) => {
+        console.log(list);
+    
+        setTaskDescription(list.description)
+        setTaskStatus(list.status);
+        setTaskStartDate(list.start_date);
+        setTaskEndDate(list.end_date);
+        setTaskObjectiveId(list.objective_id);
+        setUserId(list.user_id);
+        setId(list.id)
+      }
+    
+      const saveEditedIndividualTask = async (e) => {
+          e.preventDefault();
+          setshowloader(true);
+    
+          console.log("edit values",  task_description, task_end_date, task_start_date, task_objective_id, user_id, created_by, updated_by, id, task_status, setUpdatedBy)
+    
+          const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
+          const body = JSON.stringify({
+            "id": id,
+            "description": task_description,
+            "user_id": user_id,
+            "objective_id": task_objective_id,
+            "start_date": task_start_date,
+            "end_date": task_end_date,
+            "status": task_status,
+            "created_by": created_by,
+            "updated_by": updated_by
+          });
+    
+          console.log("task", body);
+    
+          try {
+    
+              let response = await axios.post('/tasks/update', body, config)
+              if (response.status == 201) {
+                  setshowloader(false);
+                  setEditOpenIndividualTask(false);
+    
+                  let item = response.data.message
+                  swal.fire({
+                      title: "Success",
+                      text: item,
+                      icon: "success",
+                  })
+    
+              } else {
+                  let error = response.data.message
+                      setshowloader(false);
+                      setEditOpenIndividualTask(false);
+    
+                      swal.fire({
+                          title: "Error",
+                          text: error,
+                          icon: "error",
+                          dangerMode: true
+                      });
+              }
+          } catch (error) {
+              let err = error.response.data.message
+              setshowloader(false);
+              setEditOpenIndividualTask(false);
+    
+              swal.fire({
+                  title: "Error",
+                  text: err,
+                  icon: "error",
+                  dangerMode: true
+              });
+          }
+    
+      }
+
     // const handleRedirect = () => {
     //     history.push('/admin/tasks');
     // }
@@ -354,18 +447,18 @@ export default function StrategicObjectives() {
                             <GridItem xs={12} sm={6} md={2}>
                                 <Card className={classes.cardBodyRed}>
                                     <CardBody>
-                                        <h4 className={classes.cardTitle}>
+                                        <h3 className={classes.cardTitle}>
                                         {list.offtrack} <small>Off Ttack</small>
-                                        </h4>
+                                        </h3>
                                     </CardBody>
                                 </Card>
                             </GridItem>
                             <GridItem xs={12} sm={6} md={2}>
                                 <Card className={classes.cardBodyRed}>
                                     <CardBody>
-                                            <h4 className={classes.cardTitle}>
+                                            <h3 className={classes.cardTitle}>
                                             {list.cancelled} <small>Cancelled</small>
-                                            </h4>
+                                            </h3>
                                     </CardBody>
                                 </Card>
                             </GridItem >
@@ -381,27 +474,27 @@ export default function StrategicObjectives() {
                             <GridItem xs={12} sm={6} md={2}>
                                 <Card className={classes.cardBodyOrange}>
                                     <CardBody>
-                                        <h4 className={classes.cardTitle}>
+                                        <h3 className={classes.cardTitle}>
                                         {list.onGoing}  <small>Ongoing</small>
-                                        </h4>
+                                        </h3>
                                     </CardBody>
                                 </Card>
                             </GridItem>
                             <GridItem xs={12} sm={6} md={2}>
                                 <Card  className={classes.cardBodyGreen}>
                                     <CardBody>
-                                        <h4 className={classes.cardTitle}>
+                                        <h3 className={classes.cardTitle}>
                                         {list.done} <small>Completed</small>
-                                        </h4>
+                                        </h3>
                                     </CardBody>
                                 </Card>
                             </GridItem>
                             <GridItem xs={12} sm={6} md={2}>
                                 <Card className={classes.cardBodyRed}>
                                     <CardBody>
-                                        <h4 className={classes.cardTitle}>
+                                        <h3 className={classes.cardTitle}>
                                         {list.notStarted} <small>Not Started</small>
-                                        </h4>
+                                        </h3>
                                     </CardBody>
                                 </Card>
                             </GridItem>
@@ -446,8 +539,7 @@ export default function StrategicObjectives() {
                                                 <TableCell>{moment(list.start_date).format('YYYY-MM-DD')}</TableCell>
                                                 <TableCell>{moment(list.end_date).format('YYYY-MM-DD')}</TableCell>
                                                 <TableCell>{list.status}</TableCell>
-                                                <TableCell> <IconButton aria-label="edit" className={classes.textGreen} onClick={() => { }} ><EditIcon /></IconButton></TableCell>
-
+                                                <TableCell> <IconButton aria-label="edit" className={classes.textGreen} onClick={() => {handleEditIndividualTaskOpen(); setEditingIndividualTask(list) }} ><EditIcon /></IconButton></TableCell>
                                             </TableRow>
                                         ))) : err ? (<TableRow> <TableCell> {err} </TableCell></TableRow>) 
                                         : null }
@@ -487,30 +579,55 @@ export default function StrategicObjectives() {
                             setDescription(value)
                         }}
                     />
-
-                    <Grid item xs={6} lg={6} xl={6} sm={12}>
-                        <label> KPI : </label>
-                        <TextField
-                            id="outlined-select-kpi"
-                            select
-                            fullWidth
-                            variant="outlined"
-                            label="Select"
-                            className={classes.textInput}
-                            value={kpi_id}
-                            onChange={(event) => {
-                                setKpiId(event.target.value);
-                                setKpiUom(event);
-                                console.log("uom search", event.target)
-                            }}
-                            helperText="Please select your kpi"
-                        >
-                            {kpis.map((option) => (
+                    <Grid container spacing={2}>
+                        <Grid item xs={6} lg={6} xl={6} sm={12}>
+                            <label> KPI : </label>
+                            <TextField
+                                id="outlined-select-kpi"
+                                select
+                                fullWidth
+                                variant="outlined"
+                                label="Select"
+                                className={classes.textInput}
+                                value={kpi_id}
+                                onChange={(event) => {
+                                    setKpiId(event.target.value);
+                                    setKpiUom(event);
+                                    console.log("uom search", event.target)
+                                }}
+                                helperText="Please select your kpi"
+                            >
+                                {kpis && kpis.map((option) => (
+                                    <MenuItem key={option.id} value={option.id}>
+                                        {option.title}
+                                    </MenuItem>
+                                ))}
+                            </TextField>
+                        </Grid>
+                        <Grid item xs={6} lg={6} xl={6} sm={12}>
+                            <label> Pillar : </label>
+                            <TextField
+                                id="outlined-select-pillar"
+                                select
+                                required
+                                fullWidth
+                                variant="outlined"
+                                label="Select"
+                                className={classes.textInput}
+                                value={pillar_id}
+                                onChange={(event) => {
+                                setPillar(event.target.value);
+                                // setUomValue()
+                                }}
+                                helperText="Please select your pillar"
+                            >
+                                {pillars && pillars.map((option) => (
                                 <MenuItem key={option.id} value={option.id}>
-                                    {option.title}
+                                    {option.description}
                                 </MenuItem>
-                            ))}
-                        </TextField>
+                                ))}
+                            </TextField>
+                        </Grid>
                     </Grid>
 
                     <Grid item xs={6} lg={6} xl={6} sm={12}>
@@ -805,7 +922,7 @@ export default function StrategicObjectives() {
                         }}
                         helperText="Please select your kpi"
                     >
-                        {kpis.map((option) => (
+                        {kpis && kpis.map((option) => (
                             <MenuItem key={option.id} value={option.id}>
                                 {option.title}
                             </MenuItem>
@@ -849,6 +966,29 @@ export default function StrategicObjectives() {
                     />
 
                     ) : null}  
+
+                  <label> Pillar : </label>
+                  <TextField
+                    id="outlined-select-pillar"
+                    select
+                    required
+                    fullWidth
+                    variant="outlined"
+                    label="Select"
+                    className={classes.textInput}
+                    value={pillar_id}
+                    onChange={(event) => {
+                      setPillar(event.target.value);
+                      // setUomValue()
+                    }}
+                    helperText="Please select your pillar"
+                  >
+                    {pillars && pillars.map((option) => (
+                      <MenuItem key={option.id} value={option.id}>
+                        {option.description}
+                      </MenuItem>
+                    ))}
+                  </TextField>
 
                     <Grid container spacing={2}>
                         <Grid item xs={6} lg={6} xl={6} sm={12}>
@@ -931,6 +1071,91 @@ export default function StrategicObjectives() {
                 </DialogActions>
             </Dialog>
 
+            <Dialog open={editopenindividualtask} onClose={handleEditIndividualTaskClose}>
+            <DialogTitle>Strategic Intitative</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        Edit Strategic Intitative Details
+                    </DialogContentText>
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        id="description"
+                        label="Description"
+                        type="text"
+                        fullWidth
+                        style={{ marginBottom: '15px' }}
+                        value={task_description}
+                        variant="outlined"
+                        onChange={(event) => {
+                            setTaskDescription(event.target.value);
+                        }}
+                    />
+
+                <Grid container spacing={2}>
+                    <Grid item xs={6} lg={6} xl={6} sm={12}>
+                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                            <KeyboardDatePicker
+                                margin="normal"
+                                id="date-picker-dialog"
+                                helperText="Set start date"
+                                format="yyyy/dd/MM"
+                                fullWidth
+                                inputVariant="outlined"
+                                value={task_start_date}
+                                onChange={setTaskStartDate}
+                                KeyboardButtonProps={{
+                                    'aria-label': 'change date',
+                                }}
+                            />
+                        </MuiPickersUtilsProvider>
+                    </Grid>
+
+                    <Grid item xs={6} lg={6} xl={6} sm={12}>
+                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                            <KeyboardDatePicker
+                                margin="normal"
+                                id="date-picker-dialog"
+                                helperText="Set due date"
+                                format="yyyy/dd/MM"
+                                fullWidth
+                                inputVariant="outlined"
+                                value={task_end_date}
+                                onChange={setTaskEndDate}
+                                KeyboardButtonProps={{
+                                    'aria-label': 'change date',
+                                }}
+                            />
+                        </MuiPickersUtilsProvider>
+                    </Grid>
+                </Grid>
+
+                    <label style={{ fontWeight: 'bold', color: 'black' }}> Status : </label>
+                    <TextField
+                        id="outlined-select-status"
+                        select
+                        fullWidth
+                        variant="outlined"
+                        label="Select"
+                        value={task_status}
+                        onChange={(event) => {
+                            setTaskStatus(event.target.value);
+                        }}
+                        helperText="Please select the status"
+                    >
+                        {statuses.map((option) => (
+                            <MenuItem key={option.status} value={option.status}>
+                                {option.status}
+                            </MenuItem>
+                        ))}
+                    </TextField>
+
+                </DialogContent>
+                <DialogActions>
+                    <Button color="danger" onClick={handleEditIndividualTaskClose}>Cancel</Button>
+                    <Button color="primary" onClick={(e) => { saveEditedIndividualTask(e) }}>Save</Button>
+                </DialogActions>
+            </Dialog>
         </div>
     );
 }

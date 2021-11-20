@@ -212,25 +212,25 @@ export default function UserDashboard() {
                       <GridItem xs={12} sm={6} md={2}>
                           <Card className={classes.cardBodyRed}>
                               <CardBody>
-                                  <h4 className={classes.cardTitle}>
+                                  <h3 className={classes.cardTitle}>
                                   {list.offtrack} <small>Off Ttack</small>
-                                  </h4>
+                                  </h3>
                               </CardBody>
                           </Card>
                       </GridItem>
                       <GridItem xs={12} sm={6} md={2}>
                           <Card className={classes.cardBodyRed}>
                               <CardBody>
-                                      <h4 className={classes.cardTitle}>
+                                      <h3 className={classes.cardTitle}>
                                       {list.cancelled}  <small>Cancelled</small>
-                                      </h4>
+                                      </h3>
                               </CardBody>
                           </Card>
                       </GridItem >
                       {/* <GridItem xs={12} sm={6} md={2}>
                           <Card className={classes.cardBodyYellow}>
                               <CardBody>
-                                  <h4 className={classes.cardTitle}>
+                                  <h3 className={classes.cardTitle}>
                                   {list.postPoned} <small>Postponed</small>
                                   </h4>
                               </CardBody>
@@ -239,27 +239,27 @@ export default function UserDashboard() {
                       <GridItem xs={12} sm={6} md={2}>
                           <Card className={classes.cardBodyOrange}>
                               <CardBody>
-                                  <h4 className={classes.cardTitle}>
+                                  <h3 className={classes.cardTitle}>
                                   {list.onGoing} <small>Ongoing</small>
-                                  </h4>
+                                  </h3>
                               </CardBody>
                           </Card>
                       </GridItem>
                       <GridItem xs={12} sm={6} md={2}>
                           <Card  className={classes.cardBodyGreen}>
                               <CardBody>
-                                  <h4 className={classes.cardTitle}>
+                                  <h3 className={classes.cardTitle}>
                                   {list.done} <small>Completed</small>
-                                  </h4>
+                                  </h3>
                               </CardBody>
                           </Card>
                       </GridItem>
                       <GridItem xs={12} sm={6} md={2}>
                           <Card className={classes.cardBodyRed}>
                               <CardBody>
-                                  <h4 className={classes.cardTitle}>
+                                  <h3 className={classes.cardTitle}>
                                   {list.notStarted} <small>Not Started</small>
-                                  </h4>
+                                  </h3>
                               </CardBody>
                           </Card>
                       </GridItem>

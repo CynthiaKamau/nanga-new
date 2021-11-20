@@ -40,6 +40,8 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import { getMission, getVision } from "actions/data";
+import { getStatus, getPillars } from "actions/data";
+
 
 const useStyles = makeStyles(styles);
 
@@ -53,13 +55,22 @@ export default function Dashboard() {
   const { items } = useSelector(state => state.objective);
   const {  mission, vision } = useSelector(state => state.data);
   const {  items : kpis } = useSelector(state => state.kpi);
+  const { statuses, pillars } = useSelector(state => state.data);
+
+  console.log("kpis", kpis)
+
+  if(kpis === null || kpis === undefined) {
+    kpis === []
+  }
 
   useEffect(() => {
     dispatch(getUserObjectives(currentUser.id));
     dispatch(getMission(currentUser.id));
     dispatch(getVision());
-    dispatch(getKpis());
+    dispatch(getKpis(currentUser.id));
     setUserId(currentUser.id);
+    dispatch(getStatus());
+    dispatch(getPillars());
     setCreatedBy(currentUser.id);
   }, [])
 
@@ -69,6 +80,7 @@ export default function Dashboard() {
   const [addopen, setAddOpen] = useState(false);
   const [addopentask, setAddOpenTask] = useState("");
   const [addopenindividualtask, setAddOpenIndividualTask] = useState(false);
+   const [editopenindividualtask, setEditOpenIndividualTask] = useState(false);
   const [editopenmission, setEditMissionOpen] = useState(false);
   const [editopenvision, setEditVisionOpen] = useState(false);
   const [task_description, setTaskDescription] = useState("");
@@ -76,6 +88,7 @@ export default function Dashboard() {
   const [end_date, setEndDate] = useState("");
   const [task_start_date, setTaskStartDate] = useState("");
   const [task_end_date, setTaskEndDate] = useState("");
+  const [task_status, setTaskStatus] = useState("");
   const [user_id, setUserId] = useState(currentUser.id);
   const [showloader, setshowloader] = useState(false); 
   const [created_by, setCreatedBy] = useState("");
@@ -88,6 +101,12 @@ export default function Dashboard() {
   const [ objectiveId, setObjectiveId] = useState("");
   const [ missionId, setMissionId] = useState("");
   const [ visionId, setVisionId] = useState("");
+  // const [status, setStatus] = useState("");
+  const [id, setId] = useState("");
+  const [updated_by, setUpdatedBy] = useState(currentUser.id);
+  const [ task_objective_id, setTaskObjectiveId] = useState("");
+  const [ pillar_id, setPillar] = useState("");
+
   // const [newuser, setNewUser] = useState(true);
 
   // const categories = JsonData.Categories;
@@ -127,6 +146,14 @@ export default function Dashboard() {
       setAddOpenIndividualTask(false);
   }
 
+  const handleEditIndividualTaskOpen = () => {
+    setEditOpenIndividualTask(true);
+  }
+
+  const handleEditIndividualTaskClose = () => {
+      setEditOpenIndividualTask(false);
+  }
+
   const handleEditMissionClose = () => {
     setEditMissionOpen(false);
   };
@@ -144,10 +171,10 @@ export default function Dashboard() {
     let end_date = moment(end_date).format('YYYY-MM-DD');
     let start_date = moment(start_date).format('YYYY-MM-DD');
 
-    console.log("save objective", description, end_date, kpi_id, start_date, target, user_id, created_by);
+    console.log("save objective", description, end_date, kpi_id, start_date, target, user_id, created_by, pillar_id);
 
     const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
-    let body = {description, end_date, kpi_id, start_date, target, user_id, created_by};
+    let body = {description, end_date, kpi_id, start_date, target, user_id, created_by, pillar_id};
 
     try {
       let response = await axios.post('/objectives/create', body, config);
@@ -486,6 +513,80 @@ export default function Dashboard() {
     }
   }
 
+  const setEditingIndividualTask = (list) => {
+    console.log(list);
+
+    setTaskDescription(list.description)
+    setTaskStatus(list.status);
+    setTaskStartDate(list.start_date);
+    setTaskEndDate(list.end_date);
+    setTaskObjectiveId(list.objective_id);
+    setUserId(list.user_id);
+    setId(list.id)
+  }
+
+  const saveEditedIndividualTask = async (e) => {
+      e.preventDefault();
+      setshowloader(true);
+
+      console.log("edit values",  task_description, task_end_date, task_start_date, task_objective_id, user_id, created_by, updated_by, id, task_status, setUpdatedBy)
+
+      const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
+      const body = JSON.stringify({
+        "id": id,
+        "description": task_description,
+        "user_id": user_id,
+        "objective_id": task_objective_id,
+        "start_date": task_start_date,
+        "end_date": task_end_date,
+        "status": task_status,
+        "created_by": created_by,
+        "updated_by": updated_by
+      });
+
+      console.log("task", body);
+
+      try {
+
+          let response = await axios.post('/tasks/update', body, config)
+          if (response.status == 201) {
+              setshowloader(false);
+              setEditOpenIndividualTask(false);
+
+              let item = response.data.message
+              swal.fire({
+                  title: "Success",
+                  text: item,
+                  icon: "success",
+              })
+
+          } else {
+              let error = response.data.message
+                  setshowloader(false);
+                  setEditOpenIndividualTask(false);
+
+                  swal.fire({
+                      title: "Error",
+                      text: error,
+                      icon: "error",
+                      dangerMode: true
+                  });
+          }
+      } catch (error) {
+          let err = error.response.data.message
+          setshowloader(false);
+          setEditOpenIndividualTask(false);
+
+          swal.fire({
+              title: "Error",
+              text: err,
+              icon: "error",
+              dangerMode: true
+          });
+      }
+
+  }
+
 
   return (
     <div>
@@ -550,29 +651,56 @@ export default function Dashboard() {
                 }}
               />
 
-              <Grid item xs={6} lg={6} xl={6} sm={12}>
-                <label> KPI : </label>
-                <TextField
-                  id="outlined-select-kpi"
-                  select
-                  required
-                  fullWidth
-                  variant="outlined"
-                  label="Select"
-                  className={classes.textInput}
-                  value={kpi_id}
-                  onChange={(event) => {
-                    setKpi(event.target.value);
-                    // setUomValue()
-                  }}
-                  helperText="Please select your kpi"
-                >
-                  {kpis.map((option) => (
-                    <MenuItem key={option.id} value={option.id}>
-                      {option.title}
-                    </MenuItem>
-                  ))}
-                </TextField>
+              <Grid container spacing={2}>
+                <Grid item xs={6} lg={6} xl={6} sm={12}>
+                  <label> KPI : </label>
+                  <TextField
+                    id="outlined-select-kpi"
+                    select
+                    required
+                    fullWidth
+                    variant="outlined"
+                    label="Select"
+                    className={classes.textInput}
+                    value={kpi_id}
+                    onChange={(event) => {
+                      setKpi(event.target.value);
+                      // setUomValue()
+                    }}
+                    helperText="Please select your kpi"
+                  >
+                    {kpis && kpis.map((option) => (
+                      <MenuItem key={option.id} value={option.id}>
+                        {option.title}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                </Grid>
+
+                <Grid item xs={6} lg={6} xl={6} sm={12}>
+                  <label> Pillar : </label>
+                  <TextField
+                    id="outlined-select-pillar"
+                    select
+                    required
+                    fullWidth
+                    variant="outlined"
+                    label="Select"
+                    className={classes.textInput}
+                    value={pillar_id}
+                    onChange={(event) => {
+                      setPillar(event.target.value);
+                      // setUomValue()
+                    }}
+                    helperText="Please select your pillar"
+                  >
+                    {pillars && pillars.map((option) => (
+                      <MenuItem key={option.id} value={option.id}>
+                        {option.description}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                </Grid>
               </Grid>
 
               <Grid item xs={6} lg={6} xl={6} sm={12}>
@@ -918,6 +1046,92 @@ export default function Dashboard() {
 
         </Dialog>
 
+        <Dialog open={editopenindividualtask} onClose={handleEditIndividualTaskClose}>
+            <DialogTitle>Strategic Intitative</DialogTitle>
+            <DialogContent>
+                <DialogContentText>
+                    Edit Strategic Intitative Details
+                </DialogContentText>
+                <TextField
+                    autoFocus
+                    margin="dense"
+                    id="description"
+                    label="Description"
+                    type="text"
+                    fullWidth
+                    style={{ marginBottom: '15px' }}
+                    value={task_description}
+                    variant="outlined"
+                    onChange={(event) => {
+                        setTaskDescription(event.target.value);
+                    }}
+                />
+
+            <Grid container spacing={2}>
+                <Grid item xs={6} lg={6} xl={6} sm={12}>
+                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                        <KeyboardDatePicker
+                            margin="normal"
+                            id="date-picker-dialog"
+                            helperText="Set start date"
+                            format="yyyy/dd/MM"
+                            fullWidth
+                            inputVariant="outlined"
+                            value={task_start_date}
+                            onChange={setTaskStartDate}
+                            KeyboardButtonProps={{
+                                'aria-label': 'change date',
+                            }}
+                        />
+                    </MuiPickersUtilsProvider>
+                </Grid>
+
+                <Grid item xs={6} lg={6} xl={6} sm={12}>
+                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                        <KeyboardDatePicker
+                            margin="normal"
+                            id="date-picker-dialog"
+                            helperText="Set due date"
+                            format="yyyy/dd/MM"
+                            fullWidth
+                            inputVariant="outlined"
+                            value={task_end_date}
+                            onChange={setTaskEndDate}
+                            KeyboardButtonProps={{
+                                'aria-label': 'change date',
+                            }}
+                        />
+                    </MuiPickersUtilsProvider>
+                </Grid>
+            </Grid>
+
+                <label style={{ fontWeight: 'bold', color: 'black' }}> Status : </label>
+                <TextField
+                    id="outlined-select-status"
+                    select
+                    fullWidth
+                    variant="outlined"
+                    label="Select"
+                    value={task_status}
+                    onChange={(event) => {
+                        setTaskStatus(event.target.value);
+                    }}
+                    helperText="Please select the status"
+                >
+                    {statuses.map((option) => (
+                        <MenuItem key={option.status} value={option.status}>
+                            {option.status}
+                        </MenuItem>
+                    ))}
+                </TextField>
+
+            </DialogContent>
+            <DialogActions>
+                <Button color="danger" onClick={handleEditIndividualTaskClose}>Cancel</Button>
+                <Button color="primary" onClick={(e) => { saveEditedIndividualTask(e) }}>Save</Button>
+            </DialogActions>
+        </Dialog>
+
       </GridContainer>
 
       { items && items.length >= 1 ? (
@@ -941,14 +1155,14 @@ export default function Dashboard() {
                       <GridItem xs={12} sm={6} md={2}>
                           <Card className={classes.cardBodyRed}>
                               <CardBody>
-                                  <h4 className={classes.cardTitle}>{list.offtrack} <small>Off Ttack</small></h4>
+                                  <h3 className={classes.cardTitle}>{list.offtrack} <small>Off Ttack</small></h3>
                               </CardBody>
                           </Card>
                       </GridItem>
                       <GridItem xs={12} sm={6} md={2}>
                           <Card className={classes.cardBodyRed}>
                               <CardBody>
-                                <h4 className={classes.cardTitle}>{list.cancelled} <small>Cancelled</small></h4>
+                                <h3 className={classes.cardTitle}>{list.cancelled} <small>Cancelled</small></h3>
                               </CardBody>
                           </Card>
                       </GridItem >
@@ -964,27 +1178,27 @@ export default function Dashboard() {
                       <GridItem xs={12} sm={6} md={2}>
                           <Card className={classes.cardBodyOrange}>
                               <CardBody>
-                                  <h4 className={classes.cardTitle}>
+                                  <h3 className={classes.cardTitle}>
                                   {list.onGoing} <small>Ongoing</small>
-                                  </h4>
+                                  </h3>
                               </CardBody>
                           </Card>
                       </GridItem>
                       <GridItem xs={12} sm={6} md={2}>
                           <Card  className={classes.cardBodyGreen}>
                               <CardBody>
-                                  <h4 className={classes.cardTitle}>
+                                  <h3 className={classes.cardTitle}>
                                       {list.done} <small>Completed</small>
-                                  </h4>
+                                  </h3>
                               </CardBody>
                           </Card>
                       </GridItem>
                       <GridItem xs={12} sm={6} md={2}>
                           <Card className={classes.cardBodyRed}>
                               <CardBody>
-                                  <h4 className={classes.cardTitle}>
-                                      {list.notStarted}<small>Not Started</small>
-                                  </h4>
+                                  <h3 className={classes.cardTitle}>
+                                      {list.notStarted}<small> Not Started</small>
+                                  </h3>
                               </CardBody>
                           </Card>
                       </GridItem>
@@ -1027,7 +1241,7 @@ export default function Dashboard() {
                                           <TableCell>{moment(list.start_date).format('YYYY-MM-DD')}</TableCell>
                                           <TableCell>{moment(list.end_date).format('YYYY-MM-DD')}</TableCell>
                                           <TableCell>{list.status}</TableCell>
-                                          <TableCell> <IconButton aria-label="edit" className={classes.textGreen} onClick={() => { }} ><EditIcon /></IconButton></TableCell>
+                                          <TableCell> <IconButton aria-label="edit" className={classes.textGreen} onClick={() => {handleEditIndividualTaskOpen(); setEditingIndividualTask(list) }} ><EditIcon /></IconButton></TableCell>
                                       </TableRow>
                                   ))) : err ? (<TableRow> <TableCell> {err} </TableCell></TableRow>) 
                                   : null }
