@@ -41,7 +41,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import { getMission, getVision } from "actions/data";
 import { getStatus, getPillars } from "actions/data";
-
+import { getUsers } from "actions/users";
 
 const useStyles = makeStyles(styles);
 
@@ -56,6 +56,7 @@ export default function Dashboard() {
   const {  mission, vision } = useSelector(state => state.data);
   const {  items : kpis } = useSelector(state => state.kpi);
   const { statuses, pillars } = useSelector(state => state.data);
+  const { items : sysusers} = useSelector(state => state.user)
 
   console.log("kpis", kpis)
 
@@ -72,6 +73,8 @@ export default function Dashboard() {
     dispatch(getStatus());
     dispatch(getPillars());
     setCreatedBy(currentUser.id);
+    dispatch(getUsers())
+
   }, [])
 
   const [description, setDescription] = useState("");
@@ -106,6 +109,8 @@ export default function Dashboard() {
   const [updated_by, setUpdatedBy] = useState(currentUser.id);
   const [ task_objective_id, setTaskObjectiveId] = useState("");
   const [ pillar_id, setPillar] = useState("");
+  const [assignee_id, setAssigneeId] = useState("");
+
 
   // const [newuser, setNewUser] = useState(true);
 
@@ -228,14 +233,51 @@ export default function Dashboard() {
             });
 
           } else {
-            console.log("task", response1.data.data)
 
-            swal.fire({
-              title: "Success",
-              text: "Objective and task added successfully!",
-              icon: "success",
-              dangerMode: false
-          });
+            console.log("task add", response1.data.data)
+
+            const body = JSON.stringify({
+              task_id : response1.data.data.id ,
+              assigner_id : created_by,
+              user_id : assignee_id
+             })
+  
+            console.log(body, setAssigneeId)
+  
+            try {
+  
+              let response2 = await axios.post('/assignedtasks/update', body, config)
+              if (response2.status == 201) {
+                setshowloader(false);
+                swal.fire({
+                  title: "Success",
+                  text: "Objective and task added successfully!",
+                  icon: "success",
+                  dangerMode: false
+                }).then(() => dispatch(getUserObjectives(currentUser.id)));
+                
+              } else {
+        
+                  let error = response2.data.message
+                  setshowloader(false);
+                  swal.fire({
+                      title: "Error",
+                      text: error,
+                      icon: "error",
+                      dangerMode: true
+                  });
+              }
+            } catch (error) {
+        
+              let err = error.response.data.message
+                  setshowloader(false);
+                  swal.fire({
+                      title: "Error",
+                      text: err,
+                      icon: "error",
+                      dangerMode: true
+                  });
+            }
 
           }
 
@@ -987,6 +1029,26 @@ export default function Dashboard() {
                     }}
                 />
 
+                <label style={{ fontWeight: 'bold', color: 'black' }}> User : </label>
+                  <TextField
+                      id="outlined-select-user"
+                      select
+                      fullWidth
+                      variant="outlined"
+                      label="Select"
+                      value={assignee_id}
+                      onChange={(event) => {
+                          setAssigneeId(event.target.value);
+                      }}
+                      helperText="Please select a user"
+                    >
+                    {sysusers.map((option) => (
+                        <MenuItem key={option.id} value={option.id}>
+                            {option.fullnames}
+                        </MenuItem>
+                    ))}
+                  </TextField>
+
                 <Grid container spacing={2}>
                     <Grid item xs={6} lg={6} xl={6} sm={12}>
                         <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -1146,10 +1208,13 @@ export default function Dashboard() {
             {items ? ( items.map((list, index) => (
               <GridItem container justify="flex-end" key={index}  >
 
-                <Card className={classes.cardBodyRed} key={index} style={{ marginBottom: '0'}} >
+                <Card className={`classes.cardBodyRed ${list.status === 'Complete' && 'classes.cardBodyGreen'}`} key={index} style={{ marginBottom: '0'}} >
                   <GridItem xs={12} sm={12} md={12}>
                     <h3 className={classes.textBold}> {list.objectives.description} </h3>
                     <h6 className={classes.textGreen}> {list.totalTasks} Management actions</h6>
+
+                    <h5 className={classes.textGreen}> Associated KPIS {list.totalTasks} </h5>
+
                   </GridItem>
                   <CardBody className={classes.cardBody}>
                       <GridItem xs={12} sm={6} md={2}>

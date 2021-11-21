@@ -36,6 +36,7 @@ import axios from "axios";
 import { getUserObjectives } from "actions/objectives";
 import { getKpis } from "actions/kpis";
 import { getStatus, getPillars } from "actions/data";
+import { getUsers } from "actions/users";
 
 // import { getObjectiveTasks } from "actions/objectives";
 
@@ -51,8 +52,7 @@ export default function StrategicObjectives() {
     const { items, error} = useSelector(state => state.objective);
     const {  items : kpis } = useSelector(state => state.kpi);
     const { statuses, pillars } = useSelector(state => state.data);
-
-    const [ objectiveId, setObjectiveId] = useState("");
+    const { items : sysusers} = useSelector(state => state.user)
 
 
     useEffect(() => {
@@ -62,6 +62,7 @@ export default function StrategicObjectives() {
         setCreatedBy(currentUser.id);
         dispatch(getStatus());
         dispatch(getPillars());
+        dispatch(getUsers())
 
     }, [])
 
@@ -94,6 +95,8 @@ export default function StrategicObjectives() {
     const [editopenindividualtask, setEditOpenIndividualTask] = useState(false);
     const [task_status, setTaskStatus] = useState("");
     const [ pillar_id, setPillar] = useState("");
+    const [assignee_id, setAssigneeId] = useState("");
+    const [ objectiveId, setObjectiveId] = useState("");
 
 
     const handleAddClickOpen = () => {
@@ -167,14 +170,50 @@ export default function StrategicObjectives() {
     
               console.log(response1)
               } else {
-                console.log("task", response1.data.data)
+                console.log("task add", response1.data.data)
+
+                const body = JSON.stringify({
+                task_id : response1.data.data.id ,
+                assigner_id : created_by,
+                user_id : assignee_id
+                })
     
-                swal.fire({
-                  title: "Success",
-                  text: "Objective and task added successfully!",
-                  icon: "success",
-                  dangerMode: false
-                }).then(() => dispatch(getUserObjectives(currentUser.id)));
+                console.log(body, setAssigneeId)
+    
+                try {
+    
+                let response2 = await axios.post('/assignedtasks/update', body, config)
+                if (response2.status == 201) {
+                    setshowloader(false);
+                    swal.fire({
+                    title: "Success",
+                    text: "Objective and task added successfully!",
+                    icon: "success",
+                    dangerMode: false
+                    }).then(() => dispatch(getUserObjectives(currentUser.id)));
+                    
+                } else {
+            
+                    let error = response2.data.message
+                    setshowloader(false);
+                    swal.fire({
+                        title: "Error",
+                        text: error,
+                        icon: "error",
+                        dangerMode: true
+                    });
+                }
+                } catch (error) {
+            
+                let err = error.response.data.message
+                    setshowloader(false);
+                    swal.fire({
+                        title: "Error",
+                        text: err,
+                        icon: "error",
+                        dangerMode: true
+                    });
+                }
     
               }
     
@@ -311,7 +350,7 @@ export default function StrategicObjectives() {
         end_date: task_end_date,
         user_id: user_id,
         created_by: created_by,
-        objective_id: 17
+        objective_id: objectiveId
         }
 
         console.log("individual task", task)
@@ -434,7 +473,7 @@ export default function StrategicObjectives() {
 
             {items ? ( items.map((list, index) => (
                 <div key={index} style={{ justifyContent: 'center' }} >
-                    <Card className={classes.cardBodyRed} key={index} style={{ marginBottom: '0'}} >
+                    <Card className={`classes.cardBodyRed ${list.status === 'Complete' && 'classes.cardBodyGreen'}`} key={index} style={{ marginBottom: '0'}} >
                         <Grid container justify="flex-end">
                             <IconButton aria-label="edit" className={classes.textGreen} onClick={() => { handleEditClickOpen(); setEditing(list); }} ><EditIcon /></IconButton>
                         </Grid>
@@ -442,6 +481,8 @@ export default function StrategicObjectives() {
                         <GridItem xs={12} sm={12} md={12}>
                             <h4 className={classes.textBold}> {list.objectives.description} </h4>
                             <h6 className={classes.textGreen}> Management actions</h6>
+
+                            <h5 className={classes.textGreen}> Associated KPIS {list.totalTasks} </h5>
                         </GridItem>
                         <CardBody className={classes.cardBody}>
                             <GridItem xs={12} sm={6} md={2}>
@@ -740,43 +781,63 @@ export default function StrategicObjectives() {
                         }}
                     />
 
-                <Grid container spacing={2}>
-                    <Grid item xs={6} lg={6} xl={6} sm={12}>
-                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                            <KeyboardDatePicker
-                                margin="normal"
-                                id="date-picker-dialog"
-                                helperText="Set start date"
-                                format="yyyy/dd/MM"
-                                fullWidth
-                                inputVariant="outlined"
-                                value={task_start_date}
-                                onChange={setTaskStartDate}
-                                KeyboardButtonProps={{
-                                    'aria-label': 'change date',
-                                }}
-                            />
-                        </MuiPickersUtilsProvider>
-                    </Grid>
+                    <label style={{ fontWeight: 'bold', color: 'black' }}> User : </label>
+                    <TextField
+                        id="outlined-select-user"
+                        select
+                        fullWidth
+                        variant="outlined"
+                        label="Select"
+                        value={assignee_id}
+                        onChange={(event) => {
+                            setAssigneeId(event.target.value);
+                        }}
+                        helperText="Please select a user"
+                        >
+                        {sysusers.map((option) => (
+                            <MenuItem key={option.id} value={option.id}>
+                                {option.fullnames}
+                            </MenuItem>
+                        ))}
+                    </TextField>
 
-                    <Grid item xs={6} lg={6} xl={6} sm={12}>
-                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                            <KeyboardDatePicker
-                                margin="normal"
-                                id="date-picker-dialog"
-                                helperText="Set end date"
-                                format="yyyy/dd/MM"
-                                fullWidth
-                                inputVariant="outlined"
-                                value={task_end_date}
-                                onChange={setTaskEndDate}
-                                KeyboardButtonProps={{
-                                    'aria-label': 'change date',
-                                }}
-                            />
-                        </MuiPickersUtilsProvider>
+                    <Grid container spacing={2}>
+                        <Grid item xs={6} lg={6} xl={6} sm={12}>
+                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                <KeyboardDatePicker
+                                    margin="normal"
+                                    id="date-picker-dialog"
+                                    helperText="Set start date"
+                                    format="yyyy/dd/MM"
+                                    fullWidth
+                                    inputVariant="outlined"
+                                    value={task_start_date}
+                                    onChange={setTaskStartDate}
+                                    KeyboardButtonProps={{
+                                        'aria-label': 'change date',
+                                    }}
+                                />
+                            </MuiPickersUtilsProvider>
+                        </Grid>
+
+                        <Grid item xs={6} lg={6} xl={6} sm={12}>
+                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                <KeyboardDatePicker
+                                    margin="normal"
+                                    id="date-picker-dialog"
+                                    helperText="Set end date"
+                                    format="yyyy/dd/MM"
+                                    fullWidth
+                                    inputVariant="outlined"
+                                    value={task_end_date}
+                                    onChange={setTaskEndDate}
+                                    KeyboardButtonProps={{
+                                        'aria-label': 'change date',
+                                    }}
+                                />
+                            </MuiPickersUtilsProvider>
+                        </Grid>
                     </Grid>
-                </Grid>
 
                 </DialogContent>
                 <DialogActions>

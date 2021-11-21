@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
 // @material-ui/core
@@ -15,6 +15,7 @@ import Card from "components/Card/Card.js";
 import CardHeader from "components/Card/CardHeader.js";
 import CardBody from "components/Card/CardBody.js";
 import { ArrowForward } from "@material-ui/icons";
+import { ControlPoint } from "@material-ui/icons";
 import avatar from "../../assets/img/faces/marc.jpg";
 import { useHistory } from "react-router";
 import { getAssignedTasks } from "actions/tasks";
@@ -23,6 +24,22 @@ import { LinearProgress } from "@material-ui/core";
 import styles from "assets/jss/material-dashboard-pro-react/views/assignedTasksStyle.js";
 import IconButton from '@material-ui/core/Button';
 import { getStatus } from "actions/data";
+import Button from "components/CustomButtons/Button.js";
+import DateFnsUtils from '@date-io/date-fns';
+import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import TextField from '@material-ui/core/TextField';
+import { Grid } from "@material-ui/core";
+import axios from "axios";
+import swal from "sweetalert2";
+import Loader from "react-loader-spinner";
+import MenuItem from '@material-ui/core/MenuItem';
+import { getUserObjectives } from "actions/objectives";
+
 
 const useStyles = makeStyles(styles);
 
@@ -35,13 +52,74 @@ export default function AssignedTasksPage() {
     const { user: currentUser } = useSelector(state => state.auth);
     const { items, error, isLoading } = useSelector(state => state.task);
     const { statuses } = useSelector(state => state.data);
+    const { items: objectives} = useSelector(state => state.objective);
 
     console.log("ststuses", statuses)
+
+    const [addopen, setAddOpen] = useState(false);
+    const [start_date, setStartDate] = useState("");
+    const [end_date, setEndDate] = useState("");
+    const [created_by, setCreatedBy] = useState("");
+    const [user_id, setUserId] = useState(currentUser.id);
+    const [showloader, setshowloader] = useState(false);
+    const [description, setDescription] = useState("");
+    const [objective_id, setObjectiveId] = useState("");
+
 
     useEffect(() => {
         dispatch(getAssignedTasks(currentUser.id))
         dispatch(getStatus())
+        dispatch(getUserObjectives(currentUser.id));
     }, []);
+
+    const handleAddClose = () => {
+        setAddOpen(false);
+    };
+
+    const saveTaskToObjectives = async (e) => {
+        e.preventDefault();
+        setshowloader(true);
+
+        const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
+
+        console.log("task here", description, start_date, end_date, user_id, created_by, objective_id, setCreatedBy, setUserId )
+    
+        let end_date = moment(end_date).format('YYYY-MM-DD');
+        let start_date = moment(start_date).format('YYYY-MM-DD');
+
+        let task = {
+        description: description,
+        start_date: start_date,
+        end_date: end_date,
+        user_id: user_id,
+        created_by: created_by,
+        objective_id: objective_id
+        }
+
+        console.log("individual task", task)
+    
+        let response = await axios.post('/tasks/create', task, config);
+
+        console.log("resp", response)
+
+        if (response.data.success === false) {
+            setshowloader(false);
+            swal.fire({
+                title: "Error",
+                text: "An error occurred, please try again!",
+                icon: "error",
+                dangerMode: true
+            });
+
+        } else {
+
+            swal.fire({
+                title: "Success",
+                text: "Task added successfully!",
+                icon: "success",
+            });
+        }
+    }
 
     
     const handleOpen = (user) => {
@@ -67,8 +145,8 @@ export default function AssignedTasksPage() {
                                 <TableHead className={classes.tableHeader}>
                                     <TableRow>
                                         <TableCell>Management Actions</TableCell>
+                                        <TableCell>From</TableCell>
                                         <TableCell>Resources</TableCell>
-                                        {/* <TableCell>Start Date</TableCell> */}
                                         <TableCell>Due Date</TableCell>
                                         <TableCell>Progress</TableCell>
                                         <TableCell>Actions</TableCell>
@@ -79,11 +157,14 @@ export default function AssignedTasksPage() {
                                         <TableRow key={index}>
                                                 <TableCell>{list.description}</TableCell>
                                             <TableCell > <img src={avatar} alt="..." style={{ maxWidth: '50px', maxHeight: '50px', borderRadius: '50%', marginRight: '160px', marginTop: '35px' }} />  </TableCell>
+                                            <TableCell> To Add </TableCell>
                                             {/* <TableCell>{moment(list.start_date).format('YYYY-MM-DD')}</TableCell> */}
                                             <TableCell>{moment(list.end_date).format('YYYY-MM-DD')}</TableCell>
                                             <TableCell>{list.status}</TableCell>
                                             <TableCell>
                                                 <IconButton aria-label="view" color="error" onClick={() => handleOpen(list.user_id)} ><ArrowForward /></IconButton>
+                                                <IconButton aria-label="view" color="error" onClick={() => {handleOpen(list.user_id); setObjectiveId(list.objective_id); setDescription(list.description)}} ><ControlPoint /></IconButton>
+
                                             </TableCell>
                                         </TableRow>
                                     ))) : error ? (<TableRow> <TableCell> {error} </TableCell></TableRow> 
@@ -93,6 +174,94 @@ export default function AssignedTasksPage() {
 
                         </CardBody>
                     </Card>
+
+                    <Dialog open={addopen} onClose={handleAddClose}>
+                        <DialogTitle>Strategic Objective</DialogTitle>
+                        <DialogContent>
+                            <DialogContentText>
+                                Add Task To Your Strategic Objectives
+                            </DialogContentText>
+                          
+                            <label> Objective : </label>
+                            <TextField
+                                id="outlined-select-objective"
+                                select
+                                fullWidth
+                                variant="outlined"
+                                label="Select"
+                                className={classes.textInput}
+                                value={objective_id}
+                                onChange={(event) => {
+                                    setObjectiveId(event.target.value);
+                                }}
+                                helperText="Please select your objective"
+                            >
+                                {objectives && objectives.map((option) => (
+                                    <MenuItem key={option.id} value={option.id}>
+                                        {option.description}
+                                    </MenuItem>
+                                ))}
+                            </TextField>
+
+                            <Grid container spacing={2}>
+                                <Grid item xs={6} lg={6} xl={6} sm={12}>
+                                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                    <KeyboardDatePicker
+                                        margin="normal"
+                                        id="date-picker-dialog"
+                                        helperText="Set start date"
+                                        format="yyyy/dd/MM"
+                                        fullWidth
+                                        inputVariant="outlined"
+                                        value={start_date}
+                                        onChange={setStartDate}
+                                        KeyboardButtonProps={{
+                                            'aria-label': 'change date',
+                                        }}
+                                    />
+                                    </MuiPickersUtilsProvider>
+
+                                </Grid>
+
+                                <Grid item xs={6} lg={6} xl={6} sm={12}>
+                                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                    <KeyboardDatePicker
+                                        margin="normal"
+                                        id="date-picker-dialog"
+                                        helperText="Set end date"
+                                        format="yyyy/dd/MM"
+                                        fullWidth
+                                        inputVariant="outlined"
+                                        value={end_date}
+                                        onChange={setEndDate}
+                                        KeyboardButtonProps={{
+                                            'aria-label': 'change date',
+                                        }}
+                                    />
+                                    </MuiPickersUtilsProvider>
+                                    
+                                </Grid>
+                            </Grid>
+
+                        </DialogContent>
+                        <DialogActions>
+                            <Button color="danger" onClick={handleAddClose}>Cancel</Button>
+                            { showloader === true  ? (
+                                <div style={{ textAlign: "center", marginTop: 10 }}>
+                                    <Loader
+                                        type="Puff"
+                                        color="#00BFFF"
+                                        height={150}
+                                        width={150}
+                                    />
+                                </div>
+                                ) :
+                                (
+                                    <Button color="primary" onClick={saveTaskToObjectives}>Save</Button>
+                                )}
+                        </DialogActions>
+                    </Dialog>
+
                 </GridItem>
             </GridContainer>
         </div>

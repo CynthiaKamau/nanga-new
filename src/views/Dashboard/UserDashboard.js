@@ -203,10 +203,13 @@ export default function UserDashboard() {
             {items ? ( items.map((list, index) => (
               <GridItem container justify="flex-end" key={index}  >
 
-                <Card className={classes.cardBodyRed} key={index} style={{ marginBottom: '0'}} >
+                <Card className={`classes.cardBodyRed ${list.status === 'Complete' && 'classes.cardBodyGreen'}`} key={index} style={{ marginBottom: '0'}} >
                   <GridItem xs={12} sm={12} md={12}>
                     <h4 className={classes.textBold}> {list.objectives.description} </h4>
                     <h6 className={classes.textGreen}> {list.totalTasks} Management actions</h6>
+
+                    <h5 className={classes.textGreen}> Associated KPIS {list.totalTasks} </h5>
+
                   </GridItem>
                   <CardBody className={classes.cardBody}>
                       <GridItem xs={12} sm={6} md={2}>
