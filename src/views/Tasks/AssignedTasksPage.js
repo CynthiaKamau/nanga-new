@@ -14,10 +14,8 @@ import TableRow from '@material-ui/core/TableRow';
 import Card from "components/Card/Card.js";
 import CardHeader from "components/Card/CardHeader.js";
 import CardBody from "components/Card/CardBody.js";
-import { ArrowForward } from "@material-ui/icons";
 import { ControlPoint } from "@material-ui/icons";
 import avatar from "../../assets/img/faces/marc.jpg";
-import { useHistory } from "react-router";
 import { getAssignedTasks } from "actions/tasks";
 import moment from "moment";
 import { LinearProgress } from "@material-ui/core";
@@ -45,7 +43,6 @@ const useStyles = makeStyles(styles);
 
 export default function AssignedTasksPage() {
     const classes = useStyles();
-    const history = useHistory();
 
     const dispatch = useDispatch();
 
@@ -54,7 +51,9 @@ export default function AssignedTasksPage() {
     const { statuses } = useSelector(state => state.data);
     const { items: objectives} = useSelector(state => state.objective);
 
-    console.log("ststuses", statuses)
+    console.log("objectives", objectives)
+    console.log("statuses", statuses)
+
 
     const [addopen, setAddOpen] = useState(false);
     const [start_date, setStartDate] = useState("");
@@ -92,39 +91,56 @@ export default function AssignedTasksPage() {
         start_date: start_date,
         end_date: end_date,
         user_id: user_id,
-        created_by: created_by,
+        created_by: user_id,
         objective_id: objective_id
         }
 
         console.log("individual task", task)
     
-        let response = await axios.post('/tasks/create', task, config);
+        try {
 
-        console.log("resp", response)
+            let response = await axios.post('/tasks/create', task, config);
 
-        if (response.data.success === false) {
+            if (response.data.success === false) {
+                setshowloader(false);
+                setAddOpen(false)
+                let error = response.data.message
+
+                swal.fire({
+                    title: "Error",
+                    text: error,
+                    icon: "error",
+                    dangerMode: true
+                });
+
+            } else {
+
+                setshowloader(false);
+                setAddOpen(false)
+                swal.fire({
+                    title: "Success",
+                    text: "Task added successfully!",
+                    icon: "success",
+                });
+            }
+        } catch (error) {
+            let err = error.response.data.message
             setshowloader(false);
+            setAddOpen(false)
+  
             swal.fire({
                 title: "Error",
-                text: "An error occurred, please try again!",
+                text: err,
                 icon: "error",
                 dangerMode: true
-            });
-
-        } else {
-
-            swal.fire({
-                title: "Success",
-                text: "Task added successfully!",
-                icon: "success",
             });
         }
     }
 
     
-    const handleOpen = (user) => {
-
-        history.push(`/admin/user-dashboard/id=${user}`);
+    const handleOpen = () => {
+        setAddOpen(true);
+        //history.push(`/admin/user-dashboard/id=${user}`);
     }
 
     return (
@@ -162,8 +178,7 @@ export default function AssignedTasksPage() {
                                             <TableCell>{moment(list.end_date).format('YYYY-MM-DD')}</TableCell>
                                             <TableCell>{list.status}</TableCell>
                                             <TableCell>
-                                                <IconButton aria-label="view" color="error" onClick={() => handleOpen(list.user_id)} ><ArrowForward /></IconButton>
-                                                <IconButton aria-label="view" color="error" onClick={() => {handleOpen(list.user_id); setObjectiveId(list.objective_id); setDescription(list.description)}} ><ControlPoint /></IconButton>
+                                                <IconButton aria-label="view" color="error" onClick={() => {handleOpen(); setObjectiveId(list.objective_id); setDescription(list.description)}} ><ControlPoint /></IconButton>
 
                                             </TableCell>
                                         </TableRow>
@@ -197,8 +212,8 @@ export default function AssignedTasksPage() {
                                 helperText="Please select your objective"
                             >
                                 {objectives && objectives.map((option) => (
-                                    <MenuItem key={option.id} value={option.id}>
-                                        {option.description}
+                                    <MenuItem key={option.objectives.id} value={option.objectives.id}>
+                                        {option.objectives.description}
                                     </MenuItem>
                                 ))}
                             </TextField>
@@ -251,8 +266,8 @@ export default function AssignedTasksPage() {
                                     <Loader
                                         type="Puff"
                                         color="#00BFFF"
-                                        height={150}
-                                        width={150}
+                                        height={100}
+                                        width={100}
                                     />
                                 </div>
                                 ) :

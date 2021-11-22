@@ -1213,7 +1213,7 @@ export default function Dashboard() {
                     <h3 className={classes.textBold}> {list.objectives.description} </h3>
                     <h6 className={classes.textGreen}> {list.totalTasks} Management actions</h6>
 
-                    <h5 className={classes.textGreen}> Associated KPIS {list.totalTasks} </h5>
+                    <h6 > Associated KPIS : {list.objectives.kpi.title} </h6>
 
                   </GridItem>
                   <CardBody className={classes.cardBody}>

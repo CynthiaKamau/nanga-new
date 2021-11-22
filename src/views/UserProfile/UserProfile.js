@@ -75,13 +75,28 @@ export default function UserProfile() {
     _setImage(newImage);
   };
 
-  const handleOnChange = (event) => {
+  const handleOnChange = async (event) => {
     const newImage = event.target?.files?.[0];
 
     if (newImage) {
-      setImage(URL.createObjectURL(newImage));
+      const base64 = await convertBase64(newImage)
+      console.log(base64)
+      setImage(base64)
     }
   };
+
+  const convertBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const fileReader = new FileReader();
+      fileReader.readAsDataURL(file)
+      fileReader.onload = () => {
+        resolve(fileReader.result);
+      }
+      fileReader.onerror = (error) => {
+        reject(error);
+      }
+    })
+  }
 
   /**
    *
@@ -125,9 +140,11 @@ export default function UserProfile() {
         dangerMode: true
       });
     } else {
+      let msg = response.data.message;
+      setshowloader(false)
       swal.fire({
         title: "Success",
-        text: "Profile updated successfully!",
+        text: msg,
         icon: "success",
       });
     }
@@ -253,7 +270,7 @@ export default function UserProfile() {
                     onClick={handleClick}
                   >
                     {image ? <DeleteIcon mr={2} /> : <UploadIcon mr={2} />}
-                    {image ? "Limpar" : "Upload"}
+                    {image ? "Remove" : "Upload"}
                   </Button>
                 </label>
                 </GridItem>
@@ -282,7 +299,7 @@ export default function UserProfile() {
           <Card profile>
             <CardAvatar profile>
               <a href="#pablo" onClick={(e) => e.preventDefault()}>
-                <img src={avatar} alt="..." />
+                <img src={{ uri: `data:image/png;base64, ${avatar}`}} alt="..." />
               </a>
             </CardAvatar>
             <CardBody profile>

@@ -482,7 +482,7 @@ export default function StrategicObjectives() {
                             <h4 className={classes.textBold}> {list.objectives.description} </h4>
                             <h6 className={classes.textGreen}> Management actions</h6>
 
-                            <h5 className={classes.textGreen}> Associated KPIS {list.totalTasks} </h5>
+                            <h6> Associated KPIS : {list.objectives.kpi.title} </h6>
                         </GridItem>
                         <CardBody className={classes.cardBody}>
                             <GridItem xs={12} sm={6} md={2}>
