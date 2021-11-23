@@ -208,7 +208,7 @@ export default function UserDashboard() {
             {items ? ( items.map((list, index) => (
               <GridItem container justify="flex-end" key={index}  >
 
-                <Card style={{borderLeft : list.objectives.overallStatus === 'INCOMPLETE' ? 'solid 5px red' : (list.objectives.overallStatus === 'COMPLETE') ? 'solid 5px green' : 'solid 5px black' , marginBottom: '0'}} key={index} >
+                <Card style={{borderLeft : list.objectives.overallStatus === 'Incomplete' ? 'solid 5px red' : (list.objectives.overallStatus === 'COMPLETE') ? 'solid 5px green' : (list.objectives.overallStatus === 'INCOMPLETE') ? 'solid 5px red'  :'solid 5px black' , marginBottom: '0'}} key={index} >
                   <GridItem xs={12} sm={12} md={12}>
                     <h4 className={classes.textBold}> {list.objectives.description} </h4>
                     <h6 className={classes.textGreen}> {list.totalTasks} Management actions</h6>

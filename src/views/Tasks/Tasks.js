@@ -231,7 +231,7 @@ export default function TasksPage() {
         const body = JSON.stringify({
             task_id : task_id ,
             assigner_id : created_by,
-            user_id : assignee_id
+            user_ids : [assignee_id]
         })
 
         console.log(body, setAssigneeId)

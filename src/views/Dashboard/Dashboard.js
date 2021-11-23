@@ -239,7 +239,7 @@ export default function Dashboard() {
             const body = JSON.stringify({
               task_id : response1.data.data.id ,
               assigner_id : created_by,
-              user_id : assignee_id
+              user_ids : [assignee_id]
              })
   
             console.log(body, setAssigneeId)
@@ -1226,7 +1226,7 @@ export default function Dashboard() {
             {items ? ( items.map((list, index) => (
               <GridItem container justify="flex-end" key={index}  >
 
-                <Card style={{ borderLeft : list.objectives.overallStatus == 'INCOMPLETE' ? 'solid 5px red' : list.objectives.overallStatus === 'COMPLETE' ? 'solid 5px green' : 'solid 5px black' , marginBottom: '0'}} key={index} >
+                <Card style={{borderLeft : list.objectives.overallStatus === 'Incomplete' ? 'solid 5px red' : (list.objectives.overallStatus === 'COMPLETE') ? 'solid 5px green' : (list.objectives.overallStatus === 'INCOMPLETE') ? 'solid 5px red'  :'solid 5px black' , marginBottom: '0'}} key={index} >
                   <GridItem xs={12} sm={12} md={12}>
                     <h3 className={classes.textBold}> {list.objectives.description} </h3>
                     <h6 className={classes.textGreen}> {list.totalTasks} Management actions</h6>

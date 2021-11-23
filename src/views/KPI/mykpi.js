@@ -15,6 +15,7 @@ import TableRow from '@material-ui/core/TableRow';
 import Card from "components/Card/Card.js";
 import CardHeader from "components/Card/CardHeader.js";
 import CardBody from "components/Card/CardBody.js";
+import { makeStyles } from "@material-ui/core/styles";
 // import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import IconButton from '@material-ui/core/Button';
@@ -28,7 +29,7 @@ import TextField from '@material-ui/core/TextField';
 import swal from "sweetalert2";
 import Loader from "react-loader-spinner";
 import { getUserObjectives } from "actions/objectives";
-import { getCategories } from "actions/data";
+import { getCategories, getPillars } from "actions/data";
 import { getKpis } from "actions/kpis";
 import { LinearProgress } from "@material-ui/core";
 import DateFnsUtils from '@date-io/date-fns';
@@ -38,16 +39,20 @@ import { Grid } from "@material-ui/core";
 import axios from "axios";
 import FiberManualRecord from "@material-ui/icons/FiberManualRecord";
 
+import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
+
+const useStyles = makeStyles(styles);
+
 // import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
 
 // const useStyles = makeStyles(styles);
 
 export default function myKpis() {
-    // const classes = useStyles();
+    const classes = useStyles();
     const dispatch = useDispatch();
 
     const { items, item, error, isLoading } = useSelector(state => state.objective);
-    const {  categories } = useSelector(state => state.data);
+    const {  categories, pillars } = useSelector(state => state.data);
     const { user: currentUser } = useSelector(state => state.auth);
     const {  items : kpis } = useSelector(state => state.kpi);
 
@@ -57,6 +62,7 @@ export default function myKpis() {
         dispatch(getUserObjectives(currentUser.id));
         dispatch(getCategories());
         dispatch(getKpis(currentUser.id));
+        dispatch(getPillars());
     }, [])
 
     const [addopen, setAddOpen] = useState(false);
@@ -66,7 +72,6 @@ export default function myKpis() {
     const [category, setCategory] = useState("");
     const [target, setTarget] = useState("");
     const [target_achieved_on_review, setTargetAtReview] = useState("");
-    const [target_achieved, setTargetAchieved] = useState("");
     const [showloader, setshowloader] = useState(false);  
     const [id, setId] = useState("");
     const [created_by, setCreatedBy] = useState(currentUser.id);
@@ -75,6 +80,12 @@ export default function myKpis() {
     const [end_date, setEndDate] = useState("");
     const [kpi_id, setKpiId] = useState("");
     const [user_id, setUserId] = useState(currentUser.id);
+    const [target_achieved, setTargetAchieved] = useState("");
+    const [root_cause, setRootCause] = useState("");
+    const [action, setAction] = useState("");
+    const [support_required, setSupportRequired] = useState("");
+    const [risk_and_opportunity, setRiskAndOpportunity] = useState(""); 
+    const [pillar_id, setPillarId] = useState("");
 
     // const handleAddClickOpen = () => {
     //     setAddOpen(true);
@@ -130,14 +141,20 @@ export default function myKpis() {
 
     const setEditing = (list) => {
 
-        setDescription(list.kpi.title);
+        setDescription(list.description);
         setKpiId(list.kpi.id);
+        setPillarId(list.pillar_id);
         setId(list.id);
         setTarget(list.target);
         setTargetAchieved(list.target_achieved);
         setTargetAtReview(list.target_achieved_on_review);
         setStartDate(list.start_date);
         setEndDate(list.end_date)
+        setTargetAchieved(list.target_achieved);
+        setSupportRequired(list.supportRequired);
+        setAction(list.action);
+        setRootCause(list.rootCause)
+        setRiskAndOpportunity(list.riskOrOpportunity)
     }
 
     const saveEdited = async (e) => {
@@ -146,10 +163,10 @@ export default function myKpis() {
         let end_date = moment(end_date).format('YYYY-MM-DD');
         let start_date = moment(start_date).format('YYYY-MM-DD');
 
-        console.log("edit values", id, description, end_date, kpi_id, start_date, target, user_id, target_achieved, target_achieved_on_review, setUpdatedBy(), setUserId)
+        console.log("edit values", id, description, kpi_id, user_id, pillar_id, start_date, end_date,  target, target_achieved, root_cause, risk_and_opportunity, action, support_required, created_by, updated_by, setUpdatedBy(), setUserId, setPillarId)
 
         const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
-        const body = JSON.stringify({ id, description, kpi_id, user_id, start_date, end_date,  target, target_achieved, target_achieved_on_review, created_by, updated_by });
+        const body = JSON.stringify({ id, description, kpi_id, user_id, pillar_id, start_date, end_date,  target, target_achieved, root_cause, risk_and_opportunity, action, support_required, created_by, updated_by });
 
         try {
 
@@ -262,13 +279,13 @@ export default function myKpis() {
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell>KPI</TableCell>
-                            <TableCell>Categories</TableCell>
-                            <TableCell>Unit Of Measure</TableCell>
-                            <TableCell>Target</TableCell>
-                            <TableCell>Target Achieved</TableCell>
-                            <TableCell>Target At Review</TableCell>
-                            <TableCell>Variance</TableCell>
+                            <TableCell>Strategic Objective</TableCell>
+                            <TableCell>Owner</TableCell>
+                            <TableCell>Status</TableCell>
+                            <TableCell>Root Cause and Insight</TableCell>
+                            <TableCell>Action</TableCell>
+                            <TableCell>Risk/Opportunities</TableCell>
+                            <TableCell>Support Required</TableCell>
                             <TableCell>Action</TableCell>
                         </TableRow>
                     </TableHead>
@@ -276,12 +293,12 @@ export default function myKpis() {
                         {items ? ( items.map((list, index) => (
                             <TableRow key={index}>
                                 <TableCell>{list.objectives.description}</TableCell>
-                                <TableCell>{list.objectives.kpi.categories.description} </TableCell>
-                                <TableCell>{list.objectives.kpi.kpi_unit_of_measure}</TableCell>
-                                <TableCell>{list.objectives.target} </TableCell>
-                                <TableCell>{list.objectives.target_achieved} </TableCell>
-                                <TableCell>{list.objectives.target_achieved_on_review} </TableCell>
-                                <TableCell> <FiberManualRecord style={{color : '#29A15B'}}/> </TableCell>
+                                <TableCell>{list.objectives.user_id} </TableCell>
+                                <TableCell> <FiberManualRecord style={{color : list.objectives.overallStatus === 'Incomplete' ? 'red' : (list.objectives.overallStatus === 'COMPLETE') ? 'green' : (list.objectives.overallStatus === 'INCOMPLETE') ? 'red'  :'solid 5px black' , marginBottom: '0'}} key={index} /> </TableCell>
+                                <TableCell>{list.objectives.rootCause} </TableCell>
+                                <TableCell>{list.objectives.action} </TableCell>
+                                <TableCell>{list.objectives.riskOrOpportunity} </TableCell>
+                                <TableCell>{list.objectives.supportRequired} </TableCell>
                                 <TableCell>
                                 <IconButton aria-label="edit" color="primary" onClick={() => { handleEditClickOpen(); setEditing(list.objectives) }} ><EditIcon/></IconButton>
                                 {/* <IconButton aria-label="delete" color="secondary" onClick={() => { handleDeleteClickOpen(); setDelete(list) }} ><DeleteIcon /></IconButton> */}
@@ -439,25 +456,158 @@ export default function myKpis() {
                             }}
                         />
 
-                        <label style={{ fontWeight: 'bold', color: 'black'}}> KPI : </label>
+                        <Grid container spacing={2}>
+                            <Grid item xs={6} lg={6} xl={6} sm={12}>                            
+                            <label style={{ fontWeight: 'bold', color: 'black'}}> KPI : </label>
+                            <TextField
+                                id="outlined-select-kpi"
+                                select
+                                fullWidth
+                                variant="outlined"
+                                label="Select"
+                                value={kpi_id}
+                                onChange = {(event) => {
+                                setKpiId(event.target.value);
+                                }}
+                                helperText="Please select your Kpi"
+                            >
+                                {kpis && kpis.map((option) => (
+                                <MenuItem key={option.id} value={option.id}>
+                                    {option.title}
+                                </MenuItem>
+                                ))}
+                                </TextField>
+                            </Grid>
+
+                            <Grid item xs={6} lg={6} xl={6} sm={12}>
+                                <label> Pillar : </label>
+                                <TextField
+                                    id="outlined-select-pillar"
+                                    select
+                                    required
+                                    fullWidth
+                                    variant="outlined"
+                                    label="Select"
+                                    className={classes.textInput}
+                                    value={pillar_id}
+                                    onChange={(event) => {
+                                    setPillarId(event.target.value);
+                                    // setUomValue()
+                                    }}
+                                    helperText="Please select your pillar"
+                                >
+                                    {pillars && pillars.map((option) => (
+                                    <MenuItem key={option.id} value={option.id}>
+                                        {option.description}
+                                    </MenuItem>
+                                    ))}
+                                </TextField>
+                            </Grid>
+                        </Grid>
+
+                        <Grid container spacing={2}>
+                            <Grid item xs={6} lg={6} xl={6} sm={12}>
+                                <TextField
+                                autoFocus
+                                margin="dense"
+                                id="target"
+                                label="Target"
+                                type="number"
+                                fullWidth
+                                style={{marginBottom : '15px'}}
+                                value={target}
+                                variant="outlined"
+                                onChange = {(event) => {
+                                    setTarget(event.target.value);
+                                }}
+                                />
+                            </Grid>
+
+                            <Grid item xs={6} lg={6} xl={6} sm={12}>
+                                <TextField
+                                autoFocus
+                                margin="dense"
+                                id="target_achieved"
+                                label="Target Achieved"
+                                type="text"
+                                fullWidth
+                                style={{marginBottom : '15px'}}
+                                value={target_achieved}
+                                variant="outlined"
+                                onChange = {(event) => {
+                                    setTargetAchieved(event.target.value);
+                                }}
+                                />
+                            </Grid>
+                        </Grid>
+
                         <TextField
-                            id="outlined-select-kpi"
-                            select
                             fullWidth
+                            label="Root Cause"
+                            id="root_cause"
+                            multiline
+                            rows={2}
+                            required
                             variant="outlined"
-                            label="Select"
-                            value={kpi_id}
-                            onChange = {(event) => {
-                            setKpiId(event.target.value);
+                            className={classes.textInput}
+                            type="text"
+                            value={root_cause}
+                            onChange={(event) => {
+                                const value = event.target.value;
+                                setRootCause(value)
                             }}
-                            helperText="Please select your Kpi"
-                        >
-                            {kpis && kpis.map((option) => (
-                            <MenuItem key={option.id} value={option.id}>
-                                {option.title}
-                            </MenuItem>
-                            ))}
-                        </TextField>
+                        />
+
+                        <TextField
+                            fullWidth
+                            label="Support Required"
+                            id="support_required"
+                            multiline
+                            rows={2}
+                            required
+                            variant="outlined"
+                            className={classes.textInput}
+                            type="text"
+                            value={support_required}
+                            onChange={(event) => {
+                                const value = event.target.value;
+                                setSupportRequired(value)
+                            }}
+                        />
+
+                        <TextField
+                            fullWidth
+                            label="Action"
+                            id="action"
+                            multiline
+                            rows={2}
+                            required
+                            variant="outlined"
+                            className={classes.textInput}
+                            type="text"
+                            value={action}
+                            onChange={(event) => {
+                                const value = event.target.value;
+                                setAction(value)
+                            }}
+                        />
+
+                        <TextField
+                            fullWidth
+                            label="Risk And Opportunity"
+                            id="risk_and_opportunity"
+                            multiline
+                            rows={2}
+                            required
+                            variant="outlined"
+                            className={classes.textInput}
+                            type="text"
+                            value={risk_and_opportunity}
+                            onChange={(event) => {
+                                const value = event.target.value;
+                                setRiskAndOpportunity(value)
+                            }}
+                        />
 
                         <Grid container spacing={2}>
                             <Grid item xs={6} lg={6} xl={6} sm={12}>
@@ -494,57 +644,6 @@ export default function myKpis() {
                                     }}
                                 />
                             </MuiPickersUtilsProvider>
-                            </Grid>
-                        </Grid>
-
-                        <TextField
-                            autoFocus
-                            margin="dense"
-                            id="target"
-                            label="Target"
-                            type="number"
-                            fullWidth
-                            style={{marginBottom : '15px'}}
-                            value={target}
-                            variant="outlined"
-                            onChange = {(event) => {
-                                setTarget(event.target.value);
-                            }}
-                        />
-
-                        <Grid container spacing={2}>
-                            <Grid item xs={6} lg={6} xl={6} sm={12}>
-                                <TextField
-                                    autoFocus
-                                    margin="dense"
-                                    id="target_achieved_on_review"
-                                    label="Target At Review"
-                                    type="text"
-                                    fullWidth
-                                    style={{marginBottom : '15px'}}
-                                    value={target_achieved_on_review}
-                                    variant="outlined"
-                                    onChange = {(event) => {
-                                        setTargetAtReview(event.target.value);
-                                    }}
-                                />
-                            </Grid>
-
-                            <Grid item xs={6} lg={6} xl={6} sm={12}>
-                                <TextField
-                                autoFocus
-                                margin="dense"
-                                id="target_achieved"
-                                label="Target Achieved"
-                                type="text"
-                                fullWidth
-                                style={{marginBottom : '15px'}}
-                                value={target_achieved}
-                                variant="outlined"
-                                onChange = {(event) => {
-                                    setTargetAchieved(event.target.value);
-                                }}
-                                />
                             </Grid>
                         </Grid>
 

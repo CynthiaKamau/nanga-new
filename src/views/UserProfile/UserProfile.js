@@ -146,8 +146,7 @@ export default function UserProfile() {
         text: msg,
         icon: "success",
       });
-    }
-
+    }  
   }
 
   return (

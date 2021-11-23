@@ -15,7 +15,6 @@ import Card from "components/Card/Card.js";
 import CardHeader from "components/Card/CardHeader.js";
 import CardBody from "components/Card/CardBody.js";
 import { ControlPoint } from "@material-ui/icons";
-import avatar from "../../assets/img/faces/marc.jpg";
 import { getAssignedTasks } from "actions/tasks";
 import moment from "moment";
 import { LinearProgress } from "@material-ui/core";
@@ -37,7 +36,6 @@ import swal from "sweetalert2";
 import Loader from "react-loader-spinner";
 import MenuItem from '@material-ui/core/MenuItem';
 import { getUserObjectives } from "actions/objectives";
-
 
 const useStyles = makeStyles(styles);
 
@@ -90,7 +88,7 @@ export default function AssignedTasksPage() {
         description: description,
         start_date: start_date,
         end_date: end_date,
-        user_id: user_id,
+        user_ids: user_id,
         created_by: user_id,
         objective_id: objective_id
         }
@@ -173,13 +171,17 @@ export default function AssignedTasksPage() {
                                         <TableRow key={index}>
                                             <TableCell>{list.description}</TableCell>
                                             <TableCell> {list.assignedTasks[0].assigner.fullnames} </TableCell>
-                                            <TableCell > <img src={avatar} alt="..." style={{ maxWidth: '50px', maxHeight: '50px', borderRadius: '50%', marginRight: '160px', marginTop: '35px' }} />  </TableCell>
+                                            <TableCell > 
+                                                {list.assignedTasks.map((detail, index) => (
+                                                   <img key={index} src={detail.assignee.userPicture}
+                                                    alt="..." style={{ maxWidth: '50px', maxHeight: '50px', borderRadius: '50%', marginRight: '160px', marginTop: '35px' }} />
+                                                ))}
+                                            </TableCell>
                                             {/* <TableCell>{moment(list.start_date).format('YYYY-MM-DD')}</TableCell> */}
                                             <TableCell>{moment(list.end_date).format('YYYY-MM-DD')}</TableCell>
                                             <TableCell>{list.status}</TableCell>
                                             <TableCell>
                                                 <IconButton aria-label="view" color="error" onClick={() => {handleOpen(); setObjectiveId(list.objective_id); setDescription(list.description)}} ><ControlPoint /></IconButton>
-
                                             </TableCell>
                                         </TableRow>
                                     ))) : error ? (<TableRow> <TableCell> {error} </TableCell></TableRow> 

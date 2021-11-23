@@ -37,7 +37,7 @@ import { getUserObjectives } from "actions/objectives";
 import { getKpis } from "actions/kpis";
 import { getStatus, getPillars } from "actions/data";
 import { getUsers } from "actions/users";
-
+// import { ListItemText, Checkbox } from "@material-ui/core";
 // import { getObjectiveTasks } from "actions/objectives";
 
 const useStyles = makeStyles(styles);
@@ -175,7 +175,7 @@ export default function StrategicObjectives() {
                 const body = JSON.stringify({
                 task_id : response1.data.data.id ,
                 assigner_id : created_by,
-                user_id : assignee_id
+                user_ids : [assignee_id]
                 })
     
                 console.log(body, setAssigneeId)
@@ -387,7 +387,7 @@ export default function StrategicObjectives() {
             const body = JSON.stringify({
               task_id : response.data.data.id ,
               assigner_id : created_by,
-              user_id : assignee_id
+              user_ids : [assignee_id]
              })
   
             console.log(body, setAssigneeId)
@@ -524,7 +524,7 @@ export default function StrategicObjectives() {
 
             {items ? ( items.map((list, index) => (
                 <div key={index} style={{ justifyContent: 'center' }} >
-                    <Card style={{borderLeft : list.objectives.overallStatus === 'INCOMPLETE' ? 'solid 5px red' : (list.objectives.overallStatus === 'COMPLETE') ? 'solid 5px green' : 'solid 5px black' , marginBottom: '0'}} key={index} >
+                    <Card style={{borderLeft : list.objectives.overallStatus === 'Incomplete' ? 'solid 5px red' : (list.objectives.overallStatus === 'COMPLETE') ? 'solid 5px green' : (list.objectives.overallStatus === 'INCOMPLETE') ? 'solid 5px red'  :'solid 5px black' , marginBottom: '0'}} key={index} >
                         <Grid container justify="flex-end">
                             <IconButton aria-label="edit" className={classes.textGreen} onClick={() => { handleEditClickOpen(); setEditing(list.objectives); }} ><EditIcon /></IconButton>
                         </Grid>
@@ -942,6 +942,7 @@ export default function StrategicObjectives() {
                         fullWidth
                         variant="outlined"
                         label="Select"
+                        multiple
                         value={assignee_id}
                         onChange={(event) => {
                             setAssigneeId(event.target.value);
@@ -950,6 +951,8 @@ export default function StrategicObjectives() {
                         >
                         {sysusers.map((option) => (
                             <MenuItem key={option.id} value={option.id}>
+                                {/* <Checkbox checked={assignee_id.indexOf(option) > -1} />
+                                <ListItemText primary={option.fullnames} /> */}
                                 {option.fullnames}
                             </MenuItem>
                         ))}
