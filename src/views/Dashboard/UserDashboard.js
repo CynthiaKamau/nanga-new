@@ -36,7 +36,7 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import { getMission, getVision } from "actions/data";
+import { getMission, getVision, getUserById } from "actions/data";
 
 const useStyles = makeStyles(styles);
 
@@ -47,12 +47,21 @@ export default function UserDashboard() {
   const dispatch = useDispatch();
 
   const { items } = useSelector(state => state.objective);
-  const {  mission, vision } = useSelector(state => state.data);
+  const {  mission, vision, spec_user } = useSelector(state => state.data);
 
   // const {  categories } = useSelector(state => state.data);
 
   const str = window.location.pathname;
   const chars = str.slice(25, 1000);
+
+  const [editopenmission, setEditMissionOpen] = useState(false);
+  const [showloader, setshowloader] = useState(false); 
+  const [show_tasks, setShowTasks] = useState(false);
+  const [setIndex, setSelectedIndex] = useState("");
+  const [err, setError] = useState("");
+  const [obj_tasks, setObjTasks] = useState("");
+  const [ objectiveId, setObjectiveId] = useState("");
+  const [usermission, setUserMission] = useState("");
 
 
   useEffect(() => {
@@ -63,18 +72,12 @@ export default function UserDashboard() {
         dispatch(getKpis());
         dispatch(getMission(chars));
         dispatch(getVision());
+        dispatch(getUserById(chars));
     }
     
   }, [chars])
 
-  const [editopenmission, setEditMissionOpen] = useState(false);
-  const [showloader, setshowloader] = useState(false); 
-  const [show_tasks, setShowTasks] = useState(false);
-  const [setIndex, setSelectedIndex] = useState("");
-  const [err, setError] = useState("");
-  const [obj_tasks, setObjTasks] = useState("");
-  const [ objectiveId, setObjectiveId] = useState("");
-  const [usermission, setUserMission] = useState("");
+  console.log("here", spec_user)
 
 
   // const [newuser, setNewUser] = useState(true);
@@ -122,6 +125,8 @@ export default function UserDashboard() {
     <div>
 
       <GridContainer>
+
+      <h4 className={classes.textBold} style={{ marginRight: '5px'}}> {spec_user.fullnames} | </h4> <h5> {spec_user.roles.role_name}</h5>
 
       <GridItem xs={12} sm={12} md={12}>
           <h3 className={classes.textBold}> THE VISION</h3>
@@ -203,12 +208,14 @@ export default function UserDashboard() {
             {items ? ( items.map((list, index) => (
               <GridItem container justify="flex-end" key={index}  >
 
-                <Card className={`classes.cardBodyRed ${list.status === 'Complete' && 'classes.cardBodyGreen'}`} key={index} style={{ marginBottom: '0'}} >
+                <Card style={{borderLeft : list.objectives.overallStatus === 'INCOMPLETE' ? 'solid 5px red' : (list.objectives.overallStatus === 'COMPLETE') ? 'solid 5px green' : 'solid 5px black' , marginBottom: '0'}} key={index} >
                   <GridItem xs={12} sm={12} md={12}>
                     <h4 className={classes.textBold}> {list.objectives.description} </h4>
                     <h6 className={classes.textGreen}> {list.totalTasks} Management actions</h6>
 
-                    <h6> Associated KPIS : {list.objectives.kpi.title} </h6>
+                    <h6 > KPIS : {list.objectives.kpi.title} </h6>
+
+                    <h6 > STATUS : {list.objectives.overallStatus} </h6>
 
                   </GridItem>
                   <CardBody className={classes.cardBody}>

@@ -31,6 +31,10 @@ import {
     EDIT_VISION_FETCH_REQUEST,
     EDIT_VISION_FAIL,
 
+    SPEC_USER_SUCCESS,
+    SPEC_USER_FETCH_REQUEST,
+    SPEC_USER_FAIL,
+
 } from '../actions/types';
 
 const initialState = {
@@ -39,6 +43,7 @@ const initialState = {
     roles : [],
     role : [],
     statuses : [],
+    spec_user : [],
     pillars : [],
     status : [],
     mission : [],
@@ -57,6 +62,7 @@ export default function(state = initialState, action) {
         case EDIT_MISSION_FETCH_REQUEST :
         case EDIT_VISION_FETCH_REQUEST :
         case ALL_PILLARS_FETCH_REQUEST :
+        case SPEC_USER_FETCH_REQUEST :
             return {
                 ...state,
                 isLoading: true
@@ -100,6 +106,12 @@ export default function(state = initialState, action) {
                 mission : action.payload,
                 error : null
             }
+        case SPEC_USER_SUCCESS :
+            return {
+                ...state,
+                spec_user : action.payload.data,
+                error : null
+            }
         case VISION_SUCCESS :
             return {
                 ...state,
@@ -134,6 +146,13 @@ export default function(state = initialState, action) {
                 ...state,
                 isLoading: false,
                 pillars : null,
+                error: action.payload.message
+            }
+        case SPEC_USER_FAIL :
+            return {
+                ...state,
+                isLoading: false,
+                spec_user : null,
                 error: action.payload.message
             }
         case EDIT_MISSION_FAIL :

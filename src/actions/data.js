@@ -20,6 +20,10 @@ import {
     MISSION_FETCH_REQUEST,
     MISSION_FAIL,
 
+    SPEC_USER_SUCCESS,
+    SPEC_USER_FETCH_REQUEST,
+    SPEC_USER_FAIL,
+
     VISION_SUCCESS,
     VISION_FETCH_REQUEST,
     VISION_FAIL,
@@ -225,6 +229,29 @@ export const editVision = (user_id, uservision) => {
         }
     }
 }
+
+//user mission
+export const getUserById = (id) => {
+
+    return async function (dispatch) {
+
+        dispatch({ type: SPEC_USER_FETCH_REQUEST });
+
+        try {
+
+            let response = await axios.get(`/users/findByUserId?user_id=${id}`)
+            if (response.status == 200) {
+                dispatch({ type: SPEC_USER_SUCCESS, payload: response.data })
+            } else {
+                dispatch({ type: SPEC_USER_FAIL, payload: response.data })
+            }
+
+        } catch (error) {
+            dispatch({ type: SPEC_USER_FAIL, payload: error.response })
+        }
+    }
+}
+
 
 
 

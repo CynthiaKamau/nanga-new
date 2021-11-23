@@ -147,7 +147,7 @@ export default function StrategicObjectives() {
                 description: task_description,
                 start_date: task_start_date,
                 end_date: task_end_date,
-                user_id: user_id,
+                user_id: created_by,
                 created_by: created_by,
                 objective_id: response.data.data.id
               }
@@ -234,6 +234,11 @@ export default function StrategicObjectives() {
         }
     
       }
+    
+    const handleAddTaskOpen = () => {
+        setAddOpenTask(true);
+        setAddOpen(false);
+    }
 
     const handleAddClose = () => {
         setAddOpen(false);
@@ -251,7 +256,12 @@ export default function StrategicObjectives() {
     const setEditing = (list) => {
 
         setDescription(list.description);
-        setKpiUom(list.kpi.kpi_unit_of_measure);
+
+        if(list.kpi.kpi_unit_of_measure !== undefined) {
+            setKpiUom(list.kpi.kpi_unit_of_measure);
+        } else {
+            setKpiUom([]);
+        }
         setKpiId(list.kpi_id);
         setId(list.id);
         setTarget(list.target);
@@ -361,20 +371,61 @@ export default function StrategicObjectives() {
 
         if (response.data.success === false) {
             setshowloader(false);
+            let error = response.data.message;
+
             swal.fire({
                 title: "Error",
-                text: "An error occurred, please try again!",
+                text: error,
                 icon: "error",
                 dangerMode: true
             });
 
         } else {
 
-            swal.fire({
-                title: "Success",
-                text: "Task added successfully!",
-                icon: "success",
-            });
+            console.log("task add", response.data.data)
+
+            const body = JSON.stringify({
+              task_id : response.data.data.id ,
+              assigner_id : created_by,
+              user_id : assignee_id
+             })
+  
+            console.log(body, setAssigneeId)
+  
+            try {
+  
+              let response2 = await axios.post('/assignedtasks/update', body, config)
+              if (response2.status == 201) {
+                setshowloader(false);
+                swal.fire({
+                  title: "Success",
+                  text: "Task added successfully!",
+                  icon: "success",
+                  dangerMode: false
+                }).then(() => dispatch(getUserObjectives(currentUser.id)));
+                
+              } else {
+        
+                  let error = response2.data.message
+                  setshowloader(false);
+                  swal.fire({
+                      title: "Error",
+                      text: error,
+                      icon: "error",
+                      dangerMode: true
+                  });
+              }
+            } catch (error) {
+        
+              let err = error.response.data.message
+                  setshowloader(false);
+                  swal.fire({
+                      title: "Error",
+                      text: err,
+                      icon: "error",
+                      dangerMode: true
+                  });
+            }
         }
     }
 
@@ -431,8 +482,8 @@ export default function StrategicObjectives() {
                       title: "Success",
                       text: item,
                       icon: "success",
-                  })
-    
+                  }).then(() => dispatch(getUserObjectives(currentUser.id)))
+
               } else {
                   let error = response.data.message
                       setshowloader(false);
@@ -473,16 +524,19 @@ export default function StrategicObjectives() {
 
             {items ? ( items.map((list, index) => (
                 <div key={index} style={{ justifyContent: 'center' }} >
-                    <Card className={`classes.cardBodyRed ${list.status === 'Complete' && 'classes.cardBodyGreen'}`} key={index} style={{ marginBottom: '0'}} >
+                    <Card style={{borderLeft : list.objectives.overallStatus === 'INCOMPLETE' ? 'solid 5px red' : (list.objectives.overallStatus === 'COMPLETE') ? 'solid 5px green' : 'solid 5px black' , marginBottom: '0'}} key={index} >
                         <Grid container justify="flex-end">
-                            <IconButton aria-label="edit" className={classes.textGreen} onClick={() => { handleEditClickOpen(); setEditing(list); }} ><EditIcon /></IconButton>
+                            <IconButton aria-label="edit" className={classes.textGreen} onClick={() => { handleEditClickOpen(); setEditing(list.objectives); }} ><EditIcon /></IconButton>
                         </Grid>
 
                         <GridItem xs={12} sm={12} md={12}>
                             <h4 className={classes.textBold}> {list.objectives.description} </h4>
                             <h6 className={classes.textGreen}> Management actions</h6>
 
-                            <h6> Associated KPIS : {list.objectives.kpi.title} </h6>
+                            <h6> KPIS : {list.objectives.kpi.title} </h6>
+
+                            <h6 > STATUS : {list.objectives.overallStatus} </h6>
+
                         </GridItem>
                         <CardBody className={classes.cardBody}>
                             <GridItem xs={12} sm={6} md={2}>
@@ -743,7 +797,7 @@ export default function StrategicObjectives() {
                         </div>
                         ) :
                         (
-                            <Button color="primary" onClick={handleAddClose}>Save</Button>
+                            <Button color="primary" onClick={handleAddTaskOpen}>Save</Button>
                         )}
                 </DialogActions>
             </Dialog>
@@ -866,16 +920,6 @@ export default function StrategicObjectives() {
 
                     <TextField
                         fullWidth
-                        label="Objective"
-                        id="objective"
-                        type="text"
-                        variant="outlined"
-                        disabled
-                        value={description}
-                        className={classes.textInput}
-                    />
-                    <TextField
-                        fullWidth
                         label="Description"
                         id="task_description"
                         multiline
@@ -890,6 +934,26 @@ export default function StrategicObjectives() {
                             setTaskDescription(value)
                         }}
                     />
+
+                    <label style={{ fontWeight: 'bold', color: 'black' }}> User : </label>
+                    <TextField
+                        id="outlined-select-user"
+                        select
+                        fullWidth
+                        variant="outlined"
+                        label="Select"
+                        value={assignee_id}
+                        onChange={(event) => {
+                            setAssigneeId(event.target.value);
+                        }}
+                        helperText="Please select a user"
+                        >
+                        {sysusers.map((option) => (
+                            <MenuItem key={option.id} value={option.id}>
+                                {option.fullnames}
+                            </MenuItem>
+                        ))}
+                    </TextField>
 
                     <Grid container spacing={2}>
                         <Grid item xs={6} lg={6} xl={6} sm={12}>

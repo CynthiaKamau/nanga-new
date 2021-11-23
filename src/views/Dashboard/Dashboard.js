@@ -863,6 +863,26 @@ export default function Dashboard() {
               />
             </Grid>
 
+            <label style={{ fontWeight: 'bold', color: 'black' }}> User : </label>
+              <TextField
+                  id="outlined-select-user"
+                  select
+                  fullWidth
+                  variant="outlined"
+                  label="Select"
+                  value={assignee_id}
+                  onChange={(event) => {
+                      setAssigneeId(event.target.value);
+                  }}
+                  helperText="Please select a user"
+                  >
+                  {sysusers.map((option) => (
+                      <MenuItem key={option.id} value={option.id}>
+                          {option.fullnames}
+                      </MenuItem>
+                  ))}
+              </TextField>
+
             <Grid container spacing={2}>
               <Grid item xs={6} lg={6} xl={6} sm={12}>
                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -1055,8 +1075,7 @@ export default function Dashboard() {
                             <KeyboardDatePicker
                                 margin="normal"
                                 id="date-picker-dialog"
-                                validators={['required']}
-                                errorMessages={['this field is required']}
+                                helperText="Set start date"
                                 format="yyyy/dd/MM"
                                 fullWidth
                                 inputVariant="outlined"
@@ -1074,8 +1093,7 @@ export default function Dashboard() {
                             <KeyboardDatePicker
                                 margin="normal"
                                 id="date-picker-dialog"
-                                validators={['required']}
-                                errorMessages={['this field is required']}
+                                helperText="Set end date"
                                 format="yyyy/dd/MM"
                                 fullWidth
                                 inputVariant="outlined"
@@ -1208,12 +1226,14 @@ export default function Dashboard() {
             {items ? ( items.map((list, index) => (
               <GridItem container justify="flex-end" key={index}  >
 
-                <Card className={`classes.cardBodyRed ${list.status === 'Complete' && 'classes.cardBodyGreen'}`} key={index} style={{ marginBottom: '0'}} >
+                <Card style={{ borderLeft : list.objectives.overallStatus == 'INCOMPLETE' ? 'solid 5px red' : list.objectives.overallStatus === 'COMPLETE' ? 'solid 5px green' : 'solid 5px black' , marginBottom: '0'}} key={index} >
                   <GridItem xs={12} sm={12} md={12}>
                     <h3 className={classes.textBold}> {list.objectives.description} </h3>
                     <h6 className={classes.textGreen}> {list.totalTasks} Management actions</h6>
 
-                    <h6 > Associated KPIS : {list.objectives.kpi.title} </h6>
+                    <h6 > KPIS : {list.objectives.kpi.title} </h6>
+
+                    <h6 > STATUS : {list.objectives.overallStatus} </h6>
 
                   </GridItem>
                   <CardBody className={classes.cardBody}>

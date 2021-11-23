@@ -36,8 +36,6 @@ export default function UserProfile() {
 
   const { user : currentUser } = useSelector(state => state.auth);
 
-  console.log(currentUser)
-
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [department, setDepartment] = useState("");
@@ -47,7 +45,7 @@ export default function UserProfile() {
   const [updated_by, setUpdatedBy] = useState(currentUser.id);
   const [showloader, setshowloader] = useState(false);  
   const [image, _setImage] = useState(null);
-  const [avatar, setAvatar] = useState(currentUser.userProfile)
+  const [avatar, setAvatar] = useState("")
   const inputFileRef = createRef(null);
 
   // var urlCreator = window.URL || window.webkitURL;
@@ -61,6 +59,7 @@ export default function UserProfile() {
     setTeam(currentUser.team);
     setRole(currentUser.role);
     setId(currentUser.id);
+    setAvatar(currentUser.image);
   }, []);
 
   const cleanup = () => {
@@ -299,7 +298,8 @@ export default function UserProfile() {
           <Card profile>
             <CardAvatar profile>
               <a href="#pablo" onClick={(e) => e.preventDefault()}>
-                <img src={{ uri: `data:image/png;base64, ${avatar}`}} alt="..." />
+                <img src={avatar} alt="..." />
+
               </a>
             </CardAvatar>
             <CardBody profile>

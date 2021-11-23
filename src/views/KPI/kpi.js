@@ -31,6 +31,8 @@ import Loader from "react-loader-spinner";
 import { LinearProgress } from "@material-ui/core";
 import axios from "axios";
 import { getCategories } from "actions/data";
+import { Grid } from "@material-ui/core";
+import FiberManualRecord from "@material-ui/icons/FiberManualRecord";
 
 import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
 
@@ -62,7 +64,12 @@ export default function KPIs() {
     const [id, setId] = useState("");
     const [created_by, setCreatedBy] = useState(currentUser.id);
     const [updated_by, setUpdatedBy] = useState(currentUser.id);
-
+    const [target, setTarget] = useState("");
+    const [account, setAccount] = useState("");
+    const [target_achieved, setTargetAchieved] = useState("");
+    const [action, setAction] = useState("");
+    const [support_required, setSupportRequired] = useState("");
+    const [root_cause, setRootCause] = useState("");
 
     const handleAddClickOpen = () => {
         setAddOpen(true);
@@ -81,7 +88,10 @@ export default function KPIs() {
             title : kpi,
             kpiUnitofMeasure : uom,
             categoryId : category,
-            createdBy : created_by 
+            createdBy : created_by,
+            account : account,
+            target : target,
+            userId : created_by
         });
 
         try {
@@ -95,7 +105,7 @@ export default function KPIs() {
                         title: "Success",
                         text: item,
                         icon: "success",
-                    }).then(() =>dispatch(getKpis()));
+                    }).then(() => dispatch(getKpis(currentUser.id)));
 
                 } else {
                     let error = response.data.message
@@ -131,6 +141,12 @@ export default function KPIs() {
         setUnitOfMeasure(list.kpi_unit_of_measure);
         setCategory(list.categories.id);
         setId(list.id);
+        setAccount(list.account);
+        setTarget(list.target);
+        setTargetAchieved(list.target_achieved);
+        setSupportRequired(list.supportRequired);
+        setAction(list.action);
+        setRootCause(list.rootCause)
     }
 
     const saveEdited = async(e) => {
@@ -148,7 +164,14 @@ export default function KPIs() {
             categoryId : category,
             createdBy : created_by,
             updatedBy : updated_by,
-            id: id 
+            id: id, 
+            userId: created_by,
+            account: accounts,
+            target: target,
+            targetAchieved: target_achieved,
+            action: action,
+            rootCause: root_cause,
+            supportRequired: support_required
         });
         console.log("kpi", body);
 
@@ -162,7 +185,7 @@ export default function KPIs() {
                         title: "Success",
                         text: item,
                         icon: "success",
-                    }).then(() =>dispatch(getKpis()));
+                    }).then(() => dispatch(getKpis(currentUser.id)));
                     
             } else {
                 let error = response.data.message
@@ -246,6 +269,17 @@ export default function KPIs() {
         }
     ]
 
+    const accounts = [
+        {
+            value: 'Revenue',
+            label: 'Revenue',
+        },
+        {
+            value: 'Expense',
+            label: 'Expense',
+        }
+    ]
+
   return (
     <div>
       <GridContainer>
@@ -263,10 +297,14 @@ export default function KPIs() {
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell>KPI</TableCell>
-                            <TableCell>Unit Of Measure</TableCell>
-                            <TableCell>Categories</TableCell>
-                            { currentUser.role_id=== 0 ? ( <TableCell>Action</TableCell> ) : null }
+                            <TableCell>Measure</TableCell>
+                            <TableCell>YTD Actual</TableCell>
+                            <TableCell>YTD Target</TableCell>
+                            <TableCell> VAR</TableCell>
+                            <TableCell> Root Cause </TableCell>
+                            <TableCell>Action</TableCell>
+                            <TableCell>Support Required </TableCell>
+                            <TableCell> </TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -274,13 +312,20 @@ export default function KPIs() {
                             <TableRow> <TableCell> No KPIs available </TableCell></TableRow>
                         ) : items ? ( items.map((list, index) => (
                             <TableRow key={index}>
-                                <TableCell>{list.title}</TableCell>
-                                <TableCell>{list.kpi_unit_of_measure}</TableCell>
-                                <TableCell>{list.categories.description} </TableCell>
-                                { currentUser.role_id=== 0 ? ( <TableCell>
-                                <IconButton aria-label="edit" color="primary" onClick={() => { handleEditClickOpen(); setEditing(list) }} ><EditIcon/></IconButton>
+                                <TableCell>{list.title} {list.kpi_unit_of_measure}</TableCell>
+                                <TableCell>{list.target_achieved}</TableCell>
+                                <TableCell>{list.target} </TableCell>
+                                { list.variance === 'amber' ? (
+                                    <TableCell> <FiberManualRecord style={{color : '#FFC107'}}/> </TableCell>)
+                                : list.variance === 'green' ? (<TableCell> <FiberManualRecord style={{color : '#29A15B'}}/> </TableCell>)
+                                : list.variance === 'blue' ? (<TableCell> <FiberManualRecord style={{color : '#03A9F4'}}/> </TableCell>)
+                                : list.variance === 'red' ? (<TableCell> <FiberManualRecord style={{color : '#F44336'}}/> </TableCell>)
+                                : null }
+                                <TableCell>{list.rootCause}</TableCell>
+                                <TableCell>{list.action}</TableCell>
+                                <TableCell>{list.supportRequired}</TableCell>
+                                <TableCell><IconButton aria-label="edit" color="primary" onClick={() => { handleEditClickOpen(); setEditing(list) }} ><EditIcon/></IconButton> </TableCell>
                                 {/* <IconButton aria-label="delete" color="secondary" onClick={() => { handleDeleteClickOpen(); setDelete(list) }} ><DeleteIcon /></IconButton> */}
-                                </TableCell> ) : null }
                             </TableRow>
                         ))) : error ? (<TableRow> <TableCell> {error} </TableCell></TableRow> 
                         ) : isLoading ? (<TableRow> <LinearProgress color="success" /> </TableRow>) : null }
@@ -298,7 +343,7 @@ export default function KPIs() {
                             autoFocus
                             margin="dense"
                             id="kpi"
-                            label="KPI"
+                            label="Title"
                             type="text"
                             fullWidth
                             style={{marginBottom : '15px'}}
@@ -345,6 +390,41 @@ export default function KPIs() {
                             {categories.map((option) => (
                             <MenuItem key={option.id} value={option.id}>
                                 {option.description}
+                            </MenuItem>
+                            ))}
+                        </TextField>
+
+                        <TextField
+                            autoFocus
+                            margin="dense"
+                            id="target"
+                            label="Target"
+                            type="number"
+                            fullWidth
+                            style={{marginBottom : '15px'}}
+                            value={target}
+                            variant="outlined"
+                            onChange = {(event) => {
+                                setTarget(event.target.value);
+                            }}
+                        />
+
+                        <label style={{ fontWeight: 'bold', color: 'black'}}> Account : </label>
+                        <TextField
+                            id="outlined-select-account"
+                            select
+                            fullWidth
+                            variant="outlined"
+                            label="Select"
+                            value={account}
+                            onChange = {(event) => {
+                            setAccount(event.target.value);
+                            }}
+                            helperText="Please select your account"
+                        >
+                            {accounts.map((option) => (
+                            <MenuItem key={option.value} value={option.value}>
+                                {option.label}
                             </MenuItem>
                             ))}
                         </TextField>
@@ -425,6 +505,113 @@ export default function KPIs() {
                             {categories.map((option) => (
                             <MenuItem key={option.id} value={option.id}>
                                 {option.description}
+                            </MenuItem>
+                            ))}
+                        </TextField>
+
+                        <Grid container spacing={2}>
+                            <Grid item xs={6} lg={6} xl={6} sm={12}>
+                                <TextField
+                                    autoFocus
+                                    margin="dense"
+                                    id="target"
+                                    label="Target"
+                                    type="number"
+                                    fullWidth
+                                    style={{marginBottom : '15px'}}
+                                    value={target}
+                                    variant="outlined"
+                                    onChange = {(event) => {
+                                        setTarget(event.target.value);
+                                    }}
+                                />
+                            </Grid>
+
+                            <Grid item xs={6} lg={6} xl={6} sm={12}>
+                                <TextField
+                                    autoFocus
+                                    margin="dense"
+                                    id="target"
+                                    label="Target Achieved"
+                                    type="number"
+                                    fullWidth
+                                    style={{marginBottom : '15px'}}
+                                    value={target_achieved}
+                                    variant="outlined"
+                                    onChange = {(event) => {
+                                        setTargetAchieved(event.target.value);
+                                    }}
+                                />
+                            </Grid>
+                        </Grid>
+
+                        <TextField
+                            fullWidth
+                            label="Root Cause"
+                            id="root_cause"
+                            multiline
+                            rows={2}
+                            required
+                            variant="outlined"
+                            className={classes.textInput}
+                            type="text"
+                            value={root_cause}
+                            onChange={(event) => {
+                                const value = event.target.value;
+                                setRootCause(value)
+                            }}
+                        />
+
+                        <TextField
+                            fullWidth
+                            label="Support Required"
+                            id="support_required"
+                            multiline
+                            rows={2}
+                            required
+                            variant="outlined"
+                            className={classes.textInput}
+                            type="text"
+                            value={support_required}
+                            onChange={(event) => {
+                                const value = event.target.value;
+                                setSupportRequired(value)
+                            }}
+                        />
+
+                        <TextField
+                            fullWidth
+                            label="Action"
+                            id="action"
+                            multiline
+                            rows={2}
+                            required
+                            variant="outlined"
+                            className={classes.textInput}
+                            type="text"
+                            value={action}
+                            onChange={(event) => {
+                                const value = event.target.value;
+                                setAction(value)
+                            }}
+                        />
+
+                        <label style={{ fontWeight: 'bold', color: 'black'}}> Account : </label>
+                        <TextField
+                            id="outlined-select-account"
+                            select
+                            fullWidth
+                            variant="outlined"
+                            label="Select"
+                            value={account}
+                            onChange = {(event) => {
+                            setAccount(event.target.value);
+                            }}
+                            helperText="Please select your account"
+                        >
+                            {accounts.map((option) => (
+                            <MenuItem key={option.value} value={option.value}>
+                                {option.label}
                             </MenuItem>
                             ))}
                         </TextField>

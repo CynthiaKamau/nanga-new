@@ -171,9 +171,9 @@ export default function AssignedTasksPage() {
                                 <TableBody>
                                     {items ? ( items.map((list, index) => (
                                         <TableRow key={index}>
-                                                <TableCell>{list.description}</TableCell>
+                                            <TableCell>{list.description}</TableCell>
+                                            <TableCell> {list.assignedTasks[0].assigner.fullnames} </TableCell>
                                             <TableCell > <img src={avatar} alt="..." style={{ maxWidth: '50px', maxHeight: '50px', borderRadius: '50%', marginRight: '160px', marginTop: '35px' }} />  </TableCell>
-                                            <TableCell> To Add </TableCell>
                                             {/* <TableCell>{moment(list.start_date).format('YYYY-MM-DD')}</TableCell> */}
                                             <TableCell>{moment(list.end_date).format('YYYY-MM-DD')}</TableCell>
                                             <TableCell>{list.status}</TableCell>
