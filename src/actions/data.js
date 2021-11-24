@@ -241,7 +241,7 @@ export const getUserById = (id) => {
 
             let response = await axios.get(`/users/findByUserId?user_id=${id}`)
             if (response.status == 200) {
-                dispatch({ type: SPEC_USER_SUCCESS, payload: response.data })
+                dispatch({ type: SPEC_USER_SUCCESS, payload: response.data.data })
             } else {
                 dispatch({ type: SPEC_USER_FAIL, payload: response.data })
             }

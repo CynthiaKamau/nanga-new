@@ -36,6 +36,8 @@ import swal from "sweetalert2";
 import Loader from "react-loader-spinner";
 import MenuItem from '@material-ui/core/MenuItem';
 import { getUserObjectives } from "actions/objectives";
+import Avatar from "../../assets/img/default-avatar.png";
+
 
 const useStyles = makeStyles(styles);
 
@@ -173,8 +175,16 @@ export default function AssignedTasksPage() {
                                             <TableCell> {list.assignedTasks[0].assigner.fullnames} </TableCell>
                                             <TableCell > 
                                                 {list.assignedTasks.map((detail, index) => (
-                                                   <img key={index} src={detail.assignee.userPicture}
-                                                    alt="..." style={{ maxWidth: '50px', maxHeight: '50px', borderRadius: '50%', marginRight: '160px', marginTop: '35px' }} />
+                                                    <div key={index} style={{ display: 'inline' }}>
+                                                        { detail.assignee.userPicture === null || detail.assignee.userPicture === undefined ? (
+                                                            <img key={index} src={Avatar} alt={detail.assignee.fullnames}  style={{ maxWidth: '50px', maxHeight: '50px', borderRadius: '50%'}} />
+
+                                                        ) : detail.assignee.userPicture != null ? (
+                                                            <img key={index} src={detail.assignee.userPicture}
+                                                            alt={detail.assignee.fullnames}  style={{ maxWidth: '50px', maxHeight: '50px', borderRadius: '50%'}} />
+                                                        ) : null}
+                                                    </div>
+                                                   
                                                 ))}
                                             </TableCell>
                                             {/* <TableCell>{moment(list.start_date).format('YYYY-MM-DD')}</TableCell> */}

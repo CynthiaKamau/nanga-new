@@ -32,7 +32,6 @@ import { LinearProgress } from "@material-ui/core";
 import axios from "axios";
 import { getCategories } from "actions/data";
 import { Grid } from "@material-ui/core";
-import FiberManualRecord from "@material-ui/icons/FiberManualRecord";
 
 import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
 
@@ -166,7 +165,7 @@ export default function KPIs() {
             updatedBy : updated_by,
             id: id, 
             userId: created_by,
-            account: accounts,
+            account: account,
             target: target,
             targetAchieved: target_achieved,
             action: action,
@@ -283,7 +282,11 @@ export default function KPIs() {
   return (
     <div>
       <GridContainer>
-      <GridItem xs={12} sm={12} md={12}>
+        <Grid container justify="flex-end" style={{ marginTop: '10px' }}>
+            <Button color="primary" size="lg" onClick={handleAddClickOpen}> Add KPI </Button> 
+        </Grid>
+
+        <GridItem xs={12} sm={12} md={12}>
             <Card>
               <CardHeader color="primary">
                 <h4>KPIs</h4>
@@ -292,19 +295,16 @@ export default function KPIs() {
                 </p>
               </CardHeader>
               <CardBody>
-              { currentUser.role_id === 0 ? (<div className={classes.btnRight}><Button color="primary" size="lg" onClick={handleAddClickOpen}> Add KPI </Button> </div> ) : null }
 
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell>Measure</TableCell>
-                            <TableCell>YTD Actual</TableCell>
-                            <TableCell>YTD Target</TableCell>
-                            <TableCell> VAR</TableCell>
-                            <TableCell> Root Cause </TableCell>
+                            <TableCell>Title</TableCell>
+                            <TableCell>Unit Of Measure</TableCell>
+                            <TableCell> Category</TableCell>
+                            <TableCell>Account</TableCell>
+                            <TableCell> Target </TableCell>
                             <TableCell>Action</TableCell>
-                            <TableCell>Support Required </TableCell>
-                            <TableCell> </TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -312,19 +312,12 @@ export default function KPIs() {
                             <TableRow> <TableCell> No KPIs available </TableCell></TableRow>
                         ) : items ? ( items.map((list, index) => (
                             <TableRow key={index}>
-                                <TableCell>{list.title} {list.kpi_unit_of_measure}</TableCell>
-                                <TableCell>{list.target_achieved}</TableCell>
+                                <TableCell>{list.title}</TableCell>
+                                <TableCell>{list.kpi_unit_of_measure}</TableCell>
+                                <TableCell>{list.categories.description}</TableCell>
+                                <TableCell>{list.account}</TableCell>
                                 <TableCell>{list.target} </TableCell>
-                                { list.variance === 'amber' ? (
-                                    <TableCell> <FiberManualRecord style={{color : '#FFC107'}}/> </TableCell>)
-                                : list.variance === 'green' ? (<TableCell> <FiberManualRecord style={{color : '#29A15B'}}/> </TableCell>)
-                                : list.variance === 'blue' ? (<TableCell> <FiberManualRecord style={{color : '#03A9F4'}}/> </TableCell>)
-                                : list.variance === 'red' ? (<TableCell> <FiberManualRecord style={{color : '#F44336'}}/> </TableCell>)
-                                : null }
-                                <TableCell>{list.rootCause}</TableCell>
-                                <TableCell>{list.action}</TableCell>
-                                <TableCell>{list.supportRequired}</TableCell>
-                                <TableCell><IconButton aria-label="edit" color="primary" onClick={() => { handleEditClickOpen(); setEditing(list) }} ><EditIcon/></IconButton> </TableCell>
+                                <TableCell><IconButton aria-label="edit" className={classes.textGreen} onClick={() => { handleEditClickOpen(); setEditing(list) }} ><EditIcon/></IconButton> </TableCell>
                                 {/* <IconButton aria-label="delete" color="secondary" onClick={() => { handleDeleteClickOpen(); setDelete(list) }} ><DeleteIcon /></IconButton> */}
                             </TableRow>
                         ))) : error ? (<TableRow> <TableCell> {error} </TableCell></TableRow> 
@@ -659,7 +652,7 @@ export default function KPIs() {
 
               </CardBody>
             </Card>
-          </GridItem>
+        </GridItem>
       </GridContainer>
     </div>
   );

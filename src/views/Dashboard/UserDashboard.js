@@ -126,7 +126,10 @@ export default function UserDashboard() {
 
       <GridContainer>
 
-      <h4 className={classes.textBold} style={{ marginRight: '5px'}}> {spec_user.fullnames} | </h4> <h5> {spec_user.roles.role_name}</h5>
+      {spec_user === undefined || spec_user === null || spec_user.length === 0 ? ( <h4> </h4>) : spec_user ? (
+        <Grid container>
+          <Grid item xs={6} md={2} sm={2} style={{ margin : 0}}><h4 className={classes.textBold}> {spec_user.fullnames} </h4> </Grid>
+          <Grid item xs={6} md={2} sm={2}> <h5> {spec_user.roles.role_name}</h5> </Grid> </Grid>) : null }
 
       <GridItem xs={12} sm={12} md={12}>
           <h3 className={classes.textBold}> THE VISION</h3>

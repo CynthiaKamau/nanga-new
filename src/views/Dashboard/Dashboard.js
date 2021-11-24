@@ -42,6 +42,7 @@ import TableRow from '@material-ui/core/TableRow';
 import { getMission, getVision } from "actions/data";
 import { getStatus, getPillars } from "actions/data";
 import { getUsers } from "actions/users";
+import { getCategories } from "actions/data";
 
 const useStyles = makeStyles(styles);
 
@@ -57,12 +58,9 @@ export default function Dashboard() {
   const {  items : kpis } = useSelector(state => state.kpi);
   const { statuses, pillars } = useSelector(state => state.data);
   const { items : sysusers} = useSelector(state => state.user)
+  const { categories }  = useSelector(state => state.data);
 
   console.log("kpis", kpis)
-
-  if(kpis === null || kpis === undefined) {
-    kpis === []
-  }
 
   useEffect(() => {
     dispatch(getUserObjectives(currentUser.id));
@@ -74,8 +72,59 @@ export default function Dashboard() {
     dispatch(getPillars());
     setCreatedBy(currentUser.id);
     dispatch(getUsers())
+    dispatch(getCategories());
 
   }, [])
+
+  const uoms = [
+    {
+      value: '%',
+      label: '%',
+    },
+    {
+    value: '<%',
+    label: '<%',
+    },
+    {
+    value: '%>',
+    label: '%>',
+    },
+    {
+      value: 'numeric',
+      label: 'numeric',
+    },
+    {
+      value: 'KES',
+      label: 'KES',
+    },
+    {
+        value: 'TSH',
+        label: 'TSH',
+    },
+    {
+        value: 'UGX',
+        label: 'UGX',
+    },
+    {
+        value: 'RWF',
+        label: 'RWF',
+    },
+    {
+        value: 'USD',
+        label: 'USD',
+    }
+  ]
+
+  const accounts = [
+    {
+        value: 'Revenue',
+        label: 'Revenue',
+    },
+    {
+        value: 'Expense',
+        label: 'Expense',
+    }
+  ]
 
   const [description, setDescription] = useState("");
   const [target, setTarget] = useState("");
@@ -110,7 +159,25 @@ export default function Dashboard() {
   const [ task_objective_id, setTaskObjectiveId] = useState("");
   const [ pillar_id, setPillar] = useState("");
   const [assignee_id, setAssigneeId] = useState("");
+  const [kpi_title, setKPITitle] = useState("");
+  const [kpi_uom, setKpiUnitOfMeasure] = useState("");
+  const [kpi_category, setKpiCategory] = useState("");
+  const [kpi_target, setKpiTarget] = useState("");
+  const [kpi_account, setKpiAccount] = useState("");
+  const [null_kpis, setNullKpis] = useState(true);
 
+
+  if(kpis === null || kpis === undefined) {
+    kpis === [];
+  }
+  
+  useEffect(() => {
+    if(kpis && kpis.length >= 1) {
+      setNullKpis(false);
+    }
+  }, [kpis]);
+
+  console.log(null_kpis);
 
   // const [newuser, setNewUser] = useState(true);
 
@@ -181,9 +248,26 @@ export default function Dashboard() {
     const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
     let body = {description, end_date, kpi_id, start_date, target, user_id, created_by, pillar_id};
 
-    try {
-      let response = await axios.post('/objectives/create', body, config);
-    
+    //add if else clause here
+
+    if(null_kpis === true) {
+
+      try {
+
+        let kpi_body = JSON.stringify({ 
+          title : kpi_title,
+          kpiUnitofMeasure : kpi_uom,
+          categoryId : kpi_category,
+          createdBy : created_by,
+          account : kpi_account,
+          target : kpi_target,
+          userId : created_by
+        });
+
+        console.log("kpi body", kpi_body);
+
+        let response = await axios.post('/kpi/create', kpi_body, config);
+      
         if (response.data.status !== 201) {
           error(response.data)
           setshowloader(false);
@@ -198,30 +282,144 @@ export default function Dashboard() {
               dangerMode: true
           });
 
-        } else {
-          setshowloader(false);
-          setAddOpenTask(false);
+        } else {    
+          
+          let obj_body = ({
+            description : description ,
+            end_date : end_date,
+            kpi_id : response.data.data.id,
+            start_date : start_date,
+            target : target,
+            user_id : target,
+            created_by : target,
+            pillar_id : target
+          });
 
-          console.log("objective ", response.data)
-
-          let task_end_date = moment(task_end_date).format('YYYY-MM-DD');
-          let task_start_date = moment(task_start_date).format('YYYY-MM-DD');
-
-          let task = {
-            description: task_description,
-            start_date: task_start_date,
-            end_date: task_end_date,
-            user_id: user_id,
-            created_by: created_by,
-            objective_id: response.data.data.id
-          }
-
-          console.log("task", task)
-
-          let response1 = await axios.post('/tasks/create', task, config);
-
-          if (response1.data.success === false) {
+          let response0 = await axios.post('/objectives/create', obj_body, config);
+      
+          if (response0.data.status !== 201) {
+            error(response0.data)
             setshowloader(false);
+            setAddOpenTask(false);
+
+            let error = response0.data.message;
+
+            swal.fire({
+                title: "Error",
+                text: error,
+                icon: "error",
+                dangerMode: true
+            });
+
+          } else {
+            setshowloader(false);
+            setAddOpenTask(false);
+
+            console.log("objective ", response0.data)
+
+            let task_end_date = moment(task_end_date).format('YYYY-MM-DD');
+            let task_start_date = moment(task_start_date).format('YYYY-MM-DD');
+
+            let task = {
+              description: task_description,
+              start_date: task_start_date,
+              end_date: task_end_date,
+              user_id: user_id,
+              created_by: created_by,
+              objective_id: response0.data.data.id
+            }
+
+            console.log("task", task)
+
+            let response1 = await axios.post('/tasks/create', task, config);
+
+            if (response1.data.success === false) {
+              setshowloader(false);
+
+              let error = response.data.message;
+
+              swal.fire({
+                  title: "Error",
+                  text: error,
+                  icon: "error",
+                  dangerMode: true
+              });
+
+            } else {
+
+              console.log("task add", response1.data.data)
+
+              const body = JSON.stringify({
+                task_id : response1.data.data.id ,
+                assigner_id : created_by,
+                user_ids : [assignee_id]
+              })
+    
+              console.log(body, setAssigneeId)
+    
+              try {
+    
+                let response2 = await axios.post('/assignedtasks/update', body, config)
+                if (response2.status == 201) {
+                  setshowloader(false);
+                  swal.fire({
+                    title: "Success",
+                    text: "Objective and task added successfully!",
+                    icon: "success",
+                    dangerMode: false
+                  }).then(() => dispatch(getUserObjectives(currentUser.id)));
+                  
+                } else {
+          
+                    let error = response2.data.message
+                    setshowloader(false);
+                    swal.fire({
+                        title: "Error",
+                        text: error,
+                        icon: "error",
+                        dangerMode: true
+                    });
+                }
+              } catch (error) {
+          
+                let err = error.response.data.message
+                    setshowloader(false);
+                    swal.fire({
+                        title: "Error",
+                        text: err,
+                        icon: "error",
+                        dangerMode: true
+                    });
+              }
+
+            }
+
+          }
+        } 
+      } catch (error) {
+        console.log(error);
+        setshowloader(false);
+        setAddOpenTask(false);
+
+        let err = error.response.data.message;
+
+        swal.fire({
+          title: "Error",
+          text: err,
+          icon: "error",
+          dangerMode: true
+      });
+      }
+
+    } else {
+
+      try {
+        let response = await axios.post('/objectives/create', body, config);
+      
+          if (response.data.status !== 201) {
+            error(response.data)
+            setshowloader(false);
+            setAddOpenTask(false);
 
             let error = response.data.message;
 
@@ -233,68 +431,104 @@ export default function Dashboard() {
             });
 
           } else {
+            setshowloader(false);
+            setAddOpenTask(false);
 
-            console.log("task add", response1.data.data)
+            console.log("objective ", response.data)
 
-            const body = JSON.stringify({
-              task_id : response1.data.data.id ,
-              assigner_id : created_by,
-              user_ids : [assignee_id]
-             })
-  
-            console.log(body, setAssigneeId)
-  
-            try {
-  
-              let response2 = await axios.post('/assignedtasks/update', body, config)
-              if (response2.status == 201) {
-                setshowloader(false);
-                swal.fire({
-                  title: "Success",
-                  text: "Objective and task added successfully!",
-                  icon: "success",
-                  dangerMode: false
-                }).then(() => dispatch(getUserObjectives(currentUser.id)));
-                
-              } else {
-        
-                  let error = response2.data.message
+            let task_end_date = moment(task_end_date).format('YYYY-MM-DD');
+            let task_start_date = moment(task_start_date).format('YYYY-MM-DD');
+
+            let task = {
+              description: task_description,
+              start_date: task_start_date,
+              end_date: task_end_date,
+              user_id: user_id,
+              created_by: created_by,
+              objective_id: response.data.data.id
+            }
+
+            console.log("task", task)
+
+            let response1 = await axios.post('/tasks/create', task, config);
+
+            if (response1.data.success === false) {
+              setshowloader(false);
+
+              let error = response.data.message;
+
+              swal.fire({
+                  title: "Error",
+                  text: error,
+                  icon: "error",
+                  dangerMode: true
+              });
+
+            } else {
+
+              console.log("task add", response1.data.data)
+
+              const body = JSON.stringify({
+                task_id : response1.data.data.id ,
+                assigner_id : created_by,
+                user_ids : [assignee_id]
+              })
+    
+              console.log(body, setAssigneeId)
+    
+              try {
+    
+                let response2 = await axios.post('/assignedtasks/update', body, config)
+                if (response2.status == 201) {
                   setshowloader(false);
                   swal.fire({
-                      title: "Error",
-                      text: error,
-                      icon: "error",
-                      dangerMode: true
-                  });
+                    title: "Success",
+                    text: "Objective and task added successfully!",
+                    icon: "success",
+                    dangerMode: false
+                  }).then(() => dispatch(getUserObjectives(currentUser.id)));
+                  
+                } else {
+          
+                    let error = response2.data.message
+                    setshowloader(false);
+                    swal.fire({
+                        title: "Error",
+                        text: error,
+                        icon: "error",
+                        dangerMode: true
+                    });
+                }
+              } catch (error) {
+          
+                let err = error.response.data.message
+                    setshowloader(false);
+                    swal.fire({
+                        title: "Error",
+                        text: err,
+                        icon: "error",
+                        dangerMode: true
+                    });
               }
-            } catch (error) {
-        
-              let err = error.response.data.message
-                  setshowloader(false);
-                  swal.fire({
-                      title: "Error",
-                      text: err,
-                      icon: "error",
-                      dangerMode: true
-                  });
+
             }
 
           }
+      } catch (error) {
+        console.log(error);
+        setshowloader(false);
+        setAddOpenTask(false);
 
-        }
-    } catch (error) {
-      console.log(error);
-      setshowloader(false);
-      setAddOpenTask(false);
+        let err = error.response.data.message;
 
-      let err = error.response.data.message;
+        swal.fire({
+          title: "Error",
+          text: err,
+          icon: "error",
+          dangerMode: true
+      });
+      }
 
-      swal.fire({
-        title: "Error",
-        text: err,
-        icon: "error",
-        dangerMode: true
-    });
     }
 
   }
@@ -672,9 +906,118 @@ export default function Dashboard() {
         <Dialog open={addopen} onClose={handleAddClose}>
             <DialogTitle>Strategic Objective</DialogTitle>
             <DialogContent>
-            <DialogContentText>
-              Create New  Strategic Objective
-            </DialogContentText>
+
+            {
+
+              kpis.length === 0 || kpis === undefined ? (
+
+                <div>
+                <DialogContent>
+                  <h4>Create New  KPI </h4>
+                </DialogContent>
+
+                <TextField
+                    autoFocus
+                    margin="dense"
+                    id="kpi"
+                    label="KPI Title"
+                    type="text"
+                    fullWidth
+                    style={{marginBottom : '15px'}}
+                    value={kpi_title}
+                    variant="outlined"
+                    onChange = {(event) => {
+                        setKPITitle(event.target.value);
+                    }}
+                />
+
+                <Grid container spacing={2}>
+                  <Grid item xs={6} lg={6} xl={6} sm={12}>
+                    <label style={{ fontWeight: 'bold', color: 'black'}}>KPI Unit Of Measure : </label>
+                      <TextField
+                          id="outlined-select-uom"
+                          select
+                          fullWidth
+                          variant="outlined"
+                          label="Select"
+                          value={kpi_uom}
+                          onChange = {(event) => {
+                          setKpiUnitOfMeasure(event.target.value);
+                          }}
+                          helperText="Please select your unit of measure"
+                      >
+                          {uoms.map((option) => (
+                          <MenuItem key={option.value} value={option.value}>
+                              {option.label}
+                          </MenuItem>
+                          ))}
+                      </TextField>
+                  </Grid>
+
+                  <Grid item xs={6} lg={6} xl={6} sm={12}>
+                    <label style={{ fontWeight: 'bold', color: 'black'}}> KPI Category : </label>
+                      <TextField
+                          id="outlined-select-category"
+                          select
+                          fullWidth
+                          variant="outlined"
+                          label="Select"
+                          value={kpi_category}
+                          onChange = {(event) => {
+                          setKpiCategory(event.target.value);
+                          }}
+                          helperText="Please select your category"
+                      >
+                          {categories.map((option) => (
+                          <MenuItem key={option.id} value={option.id}>
+                              {option.description}
+                          </MenuItem>
+                          ))}
+                      </TextField>
+                  </Grid>
+                </Grid>
+
+                <TextField
+                    autoFocus
+                    margin="dense"
+                    id="target"
+                    label="KPI Target"
+                    type="number"
+                    fullWidth
+                    style={{marginBottom : '15px'}}
+                    value={kpi_target}
+                    variant="outlined"
+                    onChange = {(event) => {
+                        setKpiTarget(event.target.value);
+                    }}
+                />
+
+                <label style={{ fontWeight: 'bold', color: 'black'}}> KPI Account : </label>
+                  <TextField
+                      id="outlined-select-account"
+                      select
+                      fullWidth
+                      variant="outlined"
+                      label="Select"
+                      value={kpi_account}
+                      onChange = {(event) => {
+                      setKpiAccount(event.target.value);
+                      }}
+                      helperText="Please select your account"
+                  >
+                      {accounts.map((option) => (
+                      <MenuItem key={option.value} value={option.value}>
+                          {option.label}
+                      </MenuItem>
+                      ))}
+                  </TextField>
+                </div>
+              ) : null
+            } 
+
+            <DialogContent dividers>
+              <h4> Create New  Strategic Objective </h4>
+            </DialogContent>
               
               <TextField
                 id="outlined-multiline-static"
@@ -694,31 +1037,6 @@ export default function Dashboard() {
               />
 
               <Grid container spacing={2}>
-                <Grid item xs={6} lg={6} xl={6} sm={12}>
-                  <label> KPI : </label>
-                  <TextField
-                    id="outlined-select-kpi"
-                    select
-                    required
-                    fullWidth
-                    variant="outlined"
-                    label="Select"
-                    className={classes.textInput}
-                    value={kpi_id}
-                    onChange={(event) => {
-                      setKpi(event.target.value);
-                      // setUomValue()
-                    }}
-                    helperText="Please select your kpi"
-                  >
-                    {kpis && kpis.map((option) => (
-                      <MenuItem key={option.id} value={option.id}>
-                        {option.title}
-                      </MenuItem>
-                    ))}
-                  </TextField>
-                </Grid>
-
                 <Grid item xs={6} lg={6} xl={6} sm={12}>
                   <label> Pillar : </label>
                   <TextField
@@ -743,6 +1061,36 @@ export default function Dashboard() {
                     ))}
                   </TextField>
                 </Grid>
+
+                <Grid item xs={6} lg={6} xl={6} sm={12}>
+                  { kpis.length >= 1 ? (
+                    <div>
+                      <label> KPI : </label>
+                      <TextField
+                        id="outlined-select-kpi"
+                        select
+                        required
+                        fullWidth
+                        variant="outlined"
+                        label="Select"
+                        className={classes.textInput}
+                        value={kpi_id}
+                        onChange={(event) => {
+                          setKpi(event.target.value);
+                          // setUomValue()
+                        }}
+                        helperText="Please select your kpi"
+                      >
+                        {kpis && kpis.map((option) => (
+                          <MenuItem key={option.id} value={option.id}>
+                            {option.title}
+                          </MenuItem>
+                        ))}
+                      </TextField>
+                    </div>
+                  ) : null}
+                </Grid>
+
               </Grid>
 
               <Grid item xs={6} lg={6} xl={6} sm={12}>
@@ -1215,7 +1563,7 @@ export default function Dashboard() {
       </GridContainer>
 
       { items && items.length >= 1 ? (
-        
+
         <div>
           <GridContainer>
 

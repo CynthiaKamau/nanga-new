@@ -39,6 +39,9 @@ import { getStatus, getPillars } from "actions/data";
 import { getUsers } from "actions/users";
 // import { ListItemText, Checkbox } from "@material-ui/core";
 // import { getObjectiveTasks } from "actions/objectives";
+import Checkbox from '@material-ui/core/Checkbox';
+import ListItemText from '@material-ui/core/ListItemText';
+
 
 const useStyles = makeStyles(styles);
 
@@ -65,6 +68,8 @@ export default function StrategicObjectives() {
         dispatch(getUsers())
 
     }, [])
+
+    console.log(sysusers)
 
     const [addopen, setAddOpen] = useState(false);
     const [addopenindividualtask, setAddOpenIndividualTask] = useState(false);
@@ -95,7 +100,7 @@ export default function StrategicObjectives() {
     const [editopenindividualtask, setEditOpenIndividualTask] = useState(false);
     const [task_status, setTaskStatus] = useState("");
     const [ pillar_id, setPillar] = useState("");
-    const [assignee_id, setAssigneeId] = useState("");
+    const [assignee_id, setAssigneeId] = useState([]);
     const [ objectiveId, setObjectiveId] = useState("");
 
 
@@ -510,6 +515,16 @@ export default function StrategicObjectives() {
           }
     
       }
+
+    //   const handleChange = (event) => {
+    //     const {
+    //       target: { value },
+    //     } = event;
+    //     setAssigneeId(
+    //       // On autofill we get a the stringified value.
+    //       typeof value === 'string' ? value.split(',') : value,
+    //     );
+    //   };
 
     // const handleRedirect = () => {
     //     history.push('/admin/tasks');
@@ -935,7 +950,7 @@ export default function StrategicObjectives() {
                         }}
                     />
 
-                    <label style={{ fontWeight: 'bold', color: 'black' }}> User : </label>
+                    <label style={{ fontWeight: 'bold', color: 'black' }}> Resources : </label>
                     <TextField
                         id="outlined-select-user"
                         select
@@ -943,17 +958,17 @@ export default function StrategicObjectives() {
                         variant="outlined"
                         label="Select"
                         multiple
+                        renderValue={(selected) => selected.join(', ')}
                         value={assignee_id}
-                        onChange={(event) => {
-                            setAssigneeId(event.target.value);
-                        }}
-                        helperText="Please select a user"
+                        onChange={(event) => { setAssigneeId(event.target.value); console.log("selected user", event.target.value) }}
+                        // onChange={handleChange}
+                        helperText="Please select a resource"
                         >
                         {sysusers.map((option) => (
                             <MenuItem key={option.id} value={option.id}>
-                                {/* <Checkbox checked={assignee_id.indexOf(option) > -1} />
-                                <ListItemText primary={option.fullnames} /> */}
-                                {option.fullnames}
+                                <Checkbox checked={[option.id].indexOf(option.fullnames) > -1} />
+                                <ListItemText primary={option.fullnames} />
+                                {/* {option.fullnames} */}
                             </MenuItem>
                         ))}
                     </TextField>

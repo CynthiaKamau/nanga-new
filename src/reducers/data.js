@@ -109,7 +109,7 @@ export default function(state = initialState, action) {
         case SPEC_USER_SUCCESS :
             return {
                 ...state,
-                spec_user : action.payload.data,
+                spec_user : action.payload,
                 error : null
             }
         case VISION_SUCCESS :

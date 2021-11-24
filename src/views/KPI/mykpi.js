@@ -268,9 +268,9 @@ export default function myKpis() {
       <GridItem xs={12} sm={12} md={12}>
             <Card>
               <CardHeader color="primary">
-                <h4>User KPIs</h4>
+                <h4>User Reports</h4>
                 <p>
-                User KPI details.
+                Reports.
                 </p>
               </CardHeader>
               <CardBody>

@@ -6,16 +6,19 @@ import DashboardPage from "views/Dashboard/Dashboard.js";
 import AssignedTasksPage from "views/Tasks/AssignedTasksPage";
 import StrategicObjectives from "views/Objectives/Objectives";
 import KPIsPage from "views/KPI/kpi";
-import MyKpis from "views/KPI/mykpi"; 
+// import MyKpis from "views/KPI/mykpi"; 
 import UserProfile from "views/UserProfile/UserProfile";
 import UserDashboard from "views/Dashboard/UserDashboard";
+import ObjectiveReport from "views/Reports/objective-report";
+import KPIReport from "views/Reports/kpi-report";
 
 // @material-ui/icons
 import DashboardIcon from "@material-ui/icons/Dashboard";
 import DateRange from "@material-ui/icons/DateRange";
 import MyTeamIcon from "@material-ui/icons/PeopleAltRounded";
 import PersonAdd from "@material-ui/icons/PersonAdd";
-import { PersonOutline } from "@material-ui/icons";
+import { PersonOutline} from "@material-ui/icons";
+import VerticalAlignCenterIcon from '@material-ui/icons/VerticalAlignCenter';
 
 var dashRoutes = [
   {
@@ -62,28 +65,36 @@ var dashRoutes = [
     ],
   },
   {
-    collapse: true,
+    path: "/kpis",
     name: "KPIS",
+    rtlName: "الحاجيات",
+    icon: VerticalAlignCenterIcon,
+    component: KPIsPage,
+    layout: "/admin",
+  },
+  {
+    collapse: true,
+    name: "Reports",
     rtlName: "صفحات",
     icon: "content_paste",
     state: "tablesCollapse",
     views: [
       {
-        path: "/kpis",
-        name: "KPIS",
+        path: "/kpis-report",
+        name: "KPI Report",
         rtlName: "عالتسعير",
-        mini: "K",
+        mini: "KR",
         rtlMini: "ع",
-        component: KPIsPage,
+        component: KPIReport,
         layout: "/admin",
       },
       {
-        path: "/user-kpis",
-        name: "My KPIS",
+        path: "/strategic-objectives-report",
+        name: "Objective Report",
         rtlName: "عالتسعير",
-        mini: "KM",
+        mini: "SR",
         rtlMini: "ع",
-        component: MyKpis,
+        component: ObjectiveReport,
         layout: "/admin",
       },
     ],
