@@ -73,6 +73,32 @@ var dashRoutes = [
     layout: "/admin",
   },
   {
+    path: "/strategic-objectives",
+    name: "Strategic Objectives",
+    rtlName: "الحاجيات",
+    icon: Objectives,
+    component: StrategicObjectives,
+    layout: "/admin",
+  },
+  {
+    collapse: true,
+    name: "MAS",
+    rtlName: "صفحات",
+    icon: DateRange,
+    state: "formsCollapse",
+    views: [
+      {
+        path: "/shared-tasks",
+        name: "Assigned Tasks",
+        rtlName: "عالتسعير",
+        mini: "TM",
+        rtlMini: "ع",
+        component: AssignedTasksPage,
+        layout: "/admin",
+      }
+    ],
+  },
+  {
     collapse: true,
     name: "Reports",
     rtlName: "صفحات",
@@ -97,32 +123,6 @@ var dashRoutes = [
         component: ObjectiveReport,
         layout: "/admin",
       },
-    ],
-  },
-  {
-    path: "/strategic-objectives",
-    name: "Strategic Objectives",
-    rtlName: "الحاجيات",
-    icon: Objectives,
-    component: StrategicObjectives,
-    layout: "/admin",
-  },
-  {
-    collapse: true,
-    name: "MAS",
-    rtlName: "صفحات",
-    icon: DateRange,
-    state: "formsCollapse",
-    views: [
-      {
-        path: "/shared-tasks",
-        name: "Assigned Tasks",
-        rtlName: "عالتسعير",
-        mini: "TM",
-        rtlMini: "ع",
-        component: AssignedTasksPage,
-        layout: "/admin",
-      }
     ],
   },
   {

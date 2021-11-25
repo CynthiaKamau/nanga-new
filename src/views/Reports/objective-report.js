@@ -38,6 +38,9 @@ import moment from "moment";
 import { Grid } from "@material-ui/core";
 import axios from "axios";
 import FiberManualRecord from "@material-ui/icons/FiberManualRecord";
+import FormControl from "@material-ui/core/FormControl";
+import InputLabel from "@material-ui/core/InputLabel";
+import Select from "@material-ui/core/Select";
 
 import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
 
@@ -141,8 +144,21 @@ export default function ObjectiveReport() {
 
     const setEditing = (list) => {
 
+        console.log("h", list)
+
         setDescription(list.description);
-        setKpiId(list.kpi.id);
+
+        if(list.kpis !== null) {
+            let x = [];
+            (list.kpis).map(function (i) {
+                console.log("i", i.id)
+                x.push(i.id);
+            });
+            setKpiId(x);
+            console.log("hapo", x);
+        } else {
+            setKpiId("");
+        }
         setPillarId(list.pillar_id);
         setId(list.id);
         setTarget(list.target);
@@ -166,13 +182,29 @@ export default function ObjectiveReport() {
         console.log("edit values", id, description, kpi_id, user_id, pillar_id, start_date, end_date,  target, target_achieved, root_cause, risk_and_opportunity, action, support_required, created_by, updated_by, setUpdatedBy(), setUserId, setPillarId)
 
         const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
-        const body = JSON.stringify({ id, description, kpi_id, user_id, pillar_id, start_date, end_date,  target, target_achieved, root_cause, risk_and_opportunity, action, support_required, created_by, updated_by });
+        const body = JSON.stringify({
+            id : id,
+            description : description,
+            kpi_ids : kpi_id,
+            user_id : user_id,
+            pillar_id : pillar_id,
+            start_date : start_date,
+            end_date : end_date, 
+            target : target,
+            target_achieved : target_achieved,
+            root_cause : root_cause,
+            risk_and_opportunity : risk_and_opportunity,
+            action : action,
+            support_required : support_required,
+            created_by : created_by,
+            updated_by :updated_by });
 
         try {
 
             let response = await axios.post('/objectives/update', body, config)
             if (response.status == 201) {
                 setshowloader(false);
+                setEditOpen(false);
                     let item = response.data.message
                     swal.fire({
                         title: "Success",
@@ -183,6 +215,7 @@ export default function ObjectiveReport() {
             } else {
                 let error = response.data.message
                     setshowloader(false);
+                    setEditOpen(false);
                     swal.fire({
                         title: "Error",
                         text: error,
@@ -193,6 +226,7 @@ export default function ObjectiveReport() {
         } catch (error) {
             let err = error.response.data.message
             setshowloader(false);
+            setEditOpen(false);
             swal.fire({
                 title: "Error",
                 text: err,
@@ -293,7 +327,7 @@ export default function ObjectiveReport() {
                         {items ? ( items.map((list, index) => (
                             <TableRow key={index}>
                                 <TableCell>{list.objectives.description}</TableCell>
-                                <TableCell>{list.objectives.user_id} </TableCell>
+                                <TableCell>{list.objectives.user.fullnames} </TableCell>
                                 <TableCell> <FiberManualRecord style={{color : list.objectives.overallStatus === 'Incomplete' ? 'red' : (list.objectives.overallStatus === 'COMPLETE') ? 'green' : (list.objectives.overallStatus === 'INCOMPLETE') ? 'red'  :'solid 5px black' , marginBottom: '0'}} key={index} /> </TableCell>
                                 <TableCell>{list.objectives.rootCause} </TableCell>
                                 <TableCell>{list.objectives.action} </TableCell>
@@ -305,7 +339,7 @@ export default function ObjectiveReport() {
                                 </TableCell>
                             </TableRow>
                         ))) : error ? (<TableRow> <TableCell> {error} </TableCell></TableRow>
-                        ) : isLoading ? (<TableRow> <LinearProgress color="success" /> </TableRow>) : null }
+                        ) : isLoading === true ? (<TableRow> <LinearProgress color="success" /> </TableRow>) : null }
 
                     </TableBody>
                 </Table>
@@ -423,7 +457,7 @@ export default function ObjectiveReport() {
                       <div style={{ textAlign: "center", marginTop: 10 }}>
                         <Loader
                             type="Puff"
-                            color="#00BFFF"
+                            color="#29A15B"
                             height={150}
                             width={150}
                         />
@@ -459,24 +493,42 @@ export default function ObjectiveReport() {
                         <Grid container spacing={2}>
                             <Grid item xs={6} lg={6} xl={6} sm={12}>                            
                             <label style={{ fontWeight: 'bold', color: 'black'}}> KPI : </label>
-                            <TextField
-                                id="outlined-select-kpi"
-                                select
+                            <FormControl
                                 fullWidth
-                                variant="outlined"
-                                label="Select"
-                                value={kpi_id}
-                                onChange = {(event) => {
-                                setKpiId(event.target.value);
-                                }}
-                                helperText="Please select your Kpi"
+                                className={classes.selectFormControl}
                             >
-                                {kpis && kpis.map((option) => (
-                                <MenuItem key={option.id} value={option.id}>
-                                    {option.title}
-                                </MenuItem>
+                                <InputLabel
+                                htmlFor="multiple-select"
+                                className={classes.selectLabel}
+                                >
+                                Select KPI
+                                </InputLabel>
+                                <Select
+                                multiple
+                                variant="outlined"
+                                value={kpi_id}
+                                onChange={(event) => {
+                                    const value = event.target.value;
+                                    setKpiId(value)
+                                }}
+                                MenuProps={{ className: classes.selectMenu }}
+                                classes={{ select: classes.select }}
+                                inputProps={{
+                                    name: "multipleSelect",
+                                    id: "multiple-select",
+                                }}
+                                >
+                                    {kpis && kpis.map((option) => (
+                                    <MenuItem key={option.id} value={option.id}
+                                        classes={{
+                                        root: classes.selectMenuItem,
+                                        selected: classes.selectMenuItemSelectedMultiple,
+                                        }}>
+                                        {option.title}
+                                    </MenuItem>
                                 ))}
-                                </TextField>
+                                </Select>
+                            </FormControl>
                             </Grid>
 
                             <Grid item xs={6} lg={6} xl={6} sm={12}>
@@ -654,13 +706,13 @@ export default function ObjectiveReport() {
                       <div style={{ textAlign: "center", marginTop: 10 }}>
                         <Loader
                             type="Puff"
-                            color="#00BFFF"
+                            color="#29A15B"
                             height={150}
                             width={150}
                         />
                       </div>
                       ) : (
-                        <Button color="primary" onClick={(e) => { handleEditClose(); saveEdited(e) }}>Save</Button>
+                        <Button color="primary" onClick={(e) => { saveEdited(e) }}>Save</Button>
                       )}
                     </DialogActions>
                 </Dialog>

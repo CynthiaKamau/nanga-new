@@ -37,13 +37,12 @@ import { getUserObjectives } from "actions/objectives";
 import { getKpis } from "actions/kpis";
 import { getStatus, getPillars } from "actions/data";
 import { getUsers } from "actions/users";
-// import { ListItemText, Checkbox } from "@material-ui/core";
-// import { getObjectiveTasks } from "actions/objectives";
-import Checkbox from '@material-ui/core/Checkbox';
-import ListItemText from '@material-ui/core/ListItemText';
+import styles1 from "assets/jss/material-dashboard-pro-react/views/extendedFormsStyle.js";
+import FormControl from "@material-ui/core/FormControl";
+import InputLabel from "@material-ui/core/InputLabel";
+import Select from "@material-ui/core/Select";
 
-
-const useStyles = makeStyles(styles);
+const useStyles = makeStyles(styles, styles1);
 
 export default function StrategicObjectives() {
     const classes = useStyles();
@@ -79,7 +78,7 @@ export default function StrategicObjectives() {
 
     const [start_date, setStartDate] = useState("");
     const [end_date, setEndDate] = useState("");
-    const [kpi_id, setKpiId] = useState("");
+    const [kpi_id, setKpiId] = useState([]);
     const [target, setTarget] = useState("");
     const [target_achieved_on_review, setTargetAtReview] = useState("");
     const [target_achieved, setTargetAchieved] = useState("");
@@ -102,7 +101,10 @@ export default function StrategicObjectives() {
     const [ pillar_id, setPillar] = useState("");
     const [assignee_id, setAssigneeId] = useState([]);
     const [ objectiveId, setObjectiveId] = useState("");
-
+    const [root_cause, setRootCause] = useState("");
+    const [action, setAction] = useState("");
+    const [support_required, setSupportRequired] = useState("");
+    const [risk_and_opportunity, setRiskAndOpportunity] = useState(""); 
 
     const handleAddClickOpen = () => {
         setAddOpen(true);
@@ -121,7 +123,15 @@ export default function StrategicObjectives() {
     
         const config = { headers: { 'Content-Type': 'application/json' } }
     
-        let body = {description, end_date, kpi_id, start_date, target, user_id, created_by, pillar_id};
+        let body = ({description,
+            end_date: end_date,
+            kpi_ids : kpi_id,
+            start_date : start_date,
+            target : target,
+            user_id : user_id,
+            created_by : created_by,
+            pillar_id : pillar_id
+        });
     
         try {
           let response = await axios.post('/objectives/create', body, config);
@@ -180,7 +190,7 @@ export default function StrategicObjectives() {
                 const body = JSON.stringify({
                 task_id : response1.data.data.id ,
                 assigner_id : created_by,
-                user_ids : [assignee_id]
+                user_ids : assignee_id
                 })
     
                 console.log(body, setAssigneeId)
@@ -260,14 +270,28 @@ export default function StrategicObjectives() {
 
     const setEditing = (list) => {
 
+        console.log("kpi", list)
+
         setDescription(list.description);
 
-        if(list.kpi.kpi_unit_of_measure !== undefined) {
+        if(list.kpi && list.kpi.kpi_unit_of_measure) {
             setKpiUom(list.kpi.kpi_unit_of_measure);
         } else {
             setKpiUom([]);
         }
-        setKpiId(list.kpi_id);
+
+        if(list.kpis !== null) {
+            let x = [];
+            (list.kpis).map(function (i) {
+                console.log("i", i.id)
+                x.push(i.id);
+            });
+            setKpiId(x);
+            console.log("hapo", x);
+        } else {
+            setKpiId("");
+        }
+
         setId(list.id);
         setTarget(list.target);
         setTargetAchieved(list.target_achieved);
@@ -275,6 +299,10 @@ export default function StrategicObjectives() {
         setStartDate(list.start_date);
         setEndDate(list.end_date)
         setPillar(list.pillar_id)
+        setSupportRequired(list.supportRequired);
+        setAction(list.action);
+        setRootCause(list.rootCause)
+        setRiskAndOpportunity(list.riskOrOpportunity)
 
     }
 
@@ -290,7 +318,23 @@ export default function StrategicObjectives() {
         console.log("save objective", id, description, end_date, kpi_id, start_date, target, user_id, target_achieved, target_achieved_on_review, pillar_id, setUpdatedBy())
 
         const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
-        const body = JSON.stringify({ id, description, kpi_id, user_id, start_date, end_date,  target, target_achieved, target_achieved_on_review, created_by, updated_by, pillar_id });
+        const body = JSON.stringify({ 
+            id : id,
+            description : description,
+            kpi_ids : kpi_id,
+            user_id : user_id,
+            start_date : start_date,
+            end_date : end_date,
+            target : target,
+            target_achieved : target_achieved,
+            pillar_id : pillar_id,
+            root_cause : root_cause,
+            risk_and_opportunity : risk_and_opportunity,
+            action : action,
+            support_required : support_required,
+            created_by : created_by,
+            updated_by :updated_by
+        });
 
         try {
 
@@ -392,27 +436,28 @@ export default function StrategicObjectives() {
             const body = JSON.stringify({
               task_id : response.data.data.id ,
               assigner_id : created_by,
-              user_ids : [assignee_id]
+              user_ids : assignee_id
              })
   
-            console.log(body, setAssigneeId)
   
             try {
   
               let response2 = await axios.post('/assignedtasks/update', body, config)
               if (response2.status == 201) {
                 setshowloader(false);
+                setAddOpenIndividualTask(false);
                 swal.fire({
                   title: "Success",
                   text: "Task added successfully!",
                   icon: "success",
                   dangerMode: false
-                }).then(() => dispatch(getUserObjectives(currentUser.id)));
+                }).then(() => {setShowObjectivesTask(objectiveId)})
                 
               } else {
         
                   let error = response2.data.message
                   setshowloader(false);
+                  setAddOpenIndividualTask(false);
                   swal.fire({
                       title: "Error",
                       text: error,
@@ -424,6 +469,7 @@ export default function StrategicObjectives() {
         
               let err = error.response.data.message
                   setshowloader(false);
+                  setAddOpenIndividualTask(false);
                   swal.fire({
                       title: "Error",
                       text: err,
@@ -516,19 +562,6 @@ export default function StrategicObjectives() {
     
       }
 
-    //   const handleChange = (event) => {
-    //     const {
-    //       target: { value },
-    //     } = event;
-    //     setAssigneeId(
-    //       // On autofill we get a the stringified value.
-    //       typeof value === 'string' ? value.split(',') : value,
-    //     );
-    //   };
-
-    // const handleRedirect = () => {
-    //     history.push('/admin/tasks');
-    // }
 
     return (
         <div>
@@ -548,7 +581,23 @@ export default function StrategicObjectives() {
                             <h4 className={classes.textBold}> {list.objectives.description} </h4>
                             <h6 className={classes.textGreen}> Management actions</h6>
 
-                            <h6> KPIS : {list.objectives.kpi.title} </h6>
+                            <Grid item xs={6} md={8}>
+                                <div style={{ display: 'inline' }}>
+                                    <h6> KPIS : </h6>
+                                
+                                    {list.objectives.kpis && list.objectives.kpis.map((detail, index) => ( 
+                                        <div key={index} style={{ marginLeft: '50px'}}>
+                                            { detail.title === null || detail.title === undefined ? (
+                                                <h6> KPI Not Found</h6>
+                                            ) : detail.title ? (
+                                                <h6>{detail.title}</h6>
+                                            ) : <h6> KPI Not Found</h6>}
+                                        </div>    
+                                    ))}
+
+                                    {list.objectives.kpis === null ? (<h6 style={{ marginLeft: '50px'}}> KPI Not Found</h6>) : null}
+                                </div>
+                            </Grid>
 
                             <h6 > STATUS : {list.objectives.overallStatus} </h6>
 
@@ -666,7 +715,12 @@ export default function StrategicObjectives() {
                     ) : null }
                 </div>
                 
-            ))) : null}
+            ))) : <Loader
+                type="Puff"
+                color="#29A15B"
+                height={200}
+                width={200}
+            />}
 
             <Dialog open={addopen} onClose={handleAddClose}>
                 <DialogTitle>Strategic Objective</DialogTitle>
@@ -692,27 +746,43 @@ export default function StrategicObjectives() {
                     <Grid container spacing={2}>
                         <Grid item xs={6} lg={6} xl={6} sm={12}>
                             <label> KPI : </label>
-                            <TextField
-                                id="outlined-select-kpi"
-                                select
+                            <FormControl
                                 fullWidth
-                                variant="outlined"
-                                label="Select"
-                                className={classes.textInput}
-                                value={kpi_id}
-                                onChange={(event) => {
-                                    setKpiId(event.target.value);
-                                    setKpiUom(event);
-                                    console.log("uom search", event.target)
-                                }}
-                                helperText="Please select your kpi"
+                                className={classes.selectFormControl}
                             >
-                                {kpis && kpis.map((option) => (
-                                    <MenuItem key={option.id} value={option.id}>
+                                <InputLabel
+                                htmlFor="multiple-select"
+                                className={classes.selectLabel}
+                                >
+                                Select KPI
+                                </InputLabel>
+                                <Select
+                                multiple
+                                value={kpi_id}
+                                variant="outlined"
+                                onChange={(event) => {
+                                    const value = event.target.value;
+                                    setKpiId(value)
+                                }}
+                                MenuProps={{ className: classes.selectMenu }}
+                                classes={{ select: classes.select }}
+                                inputProps={{
+                                    name: "multipleSelect",
+                                    id: "multiple-select",
+                                }}
+                                >
+                                    {kpis && kpis.map((option) => (
+                                    <MenuItem key={option.id} value={option.id}
+                                        classes={{
+                                        root: classes.selectMenuItem,
+                                        selected: classes.selectMenuItemSelectedMultiple,
+                                        }}>
                                         {option.title}
                                     </MenuItem>
                                 ))}
-                            </TextField>
+                                </Select>
+                            </FormControl>
+
                         </Grid>
                         <Grid item xs={6} lg={6} xl={6} sm={12}>
                             <label> Pillar : </label>
@@ -805,7 +875,7 @@ export default function StrategicObjectives() {
                         <div style={{ textAlign: "center", marginTop: 10 }}>
                             <Loader
                                 type="Puff"
-                                color="#00BFFF"
+                                color="#29A15B"
                                 height={150}
                                 width={150}
                             />
@@ -850,25 +920,43 @@ export default function StrategicObjectives() {
                         }}
                     />
 
-                    <label style={{ fontWeight: 'bold', color: 'black' }}> User : </label>
-                    <TextField
-                        id="outlined-select-user"
-                        select
+                    <label style={{ fontWeight: 'bold', color: 'black' }}> Add A Resource: </label>
+                    <FormControl
                         fullWidth
-                        variant="outlined"
-                        label="Select"
-                        value={assignee_id}
-                        onChange={(event) => {
-                            setAssigneeId(event.target.value);
-                        }}
-                        helperText="Please select a user"
+                        className={classes.selectFormControl}
+                    >
+                        <InputLabel
+                        htmlFor="multiple-select"
+                        className={classes.selectLabel}
                         >
-                        {sysusers.map((option) => (
-                            <MenuItem key={option.id} value={option.id}>
+                        Select Resource
+                        </InputLabel>
+                        <Select
+                        multiple
+                        value={assignee_id}
+                        variant="outlined"
+                        onChange={(event) => {
+                            const value = event.target.value;
+                            setAssigneeId(value)
+                        }}
+                        MenuProps={{ className: classes.selectMenu }}
+                        classes={{ select: classes.select }}
+                        inputProps={{
+                            name: "multipleSelect",
+                            id: "multiple-select",
+                        }}
+                        >
+                            {sysusers && sysusers.map((option) => (
+                            <MenuItem key={option.id} value={option.id}
+                                classes={{
+                                root: classes.selectMenuItem,
+                                selected: classes.selectMenuItemSelectedMultiple,
+                                }}>
                                 {option.fullnames}
                             </MenuItem>
                         ))}
-                    </TextField>
+                        </Select>
+                    </FormControl>
 
                     <Grid container spacing={2}>
                         <Grid item xs={6} lg={6} xl={6} sm={12}>
@@ -915,7 +1003,7 @@ export default function StrategicObjectives() {
                         <div style={{ textAlign: "center", marginTop: 10 }}>
                             <Loader
                                 type="Puff"
-                                color="#00BFFF"
+                                color="#29A15B"
                                 height={150}
                                 width={150}
                             />
@@ -950,28 +1038,43 @@ export default function StrategicObjectives() {
                         }}
                     />
 
-                    <label style={{ fontWeight: 'bold', color: 'black' }}> Resources : </label>
-                    <TextField
-                        id="outlined-select-user"
-                        select
+                    <label style={{ fontWeight: 'bold', color: 'black' }}> Add A Resource: </label>
+                    <FormControl
                         fullWidth
-                        variant="outlined"
-                        label="Select"
-                        multiple
-                        renderValue={(selected) => selected.join(', ')}
-                        value={assignee_id}
-                        onChange={(event) => { setAssigneeId(event.target.value); console.log("selected user", event.target.value) }}
-                        // onChange={handleChange}
-                        helperText="Please select a resource"
+                        className={classes.selectFormControl}
+                    >
+                        <InputLabel
+                        htmlFor="multiple-select"
+                        className={classes.selectLabel}
                         >
-                        {sysusers.map((option) => (
-                            <MenuItem key={option.id} value={option.id}>
-                                <Checkbox checked={[option.id].indexOf(option.fullnames) > -1} />
-                                <ListItemText primary={option.fullnames} />
-                                {/* {option.fullnames} */}
+                        Select Resource
+                        </InputLabel>
+                        <Select
+                        multiple
+                        value={assignee_id}
+                        variant="outlined"
+                        onChange={(event) => {
+                            const value = event.target.value;
+                            setAssigneeId(value)
+                        }}
+                        MenuProps={{ className: classes.selectMenu }}
+                        classes={{ select: classes.select }}
+                        inputProps={{
+                            name: "multipleSelect",
+                            id: "multiple-select",
+                        }}
+                        >
+                            {sysusers && sysusers.map((option) => (
+                            <MenuItem key={option.id} value={option.id}
+                                classes={{
+                                root: classes.selectMenuItem,
+                                selected: classes.selectMenuItemSelectedMultiple,
+                                }}>
+                                {option.fullnames}
                             </MenuItem>
                         ))}
-                    </TextField>
+                        </Select>
+                    </FormControl>
 
                     <Grid container spacing={2}>
                         <Grid item xs={6} lg={6} xl={6} sm={12}>
@@ -1018,13 +1121,13 @@ export default function StrategicObjectives() {
                         <div style={{ textAlign: "center", marginTop: 10 }}>
                             <Loader
                                 type="Puff"
-                                color="#00BFFF"
+                                color="#29A15B"
                                 height={150}
                                 width={150}
                             />
                         </div>
                     ) : (
-                        <Button color="primary" onClick={(e) => { handleAddIndividualTaskClose(); saveIndividualTask(e) }}>Save</Button>
+                        <Button color="primary" onClick={(e) => { saveIndividualTask(e) }}>Save</Button>
                     )}
                 </DialogActions>
             </Dialog>
@@ -1051,102 +1154,81 @@ export default function StrategicObjectives() {
                         }}
                     />
 
-                    <label> KPI : </label>
+                    <label style={{ fontWeight: 'bold', color: 'black'}}> KPI : </label>
+                        <FormControl
+                            fullWidth
+                            className={classes.selectFormControl}
+                        >
+                            <InputLabel
+                            htmlFor="multiple-select"
+                            className={classes.selectLabel}
+                            >
+                            Select KPI
+                            </InputLabel>
+                            <Select
+                            multiple
+                            variant="outlined"
+                            value={kpi_id}
+                            onChange={(event) => {
+                                const value = event.target.value;
+                                setKpiId(value)
+                            }}
+                            MenuProps={{ className: classes.selectMenu }}
+                            classes={{ select: classes.select }}
+                            inputProps={{
+                                name: "multipleSelect",
+                                id: "multiple-select",
+                            }}
+                            >
+                                {kpis && kpis.map((option) => (
+                                <MenuItem key={option.id} value={option.id}
+                                    classes={{
+                                    root: classes.selectMenuItem,
+                                    selected: classes.selectMenuItemSelectedMultiple,
+                                    }}>
+                                    {option.title}
+                                </MenuItem>
+                            ))}
+                            </Select>
+                        </FormControl>
+
+                    <label> Pillar : </label>
                     <TextField
-                        id="outlined-select-kpi"
+                        id="outlined-select-pillar"
                         select
+                        required
                         fullWidth
                         variant="outlined"
                         label="Select"
                         className={classes.textInput}
-                        value={kpi_id}
+                        value={pillar_id}
                         onChange={(event) => {
-                            setKpiId(event.target.value);
+                        setPillar(event.target.value);
+                        // setUomValue()
                         }}
-                        helperText="Please select your kpi"
+                        helperText="Please select your pillar"
                     >
-                        {kpis && kpis.map((option) => (
-                            <MenuItem key={option.id} value={option.id}>
-                                {option.title}
-                            </MenuItem>
+                        {pillars && pillars.map((option) => (
+                        <MenuItem key={option.id} value={option.id}>
+                            {option.description}
+                        </MenuItem>
                         ))}
                     </TextField>
-
-                    { kpi_unit_of_measure === 'numeric' ? (
-
-                        <TextField
-                        autoFocus
-                        margin="dense"
-                        id="target"
-                        label="Target"
-                        className={classes.textInput}
-                        type="number"
-                        fullWidth
-                        style={{ marginBottom: '15px' }}
-                        value={target}
-                        variant="outlined"
-                        onChange={(event) => {
-                            setTarget(event.target.value);
-                        }}
-                        />
-
-                    ) : kpi_unit_of_measure === '%' || kpi_unit_of_measure === '<%' || kpi_unit_of_measure === '%>' ? (
-
-                        <TextField
-                        autoFocus
-                        margin="dense"
-                        id="target"
-                        label="Target"
-                        className={classes.textInput}
-                        type="text"
-                        fullWidth
-                        style={{ marginBottom: '15px' }}
-                        value={target}
-                        variant="outlined"
-                        onChange={(event) => {
-                            setTarget(event.target.value);
-                        }}
-                    />
-
-                    ) : null}  
-
-                  <label> Pillar : </label>
-                  <TextField
-                    id="outlined-select-pillar"
-                    select
-                    required
-                    fullWidth
-                    variant="outlined"
-                    label="Select"
-                    className={classes.textInput}
-                    value={pillar_id}
-                    onChange={(event) => {
-                      setPillar(event.target.value);
-                      // setUomValue()
-                    }}
-                    helperText="Please select your pillar"
-                  >
-                    {pillars && pillars.map((option) => (
-                      <MenuItem key={option.id} value={option.id}>
-                        {option.description}
-                      </MenuItem>
-                    ))}
-                  </TextField>
 
                     <Grid container spacing={2}>
                         <Grid item xs={6} lg={6} xl={6} sm={12}>
                             <TextField
                             autoFocus
                             margin="dense"
-                            id="target_at_review"
-                            label="Target At Review"
+                            id="target"
+                            label="Target"
                             type="text"
                             fullWidth
                             style={{ marginBottom: '15px' }}
-                            value={target_achieved_on_review}
+                            value={target}
                             variant="outlined"
                             onChange={(event) => {
-                                setTargetAtReview(event.target.value);
+                                setTarget(event.target.value);
                             }}
                             />
                         </Grid>
@@ -1168,6 +1250,74 @@ export default function StrategicObjectives() {
                             />
                         </Grid>
                     </Grid>
+
+                    <TextField
+                            fullWidth
+                            label="Root Cause"
+                            id="root_cause"
+                            multiline
+                            rows={2}
+                            required
+                            variant="outlined"
+                            className={classes.textInput}
+                            type="text"
+                            value={root_cause}
+                            onChange={(event) => {
+                                const value = event.target.value;
+                                setRootCause(value)
+                            }}
+                        />
+
+                        <TextField
+                            fullWidth
+                            label="Support Required"
+                            id="support_required"
+                            multiline
+                            rows={2}
+                            required
+                            variant="outlined"
+                            className={classes.textInput}
+                            type="text"
+                            value={support_required}
+                            onChange={(event) => {
+                                const value = event.target.value;
+                                setSupportRequired(value)
+                            }}
+                        />
+
+                        <TextField
+                            fullWidth
+                            label="Action"
+                            id="action"
+                            multiline
+                            rows={2}
+                            required
+                            variant="outlined"
+                            className={classes.textInput}
+                            type="text"
+                            value={action}
+                            onChange={(event) => {
+                                const value = event.target.value;
+                                setAction(value)
+                            }}
+                        />
+
+                        <TextField
+                            fullWidth
+                            label="Risk And Opportunity"
+                            id="risk_and_opportunity"
+                            multiline
+                            rows={2}
+                            required
+                            variant="outlined"
+                            className={classes.textInput}
+                            type="text"
+                            value={risk_and_opportunity}
+                            onChange={(event) => {
+                                const value = event.target.value;
+                                setRiskAndOpportunity(value)
+                            }}
+                        />
 
                     <Grid container spacing={2}>
                         <Grid item xs={6} lg={6} xl={6} sm={12}>

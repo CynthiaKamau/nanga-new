@@ -127,9 +127,7 @@ export default function UserDashboard() {
       <GridContainer>
 
       {spec_user === undefined || spec_user === null || spec_user.length === 0 ? ( <h4> </h4>) : spec_user ? (
-        <Grid container>
-          <Grid item xs={6} md={2} sm={2} style={{ margin : 0}}><h4 className={classes.textBold}> {spec_user.fullnames} </h4> </Grid>
-          <Grid item xs={6} md={2} sm={2}> <h5> {spec_user.roles.role_name}</h5> </Grid> </Grid>) : null }
+        <div> <h4 className={classes.textBold} style={{display : 'inline-block'}}> {spec_user.fullnames} | </h4>  <h6 style={{display : 'inline-block'}}> {spec_user.roles.role_name}</h6> </div> ) : null}
 
       <GridItem xs={12} sm={12} md={12}>
           <h3 className={classes.textBold}> THE VISION</h3>
@@ -189,7 +187,7 @@ export default function UserDashboard() {
               <div style={{ textAlign: "center", marginTop: 10 }}>
                   <Loader
                       type="Puff"
-                      color="#00BFFF"
+                      color="#29A15B"
                       height={150}
                       width={150}
                   />
@@ -216,7 +214,23 @@ export default function UserDashboard() {
                     <h4 className={classes.textBold}> {list.objectives.description} </h4>
                     <h6 className={classes.textGreen}> {list.totalTasks} Management actions</h6>
 
-                    <h6 > KPIS : {list.objectives.kpi.title} </h6>
+                    <Grid item xs={6} md={8}>
+                        <div style={{ display: 'inline' }}>
+                            <h6> KPIS : </h6>
+                        
+                            {list.objectives.kpis && list.objectives.kpis.map((detail, index) => ( 
+                                <div key={index} style={{ marginLeft: '50px'}}>
+                                    { detail.title === null || detail.title === undefined ? (
+                                        <h6> KPI Not Found</h6>
+                                    ) : detail.title ? (
+                                        <h6>{detail.title}</h6>
+                                    ) : <h6> KPI Not Found</h6>}
+                                </div>    
+                            ))}
+
+                            {list.objectives.kpis === null ? (<h6 style={{ marginLeft: '50px'}}> KPI Not Found</h6>) : null}
+                        </div>
+                    </Grid>
 
                     <h6 > STATUS : {list.objectives.overallStatus} </h6>
 

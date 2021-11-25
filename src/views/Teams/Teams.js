@@ -342,7 +342,7 @@ export default function TeamsPage() {
                                         <div style={{ textAlign: "center", marginTop: 10 }}>
                                         <Loader
                                             type="Puff"
-                                            color="#00BFFF"
+                                            color="#29A15B"
                                             height={150}
                                             width={150}
                                         />
@@ -447,7 +447,7 @@ export default function TeamsPage() {
                                         <div style={{ textAlign: "center", marginTop: 10 }}>
                                         <Loader
                                             type="Puff"
-                                            color="#00BFFF"
+                                            color="#29A15B"
                                             height={150}
                                             width={150}
                                         />

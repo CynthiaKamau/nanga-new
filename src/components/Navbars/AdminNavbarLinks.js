@@ -15,8 +15,8 @@ import Grow from "@material-ui/core/Grow";
 import Hidden from "@material-ui/core/Hidden";
 import Popper from "@material-ui/core/Popper";
 import Divider from "@material-ui/core/Divider";
-import avatar from "../../assets/img/faces/marc.jpg";
 import { logout } from "actions/auth";
+import Avatar from "../../assets/img/default-avatar.png";
 
 // core components
 import Button from "components/CustomButtons/Button.js";
@@ -81,7 +81,18 @@ export default function HeaderLinks(props) {
         >
           <p className="classes.top classes.search" style={{ marginRight: '30px', fontWeight: 'bold' }}>{ currentUser.full_name} </p>
 
-          <img src={avatar} alt="..." style={{ maxWidth: '100px', maxHeight: '100px', borderRadius: '50%', marginRight: '250px', marginTop: '35px' }} />
+          {currentUser ? (
+              <div style={{ display: 'inline' }}>
+                  { currentUser.image === null || currentUser.image === undefined ? (
+                      <img src={Avatar} alt={currentUser.full_name}  style={{ maxWidth: '100px', maxHeight: '100px', borderRadius: '50%', marginRight: '250px', marginTop: '35px'}} />
+
+                  ) : currentUser.image != null ? (
+                      <img src={currentUser.image}
+                      alt={currentUser.full_name}  style={{ maxWidth: '100px', maxHeight: '100px', borderRadius: '50%', marginRight: '250px', marginTop: '35px'}} />
+                  ) : null}
+              </div>
+              
+          ) : null}
 
           <Hidden mdUp implementation="css">
             <span onClick={handleClickProfile} className={classes.linkText}>
