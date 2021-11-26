@@ -1,5 +1,5 @@
 import React, { useState, useEffect, createRef } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 // import { useSelector } from "react-redux";
 
 // @material-ui/core components
@@ -22,7 +22,9 @@ import swal from "sweetalert2";
 import axios from "axios";
 import Button from "components/CustomButtons/Button.js";
 import styles from "assets/jss/material-dashboard-pro-react/views/userProfileStyles.js";
-// import avatar from "../../assets/img/faces/marc.jpg";
+import Avatar from "../../assets/img/default-avatar.png";
+import { getUser } from "actions/auth";
+
 import {
   CloudUpload as UploadIcon,
   Delete as DeleteIcon,
@@ -33,14 +35,18 @@ const useStyles = makeStyles(styles);
 
 export default function UserProfile() {
   const classes = useStyles();
+  const dispatch = useDispatch();
 
   const { user : currentUser } = useSelector(state => state.auth);
+  const { myuser } = useSelector(state => state.auth);
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [department, setDepartment] = useState("");
   const [team, setTeam] = useState("");
   const [role, setRole] = useState("");
+  const [role_id, setRoleId] = useState("");
+  const [team_id, setTeamId] = useState("");
   const [id, setId] = useState("");
   const [updated_by, setUpdatedBy] = useState(currentUser.id);
   const [showloader, setshowloader] = useState(false);  
@@ -53,14 +59,24 @@ export default function UserProfile() {
   // var imageUrl = urlCreator.createObjectURL(avatar);
 
   useEffect(() => {
-    setName(currentUser.full_name);
-    setEmail(currentUser.email);
-    setDepartment(currentUser.department);
-    setTeam(currentUser.team);
-    setRole(currentUser.role);
-    setId(currentUser.id);
-    setAvatar(currentUser.image);
+    dispatch(getUser(currentUser.id));
   }, []);
+
+
+  useEffect(() => {
+    if(myuser) {
+      setName(myuser.fullnames);
+      setEmail(myuser.email);
+      setDepartment(myuser.extension);
+      setTeam(myuser.teams.name);
+      setRole(myuser.roles.role_name);
+      setRoleId(myuser.role);
+      setTeamId(myuser.team);
+      setId(myuser.id);
+      setAvatar(myuser.userPicture);
+    }
+    
+  }, [myuser]);
 
   const cleanup = () => {
     URL.revokeObjectURL(image);
@@ -114,15 +130,17 @@ export default function UserProfile() {
 
     console.log("save values", id, name, email, department, team, role, updated_by, setUpdatedBy, setAvatar);
 
+    console.log("save image", image)
+
     const config = { headers: { 'Content-Type': 'application/json' } };
 
     const body = JSON.stringify({ 
       updated_by_id: updated_by,
       email: email,
-      extension: 18000,
+      extension: department,
       full_names: name,
-      role_id: 0,
-      team_id: 0,
+      role_id: role_id,
+      team_id: team_id,
       view: true,
       user_picture: image,
       id: id
@@ -145,7 +163,7 @@ export default function UserProfile() {
         title: "Success",
         text: msg,
         icon: "success",
-      });
+      }).then(() => dispatch(getUser(currentUser.id)));
     }  
   }
 
@@ -207,7 +225,7 @@ export default function UserProfile() {
               <GridContainer>
                 <GridItem xs={12} sm={12} md={6}>
                   <CustomInput
-                    labelText="Department"
+                    labelText="Extension"
                     id="department"
                     formControlProps={{
                       fullWidth: true,
@@ -296,14 +314,14 @@ export default function UserProfile() {
         <GridItem xs={12} sm={12} md={4}>
           <Card profile>
             <CardAvatar profile>
-              <a href="#pablo" onClick={(e) => e.preventDefault()}>
-                <img src={avatar} alt="..." />
+                { avatar ? ( <img src={avatar} alt="..." /> )
+                : avatar === null || avatar === undefined || avatar === '' ? ( <img src={Avatar} alt="..." />
+                ) : (<img src={Avatar} alt="..." /> )}
 
-              </a>
             </CardAvatar>
             <CardBody profile>
-              <h6 className={classes.cardCategory}>{currentUser.role}</h6>
-              <h4 className={classes.cardTitle}>{currentUser.full_name}</h4>
+              <h6 className={classes.cardCategory}>{role}</h6>
+              <h4 className={classes.cardTitle}>{name}</h4>
               <p className={classes.description}>
                 Don{"'"}t be scared of the truth because we need to restart the
                 human foundation in truth And I love you like Kanye loves Kanye

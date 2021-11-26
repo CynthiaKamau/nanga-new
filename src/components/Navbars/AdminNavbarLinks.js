@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useHistory } from "react-router";
 import classNames from "classnames";
@@ -17,6 +17,7 @@ import Popper from "@material-ui/core/Popper";
 import Divider from "@material-ui/core/Divider";
 import { logout } from "actions/auth";
 import Avatar from "../../assets/img/default-avatar.png";
+import { getUser } from "actions/auth";
 
 // core components
 import Button from "components/CustomButtons/Button.js";
@@ -27,8 +28,25 @@ const useStyles = makeStyles(styles);
 
 export default function HeaderLinks(props) {
   const { user : currentUser } = useSelector(state => state.auth);
+  const { myuser } = useSelector(state => state.auth);
+
   const dispatch = useDispatch();
   const history = useHistory();
+
+  const [avatar, setAvatar] = useState("")
+  const [name, setName] = useState("");
+
+  useEffect(() => {
+    dispatch(getUser(currentUser.id));
+  }, []);
+
+  useEffect(() => {
+    if(myuser) {
+      setName(myuser.fullnames);
+      setAvatar(myuser.userPicture);
+    }
+    
+  }, [myuser]);
 
   const logoutHandler = () => {
     dispatch(logout)
@@ -79,16 +97,16 @@ export default function HeaderLinks(props) {
             label: rtlActive ? classes.labelRTL : "",
           }}
         >
-          <p className="classes.top classes.search" style={{ marginRight: '30px', fontWeight: 'bold' }}>{ currentUser.full_name} </p>
+          <p className="classes.top classes.search" style={{ marginRight: '30px', fontWeight: 'bold' }}>{ name} </p>
 
           {currentUser ? (
               <div style={{ display: 'inline' }}>
-                  { currentUser.image === null || currentUser.image === undefined ? (
-                      <img src={Avatar} alt={currentUser.full_name}  style={{ maxWidth: '100px', maxHeight: '100px', borderRadius: '50%', marginRight: '250px', marginTop: '35px'}} />
+                  { avatar === null || avatar === undefined ? (
+                      <img src={Avatar} alt={name}  style={{ maxWidth: '100px', maxHeight: '100px', borderRadius: '50%', marginRight: '250px', marginTop: '35px'}} />
 
-                  ) : currentUser.image != null ? (
-                      <img src={currentUser.image}
-                      alt={currentUser.full_name}  style={{ maxWidth: '100px', maxHeight: '100px', borderRadius: '50%', marginRight: '250px', marginTop: '35px'}} />
+                  ) : avatar != null ? (
+                      <img src={avatar}
+                      alt={name}  style={{ maxWidth: '100px', maxHeight: '100px', borderRadius: '50%', marginRight: '250px', marginTop: '35px'}} />
                   ) : null}
               </div>
               

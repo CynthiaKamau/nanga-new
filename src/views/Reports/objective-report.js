@@ -315,7 +315,7 @@ export default function ObjectiveReport() {
                         <TableRow>
                             <TableCell>Strategic Objective</TableCell>
                             <TableCell>Owner</TableCell>
-                            <TableCell>Status</TableCell>
+                            <TableCell>Variance</TableCell>
                             <TableCell>Root Cause and Insight</TableCell>
                             <TableCell>Action</TableCell>
                             <TableCell>Risk/Opportunities</TableCell>
@@ -324,7 +324,8 @@ export default function ObjectiveReport() {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {items ? ( items.map((list, index) => (
+                        { isLoading ? (<TableRow> <LinearProgress color="success" /> </TableRow>) 
+                        : items ? ( items.map((list, index) => (
                             <TableRow key={index}>
                                 <TableCell>{list.objectives.description}</TableCell>
                                 <TableCell>{list.objectives.user.fullnames} </TableCell>
@@ -339,7 +340,7 @@ export default function ObjectiveReport() {
                                 </TableCell>
                             </TableRow>
                         ))) : error ? (<TableRow> <TableCell> {error} </TableCell></TableRow>
-                        ) : isLoading === true ? (<TableRow> <LinearProgress color="success" /> </TableRow>) : null }
+                        ) : null }
 
                     </TableBody>
                 </Table>

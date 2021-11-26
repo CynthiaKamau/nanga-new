@@ -11,7 +11,8 @@ token : localStorage.getItem('token'),
 isAuthenticated : null,
 isLoading : false,
 user : null,
-error : null
+error : null,
+myuser : null,
 }
 export default function(state = initialState, action) {
 switch(action.type) {
@@ -36,11 +37,20 @@ switch(action.type) {
             ...state, 
             isAuthenticated : true,
             isLoading : false,
-            user : action.payload.user,
-            token : action.payload.token
+            myuser : action.payload.data,
         }
     case LOGIN_FAIL :
     case AUTH_ERROR :
+        localStorage.removeItem('token');
+        return  {
+            ...state,
+            isAuthenticated: false,
+            token: null,
+            user : null,
+            myuser: null,
+            error : action.payload.message
+        }
+
     case LOGOUT :
         localStorage.removeItem('token');
         return  {

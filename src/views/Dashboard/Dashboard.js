@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
+// import { useHistory } from "react-router";
+// import { Redirect } from "react-router";
 import axios from "axios";
 // @material-ui/core
 import { makeStyles } from "@material-ui/core/styles";
@@ -40,10 +42,11 @@ import { Grid } from "@material-ui/core";
 // import CardHeader from "components/Card/CardHeader";
 import { LinearProgress } from "@material-ui/core";
 import FiberManualRecord from "@material-ui/icons/FiberManualRecord";
+import { withRouter } from 'react-router-dom';
 
 const useStyles = makeStyles(styles);
 
-export default function Dashboard() {
+function Dashboard() {
   const classes = useStyles();
   // const history = useHistory();
 
@@ -51,11 +54,10 @@ export default function Dashboard() {
 
   const { user: currentUser } = useSelector(state => state.auth);
   const {  mission, vision } = useSelector(state => state.data);
-  const {  items : kpis } = useSelector(state => state.kpi);
   const { categories }  = useSelector(state => state.data);
   const { items, error, isLoading } = useSelector(state => state.kpi);
 
-  console.log("kpis", kpis)
+  console.log("user", currentUser)
 
   useEffect(() => {
     dispatch(getUserObjectives(currentUser.id));
@@ -252,8 +254,14 @@ export default function Dashboard() {
   }
 
   const setEditingVision = (vision) => {
-    setUserVision(vision[0].description)
-    setVisionId(vision[0].id)
+
+    if(mission[0] === null || mission[0] === undefined) {
+      setUserVision('');
+      setVisionId(null);
+    } else {
+      setUserVision(vision[0].description)
+      setVisionId(vision[0].id)
+    }
   }
 
   const editMission = async (e) => {
@@ -374,55 +382,107 @@ export default function Dashboard() {
 
     const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
 
-    const body = JSON.stringify({
+    if(visionId === null) {
+
+      const body = JSON.stringify({
         description : uservision,
-        id : visionId
+        id : visionId,
+        userid : user_id,
+        createdBy : user_id,
       });
 
-    console.log("vision", body)
+      try {
 
-    try {
-
-        let response = await axios.post('vision/update', body, config)
+        let response = await axios.post('/visions/create', body, config)
         if (response.status == 201) {
+
+          let res = response.data.message;
           setshowloader(false);
           setEditVisionOpen(false);
-
-          let resp = response.data.message;
-            swal.fire({
-              title: "Success",
-              text: resp,
-              icon: "success",
-            }).then(() => dispatch(getVision(currentUser.id)));
-
-        } else {
-          setshowloader(false);
-          setEditVisionOpen(false);
-
-          let err = response.data.message;
 
           swal.fire({
-            title: "Error",
-            text: err,
-            icon: "error",
-            dangerMode: true
-          });
-        }
+            title: "Success",
+            text: res,
+            icon: "success",
+          }).then(() => dispatch(getVision(currentUser.id)));
 
-    } catch (error) {
+      } else {
         setshowloader(false);
         setEditVisionOpen(false);
+        let err = response.data.message;
 
-        let err = error.response.data.message;
         swal.fire({
           title: "Error",
           text: err,
           icon: "error",
           dangerMode: true
         });
-    }
+      }
 
-  }
+      } catch (error) {
+          setshowloader(false);
+          setEditVisionOpen(false);
+
+          let err = error.response.data.message;
+          swal.fire({
+            title: "Error",
+            text: err,
+            icon: "error",
+            dangerMode: true
+          });
+      }
+
+    } else {  
+      try {
+
+          const body = JSON.stringify({
+            userId : user_id,
+            updatedBy : user_id,
+            description : uservision,
+            id : missionId
+          });
+
+          let response = await axios.post('vision/update', body, config)
+          if (response.status == 201) {
+            setshowloader(false);
+            setEditVisionOpen(false);
+
+            let resp = response.data.message;
+              swal.fire({
+                title: "Success",
+                text: resp,
+                icon: "success",
+              }).then(() => dispatch(getVision(currentUser.id)));
+
+          } else {
+            setshowloader(false);
+            setEditVisionOpen(false);
+
+            let err = response.data.message;
+
+            swal.fire({
+              title: "Error",
+              text: err,
+              icon: "error",
+              dangerMode: true
+            });
+          }
+
+      } catch (error) {
+          setshowloader(false);
+          setEditVisionOpen(false);
+
+          let err = error.response.data.message;
+          swal.fire({
+            title: "Error",
+            text: err,
+            icon: "error",
+            dangerMode: true
+          });
+      }
+
+    }
+  }  
 
   // const handleEditClickOpen = () => {
   //   setEditOpen(true);
@@ -518,7 +578,7 @@ export default function Dashboard() {
             <CardBody className={classes.cardGrey}>
               {vision === undefined || vision === null || vision.length === 0 ? (
                 <h4> </h4>
-              ) : vision ? (~
+              ) : vision ? (
                 <h4 > {vision[0].description}</h4>
               ) : null}
               
@@ -1012,3 +1072,5 @@ export default function Dashboard() {
     </div>
   );
 }
+
+export default withRouter(Dashboard);

@@ -51,7 +51,7 @@ export default function StrategicObjectives() {
     // const history = useHistory();
 
     const { user: currentUser } = useSelector(state => state.auth);
-    const { items, error} = useSelector(state => state.objective);
+    const { items, error, isLoading} = useSelector(state => state.objective);
     const {  items : kpis } = useSelector(state => state.kpi);
     const { statuses, pillars } = useSelector(state => state.data);
     const { items : sysusers} = useSelector(state => state.user)
@@ -570,7 +570,19 @@ export default function StrategicObjectives() {
                 <Button color="primary" onClick={handleAddClickOpen}> Create New Objective</Button>
             </Grid>
 
-            {items ? ( items.map((list, index) => (
+            { isLoading ? ( <Loader
+                type="Puff"
+                color="#29A15B"
+                height={200}
+                width={200}
+                style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    padding: "50px"
+                  }}
+                />
+            ) : items ? ( items.map((list, index) => (
                 <div key={index} style={{ justifyContent: 'center' }} >
                     <Card style={{borderLeft : list.objectives.overallStatus === 'Incomplete' ? 'solid 5px red' : (list.objectives.overallStatus === 'COMPLETE') ? 'solid 5px green' : (list.objectives.overallStatus === 'INCOMPLETE') ? 'solid 5px red'  :'solid 5px black' , marginBottom: '0'}} key={index} >
                         <Grid container justify="flex-end">
@@ -707,7 +719,7 @@ export default function StrategicObjectives() {
                             </CardBody>
                             <CardFooter>
                                 <Grid container justify="center">
-                                    <Button simple onClick={() => {setShowTasks(false); handleAddIndividualTaskOpen() }}><p style={{ color: '#388e3c' }}> Add New Task</p> </Button>
+                                    <Button simple onClick={() => {setShowTasks(false); handleAddIndividualTaskOpen() }}><p style={{ color: '#388e3c' }}> Add New MAS</p> </Button>
                                 </Grid>
                             </CardFooter>
                         </Card>
@@ -715,12 +727,7 @@ export default function StrategicObjectives() {
                     ) : null }
                 </div>
                 
-            ))) : <Loader
-                type="Puff"
-                color="#29A15B"
-                height={200}
-                width={200}
-            />}
+            ))) :  null}
 
             <Dialog open={addopen} onClose={handleAddClose}>
                 <DialogTitle>Strategic Objective</DialogTitle>

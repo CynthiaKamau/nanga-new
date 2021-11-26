@@ -1,8 +1,8 @@
 import React from "react";
 import { createBrowserHistory } from "history";
-import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
+import { BrowserRouter, Route, Switch } from "react-router-dom";
 import axios from "axios";
-import { useSelector } from "react-redux";
+// import { useSelector } from "react-redux";
 
 // core components
 import AuthLayout from "layouts/Auth.js";
@@ -16,7 +16,7 @@ const App = () => {
 
   const hist = createBrowserHistory();
 
-  const { user : currentUser } = useSelector(state => state.auth);
+  // const { user : currentUser } = useSelector(state => state.auth);
 
   // const { REACT_APP_SERVER_URL } = process.env;
 
@@ -25,11 +25,21 @@ const App = () => {
   return (
     <BrowserRouter history={hist}>
     <Switch>
+      {/* { currentUser ? (
+        <div>
+          <Route path="/rtl" component={RtlLayout} />
+          <Route path="/auth" component={AuthLayout} />
+          <Route path="/admin" component={AdminLayout} />
+        </div>
+      ): <Route path="/" component={LoginPage} />
+    } */}
+
       <Route path="/rtl" component={RtlLayout} />
       <Route path="/auth" component={AuthLayout} />
       <Route path="/admin" component={AdminLayout} />
-      <Route path="/" component={LoginPage} />
-      { !currentUser ? ( <Redirect from="/admin/dashboard" to="/" />) : null} 
+      <Route path="/" component={LoginPage} />      
+      
+      {/* { !currentUser ? ( <Redirect from="/admin/dashboard" to="/" />) : null}  */}
     </Switch>
   </BrowserRouter>
   );

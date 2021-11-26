@@ -39,8 +39,6 @@ const useStyles = makeStyles(styles);
 export default function LoginPage() {
     const { isAuthenticated, isLoading, error  } = useSelector(state => state.auth);
 
-    console.log("loader", isLoading)
-
     const dispatch = useDispatch();
 
     const classes = useStyles();
@@ -89,6 +87,7 @@ export default function LoginPage() {
 
         dispatch(login(username, password))
         if (error) {
+            console.log("login err", error)
             setshowloader(false);
             swal.fire({
                 title: "Error",

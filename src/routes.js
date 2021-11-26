@@ -89,7 +89,7 @@ var dashRoutes = [
     views: [
       {
         path: "/shared-tasks",
-        name: "Assigned Tasks",
+        name: "Assigned MAS",
         rtlName: "عالتسعير",
         mini: "TM",
         rtlMini: "ع",
