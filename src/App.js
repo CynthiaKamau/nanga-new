@@ -1,6 +1,6 @@
 import React from "react";
 import { createBrowserHistory } from "history";
-import { BrowserRouter, Route, Switch } from "react-router-dom";
+import { BrowserRouter, Route, Switch} from "react-router-dom";
 import axios from "axios";
 // import { useSelector } from "react-redux";
 
@@ -25,15 +25,6 @@ const App = () => {
   return (
     <BrowserRouter history={hist}>
     <Switch>
-      {/* { currentUser ? (
-        <div>
-          <Route path="/rtl" component={RtlLayout} />
-          <Route path="/auth" component={AuthLayout} />
-          <Route path="/admin" component={AdminLayout} />
-        </div>
-      ): <Route path="/" component={LoginPage} />
-    } */}
-
       <Route path="/rtl" component={RtlLayout} />
       <Route path="/auth" component={AuthLayout} />
       <Route path="/admin" component={AdminLayout} />

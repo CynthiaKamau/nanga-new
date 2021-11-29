@@ -37,7 +37,7 @@ import styles from "assets/jss/material-dashboard-pro-react/views/loginPageStyle
 const useStyles = makeStyles(styles);
 
 export default function LoginPage() {
-    const { isAuthenticated, isLoading, error  } = useSelector(state => state.auth);
+    const { isAuthenticated, isLoading, error, user  } = useSelector(state => state.auth);
 
     const dispatch = useDispatch();
 
@@ -45,9 +45,9 @@ export default function LoginPage() {
 
     const history = useHistory();
 
-    if(isAuthenticated === true) {
-        history.push(`/admin/dashboard`);
-    }
+    // if(isAuthenticated === true) {
+    //     history.push(`/admin/dashboard`);
+    // }
 
     const [username, setusername] = useState("");
     const [password, setPassword] = useState("");
@@ -85,6 +85,15 @@ export default function LoginPage() {
         e.preventDefault();
         setshowloader(true);
 
+        if(username === "" || password === ""  ) {
+            swal.fire({
+                title: "Error",
+                text: "Username and Password are required!",
+                icon: "error",
+                dangerMode: true
+            });
+        }
+
         dispatch(login(username, password))
         if (error) {
             console.log("login err", error)
@@ -97,6 +106,7 @@ export default function LoginPage() {
             });
         } else if(isAuthenticated  === true) {
             setshowloader(false);
+            console.log(user)
             history.push(`/admin/dashboard`);
         }
 

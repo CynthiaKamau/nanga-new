@@ -62,7 +62,7 @@ function Dashboard() {
   useEffect(() => {
     dispatch(getUserObjectives(currentUser.id));
     dispatch(getMission(currentUser.id));
-    dispatch(getVision());
+    dispatch(getVision(currentUser.id));
     dispatch(getKpis(currentUser.id));
     setUserId(currentUser.id);
     dispatch(getStatus());
@@ -254,7 +254,7 @@ function Dashboard() {
   }
 
   const setEditingVision = (vision) => {
-
+    console.log("vision here", vision)
     if(mission[0] === null || mission[0] === undefined) {
       setUserVision('');
       setVisionId(null);
@@ -386,14 +386,13 @@ function Dashboard() {
 
       const body = JSON.stringify({
         description : uservision,
-        id : visionId,
         userid : user_id,
         createdBy : user_id,
       });
 
       try {
 
-        let response = await axios.post('/visions/create', body, config)
+        let response = await axios.post('/vision/create', body, config)
         if (response.status == 201) {
 
           let res = response.data.message;
@@ -436,14 +435,15 @@ function Dashboard() {
       try {
 
           const body = JSON.stringify({
-            userId : user_id,
+            userid : user_id,
             updatedBy : user_id,
             description : uservision,
-            id : missionId
+            id : visionId
           });
 
           let response = await axios.post('vision/update', body, config)
-          if (response.status == 201) {
+          console.log("vision resp", response.data)
+          if (response.status == 200) {
             setshowloader(false);
             setEditVisionOpen(false);
 

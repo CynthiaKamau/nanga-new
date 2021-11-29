@@ -39,9 +39,7 @@ export const login = (username, password ) => {
 
     const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
 
-    const body = JSON.stringify({ username, password });
-
-    console.log(body)
+    const body = JSON.stringify({username, password});
 
     return async function (dispatch) {
 
@@ -50,13 +48,13 @@ export const login = (username, password ) => {
         try {
 
             let response = await axios.post('/authenticate', body, config)
-            if (response.success == true) {
+            console.log("here",response)
+            if (response.data.success === true) {
                 dispatch({ type: LOGIN_SUCCESS, payload: response.data })
-            } else if(response.success == false) {
+            } else if(response.data.success === false) {
                 dispatch({ type: LOGIN_FAIL, payload: response.data })
             }
         } catch (error) {
-
             dispatch({ type: LOGIN_FAIL, payload: error.response.data })
         }
 

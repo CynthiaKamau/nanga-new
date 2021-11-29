@@ -180,7 +180,7 @@ export const editMission = (user_id, usermission) => {
 }
 
 //user vision
-export const getVision = () => {
+export const getVision = (id) => {
 
     return async function (dispatch) {
 
@@ -188,7 +188,7 @@ export const getVision = () => {
 
         try {
 
-            let response = await axios.get('/vision/all_vision')
+            let response = await axios.get(`vision/fetchVisionbyUserId?user_id=${id}`)
             if (response.status == 200) {
                 dispatch({ type: VISION_SUCCESS, payload: response.data })
             } else {
