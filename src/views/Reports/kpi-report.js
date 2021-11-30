@@ -397,7 +397,7 @@ export default function KPIReport() {
                             autoFocus
                             margin="dense"
                             id="target"
-                            label="Target"
+                            label="YTD Planned"
                             type="number"
                             fullWidth
                             style={{marginBottom : '15px'}}
@@ -514,7 +514,7 @@ export default function KPIReport() {
                                     autoFocus
                                     margin="dense"
                                     id="target"
-                                    label="Planned YTD"
+                                    label="YTD Planned "
                                     type="number"
                                     fullWidth
                                     style={{marginBottom : '15px'}}
@@ -531,7 +531,7 @@ export default function KPIReport() {
                                     autoFocus
                                     margin="dense"
                                     id="target"
-                                    label="Actual YTD"
+                                    label="YTD Actual "
                                     type="number"
                                     fullWidth
                                     style={{marginBottom : '15px'}}

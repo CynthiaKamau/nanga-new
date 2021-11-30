@@ -611,8 +611,6 @@ export default function StrategicObjectives() {
                                 </div>
                             </Grid>
 
-                            <h6 > STATUS : {list.objectives.overallStatus} </h6>
-
                         </GridItem>
                         <CardBody className={classes.cardBody}>
                             <GridItem xs={12} sm={6} md={2}>

@@ -67,8 +67,8 @@ export default function KPIs() {
     const [account, setAccount] = useState("");
     const [target_achieved, setTargetAchieved] = useState("");
     const [action, setAction] = useState("");
-    const [support_required, setSupportRequired] = useState("");
-    const [root_cause, setRootCause] = useState("");
+    // const [support_required, setSupportRequired] = useState("");
+    // const [root_cause, setRootCause] = useState("");
 
     const handleAddClickOpen = () => {
         setAddOpen(true);
@@ -143,9 +143,9 @@ export default function KPIs() {
         setAccount(list.account);
         setTarget(list.target);
         setTargetAchieved(list.target_achieved);
-        setSupportRequired(list.supportRequired);
+        // setSupportRequired(list.supportRequired);
         setAction(list.action);
-        setRootCause(list.rootCause)
+        // setRootCause(list.rootCause)
     }
 
     const saveEdited = async(e) => {
@@ -168,9 +168,7 @@ export default function KPIs() {
             account: account,
             target: target,
             targetAchieved: target_achieved,
-            action: action,
-            rootCause: root_cause,
-            supportRequired: support_required
+            action: action
         });
         console.log("kpi", body);
 
@@ -303,7 +301,8 @@ export default function KPIs() {
                             <TableCell>Unit Of Measure</TableCell>
                             <TableCell> Category</TableCell>
                             <TableCell>Account</TableCell>
-                            <TableCell> Target </TableCell>
+                            <TableCell> YTD Planned </TableCell>
+                            <TableCell> YTD Actual </TableCell>
                             <TableCell>Action</TableCell>
                         </TableRow>
                     </TableHead>
@@ -317,6 +316,7 @@ export default function KPIs() {
                                 <TableCell>{list.categories.description}</TableCell>
                                 <TableCell>{list.account}</TableCell>
                                 <TableCell>{list.target} </TableCell>
+                                <TableCell>{list.target_achieved} </TableCell>
                                 <TableCell><IconButton aria-label="edit" className={classes.textGreen} onClick={() => { handleEditClickOpen(); setEditing(list) }} ><EditIcon/></IconButton> </TableCell>
                                 {/* <IconButton aria-label="delete" color="secondary" onClick={() => { handleDeleteClickOpen(); setDelete(list) }} ><DeleteIcon /></IconButton> */}
                             </TableRow>
@@ -391,7 +391,7 @@ export default function KPIs() {
                             autoFocus
                             margin="dense"
                             id="target"
-                            label="Target"
+                            label="YTD Planned"
                             type="number"
                             fullWidth
                             style={{marginBottom : '15px'}}
@@ -508,7 +508,7 @@ export default function KPIs() {
                                     autoFocus
                                     margin="dense"
                                     id="target"
-                                    label="Target"
+                                    label="YTD Planned"
                                     type="number"
                                     fullWidth
                                     style={{marginBottom : '15px'}}
@@ -525,7 +525,7 @@ export default function KPIs() {
                                     autoFocus
                                     margin="dense"
                                     id="target"
-                                    label="Target Achieved"
+                                    label="YTD Actual"
                                     type="number"
                                     fullWidth
                                     style={{marginBottom : '15px'}}
@@ -538,7 +538,7 @@ export default function KPIs() {
                             </Grid>
                         </Grid>
 
-                        <TextField
+                        {/* <TextField
                             fullWidth
                             label="Root Cause"
                             id="root_cause"
@@ -552,10 +552,10 @@ export default function KPIs() {
                             onChange={(event) => {
                                 const value = event.target.value;
                                 setRootCause(value)
-                            }}
-                        />
+                            }} 
+                        /> */}
 
-                        <TextField
+                        {/* <TextField
                             fullWidth
                             label="Support Required"
                             id="support_required"
@@ -570,7 +570,7 @@ export default function KPIs() {
                                 const value = event.target.value;
                                 setSupportRequired(value)
                             }}
-                        />
+                        /> */}
 
                         <TextField
                             fullWidth
