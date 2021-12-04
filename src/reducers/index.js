@@ -9,11 +9,12 @@ import task from "./task";
 import user from "./user";
 import team from "./team";
 import data from "./data";
+import bfc from "./bfc";
 
 const persistConfig = {
     key: 'root',
     storage,
-    whitelist: ['auth', 'kpi', 'user', 'team', 'data']
+    whitelist: ['auth', 'kpi', 'user', 'team', 'data', 'bfc']
 }
 
 const rootReducer = combineReducers({
@@ -24,7 +25,8 @@ const rootReducer = combineReducers({
     task : task,
     user : user,
     team : team,
-    data : data
+    data : data,
+    bfc : bfc
 });
 
 

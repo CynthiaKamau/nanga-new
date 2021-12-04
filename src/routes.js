@@ -11,6 +11,7 @@ import UserProfile from "views/UserProfile/UserProfile";
 import UserDashboard from "views/Dashboard/UserDashboard";
 import ObjectiveReport from "views/Reports/objective-report";
 import KPIReport from "views/Reports/kpi-report";
+import BFC from "views/BFC/Bfc";
 
 // @material-ui/icons
 import DashboardIcon from "@material-ui/icons/Dashboard";
@@ -81,22 +82,20 @@ var dashRoutes = [
     layout: "/admin",
   },
   {
-    collapse: true,
+    path: "/shared-tasks",
     name: "MAS",
     rtlName: "صفحات",
     icon: DateRange,
-    state: "formsCollapse",
-    views: [
-      {
-        path: "/shared-tasks",
-        name: "Assigned MAS",
-        rtlName: "عالتسعير",
-        mini: "TM",
-        rtlMini: "ع",
-        component: AssignedTasksPage,
-        layout: "/admin",
-      }
-    ],
+    component: AssignedTasksPage,
+    layout: "/admin",
+  },
+  {
+    path: "/bfc",
+    name: "BFC",
+    rtlName: "صفحات",
+    icon: DateRange,
+    component: BFC,
+    layout: "/admin",
   },
   {
     collapse: true,

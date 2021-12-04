@@ -95,7 +95,7 @@ export default function LoginPage() {
         }
 
         dispatch(login(username, password))
-        if (error) {
+        if (error !== null) {
             console.log("login err", error)
             setshowloader(false);
             swal.fire({

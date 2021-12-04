@@ -297,9 +297,9 @@ export default function KPIs() {
                 <Table>
                     <TableHead>
                         <TableRow>
+                            <TableCell> Category (Add Sorting)</TableCell>
                             <TableCell>Title</TableCell>
                             <TableCell>Unit Of Measure</TableCell>
-                            <TableCell> Category</TableCell>
                             <TableCell>Account</TableCell>
                             <TableCell> YTD Planned </TableCell>
                             <TableCell> YTD Actual </TableCell>
@@ -311,9 +311,9 @@ export default function KPIs() {
                             <TableRow> <TableCell> No KPIs available </TableCell></TableRow>
                         ) : items ? ( items.map((list, index) => (
                             <TableRow key={index}>
+                                <TableCell>{list.categories.description}</TableCell>
                                 <TableCell>{list.title}</TableCell>
                                 <TableCell>{list.kpi_unit_of_measure}</TableCell>
-                                <TableCell>{list.categories.description}</TableCell>
                                 <TableCell>{list.account}</TableCell>
                                 <TableCell>{list.target} </TableCell>
                                 <TableCell>{list.target_achieved} </TableCell>
