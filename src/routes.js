@@ -20,6 +20,8 @@ import MyTeamIcon from "@material-ui/icons/PeopleAltRounded";
 import PersonAdd from "@material-ui/icons/PersonAdd";
 import { PersonOutline} from "@material-ui/icons";
 import VerticalAlignCenterIcon from '@material-ui/icons/VerticalAlignCenter';
+import { Poll } from "@material-ui/icons";
+
 
 var dashRoutes = [
   {
@@ -93,7 +95,7 @@ var dashRoutes = [
     path: "/bfc",
     name: "BFC",
     rtlName: "صفحات",
-    icon: DateRange,
+    icon: "content_paste",
     component: BFC,
     layout: "/admin",
   },
@@ -101,7 +103,7 @@ var dashRoutes = [
     collapse: true,
     name: "Reports",
     rtlName: "صفحات",
-    icon: "content_paste",
+    icon: Poll,
     state: "tablesCollapse",
     views: [
       {

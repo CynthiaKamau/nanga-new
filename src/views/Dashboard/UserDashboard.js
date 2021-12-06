@@ -36,7 +36,7 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import { getMission, getVision, getUserById } from "actions/data";
+import { getMission, getVision, getTaskCount, getObjectivesCount, getUserById } from "actions/data";
 import CardHeader from "components/Card/CardHeader";
 import { CardContent } from "@material-ui/core";
 import Box from '@material-ui/core/Box';
@@ -49,7 +49,9 @@ import Typography from '@material-ui/core/Typography';
 import PropTypes from 'prop-types';
 import { LinearProgress } from "@material-ui/core";
 import FiberManualRecord from "@material-ui/icons/FiberManualRecord";
-
+import { getBehaviours, getFreedoms, getConstraints } from "actions/bfc";
+import Highcharts from "highcharts";
+import HighchartsReact from 'highcharts-react-official';
 
 const useStyles = makeStyles(styles);
 
@@ -62,8 +64,9 @@ export default function UserDashboard() {
   const dispatch = useDispatch();
 
   const { items : objectives } = useSelector(state => state.objective);
-  const {  mission, vision, spec_user } = useSelector(state => state.data);
+  const {  mission, vision, spec_user, task_count, objective_count } = useSelector(state => state.data);
   const { items, error, isLoading } = useSelector(state => state.kpi);
+  const { behaviours, behaviours_error, freedoms, freedoms_error, constraints, constrains_error} = useSelector(state => state.bfc);
 
   // const {  categories } = useSelector(state => state.data);
 
@@ -92,6 +95,11 @@ export default function UserDashboard() {
         dispatch(getMission(chars));
         dispatch(getVision(chars));
         dispatch(getUserById(chars));
+        dispatch(getBehaviours(chars));
+        dispatch(getFreedoms(chars));
+        dispatch(getConstraints(chars));
+        dispatch(getTaskCount(chars));
+        dispatch(getObjectivesCount(chars))
     }
     
   }, [chars])
@@ -103,6 +111,36 @@ export default function UserDashboard() {
 
   // const categories = JsonData.Categories;
   // const kpis = JsonData.KPIS;
+
+  const kpi_options = {
+    chart: {
+      plotBackgroundColor: null,
+      plotBorderWidth: null,
+      plotShadow: false,
+      type: 'pie'
+    },
+    title: {
+      text: 'Objectives Breakdown'
+    },
+    series: [{
+      data: objective_count
+    }]
+  }
+
+  const obj_options = {
+    chart: {
+      plotBackgroundColor: null,
+      plotBorderWidth: null,
+      plotShadow: false,
+      type: 'pie'
+    },
+    title: {
+      text: 'MAS Breakdown'
+    },
+    series: [{
+      data: task_count
+    }]
+  }
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -241,6 +279,7 @@ export default function UserDashboard() {
                   onChange={handleChange}
                   textColor="inherit"
                   variant="fullWidth"
+                  TabIndicatorProps={{style: {background:'#29A15B'}}}
                   aria-label="full width tabs example"
                 >
                   <Tab label="KPIS" {...a11yProps(0)} />
@@ -334,18 +373,18 @@ export default function UserDashboard() {
                             <GridItem xs={12} sm={6} md={2}>
                                 <Card className={classes.cardBodyRed}>
                                     <CardBody>
-                                        <h3 className={classes.cardTitle}>
+                                        <h4 className={classes.cardTitle}>
                                         {list.offtrack} <small>Off Ttack</small>
-                                        </h3>
+                                        </h4>
                                     </CardBody>
                                 </Card>
                             </GridItem>
                             <GridItem xs={12} sm={6} md={2}>
                                 <Card className={classes.cardBodyRed}>
                                     <CardBody>
-                                            <h3 className={classes.cardTitle}>
+                                            <h4 className={classes.cardTitle}>
                                             {list.cancelled}  <small>Cancelled</small>
-                                            </h3>
+                                            </h4>
                                     </CardBody>
                                 </Card>
                             </GridItem >
@@ -361,27 +400,27 @@ export default function UserDashboard() {
                             <GridItem xs={12} sm={6} md={2}>
                                 <Card className={classes.cardBodyOrange}>
                                     <CardBody>
-                                        <h3 className={classes.cardTitle}>
+                                        <h4 className={classes.cardTitle}>
                                         {list.onGoing} <small>Ongoing</small>
-                                        </h3>
+                                        </h4>
                                     </CardBody>
                                 </Card>
                             </GridItem>
                             <GridItem xs={12} sm={6} md={2}>
                                 <Card  className={classes.cardBodyGreen}>
                                     <CardBody>
-                                        <h3 className={classes.cardTitle}>
+                                        <h4 className={classes.cardTitle}>
                                         {list.done} <small>Completed</small>
-                                        </h3>
+                                        </h4>
                                     </CardBody>
                                 </Card>
                             </GridItem>
                             <GridItem xs={12} sm={6} md={2}>
                                 <Card className={classes.cardBodyRed}>
                                     <CardBody>
-                                        <h3 className={classes.cardTitle}>
+                                        <h4 className={classes.cardTitle}>
                                         {list.notStarted} <small>Not Started</small>
-                                        </h3>
+                                        </h4>
                                     </CardBody>
                                 </Card>
                             </GridItem>
@@ -444,87 +483,115 @@ export default function UserDashboard() {
                     spacing={2}
                     direction="row"
                   >
-                      <Grid item xs={4} key="">
+                      <Grid item xs={4} key="1">
                         <Card>
+                          <h4 style={{color: 'black', textAlign:'center'}}> Behaviours </h4>
                           <CardHeader
                             title=""
                             subheader=""
                           />
                           <CardContent>
                             <Table className={classes.tableBorder}>
-                              <TableHead className={classes.tableHeader}>
+                              {/* <TableHead className={classes.tableHeader}>
                                   <TableRow>
-                                      <TableCell>Behaviour</TableCell>
+                                      <TableCell>Description</TableCell>
                                   </TableRow>
-                              </TableHead>
+                              </TableHead> */}
                               <TableBody>
-                                  {items ? ( items.map((list, index) => (
+                                  { behaviours === null || behaviours === undefined || behaviours.length === 0 ? (
+                                      <TableRow> <TableCell> No behaviours available </TableCell></TableRow>
+                                  ) : behaviours ? ( behaviours.map((list, index) => (
                                       <TableRow key={index}>
-                                          <TableCell>{list.description}</TableCell>
+                                          <TableCell>{list.currentDescription}</TableCell>
                                       </TableRow>
-                                  ))) : error ? (<TableRow> <TableCell> {error} </TableCell></TableRow> 
-                                    ) : isLoading ? (<TableRow> <LinearProgress color="success" /> </TableRow>) : null }
+                                  ))) : behaviours_error ? (<TableRow> <TableCell> {behaviours_error} </TableCell></TableRow> ) : null }
                               </TableBody>
                             </Table>      
                           </CardContent>
                         </Card>
                       </Grid>
 
-                      <Grid item xs={4} key="">              
+                      <Grid item xs={4} key="2">              
                         <Card>
+                          <h4 style={{color: 'black', textAlign:'center'}}> Freedoms </h4>          
                           <CardHeader
                             title=""
                             subheader=""
                           />
                           <CardContent>
                             <Table className={classes.tableBorder}>
-                              <TableHead className={classes.tableHeader}>
+                              {/* <TableHead className={classes.tableHeader}>
                                   <TableRow>
-                                      <TableCell>Freedoms</TableCell>
+                                      <TableCell>Description</TableCell>
                                   </TableRow>
-                              </TableHead>
+                              </TableHead> */}
                               <TableBody>
-                                  {items ? ( items.map((list, index) => (
+                                  { freedoms === null || freedoms === undefined || freedoms.length === 0 ? (
+                                      <TableRow> <TableCell> No freedoms available </TableCell></TableRow>
+                                  ) : freedoms ? ( freedoms.map((list, index) => (
                                       <TableRow key={index}>
-                                          <TableCell>{list.description}</TableCell>
+                                          <TableCell>{list.currentDescription}</TableCell>
                                       </TableRow>
-                                  ))) : error ? (<TableRow> <TableCell> {error} </TableCell></TableRow> 
-                                    ) : isLoading ? (<TableRow> <LinearProgress color="success" /> </TableRow>) : null }
+                                  ))) : freedoms_error ? (<TableRow> <TableCell> {freedoms_error} </TableCell></TableRow>) : null }
                               </TableBody>
                             </Table>      
                           </CardContent>
                         </Card>
                       </Grid>
 
-                      <Grid item xs={4} key=""> 
+                      <Grid item xs={4} key="3"> 
                         <Card>
+                          <h4 style={{color: 'black', textAlign:'center'}}> Constraints</h4>
                           <CardHeader
                             title=""
                             subheader=""
                           />
                           <CardContent>
                             <Table className={classes.tableBorder}>
-                              <TableHead className={classes.tableHeader}>
+                              {/* <TableHead className={classes.tableHeader}>
                                   <TableRow>
-                                      <TableCell>Constraints</TableCell>
+                                      <TableCell>Description</TableCell>
                                   </TableRow>
-                              </TableHead>
+                              </TableHead> */}
                               <TableBody>
-                                  {items ? ( items.map((list, index) => (
+                                  { constraints === null || constraints === undefined || constraints.length === 0 ? (
+                                      <TableRow> <TableCell> No constraints available </TableCell></TableRow>
+                                  ) : constraints ? ( constraints.map((list, index) => (
                                       <TableRow key={index}>
-                                          <TableCell>{list.description}</TableCell>
+                                          <TableCell>{list.currentDescription}</TableCell>
                                       </TableRow>
-                                  ))) : error ? (<TableRow> <TableCell> {error} </TableCell></TableRow> 
-                                    ) : isLoading ? (<TableRow> <LinearProgress color="success" /> </TableRow>) : null }
+                                  ))) : constrains_error ? (<TableRow> <TableCell> {constrains_error} </TableCell></TableRow>) : null }
                               </TableBody>
                             </Table>      
                           </CardContent>
                         </Card>
                       </Grid>
+
                   </Grid>
                 </TabPanel>
               </SwipeableViews>
             </Box>
+
+            <Box sx={{ bgcolor: 'background.paper', marginTop: '20px' }} width="100%">
+            <h4 style={{ fontWeight: 'bold', textAlign: 'center'}}> Analytics </h4>
+
+              <Grid container spacing={2} direction="row" >
+                
+                <Grid item xs={5} key="1">
+                  <HighchartsReact
+                    highcharts={Highcharts}
+                    options={kpi_options}
+                  />                
+                </Grid>
+
+                <Grid item xs={5} key="2">
+                  <HighchartsReact
+                    highcharts={Highcharts}
+                    options={obj_options}
+                  />  
+                </Grid>
+              </Grid>   
+            </Box> 
 
             
           </GridContainer>

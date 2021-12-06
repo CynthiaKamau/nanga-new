@@ -10,7 +10,6 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import CardHeader from "components/Card/CardHeader";
 import { CardContent } from "@material-ui/core";
-import { LinearProgress } from "@material-ui/core";
 import { Grid } from "@material-ui/core";
 import Card from "components/Card/Card.js";
 import { makeStyles } from "@material-ui/core/styles";
@@ -35,7 +34,7 @@ export default function BFC() {
     const dispatch = useDispatch();
 
     const { user: currentUser } = useSelector(state => state.auth);
-    const { behaviours, behaviours_error, isLoading, freedoms, freedoms_error, constraints, constrains_error} = useSelector(state => state.bfc);
+    const { behaviours, behaviours_error, freedoms, freedoms_error, constraints, constrains_error} = useSelector(state => state.bfc);
 
     const [addBopen, setAddBOpen] = useState(false);
     const [addFopen, setAddFOpen] = useState(false);
@@ -459,13 +458,14 @@ export default function BFC() {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {behaviours ? ( behaviours.map((list, index) => (
+                            { behaviours === null || behaviours === undefined || behaviours === undefined || behaviours.length === 0 ? (
+                                <TableRow> <TableCell> No behaviours available </TableCell></TableRow>
+                            ) : behaviours ? ( behaviours.map((list, index) => (
                                 <TableRow key={index}>
                                     <TableCell>{list.currentDescription}</TableCell>
                                     <TableCell> <IconButton aria-label="edit" className={classes.textGreen} onClick={() => {handleEditBehaviourOpen(); setEditingBehaviour(list) }} ><EditIcon /></IconButton></TableCell>
                                 </TableRow>
-                            ))) : behaviours_error ? (<TableRow> <TableCell> {behaviours_error} </TableCell></TableRow> 
-                            ) : isLoading ? (<TableRow> <LinearProgress color="success" /> </TableRow>) : null }
+                            ))) : behaviours_error ? (<TableRow> <TableCell> {behaviours_error} </TableCell></TableRow> ) : null }
                         </TableBody>
                     </Table>      
                     </CardContent>
@@ -490,13 +490,14 @@ export default function BFC() {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {freedoms ? ( freedoms.map((list, index) => (
+                            { freedoms === null || freedoms === undefined || freedoms.length === 0 ? (
+                                    <TableRow> <TableCell> No freedoms available </TableCell></TableRow>
+                            ) :freedoms ? ( freedoms.map((list, index) => (
                                 <TableRow key={index}>
                                     <TableCell>{list.currentDescription}</TableCell>
                                     <TableCell> <IconButton aria-label="edit" className={classes.textGreen} onClick={() => {handleEditFreedomOpen(); setEditingFreedom(list) }} ><EditIcon /></IconButton></TableCell>
                                 </TableRow>
-                            ))) : freedoms_error ? (<TableRow> <TableCell> {freedoms_error} </TableCell></TableRow> 
-                            ) : isLoading ? (<TableRow> <LinearProgress color="success" /> </TableRow>) : null }
+                            ))) : freedoms_error ? (<TableRow> <TableCell> {freedoms_error} </TableCell></TableRow>) : null }
                         </TableBody>
                     </Table> 
                     </CardContent>
@@ -521,13 +522,14 @@ export default function BFC() {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {constraints ? ( constraints.map((list, index) => (
+                            {  constraints === null || constraints === undefined || constraints.length === 0 ? (
+                                 <TableRow> <TableCell> No constraints available </TableCell></TableRow>
+                            ) : constraints ? ( constraints.map((list, index) => (
                                 <TableRow key={index}>
                                     <TableCell>{list.currentDescription}</TableCell>
                                     <TableCell> <IconButton aria-label="edit" className={classes.textGreen} onClick={() => {handleEditConstraintOpen(); setEditingConstraint(list) }} ><EditIcon /></IconButton></TableCell>
                                 </TableRow>
-                            ))) : constrains_error ? (<TableRow> <TableCell> {constrains_error} </TableCell></TableRow> 
-                            ) : isLoading ? (<TableRow> <LinearProgress color="success" /> </TableRow>) : null }
+                            ))) : constrains_error ? (<TableRow> <TableCell> {constrains_error} </TableCell></TableRow>) : null }
                         </TableBody>
                     </Table>      
                     </CardContent>

@@ -277,6 +277,13 @@ export default function KPIs() {
         }
     ]
 
+    const [sortModel, setSortModel] = React.useState([
+        {
+          field: 'commodity',
+          sort: 'asc',
+        },
+      ]);
+
   return (
     <div>
       <GridContainer>
@@ -297,7 +304,11 @@ export default function KPIs() {
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell> Category (Add Sorting)</TableCell>
+                            
+                            <TableCell
+                                sortModel={sortModel}
+                                onSortModelChange={(model) => setSortModel(model)}>
+                                     Category (Add Sorting)</TableCell>
                             <TableCell>Title</TableCell>
                             <TableCell>Unit Of Measure</TableCell>
                             <TableCell>Account</TableCell>

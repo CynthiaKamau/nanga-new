@@ -616,18 +616,18 @@ export default function StrategicObjectives() {
                             <GridItem xs={12} sm={6} md={2}>
                                 <Card className={classes.cardBodyRed}>
                                     <CardBody>
-                                        <h3 className={classes.cardTitle}>
+                                        <h4 className={classes.cardTitle}>
                                         {list.offtrack} <small>Off Ttack</small>
-                                        </h3>
+                                        </h4>
                                     </CardBody>
                                 </Card>
                             </GridItem>
                             <GridItem xs={12} sm={6} md={2}>
                                 <Card className={classes.cardBodyRed}>
                                     <CardBody>
-                                            <h3 className={classes.cardTitle}>
+                                            <h4 className={classes.cardTitle}>
                                             {list.cancelled} <small>Cancelled</small>
-                                            </h3>
+                                            </h4>
                                     </CardBody>
                                 </Card>
                             </GridItem >
@@ -643,27 +643,27 @@ export default function StrategicObjectives() {
                             <GridItem xs={12} sm={6} md={2}>
                                 <Card className={classes.cardBodyOrange}>
                                     <CardBody>
-                                        <h3 className={classes.cardTitle}>
+                                        <h4 className={classes.cardTitle}>
                                         {list.onGoing}  <small>Ongoing</small>
-                                        </h3>
+                                        </h4>
                                     </CardBody>
                                 </Card>
                             </GridItem>
                             <GridItem xs={12} sm={6} md={2}>
                                 <Card  className={classes.cardBodyGreen}>
                                     <CardBody>
-                                        <h3 className={classes.cardTitle}>
+                                        <h4 className={classes.cardTitle}>
                                         {list.done} <small>Completed</small>
-                                        </h3>
+                                        </h4>
                                     </CardBody>
                                 </Card>
                             </GridItem>
                             <GridItem xs={12} sm={6} md={2}>
                                 <Card className={classes.cardBodyRed}>
                                     <CardBody>
-                                        <h3 className={classes.cardTitle}>
+                                        <h4 className={classes.cardTitle}>
                                         {list.notStarted} <small>Not Started</small>
-                                        </h3>
+                                        </h4>
                                     </CardBody>
                                 </Card>
                             </GridItem>

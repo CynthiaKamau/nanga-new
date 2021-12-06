@@ -34,8 +34,7 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import { getMission, getVision } from "actions/data";
-import { getStatus, getPillars } from "actions/data";
+import { getMission, getVision, getStatus, getPillars , getTaskCount, getObjectivesCount } from "actions/data";
 import { getUsers } from "actions/users";
 import { getCategories } from "actions/data";
 import { Grid } from "@material-ui/core";
@@ -57,6 +56,12 @@ import CardFooter from "components/Card/CardFooter";
 import moment from "moment";
 import CardHeader from "components/Card/CardHeader";
 import { CardContent } from "@material-ui/core";
+import { getBehaviours, getFreedoms, getConstraints } from "actions/bfc";
+import Highcharts from "highcharts";
+import HighchartsReact from 'highcharts-react-official';
+
+// // Load Highcharts modules
+require("highcharts/modules/exporting")(Highcharts);
 
 
 const useStyles = makeStyles(styles);
@@ -69,10 +74,11 @@ function Dashboard() {
   const dispatch = useDispatch();
 
   const { user: currentUser } = useSelector(state => state.auth);
-  const {  mission, vision } = useSelector(state => state.data);
+  const {  mission, vision, task_count, objective_count } = useSelector(state => state.data);
   const { categories }  = useSelector(state => state.data);
   const { items, error, isLoading } = useSelector(state => state.kpi);
   const { items : objectives } = useSelector(state => state.objective);
+  const { behaviours, behaviours_error, freedoms, freedoms_error, constraints, constrains_error} = useSelector(state => state.bfc);
 
   console.log("user", currentUser)
 
@@ -88,6 +94,11 @@ function Dashboard() {
     dispatch(getUsers())
     dispatch(getCategories());
     dispatch(getUserObjectives(currentUser.id));
+    dispatch(getBehaviours(currentUser.id));
+    dispatch(getFreedoms(currentUser.id));
+    dispatch(getConstraints(currentUser.id))
+    dispatch(getTaskCount(currentUser.id));
+    dispatch(getObjectivesCount(currentUser.id))
   }, [])
 
   const uoms = [
@@ -140,7 +151,36 @@ function Dashboard() {
     }
   ]
 
- 
+  const kpi_options = {
+    chart: {
+      plotBackgroundColor: null,
+      plotBorderWidth: null,
+      plotShadow: false,
+      type: 'pie'
+    },
+    title: {
+      text: 'Objectives Breakdown'
+    },
+    series: [{
+      data: objective_count
+    }]
+  }
+
+  const obj_options = {
+    chart: {
+      plotBackgroundColor: null,
+      plotBorderWidth: null,
+      plotShadow: false,
+      type: 'pie'
+    },
+    title: {
+      text: 'MAS Breakdown'
+    },
+    series: [{
+      data: task_count
+    }]
+  }
+  
   const [addopen, setAddOpen] = useState(false);
   const [editopenmission, setEditMissionOpen] = useState(false);
   const [editopenvision, setEditVisionOpen] = useState(false);
@@ -178,8 +218,8 @@ function Dashboard() {
     setValue(index);
   };
 
-  console.log("user mission", mission)
-  console.log("user vision", vision)
+  console.log("task_count", task_count)
+  console.log("obj count", objective_count)
 
 
   const handleAddClickOpen = () => {
@@ -1049,6 +1089,7 @@ function Dashboard() {
                   onChange={handleChange}
                   textColor="inherit"
                   variant="fullWidth"
+                  TabIndicatorProps={{style: {background:'#29A15B'}}}
                   aria-label="full width tabs example"
                 >
                   <Tab label="KPIS" {...a11yProps(0)} />
@@ -1142,18 +1183,18 @@ function Dashboard() {
                             <GridItem xs={12} sm={6} md={2}>
                                 <Card className={classes.cardBodyRed}>
                                     <CardBody>
-                                        <h3 className={classes.cardTitle}>
+                                        <h4 className={classes.cardTitle}>
                                         {list.offtrack} <small>Off Ttack</small>
-                                        </h3>
+                                        </h4>
                                     </CardBody>
                                 </Card>
                             </GridItem>
                             <GridItem xs={12} sm={6} md={2}>
                                 <Card className={classes.cardBodyRed}>
                                     <CardBody>
-                                            <h3 className={classes.cardTitle}>
+                                            <h4 className={classes.cardTitle}>
                                             {list.cancelled}  <small>Cancelled</small>
-                                            </h3>
+                                            </h4>
                                     </CardBody>
                                 </Card>
                             </GridItem >
@@ -1169,27 +1210,27 @@ function Dashboard() {
                             <GridItem xs={12} sm={6} md={2}>
                                 <Card className={classes.cardBodyOrange}>
                                     <CardBody>
-                                        <h3 className={classes.cardTitle}>
+                                        <h4 className={classes.cardTitle}>
                                         {list.onGoing} <small>Ongoing</small>
-                                        </h3>
+                                        </h4>
                                     </CardBody>
                                 </Card>
                             </GridItem>
                             <GridItem xs={12} sm={6} md={2}>
                                 <Card  className={classes.cardBodyGreen}>
                                     <CardBody>
-                                        <h3 className={classes.cardTitle}>
+                                        <h4 className={classes.cardTitle}>
                                         {list.done} <small>Completed</small>
-                                        </h3>
+                                        </h4>
                                     </CardBody>
                                 </Card>
                             </GridItem>
                             <GridItem xs={12} sm={6} md={2}>
                                 <Card className={classes.cardBodyRed}>
                                     <CardBody>
-                                        <h3 className={classes.cardTitle}>
+                                        <h4 className={classes.cardTitle}>
                                         {list.notStarted} <small>Not Started</small>
-                                        </h3>
+                                        </h4>
                                     </CardBody>
                                 </Card>
                             </GridItem>
@@ -1252,78 +1293,84 @@ function Dashboard() {
                     spacing={2}
                     direction="row"
                   >
-                      <Grid item xs={4} key="">
+                      <Grid item xs={4} key="1">
                         <Card>
+                          <h4 style={{color: 'black', textAlign:'center'}}> Behaviours </h4>
                           <CardHeader
                             title=""
                             subheader=""
                           />
                           <CardContent>
                             <Table className={classes.tableBorder}>
-                              <TableHead className={classes.tableHeader}>
+                              {/* <TableHead className={classes.tableHeader}>
                                   <TableRow>
-                                      <TableCell>Behaviour</TableCell>
+                                      <TableCell>Description</TableCell>
                                   </TableRow>
-                              </TableHead>
+                              </TableHead> */}
                               <TableBody>
-                                  {items ? ( items.map((list, index) => (
+                                  { behaviours === null || behaviours === undefined || behaviours.length === 0 ? (
+                                      <TableRow> <TableCell> No behaviours available </TableCell></TableRow>
+                                  ) : behaviours ? ( behaviours.map((list, index) => (
                                       <TableRow key={index}>
-                                          <TableCell>{list.description}</TableCell>
+                                          <TableCell>{list.currentDescription}</TableCell>
                                       </TableRow>
-                                  ))) : error ? (<TableRow> <TableCell> {error} </TableCell></TableRow> 
-                                    ) : isLoading ? (<TableRow> <LinearProgress color="success" /> </TableRow>) : null }
+                                  ))) : behaviours_error ? (<TableRow> <TableCell> {behaviours_error} </TableCell></TableRow> ) : null }
                               </TableBody>
                             </Table>      
                           </CardContent>
                         </Card>
                       </Grid>
 
-                      <Grid item xs={4} key="">              
+                      <Grid item xs={4} key="2">              
                         <Card>
+                          <h4 style={{color: 'black', textAlign:'center'}}> Freedoms </h4>          
                           <CardHeader
                             title=""
                             subheader=""
                           />
                           <CardContent>
                             <Table className={classes.tableBorder}>
-                              <TableHead className={classes.tableHeader}>
+                              {/* <TableHead className={classes.tableHeader}>
                                   <TableRow>
-                                      <TableCell>Freedoms</TableCell>
+                                      <TableCell>Description</TableCell>
                                   </TableRow>
-                              </TableHead>
+                              </TableHead> */}
                               <TableBody>
-                                  {items ? ( items.map((list, index) => (
+                                  { freedoms === null || freedoms === undefined || freedoms.length === 0  ? (
+                                      <TableRow> <TableCell> No freedoms available </TableCell></TableRow>
+                                  ) : freedoms ? ( freedoms.map((list, index) => (
                                       <TableRow key={index}>
-                                          <TableCell>{list.description}</TableCell>
+                                          <TableCell>{list.currentDescription}</TableCell>
                                       </TableRow>
-                                  ))) : error ? (<TableRow> <TableCell> {error} </TableCell></TableRow> 
-                                    ) : isLoading ? (<TableRow> <LinearProgress color="success" /> </TableRow>) : null }
+                                  ))) : freedoms_error ? (<TableRow> <TableCell> {freedoms_error} </TableCell></TableRow>) : null }
                               </TableBody>
                             </Table>      
                           </CardContent>
                         </Card>
                       </Grid>
 
-                      <Grid item xs={4} key=""> 
+                      <Grid item xs={4} key="3"> 
                         <Card>
+                          <h4 style={{color: 'black', textAlign:'center'}}> Constraints</h4>
                           <CardHeader
                             title=""
                             subheader=""
                           />
                           <CardContent>
                             <Table className={classes.tableBorder}>
-                              <TableHead className={classes.tableHeader}>
+                              {/* <TableHead className={classes.tableHeader}>
                                   <TableRow>
-                                      <TableCell>Constraints</TableCell>
+                                      <TableCell>Description</TableCell>
                                   </TableRow>
-                              </TableHead>
+                              </TableHead> */}
                               <TableBody>
-                                  {items ? ( items.map((list, index) => (
+                                  { constraints === null || constraints === undefined || constraints.length === 0 ? (
+                                      <TableRow> <TableCell> No constraints available </TableCell></TableRow>
+                                  ) : constraints ? ( constraints.map((list, index) => (
                                       <TableRow key={index}>
-                                          <TableCell>{list.description}</TableCell>
+                                          <TableCell>{list.currentDescription}</TableCell>
                                       </TableRow>
-                                  ))) : error ? (<TableRow> <TableCell> {error} </TableCell></TableRow> 
-                                    ) : isLoading ? (<TableRow> <LinearProgress color="success" /> </TableRow>) : null }
+                                  ))) : constrains_error ? (<TableRow> <TableCell> {constrains_error} </TableCell></TableRow>) : null }
                               </TableBody>
                             </Table>      
                           </CardContent>
@@ -1333,6 +1380,27 @@ function Dashboard() {
                 </TabPanel>
               </SwipeableViews>
             </Box>
+
+            <Box sx={{ bgcolor: 'background.paper', marginTop: '20px' }} width="100%">
+            <h4 style={{ fontWeight: 'bold', textAlign: 'center'}}> Analytics </h4>
+
+              <Grid container spacing={2} direction="row" >
+                
+                <Grid item xs={5} key="1">
+                  <HighchartsReact
+                    highcharts={Highcharts}
+                    options={kpi_options}
+                  />                
+                </Grid>
+
+                <Grid item xs={5} key="2">
+                  <HighchartsReact
+                    highcharts={Highcharts}
+                    options={obj_options}
+                  />  
+                </Grid>
+              </Grid>   
+            </Box> 
 
             
           </GridContainer>

@@ -35,6 +35,14 @@ import {
     SPEC_USER_FETCH_REQUEST,
     SPEC_USER_FAIL,
 
+    TASK_COUNT_SUCCESS,
+    TASK_COUNT_FETCH_REQUEST,
+    TASK_COUNT_FAIL,
+
+    OBJECTIVE_COUNT_SUCCESS,
+    OBJECTIVE_COUNT_FETCH_REQUEST,
+    OBJECTIVE_COUNT_FAIL,
+
 } from '../actions/types';
 
 const initialState = {
@@ -49,6 +57,8 @@ const initialState = {
     mission : [],
     vision : [],
     error : [],
+    task_count : [],
+    objective_count : [],
     isLoading : false
 }
 
@@ -63,6 +73,8 @@ export default function(state = initialState, action) {
         case EDIT_VISION_FETCH_REQUEST :
         case ALL_PILLARS_FETCH_REQUEST :
         case SPEC_USER_FETCH_REQUEST :
+        case TASK_COUNT_FETCH_REQUEST :
+        case OBJECTIVE_COUNT_FETCH_REQUEST :
             return {
                 ...state,
                 isLoading: true
@@ -104,6 +116,18 @@ export default function(state = initialState, action) {
             return {
                 ...state,
                 mission : action.payload,
+                error : null
+            }
+        case TASK_COUNT_SUCCESS :
+            return {
+                ...state,
+                task_count : action.payload,
+                error : null
+            }
+        case OBJECTIVE_COUNT_SUCCESS :
+            return {
+                ...state,
+                objective_count : action.payload,
                 error : null
             }
         case SPEC_USER_SUCCESS :
@@ -153,6 +177,20 @@ export default function(state = initialState, action) {
                 ...state,
                 isLoading: false,
                 spec_user : null,
+                error: action.payload.message
+            }
+        case TASK_COUNT_FAIL :
+            return {
+                ...state,
+                isLoading: false,
+                task_count : null,
+                error: action.payload.message
+            }
+        case OBJECTIVE_COUNT_FAIL :
+            return {
+                ...state,
+                isLoading: false,
+                task_count : null,
                 error: action.payload.message
             }
         case EDIT_MISSION_FAIL :

@@ -36,6 +36,13 @@ import {
     EDIT_VISION_FETCH_REQUEST,
     EDIT_VISION_FAIL,
 
+    TASK_COUNT_SUCCESS,
+    TASK_COUNT_FETCH_REQUEST,
+    TASK_COUNT_FAIL,
+
+    OBJECTIVE_COUNT_SUCCESS,
+    OBJECTIVE_COUNT_FETCH_REQUEST,
+    OBJECTIVE_COUNT_FAIL,
 
 } from './types';
 
@@ -248,6 +255,52 @@ export const getUserById = (id) => {
 
         } catch (error) {
             dispatch({ type: SPEC_USER_FAIL, payload: error.response })
+        }
+    }
+}
+
+//user task count
+export const getTaskCount = (id) => {
+
+    return async function (dispatch) {
+
+        dispatch({ type: TASK_COUNT_FETCH_REQUEST });
+
+        try {
+
+            let response = await axios.get(`/tasks/fetchGroupedTasksbyStatus?user_id=${id}`)
+            if (response.status == 200) {
+                console.log("here", response.data)
+                dispatch({ type: TASK_COUNT_SUCCESS, payload: response.data })
+            } else {
+                dispatch({ type: TASK_COUNT_FAIL, payload: response.data })
+            }
+
+        } catch (error) {
+            dispatch({ type: TASK_COUNT_FAIL, payload: error.response })
+        }
+    }
+}
+
+//user objective count
+export const getObjectivesCount = (id) => {
+
+    return async function (dispatch) {
+
+        dispatch({ type: OBJECTIVE_COUNT_FETCH_REQUEST });
+
+        try {
+
+            let response = await axios.get(`/objectives/fetchGroupedObjectivesbyOverallStatus?user_id=${id}`)
+            if (response.status == 200) {
+                console.log("here", response.data)
+                dispatch({ type: OBJECTIVE_COUNT_SUCCESS, payload: response.data })
+            } else {
+                dispatch({ type: OBJECTIVE_COUNT_FAIL, payload: response.data })
+            }
+
+        } catch (error) {
+            dispatch({ type: OBJECTIVE_COUNT_FAIL, payload: error.response })
         }
     }
 }
