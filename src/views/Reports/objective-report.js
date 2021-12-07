@@ -31,7 +31,6 @@ import Loader from "react-loader-spinner";
 import { getUserObjectives } from "actions/objectives";
 import { getCategories, getPillars } from "actions/data";
 import { getKpis } from "actions/kpis";
-import { LinearProgress } from "@material-ui/core";
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import moment from "moment";
@@ -324,7 +323,18 @@ export default function ObjectiveReport() {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        { isLoading ? (<TableRow> <LinearProgress color="success" /> </TableRow>) 
+                        { isLoading ? (<Loader
+                            type="Puff"
+                            color="#29A15B"
+                            height={150}
+                            width={150}
+                            style={{
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                padding: "50px"
+                            }}
+                            />) 
                         : items ? ( items.map((list, index) => (
                             <TableRow key={index}>
                                 <TableCell>{list.objectives.description}</TableCell>

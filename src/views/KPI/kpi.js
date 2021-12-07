@@ -308,7 +308,7 @@ export default function KPIs() {
                             <TableCell
                                 sortModel={sortModel}
                                 onSortModelChange={(model) => setSortModel(model)}>
-                                     Category (Add Sorting)</TableCell>
+                                     Category</TableCell>
                             <TableCell>Title</TableCell>
                             <TableCell>Unit Of Measure</TableCell>
                             <TableCell>Account</TableCell>

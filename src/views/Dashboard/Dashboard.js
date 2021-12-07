@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-// import { useHistory } from "react-router";
+import { useHistory } from "react-router";
 // import { Redirect } from "react-router";
 import axios from "axios";
 // @material-ui/core
@@ -69,7 +69,7 @@ const useStyles = makeStyles(styles);
 function Dashboard() {
   const classes = useStyles();
   const theme = useTheme();
-  // const history = useHistory();
+  const history = useHistory();
 
   const dispatch = useDispatch();
 
@@ -646,6 +646,18 @@ function Dashboard() {
 
   }
 
+  const kpiRouteChange = () => {
+    history.push('/admin/kpis')
+  }
+
+  const bfcRouteChange = () => {
+    history.push('/admin/bfc')
+  }
+
+  const objectivesRouteChange = () => {
+    history.push('/admin/bfc')
+  }
+
   return (
     <div>
 
@@ -1123,7 +1135,10 @@ function Dashboard() {
                               </TableHead>
                               <TableBody>
                                   { items === null || items === undefined ? (
-                                      <TableRow> <TableCell> No KPIs available </TableCell></TableRow>
+                                      <TableRow> 
+                                        <TableCell> No KPIs available </TableCell>
+                                        <TableCell> <Button color="primary" onClick={kpiRouteChange}> Add KPIS </Button> </TableCell>
+                                      </TableRow>
                                   ) : items ? ( items.map((list, index) => (
                                       <TableRow key={index}>
                                           <TableCell>{list.title} </TableCell>
@@ -1152,7 +1167,16 @@ function Dashboard() {
                     ) : null }
                 </TabPanel>
                 <TabPanel value={value} index={1} dir={theme.direction}>
-                  {objectives ? ( objectives.map((list, index) => (
+                  { objectives === null || objectives === undefined || objectives.length === 0  ? (
+                      <Card style={{ textAlign: 'center' }}>
+                        <GridItem >
+                          <h2> You have not set any Objectives </h2>
+                          <IconButton> <AddCircleOutlineIcon className={classes.iconAdd} onClick={objectivesRouteChange} /> </IconButton>
+                          <h4>Click here to start</h4>
+                        </GridItem>
+                      </Card>
+                  ) :
+                  objectives ? ( objectives.map((list, index) => (
                     <GridItem container justify="flex-end" key={index}  >
 
                       <Card style={{borderLeft : list.objectives.overallStatus === 'Incomplete' ? 'solid 5px red' : (list.objectives.overallStatus === 'COMPLETE' || list.objectives.overallStatus === 'Complete') ? 'solid 5px green' : (list.objectives.overallStatus === 'INCOMPLETE') ? 'solid 5px red'  :'solid 5px black' , marginBottom: '0'}} key={index} >
@@ -1309,7 +1333,10 @@ function Dashboard() {
                               </TableHead> */}
                               <TableBody>
                                   { behaviours === null || behaviours === undefined || behaviours.length === 0 ? (
+                                    <div>
                                       <TableRow> <TableCell> No behaviours available </TableCell></TableRow>
+                                      <TableRow style={{ textAlign: 'center'}}> <TableCell> <Button color="primary" onClick={bfcRouteChange}> Add Behavours </Button> </TableCell></TableRow>
+                                    </div>
                                   ) : behaviours ? ( behaviours.map((list, index) => (
                                       <TableRow key={index}>
                                           <TableCell>{list.currentDescription}</TableCell>
@@ -1337,7 +1364,10 @@ function Dashboard() {
                               </TableHead> */}
                               <TableBody>
                                   { freedoms === null || freedoms === undefined || freedoms.length === 0  ? (
+                                    <div>
                                       <TableRow> <TableCell> No freedoms available </TableCell></TableRow>
+                                      <TableRow> <TableCell> <Button color="primary" onClick={bfcRouteChange}> Add Freedoms </Button> </TableCell></TableRow>
+                                    </div>
                                   ) : freedoms ? ( freedoms.map((list, index) => (
                                       <TableRow key={index}>
                                           <TableCell>{list.currentDescription}</TableCell>
@@ -1365,11 +1395,12 @@ function Dashboard() {
                               </TableHead> */}
                               <TableBody>
                                   { constraints === null || constraints === undefined || constraints.length === 0 ? (
+                                    <div>
                                       <TableRow> <TableCell> No constraints available </TableCell></TableRow>
+                                      <TableRow> <TableCell> <Button color="primary" onClick={bfcRouteChange}> Add Constraints </Button> </TableCell></TableRow>
+                                    </div>
                                   ) : constraints ? ( constraints.map((list, index) => (
-                                      <TableRow key={index}>
-                                          <TableCell>{list.currentDescription}</TableCell>
-                                      </TableRow>
+                                      <TableRow key={index}><TableCell>{list.currentDescription}</TableCell></TableRow>
                                   ))) : constrains_error ? (<TableRow> <TableCell> {constrains_error} </TableCell></TableRow>) : null }
                               </TableBody>
                             </Table>      
@@ -1402,7 +1433,6 @@ function Dashboard() {
               </Grid>   
             </Box> 
 
-            
           </GridContainer>
         </div>
 

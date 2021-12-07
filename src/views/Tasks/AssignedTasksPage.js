@@ -17,7 +17,6 @@ import CardBody from "components/Card/CardBody.js";
 import { ControlPoint } from "@material-ui/icons";
 import { getAssignedTasks } from "actions/tasks";
 import moment from "moment";
-import { LinearProgress } from "@material-ui/core";
 import styles from "assets/jss/material-dashboard-pro-react/views/assignedTasksStyle.js";
 import IconButton from '@material-ui/core/Button';
 import { getStatus } from "actions/data";
@@ -169,7 +168,19 @@ export default function AssignedTasksPage() {
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {items ? ( items.map((list, index) => (
+                                    { isLoading ? (<Loader
+                                        type="Puff"
+                                        color="#29A15B"
+                                        height={150}
+                                        width={150}
+                                        style={{
+                                            display: "flex",
+                                            justifyContent: "center",
+                                            alignItems: "center",
+                                            padding: "50px"
+                                        }}
+                                        />) 
+                                    : items ? ( items.map((list, index) => (
                                         <TableRow key={index}>
                                             <TableCell>{list.description}</TableCell>
                                             <TableCell> {list.assignedTasks[0].assigner.fullnames} </TableCell>
@@ -194,8 +205,7 @@ export default function AssignedTasksPage() {
                                                 <IconButton aria-label="view" color="error" onClick={() => {handleOpen(); setObjectiveId(list.objective_id); setDescription(list.description)}} ><ControlPoint /></IconButton>
                                             </TableCell>
                                         </TableRow>
-                                    ))) : error ? (<TableRow> <TableCell> {error} </TableCell></TableRow> 
-                                    ) : isLoading ? (<TableRow> <LinearProgress color="success" /> </TableRow>) : null }
+                                    ))) : error ? (<TableRow> <TableCell> {error} </TableCell></TableRow>) : null }
                                 </TableBody>    
                             </Table>
 
