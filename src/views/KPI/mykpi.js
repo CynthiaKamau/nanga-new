@@ -300,7 +300,7 @@ export default function myKpis() {
                                 <TableCell>{list.objectives.riskOrOpportunity} </TableCell>
                                 <TableCell>{list.objectives.supportRequired} </TableCell>
                                 <TableCell>
-                                <IconButton aria-label="edit" color="primary" onClick={() => { handleEditClickOpen(); setEditing(list.objectives) }} ><EditIcon/></IconButton>
+                                    <IconButton aria-label="edit" color="primary" onClick={() => { handleEditClickOpen(); setEditing(list.objectives) }} ><EditIcon/></IconButton>
                                 {/* <IconButton aria-label="delete" color="secondary" onClick={() => { handleDeleteClickOpen(); setDelete(list) }} ><DeleteIcon /></IconButton> */}
                                 </TableCell>
                             </TableRow>
@@ -616,7 +616,7 @@ export default function myKpis() {
                                     margin="normal"
                                     id="date-picker-dialog"
                                     helperText="Set start date"
-                                    format="yyyy/dd/MM"
+                                    format="yyyy/MM/dd"
                                     fullWidth
                                     inputVariant="outlined"
                                     value={start_date}
@@ -634,7 +634,7 @@ export default function myKpis() {
                                     margin="normal"
                                     id="date-picker-dialog"
                                     helperText="Set end date"
-                                    format="yyyy/dd/MM"
+                                    format="yyyy/MM/dd"
                                     fullWidth
                                     inputVariant="outlined"
                                     value={end_date}

@@ -149,9 +149,9 @@ export default function AssignedTasksPage() {
 
                     <Card>
                         <CardHeader color="primary">
-                            <h4>Assigned Tasks</h4>
+                            <h4>Assigned MAS </h4>
                             <p>
-                                Assigned Tasks details.
+                                Assigned MAS details.
                             </p>
                         </CardHeader>
                         <CardBody>
@@ -216,7 +216,7 @@ export default function AssignedTasksPage() {
                         <DialogTitle>Strategic Objective</DialogTitle>
                         <DialogContent>
                             <DialogContentText>
-                                Add Task To Your Strategic Objectives
+                                Add MAS To Your Strategic Objectives
                             </DialogContentText>
                           
                             <label> Objective : </label>
@@ -247,7 +247,7 @@ export default function AssignedTasksPage() {
                                         margin="normal"
                                         id="date-picker-dialog"
                                         helperText="Set start date"
-                                        format="yyyy/dd/MM"
+                                        format="yyyy/MM/dd"
                                         fullWidth
                                         inputVariant="outlined"
                                         value={start_date}
@@ -266,7 +266,7 @@ export default function AssignedTasksPage() {
                                         margin="normal"
                                         id="date-picker-dialog"
                                         helperText="Set end date"
-                                        format="yyyy/dd/MM"
+                                        format="yyyy/MM/dd"
                                         fullWidth
                                         inputVariant="outlined"
                                         value={end_date}

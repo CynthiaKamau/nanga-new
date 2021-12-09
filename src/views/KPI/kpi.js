@@ -32,6 +32,7 @@ import { LinearProgress } from "@material-ui/core";
 import axios from "axios";
 import { getCategories } from "actions/data";
 import { Grid } from "@material-ui/core";
+import { CompareArrows } from "@material-ui/icons";
 
 import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
 
@@ -207,6 +208,22 @@ export default function KPIs() {
     
     }
 
+    const handleInvert = async(list) => {
+
+        try {
+
+            let response = await axios.get(`/kpi/invert?kpi_id=${list.id}`)
+            if (response.status == 201) {
+                console.log(response.data)
+                dispatch(getKpis(currentUser.id))
+            } else {
+                dispatch(getKpis(currentUser.id))
+            } 
+        } catch(e) {
+            dispatch(getKpis(currentUser.id))
+        } 
+    }
+
     // const handleDeleteClickOpen = () => {
     //     setDeleteOpen(true);
     // };
@@ -328,7 +345,9 @@ export default function KPIs() {
                                 <TableCell>{list.account}</TableCell>
                                 <TableCell>{list.target} </TableCell>
                                 <TableCell>{list.target_achieved} </TableCell>
-                                <TableCell><IconButton aria-label="edit" className={classes.textGreen} onClick={() => { handleEditClickOpen(); setEditing(list) }} ><EditIcon/></IconButton> </TableCell>
+                                <TableCell><IconButton aria-label="edit" className={classes.textGreen} onClick={() => { handleEditClickOpen(); setEditing(list) }} ><EditIcon/></IconButton>
+                                    <IconButton aria-label="invert" color="primary" onClick={() => { handleInvert() }} ><CompareArrows /></IconButton>
+                                </TableCell>
                                 {/* <IconButton aria-label="delete" color="secondary" onClick={() => { handleDeleteClickOpen(); setDelete(list) }} ><DeleteIcon /></IconButton> */}
                             </TableRow>
                         ))) : error ? (<TableRow> <TableCell> {error} </TableCell></TableRow> 

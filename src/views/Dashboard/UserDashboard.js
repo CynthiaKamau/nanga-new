@@ -194,35 +194,33 @@ export default function UserDashboard() {
       {spec_user === undefined || spec_user === null || spec_user.length === 0 ? ( <h4> </h4>) : spec_user ? (
         <div> <h4 className={classes.textBold} style={{display : 'inline-block'}}> {spec_user.fullnames} | </h4>  <h6 style={{display : 'inline-block'}}> {spec_user.roles.role_name}</h6> </div> ) : null}
 
-      <GridItem xs={12} sm={12} md={12}>
-          <h3 className={classes.textBold}> THE VISION</h3>
-          <Card>
-            <CardBody className={classes.cardGrey}>
-              {vision === undefined || vision === null || vision.length === 0 ? (
-                <h4> </h4>
-              ) : vision ? (
-                <h4 > {vision[0].description}</h4>
-              ) : null}
-            </CardBody>
-          </Card>
-        </GridItem>
+      <Grid container spacing={2} style={{marginRight : '10px', marginLeft : '10px'}}>
+        <h3 className={classes.textBold}> THE VISION</h3>
 
-        <GridItem xs={12} sm={12} md={12}>
-          <h3 className={classes.textBold}> MISSION </h3>
-          <Card>
-            <Grid container justify="flex-end" className={classes.cardGrey}>
-              {/* <IconButton aria-label="edit" color="primary" onClick={() => { handleEditMissionClickOpen(); setEditingMission() }} ><EditIcon style={{ color : '#000000'}}/></IconButton> */}
-            </Grid>
+        <Card className={classes.cardGrey} style={{margin: '0px'}}>
+          <CardBody >
+            {vision === undefined || vision === null || vision.length === 0 ? (
+              <h4> No vision found. </h4>
+            ) : vision ? (
+              <h4 > {vision[0].description}</h4>
+            ) : null}
+          </CardBody>
 
-            <CardBody className={classes.cardGrey}>
-              { mission === undefined || mission === null || mission.length === 0 ? (
-                <h4>Please update the mission</h4>
+        </Card>
+      </Grid>
+
+      <Grid container spacing={2} style={{marginRight : '10px', marginLeft : '10px', marginBottom : '20px'}}>
+        <h3 className={classes.textBold}> PERSONAL MISSION </h3>
+          <Card className={classes.cardGrey} style={{margin: '0px'}}>
+            <CardBody>
+              { mission === undefined || mission === null|| mission.length === 0 ? (
+                <h4>Please update your mission</h4>
               ) : mission ? (
                 <h4>{mission[0].description}</h4>
               ) : null}
             </CardBody>
           </Card>
-        </GridItem>
+      </Grid>  
 
         <Dialog open={editopenmission} onClose={handleEditMissionClose}>
           <DialogTitle>Personal Mission</DialogTitle>
@@ -345,7 +343,7 @@ export default function UserDashboard() {
                   {objectives ? ( objectives.map((list, index) => (
                     <GridItem container justify="flex-end" key={index}  >
 
-                      <Card style={{borderLeft : list.objectives.overallStatus === 'Incomplete' ? 'solid 5px red' : (list.objectives.overallStatus === 'COMPLETE' || list.objectives.overallStatus === 'Complete') ? 'solid 5px green' : (list.objectives.overallStatus === 'INCOMPLETE') ? 'solid 5px red'  :'solid 5px black' , marginBottom: '0'}} key={index} >
+                      <Card style={{borderLeft : list.objectives.overallStatus === 'Incomplete' ? 'solid 5px red' : (list.objectives.overallStatus === 'COMPLETE' || list.objectives.overallStatus === 'Complete') ? 'solid 5px green' : (list.objectives.overallStatus === 'INCOMPLETE' || list.objectives.overallStatus === 'Incomplete' || list.objectives.overallStatus === '' || list.objectives.overallStatus === null ) ? 'solid 5px red'  :'solid 5px black' , marginBottom: '0'}} key={index} >
                         <GridItem xs={12} sm={12} md={12}>
                           <h4 className={classes.textBold}> {list.objectives.description} </h4>
                           <h6 className={classes.textGreen}> {list.totalTasks} Management actions</h6>
@@ -482,9 +480,10 @@ export default function UserDashboard() {
                     container
                     spacing={2}
                     direction="row"
+                    style={{ paddingBottom: '20px'}}
                   >
-                      <Grid item xs={4} key="1">
-                        <Card>
+                      <Grid item xs={12} md={4} sm={4} key="1">
+                        <Card style={{ height: '100%'}}>
                           <h4 style={{color: 'black', textAlign:'center'}}> Behaviours </h4>
                           <CardHeader
                             title=""
@@ -511,8 +510,8 @@ export default function UserDashboard() {
                         </Card>
                       </Grid>
 
-                      <Grid item xs={4} key="2">              
-                        <Card>
+                      <Grid item xs={12} md={4} sm={4} key="2">              
+                        <Card style={{ height: '100%'}}>
                           <h4 style={{color: 'black', textAlign:'center'}}> Freedoms </h4>          
                           <CardHeader
                             title=""
@@ -539,8 +538,8 @@ export default function UserDashboard() {
                         </Card>
                       </Grid>
 
-                      <Grid item xs={4} key="3"> 
-                        <Card>
+                      <Grid item xs={12} md={4} sm={4} key="3"> 
+                        <Card style={{ height: '100%'}}>
                           <h4 style={{color: 'black', textAlign:'center'}}> Constraints</h4>
                           <CardHeader
                             title=""

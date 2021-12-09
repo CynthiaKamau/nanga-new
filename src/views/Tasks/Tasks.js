@@ -373,7 +373,7 @@ export default function TasksPage() {
                                                     margin="normal"
                                                     id="date-picker-dialog"
                                                     helperText="Set start date"
-                                                    format="yyyy/dd/MM"
+                                                    format="yyyy/MM/dd"
                                                     fullWidth
                                                     inputVariant="outlined"
                                                     value={start_date}
@@ -391,7 +391,7 @@ export default function TasksPage() {
                                                 margin="normal"
                                                 id="date-picker-dialog"
                                                 helperText="Set due date"
-                                                format="yyyy/dd/MM"
+                                                format="yyyy/MM/dd"
                                                 fullWidth
                                                 inputVariant="outlined"
                                                 value={end_date}
@@ -471,7 +471,7 @@ export default function TasksPage() {
                                                 margin="normal"
                                                 id="date-picker-dialog"
                                                 helperText="Set start date"
-                                                format="yyyy/dd/MM"
+                                                format="yyyy/MM/dd"
                                                 fullWidth
                                                 inputVariant="outlined"
                                                 value={start_date}
@@ -489,7 +489,7 @@ export default function TasksPage() {
                                                 margin="normal"
                                                 id="date-picker-dialog"
                                                 helperText="Set due date"
-                                                format="yyyy/dd/MM"
+                                                format="yyyy/MM/dd"
                                                 fullWidth
                                                 inputVariant="outlined"
                                                 value={end_date}

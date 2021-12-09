@@ -439,8 +439,8 @@ export default function BFC() {
             spacing={2}
             direction="row"
             >
-                <Grid item xs={4} key="1">
-                <Card>
+                <Grid item xs={12} md={4} sm={4}  key="1">
+                <Card style={{ height: '100%'}}>
                     <h4 style={{color: 'black', textAlign:'center'}}> Behaviours </h4>
                     <Grid container justify="flex-end" style={{ marginTop: '5px', paddingRight: '5px' }}>
                         <Button color="primary" onClick={handleAddBehaviourClickOpen}> Add</Button>
@@ -472,8 +472,8 @@ export default function BFC() {
                 </Card>
                 </Grid>
 
-                <Grid item xs={4} key="2">   
-                <Card>
+                <Grid item xs={12} md={4} sm={4}  key="2">   
+                <Card style={{ height: '100%'}}>
                     <h4 style={{color: 'black', textAlign:'center'}}> Freedoms </h4>          
                     <Grid container justify="flex-end" style={{marginTop: '5px', paddingRight: '5px' }}>
                         <Button color="primary" onClick={handleAddFreedomsClickOpen}> Add</Button>
@@ -504,8 +504,8 @@ export default function BFC() {
                 </Card>
                 </Grid>
 
-                <Grid item xs={4} key="3"> 
-                <Card>
+                <Grid item xs={12} md={4} sm={4} key="3"> 
+                <Card style={{ height: '100%'}}>
                     <h4 style={{color: 'black', textAlign:'center'}}> Constraints</h4>
                     <Grid container justify="flex-end" style={{marginTop: '5px', paddingRight: '5px' }}>
                         <Button color="primary" onClick={handleAddConstraintsClickOpen}> Add</Button>

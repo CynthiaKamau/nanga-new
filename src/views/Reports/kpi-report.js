@@ -297,7 +297,7 @@ export default function KPIReport() {
                         <TableRow>
                             <TableCell>Measure</TableCell>
                             <TableCell>YTD Actual</TableCell>
-                            <TableCell>YTD Target</TableCell>
+                            <TableCell>YTD Planned</TableCell>
                             <TableCell> VAR</TableCell>
                             <TableCell> Root Cause </TableCell>
                             <TableCell>Action</TableCell>

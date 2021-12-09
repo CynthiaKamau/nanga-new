@@ -1121,7 +1121,7 @@ export default function Dashboard() {
                       id="date-picker-dialog"
                       helperText="Set start date"
                       required
-                      format="yyyy/dd/MM"
+                      format="yyyy/MM/dd"
                       fullWidth
                       inputVariant="outlined"
                       value={start_date}
@@ -1140,7 +1140,7 @@ export default function Dashboard() {
                       id="date-picker-dialog"
                       helperText="Set end date"
                       required
-                      format="yyyy/dd/MM"
+                      format="yyyy/MM/dd"
                       fullWidth
                       inputVariant="outlined"
                       value={end_date}
@@ -1238,7 +1238,7 @@ export default function Dashboard() {
                   margin="normal"
                   id="date-picker-dialog"
                   helperText="Set start date"
-                  format="yyyy/dd/MM"
+                  format="yyyy/MM/dd"
                   fullWidth
                   inputVariant="outlined"
                   value={task_start_date}
@@ -1256,7 +1256,7 @@ export default function Dashboard() {
                   margin="normal"
                   id="date-picker-dialog"
                   helperText="Set end date"
-                  format="yyyy/dd/MM"
+                  format="yyyy/MM/dd"
                   fullWidth
                   inputVariant="outlined"
                   value={task_end_date}
@@ -1424,7 +1424,7 @@ export default function Dashboard() {
                                 margin="normal"
                                 id="date-picker-dialog"
                                 helperText="Set start date"
-                                format="yyyy/dd/MM"
+                                format="yyyy/MM/dd"
                                 fullWidth
                                 inputVariant="outlined"
                                 value={task_start_date}
@@ -1442,7 +1442,7 @@ export default function Dashboard() {
                                 margin="normal"
                                 id="date-picker-dialog"
                                 helperText="Set end date"
-                                format="yyyy/dd/MM"
+                                format="yyyy/MM/dd"
                                 fullWidth
                                 inputVariant="outlined"
                                 value={task_end_date}
@@ -1502,7 +1502,7 @@ export default function Dashboard() {
                             margin="normal"
                             id="date-picker-dialog"
                             helperText="Set start date"
-                            format="yyyy/dd/MM"
+                            format="yyyy/MM/dd"
                             fullWidth
                             inputVariant="outlined"
                             value={task_start_date}
@@ -1520,7 +1520,7 @@ export default function Dashboard() {
                             margin="normal"
                             id="date-picker-dialog"
                             helperText="Set due date"
-                            format="yyyy/dd/MM"
+                            format="yyyy/MM/dd"
                             fullWidth
                             inputVariant="outlined"
                             value={task_end_date}

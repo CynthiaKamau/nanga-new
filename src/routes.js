@@ -6,11 +6,14 @@ import DashboardPage from "views/Dashboard/Dashboard.js";
 import AssignedTasksPage from "views/Tasks/AssignedTasksPage";
 import StrategicObjectives from "views/Objectives/Objectives";
 import KPIsPage from "views/KPI/kpi";
+// import KPIsPageTest from "views/KPI/kpitest";
+
 // import MyKpis from "views/KPI/mykpi"; 
 import UserProfile from "views/UserProfile/UserProfile";
 import UserDashboard from "views/Dashboard/UserDashboard";
 import ObjectiveReport from "views/Reports/objective-report";
 import KPIReport from "views/Reports/kpi-report";
+
 import BFC from "views/BFC/Bfc";
 
 // @material-ui/icons

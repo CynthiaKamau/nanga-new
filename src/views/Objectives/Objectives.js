@@ -68,6 +68,17 @@ export default function StrategicObjectives() {
 
     }, [])
 
+    const obj_statuses = [
+        {
+            value: 'COMPLETE',
+            label: 'COMPLETE'
+        },
+        {
+            value: 'INCOMPLETE',
+            label: 'INCOMPLETE'
+        }
+    ]
+
     console.log(sysusers)
 
     const [addopen, setAddOpen] = useState(false);
@@ -105,6 +116,7 @@ export default function StrategicObjectives() {
     const [action, setAction] = useState("");
     const [support_required, setSupportRequired] = useState("");
     const [risk_and_opportunity, setRiskAndOpportunity] = useState(""); 
+    const [obj_status, setObjStatus ] = useState("");
 
     const handleAddClickOpen = () => {
         setAddOpen(true);
@@ -289,7 +301,7 @@ export default function StrategicObjectives() {
             setKpiId(x);
             console.log("hapo", x);
         } else {
-            setKpiId("");
+            setKpiId([]);
         }
 
         setId(list.id);
@@ -303,6 +315,12 @@ export default function StrategicObjectives() {
         setAction(list.action);
         setRootCause(list.rootCause)
         setRiskAndOpportunity(list.riskOrOpportunity)
+        if(list.overallStatus !== null){
+            setObjStatus(list.overallStatus);
+            // setObjStatus((list.overallStatus).toUpperCase());
+        } else{
+            setObjStatus('INCOMPLETE');
+        }
 
     }
 
@@ -315,7 +333,7 @@ export default function StrategicObjectives() {
         let end_date = moment(end_date).format('YYYY-MM-DD');
         let start_date = moment(start_date).format('YYYY-MM-DD');
 
-        console.log("save objective", id, description, end_date, kpi_id, start_date, target, user_id, target_achieved, target_achieved_on_review, pillar_id, setUpdatedBy())
+        console.log("save objective", id, description, end_date, kpi_id, start_date, target, user_id, obj_status, target_achieved, target_achieved_on_review, pillar_id, root_cause, action, support_required, risk_and_opportunity, setUpdatedBy())
 
         const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
         const body = JSON.stringify({ 
@@ -328,10 +346,11 @@ export default function StrategicObjectives() {
             target : target,
             target_achieved : target_achieved,
             pillar_id : pillar_id,
-            root_cause : root_cause,
-            risk_and_opportunity : risk_and_opportunity,
-            action : action,
-            support_required : support_required,
+            overallStatus : obj_status,
+            // root_cause : root_cause,
+            // risk_and_opportunity : risk_and_opportunity,
+            // action : action,
+            // support_required : support_required,
             created_by : created_by,
             updated_by :updated_by
         });
@@ -584,7 +603,7 @@ export default function StrategicObjectives() {
                 />
             ) : items ? ( items.map((list, index) => (
                 <div key={index} style={{ justifyContent: 'center' }} >
-                    <Card style={{borderLeft : list.objectives.overallStatus === 'Incomplete' ? 'solid 5px red' : (list.objectives.overallStatus === 'COMPLETE' || list.objectives.overallStatus === 'Complete') ? 'solid 5px green' : (list.objectives.overallStatus === 'INCOMPLETE') ? 'solid 5px red'  :'solid 5px black' , marginBottom: '0'}} key={index} >
+                    <Card style={{borderLeft : list.objectives.overallStatus === 'Incomplete' ? 'solid 5px red' : (list.objectives.overallStatus === 'COMPLETE' || list.objectives.overallStatus === 'Complete') ? 'solid 5px green' : (list.objectives.overallStatus === 'INCOMPLETE' || list.objectives.overallStatus === 'Incomplete' || list.objectives.overallStatus === '' || list.objectives.overallStatus === null ) ? 'solid 5px red'  :'solid 5px black' , marginBottom: '0'}} key={index} >
                         <Grid container justify="flex-end">
                             <IconButton aria-label="edit" className={classes.textGreen} onClick={() => { handleEditClickOpen(); setEditing(list.objectives); }} ><EditIcon /></IconButton>
                         </Grid>
@@ -840,7 +859,7 @@ export default function StrategicObjectives() {
                                 margin="normal"
                                 id="date-picker-dialog"
                                 helperText="Set start date"
-                                format="yyyy/dd/MM"
+                                format="yyyy/MM/dd"
                                 fullWidth
                                 inputVariant="outlined"
                                 value={start_date}
@@ -859,7 +878,7 @@ export default function StrategicObjectives() {
                                 margin="normal"
                                 id="date-picker-dialog"
                                 helperText="Set end date"
-                                format="yyyy/dd/MM"
+                                format="yyyy/MM/dd"
                                 fullWidth
                                 inputVariant="outlined"
                                 value={end_date}
@@ -970,7 +989,7 @@ export default function StrategicObjectives() {
                                     margin="normal"
                                     id="date-picker-dialog"
                                     helperText="Set start date"
-                                    format="yyyy/dd/MM"
+                                    format="yyyy/MM/dd"
                                     fullWidth
                                     inputVariant="outlined"
                                     value={task_start_date}
@@ -988,7 +1007,7 @@ export default function StrategicObjectives() {
                                     margin="normal"
                                     id="date-picker-dialog"
                                     helperText="Set end date"
-                                    format="yyyy/dd/MM"
+                                    format="yyyy/MM/dd"
                                     fullWidth
                                     inputVariant="outlined"
                                     value={task_end_date}
@@ -1088,7 +1107,7 @@ export default function StrategicObjectives() {
                                     margin="normal"
                                     id="date-picker-dialog"
                                     helperText="Set start date"
-                                    format="yyyy/dd/MM"
+                                    format="yyyy/MM/dd"
                                     fullWidth
                                     inputVariant="outlined"
                                     value={task_start_date}
@@ -1106,7 +1125,7 @@ export default function StrategicObjectives() {
                                     margin="normal"
                                     id="date-picker-dialog"
                                     helperText="Set end date"
-                                    format="yyyy/dd/MM"
+                                    format="yyyy/MM/dd"
                                     fullWidth
                                     inputVariant="outlined"
                                     value={task_end_date}
@@ -1256,73 +1275,92 @@ export default function StrategicObjectives() {
                         </Grid>
                     </Grid>
 
+                    {/* <TextField
+                        fullWidth
+                        label="Root Cause"
+                        id="root_cause"
+                        multiline
+                        rows={2}
+                        required
+                        variant="outlined"
+                        className={classes.textInput}
+                        type="text"
+                        value={root_cause}
+                        onChange={(event) => {
+                            const value = event.target.value;
+                            setRootCause(value)
+                        }}
+                    />
+
                     <TextField
-                            fullWidth
-                            label="Root Cause"
-                            id="root_cause"
-                            multiline
-                            rows={2}
-                            required
-                            variant="outlined"
-                            className={classes.textInput}
-                            type="text"
-                            value={root_cause}
-                            onChange={(event) => {
-                                const value = event.target.value;
-                                setRootCause(value)
-                            }}
-                        />
+                        fullWidth
+                        label="Support Required"
+                        id="support_required"
+                        multiline
+                        rows={2}
+                        required
+                        variant="outlined"
+                        className={classes.textInput}
+                        type="text"
+                        value={support_required}
+                        onChange={(event) => {
+                            const value = event.target.value;
+                            setSupportRequired(value)
+                        }}
+                    />
 
-                        <TextField
-                            fullWidth
-                            label="Support Required"
-                            id="support_required"
-                            multiline
-                            rows={2}
-                            required
-                            variant="outlined"
-                            className={classes.textInput}
-                            type="text"
-                            value={support_required}
-                            onChange={(event) => {
-                                const value = event.target.value;
-                                setSupportRequired(value)
-                            }}
-                        />
+                    <TextField
+                        fullWidth
+                        label="Action"
+                        id="action"
+                        multiline
+                        rows={2}
+                        required
+                        variant="outlined"
+                        className={classes.textInput}
+                        type="text"
+                        value={action}
+                        onChange={(event) => {
+                            const value = event.target.value;
+                            setAction(value)
+                        }}
+                    />
 
-                        <TextField
-                            fullWidth
-                            label="Action"
-                            id="action"
-                            multiline
-                            rows={2}
-                            required
-                            variant="outlined"
-                            className={classes.textInput}
-                            type="text"
-                            value={action}
-                            onChange={(event) => {
-                                const value = event.target.value;
-                                setAction(value)
-                            }}
-                        />
+                    <TextField
+                        fullWidth
+                        label="Risk And Opportunity"
+                        id="risk_and_opportunity"
+                        multiline
+                        rows={2}
+                        required
+                        variant="outlined"
+                        className={classes.textInput}
+                        type="text"
+                        value={risk_and_opportunity}
+                        onChange={(event) => {
+                            const value = event.target.value;
+                            setRiskAndOpportunity(value)
+                        }}
+                    /> */}
 
-                        <TextField
-                            fullWidth
-                            label="Risk And Opportunity"
-                            id="risk_and_opportunity"
-                            multiline
-                            rows={2}
-                            required
-                            variant="outlined"
-                            className={classes.textInput}
-                            type="text"
-                            value={risk_and_opportunity}
-                            onChange={(event) => {
-                                const value = event.target.value;
-                                setRiskAndOpportunity(value)
-                            }}
-                        />
+                    <TextField
+                        id="outlined-select-status"
+                        select
+                        fullWidth
+                        variant="outlined"
+                        label="Select Status"
+                        value={obj_status}
+                        onChange={(event) => {
+                            setTaskStatus(event.target.value);
+                        }}
+                        helperText="Please select the status"
+                    >
+                        {obj_statuses.map((option) => (
+                            <MenuItem key={option.value} value={option.value}>
+                                {option.label}
+                            </MenuItem>
+                        ))}
+                    </TextField>
 
                     <Grid container spacing={2}>
                         <Grid item xs={6} lg={6} xl={6} sm={12}>
@@ -1331,7 +1369,7 @@ export default function StrategicObjectives() {
                                 margin="normal"
                                 id="date-picker-dialog"
                                 helperText="Set start date"
-                                format="yyyy/dd/MM"
+                                format="yyyy/MM/dd"
                                 fullWidth
                                 inputVariant="outlined"
                                 value={start_date}
@@ -1349,7 +1387,7 @@ export default function StrategicObjectives() {
                                 margin="normal"
                                 id="date-picker-dialog"
                                 helperText="Set end date"
-                                format="yyyy/dd/MM"
+                                format="yyyy/MM/dd"
                                 fullWidth
                                 inputVariant="outlined"
                                 value={end_date}
@@ -1397,7 +1435,7 @@ export default function StrategicObjectives() {
                                 margin="normal"
                                 id="date-picker-dialog"
                                 helperText="Set start date"
-                                format="yyyy/dd/MM"
+                                format="yyyy/MM/dd"
                                 fullWidth
                                 inputVariant="outlined"
                                 value={task_start_date}
@@ -1415,7 +1453,7 @@ export default function StrategicObjectives() {
                                 margin="normal"
                                 id="date-picker-dialog"
                                 helperText="Set due date"
-                                format="yyyy/dd/MM"
+                                format="yyyy/MM/dd"
                                 fullWidth
                                 inputVariant="outlined"
                                 value={task_end_date}
