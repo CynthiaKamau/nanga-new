@@ -1351,7 +1351,7 @@ export default function StrategicObjectives() {
                         label="Select Status"
                         value={obj_status}
                         onChange={(event) => {
-                            setTaskStatus(event.target.value);
+                            setObjStatus(event.target.value);
                         }}
                         helperText="Please select the status"
                     >
