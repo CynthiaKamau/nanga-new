@@ -28,7 +28,6 @@ import TextField from '@material-ui/core/TextField';
 import { getKpis } from "actions/kpis";
 import swal from "sweetalert2";
 import Loader from "react-loader-spinner";
-import { LinearProgress } from "@material-ui/core";
 import axios from "axios";
 import { getCategories } from "actions/data";
 import { Grid } from "@material-ui/core";
@@ -66,8 +65,9 @@ export default function KPIs() {
     const [updated_by, setUpdatedBy] = useState(currentUser.id);
     const [target, setTarget] = useState("");
     const [account, setAccount] = useState("");
-    const [target_achieved, setTargetAchieved] = useState("");
     const [action, setAction] = useState("");
+    const [ytd_planned, setYTDPlanned] = useState("");
+    const [ytd_actual, setYTDActual] = useState("");
     // const [support_required, setSupportRequired] = useState("");
     // const [root_cause, setRootCause] = useState("");
 
@@ -143,7 +143,8 @@ export default function KPIs() {
         setId(list.id);
         setAccount(list.account);
         setTarget(list.target);
-        setTargetAchieved(list.target_achieved);
+        setYTDPlanned(list.plannedYTD);
+        setYTDActual(list.actualYTD)
         // setSupportRequired(list.supportRequired);
         setAction(list.action);
         // setRootCause(list.rootCause)
@@ -168,7 +169,8 @@ export default function KPIs() {
             userId: created_by,
             account: account,
             target: target,
-            targetAchieved: target_achieved,
+            plannedYTD: ytd_planned,
+            actualYTD: ytd_actual,
             action: action
         });
         console.log("kpi", body);
@@ -209,17 +211,24 @@ export default function KPIs() {
     }
 
     const handleInvert = async(list) => {
+        setshowloader(true);
+        console.log("list", list);
 
         try {
 
             let response = await axios.get(`/kpi/invert?kpi_id=${list.id}`)
-            if (response.status == 201) {
-                console.log(response.data)
+            if (response.status == 200) {
+                setshowloader(false);
+                console.log("here", response.data)
                 dispatch(getKpis(currentUser.id))
             } else {
+                setshowloader(false);
+                console.log("here else", response.data)
                 dispatch(getKpis(currentUser.id))
             } 
         } catch(e) {
+            setshowloader(false);
+            console.log("here err", e)
             dispatch(getKpis(currentUser.id))
         } 
     }
@@ -335,7 +344,19 @@ export default function KPIs() {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        { items === null || items === undefined ? (
+                        { isLoading ? (<Loader
+                            type="Puff"
+                            color="#29A15B"
+                            height={150}
+                            width={150}
+                            style={{
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                padding: "50px"
+                            }}
+                            />) 
+                        : items === null || items === undefined ? (
                             <TableRow> <TableCell> No KPIs available </TableCell></TableRow>
                         ) : items ? ( items.map((list, index) => (
                             <TableRow key={index}>
@@ -343,15 +364,14 @@ export default function KPIs() {
                                 <TableCell>{list.title}</TableCell>
                                 <TableCell>{list.kpi_unit_of_measure}</TableCell>
                                 <TableCell>{list.account}</TableCell>
-                                <TableCell>{list.target} </TableCell>
-                                <TableCell>{list.target_achieved} </TableCell>
+                                <TableCell>{list.plannedYTD} </TableCell>
+                                <TableCell>{list.actualYTD} </TableCell>
                                 <TableCell><IconButton aria-label="edit" className={classes.textGreen} onClick={() => { handleEditClickOpen(); setEditing(list) }} ><EditIcon/></IconButton>
-                                    <IconButton aria-label="invert" color="primary" onClick={() => { handleInvert() }} ><CompareArrows /></IconButton>
+                                    <IconButton aria-label="invert" color="primary" onClick={() => { handleInvert(list) }} ><CompareArrows /></IconButton>
                                 </TableCell>
                                 {/* <IconButton aria-label="delete" color="secondary" onClick={() => { handleDeleteClickOpen(); setDelete(list) }} ><DeleteIcon /></IconButton> */}
                             </TableRow>
-                        ))) : error ? (<TableRow> <TableCell> {error} </TableCell></TableRow> 
-                        ) : isLoading ? (<TableRow> <LinearProgress color="success" /> </TableRow>) : null }
+                        ))) : error ? (<TableRow> <TableCell> {error} </TableCell></TableRow>) : null }
 
                     </TableBody>
                 </Table>
@@ -537,15 +557,15 @@ export default function KPIs() {
                                 <TextField
                                     autoFocus
                                     margin="dense"
-                                    id="target"
+                                    id="ytd_planned"
                                     label="YTD Planned"
                                     type="number"
                                     fullWidth
                                     style={{marginBottom : '15px'}}
-                                    value={target}
+                                    value={ytd_planned}
                                     variant="outlined"
                                     onChange = {(event) => {
-                                        setTarget(event.target.value);
+                                        setYTDPlanned(event.target.value);
                                     }}
                                 />
                             </Grid>
@@ -554,15 +574,15 @@ export default function KPIs() {
                                 <TextField
                                     autoFocus
                                     margin="dense"
-                                    id="target"
+                                    id="ytd_actual"
                                     label="YTD Actual"
                                     type="number"
                                     fullWidth
                                     style={{marginBottom : '15px'}}
-                                    value={target_achieved}
+                                    value={ytd_actual}
                                     variant="outlined"
                                     onChange = {(event) => {
-                                        setTargetAchieved(event.target.value);
+                                        setYTDActual(event.target.value);
                                     }}
                                 />
                             </Grid>

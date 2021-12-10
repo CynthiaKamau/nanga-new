@@ -66,8 +66,8 @@ export default function KPIReport() {
     const [updated_by, setUpdatedBy] = useState(currentUser.id);
     const [target, setTarget] = useState("");
     const [account, setAccount] = useState("");
-    const [target_achieved, setTargetAchieved] = useState("");
-    const [action, setAction] = useState("");
+    const [ytd_planned, setYTDPlanned] = useState("");
+    const [ytd_actual, setYTDActual] = useState("");    const [action, setAction] = useState("");
     const [support_required, setSupportRequired] = useState("");
     const [root_cause, setRootCause] = useState("");
 
@@ -135,7 +135,7 @@ export default function KPIReport() {
     };
 
     const setEditing = (list) => {
-        console.log(list);
+        console.log("edit", list);
 
         setKPI(list.title);
         setUnitOfMeasure(list.kpi_unit_of_measure);
@@ -143,7 +143,8 @@ export default function KPIReport() {
         setId(list.id);
         setAccount(list.account);
         setTarget(list.target);
-        setTargetAchieved(list.target_achieved);
+        setYTDPlanned(list.plannedYTD);
+        setYTDActual(list.actualYTD)
         setSupportRequired(list.supportRequired);
         setAction(list.action);
         setRootCause(list.rootCause)
@@ -167,7 +168,8 @@ export default function KPIReport() {
             userId: created_by,
             account: account,
             target: target,
-            targetAchieved: target_achieved,
+            plannedYTD: ytd_planned,
+            actualYTD: ytd_actual,
             action: action,
             rootCause: root_cause,
             supportRequired: support_required
@@ -296,8 +298,8 @@ export default function KPIReport() {
                     <TableHead>
                         <TableRow>
                             <TableCell>Measure</TableCell>
-                            <TableCell>YTD Actual</TableCell>
                             <TableCell>YTD Planned</TableCell>
+                            <TableCell>YTD Actual</TableCell>
                             <TableCell> VAR</TableCell>
                             <TableCell> Root Cause </TableCell>
                             <TableCell>Action</TableCell>
@@ -311,8 +313,8 @@ export default function KPIReport() {
                         ) : items ? ( items.map((list, index) => (
                             <TableRow key={index}>
                                 <TableCell>{list.title} </TableCell>
-                                <TableCell>{list.target_achieved}</TableCell>
-                                <TableCell>{list.target} </TableCell>
+                                <TableCell>{list.plannedYTD}</TableCell>
+                                <TableCell>{list.actualYTD} </TableCell>
                                 { list.variance === 'amber' ? (
                                     <TableCell> <FiberManualRecord style={{color : '#FFC107'}}/> </TableCell>)
                                 : list.variance === 'green' ? (<TableCell> <FiberManualRecord style={{color : '#29A15B'}}/> </TableCell>)
@@ -513,15 +515,15 @@ export default function KPIReport() {
                                 <TextField
                                     autoFocus
                                     margin="dense"
-                                    id="target"
-                                    label="YTD Planned "
+                                    id="ytd_planned"
+                                    label="YTD Planned"
                                     type="number"
                                     fullWidth
                                     style={{marginBottom : '15px'}}
-                                    value={target}
+                                    value={ytd_planned}
                                     variant="outlined"
                                     onChange = {(event) => {
-                                        setTarget(event.target.value);
+                                        setYTDPlanned(event.target.value);
                                     }}
                                 />
                             </Grid>
@@ -530,15 +532,15 @@ export default function KPIReport() {
                                 <TextField
                                     autoFocus
                                     margin="dense"
-                                    id="target"
-                                    label="YTD Actual "
+                                    id="ytd_actual"
+                                    label="YTD Actual"
                                     type="number"
                                     fullWidth
                                     style={{marginBottom : '15px'}}
-                                    value={target_achieved}
+                                    value={ytd_actual}
                                     variant="outlined"
                                     onChange = {(event) => {
-                                        setTargetAchieved(event.target.value);
+                                        setYTDActual(event.target.value);
                                     }}
                                 />
                             </Grid>

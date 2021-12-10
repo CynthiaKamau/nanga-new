@@ -1141,8 +1141,8 @@ function Dashboard() {
                                           <TableCell>{list.title} </TableCell>
                                           <TableCell>{list.kpi_unit_of_measure} </TableCell>
                                           <TableCell>{list.target} </TableCell>
-                                          <TableCell>{list.target_achieved}</TableCell>
-                                          <TableCell>{list.target_achieved}</TableCell>
+                                          <TableCell>{list.plannedYTD}</TableCell>
+                                          <TableCell>{list.actualYTD}</TableCell>
                                           { list.variance === 'amber' ? (
                                               <TableCell> <FiberManualRecord style={{color : '#FFC107'}}/> </TableCell>)
                                           : list.variance === 'green' ? (<TableCell> <FiberManualRecord style={{color : '#29A15B'}}/> </TableCell>)
