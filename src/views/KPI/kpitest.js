@@ -299,45 +299,31 @@ export default function DataTable() {
     const columns = [
         {
             field: 'categories.description',
-            title: 'Category',
-            valueFormatter: (params) => (params.row?.categories?.description, console.log("im here", params)),
-            width: 200,
-            editable: true,
+            title: 'Category'
         },
         {
           field: 'title',
-          title: 'Title',
-          width: 300,
-          editable: true,
+          title: 'Title'
         },
         {
           field: 'kpi_unit_of_measure',
-          title: 'Unit Of Measure',
-          width: 200,
-          editable: true,
+          title: 'Unit Of Measure'
         },
         {
           field: 'account',
-          title: 'Account',
-          width: 200,
-          sortable: false,
+          title: 'Account'
         },
         {
           field: 'plannedYTD',
-          title: 'Planned YTD',
-          width: 200,
-          sortable: false,
+          title: 'Planned YTD'
         },
         {
           field: 'actualYTD',
-          title: 'Actual YTD',
-          width: 200,
-          sortable: false,
+          title: 'Actual YTD'
         },
         {
           field: 'actions',
           title: 'Actions',
-          width: 200,
           render: (list) => {
             console.log("editing table", list)
             return ( <div><IconButton aria-label="edit" className={classes.textGreen} onClick={() => { handleEditClickOpen(); setEditing(list)}}><EditIcon /></IconButton>
