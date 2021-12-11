@@ -1,17 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
-import { DataGrid } from '@material-ui/data-grid';
 import { getCategories } from "actions/data";
 import { getKpis } from "actions/kpis";
-import IconButton from '@material-ui/core/Button';
 import EditIcon from '@material-ui/icons/Edit';
 import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
 import { makeStyles } from "@material-ui/core/styles";
 import swal from "sweetalert2";
 import Loader from "react-loader-spinner";
 import axios from "axios";
-import { Grid } from "@material-ui/core";
+import { Grid, IconButton } from "@material-ui/core";
 import MenuItem from '@material-ui/core/MenuItem';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -22,52 +20,16 @@ import TextField from '@material-ui/core/TextField';
 import Button from "components/CustomButtons/Button.js";
 import GridItem from "components/Grid/GridItem.js";
 import GridContainer from "components/Grid/GridContainer.js";
+import { CompareArrows } from "@material-ui/icons";
+import Card from "components/Card/Card.js";
+import CardHeader from "components/Card/CardHeader.js";
+import CardBody from "components/Card/CardBody.js";
+import MaterialTable from 'material-table';
 
 const useStyles = makeStyles(styles);
-const classes = useStyles();
-
-const columns = [
-    { field: 'id', headerName: 'ID', width: 90 },
-    {
-      field: 'title',
-      headerName: 'Title',
-      width: 150,
-      editable: true,
-    },
-    {
-      field: 'kpi_unit_of_measure',
-      headerName: 'Unit Of Measure',
-      width: 150,
-      editable: true,
-    },
-    {
-      field: 'categories.id',
-      headerName: 'Category',
-      type: 'number',
-      width: 110,
-      editable: true,
-    },
-    {
-      field: 'account',
-      headerName: 'Account',
-      description: 'This column has a value getter and is not sortable.',
-      sortable: false,
-      width: 160,
-    },
-    {
-      field: '',
-      headerName: 'Actions',
-      width: 160,
-      renderCell: (value) => {
-        //   return (
-        //     //   <IconButton aria-label="edit" className={classes.textGreen} onClick={() => { handleEditClickOpen(); setEditing(value) }} ><EditIcon/></IconButton>
-        //   )
-      }
-    },
-  ];
 
 export default function DataTable() {
-    
+    const classes = useStyles();
     const dispatch = useDispatch();
 
     const { items } = useSelector(state => state.kpi);
@@ -75,7 +37,7 @@ export default function DataTable() {
     const { categories }  = useSelector(state => state.data);
     // const { error : category_error, isLoading : category_loading}  = useSelector(state => state.data);
 
-    console.log("categories", categories)
+    console.log("kpi", items)
 
     useEffect(() => {
         dispatch(getKpis(currentUser.id));
@@ -94,13 +56,20 @@ export default function DataTable() {
     const [updated_by, setUpdatedBy] = useState(currentUser.id);
     const [target, setTarget] = useState("");
     const [account, setAccount] = useState("");
-    const [target_achieved, setTargetAchieved] = useState("");
+    const [ytd_planned, setYTDPlanned] = useState("");
+    const [ytd_actual, setYTDActual] = useState("");
     const [action, setAction] = useState("");
     // const [support_required, setSupportRequired] = useState("");
     // const [root_cause, setRootCause] = useState("");
 
+    console.log(setId);
+
     const handleAddClickOpen = () => {
         setAddOpen(true);
+    };
+
+    const handleEditClickOpen = () => {
+        setEditOpen(true);
     };
 
     const saveKpi = async (e) => {
@@ -177,7 +146,8 @@ export default function DataTable() {
             userId: created_by,
             account: account,
             target: target,
-            targetAchieved: target_achieved,
+            plannedYTD: ytd_planned,
+            actualYTD: ytd_actual,
             action: action
         });
         console.log("kpi", body);
@@ -217,6 +187,22 @@ export default function DataTable() {
     
     }
 
+    const setEditing = (list) => {
+        console.log(list);
+
+        setKPI(list.title);
+        setUnitOfMeasure(list.kpi_unit_of_measure);
+        setCategory(list.categories.id);
+        setId(list.id);
+        setAccount(list.account);
+        setTarget(list.target);
+        setYTDPlanned(list.plannedYTD);
+        setYTDActual(list.actualYTD)
+        // setSupportRequired(list.supportRequired);
+        setAction(list.action);
+        // setRootCause(list.rootCause)
+    }
+
     // const handleDeleteClickOpen = () => {
     //     setDeleteOpen(true);
     // };
@@ -232,6 +218,29 @@ export default function DataTable() {
     const handleEditClose = () => {
         setEditOpen(false);
     };
+
+    const handleInvert = async(list) => {
+        setshowloader(true);
+        console.log("list", list);
+
+        try {
+
+            let response = await axios.get(`/kpi/invert?kpi_id=${list.id}`)
+            if (response.status == 200) {
+                setshowloader(false);
+                console.log("here", response.data)
+                dispatch(getKpis(currentUser.id))
+            } else {
+                setshowloader(false);
+                console.log("here else", response.data)
+                dispatch(getKpis(currentUser.id))
+            } 
+        } catch(e) {
+            setshowloader(false);
+            console.log("here err", e)
+            dispatch(getKpis(currentUser.id))
+        } 
+    }
 
     // const handleDeleteClose = () => {
     //     setDeleteOpen(false);
@@ -287,6 +296,58 @@ export default function DataTable() {
         }
     ]
 
+    const columns = [
+        {
+            field: 'categories.description',
+            title: 'Category',
+            valueFormatter: (params) => (params.row?.categories?.description, console.log("im here", params)),
+            width: 200,
+            editable: true,
+        },
+        {
+          field: 'title',
+          title: 'Title',
+          width: 300,
+          editable: true,
+        },
+        {
+          field: 'kpi_unit_of_measure',
+          title: 'Unit Of Measure',
+          width: 200,
+          editable: true,
+        },
+        {
+          field: 'account',
+          title: 'Account',
+          width: 200,
+          sortable: false,
+        },
+        {
+          field: 'plannedYTD',
+          title: 'Planned YTD',
+          width: 200,
+          sortable: false,
+        },
+        {
+          field: 'actualYTD',
+          title: 'Actual YTD',
+          width: 200,
+          sortable: false,
+        },
+        {
+          field: 'actions',
+          title: 'Actions',
+          width: 200,
+          render: (list) => {
+            console.log("editing table", list)
+            return ( <div><IconButton aria-label="edit" className={classes.textGreen} onClick={() => { handleEditClickOpen(); setEditing(list)}}><EditIcon /></IconButton>
+            <IconButton aria-label="invert" color="primary" onClick={() => { handleInvert(list) }} ><CompareArrows /></IconButton>
+            </div>)
+          }
+    
+        }
+      ];
+
   return (
     <div style={{ height: 400, width: '100%' }}>
         <GridContainer>
@@ -294,14 +355,25 @@ export default function DataTable() {
             <Button color="primary" size="lg" onClick={handleAddClickOpen}> Add KPI </Button> 
         </Grid>
 
-        <GridItem xs={12} sm={12} md={12}>
-            <DataGrid
-                rows={items}
-                columns={columns}
-                pageSize={5}
-                checkboxSelection
-                disableSelectionOnClick
-            />
+        <GridItem xs={12} sm={12} md={12} >
+            <Card>
+                <CardHeader color="primary">
+                    <h4>KPIS </h4>
+                </CardHeader>
+                <CardBody>
+                    <MaterialTable
+                        title="KPI  details."
+                        data={items}
+                        columns={columns}
+                        options={{
+                          search: true,
+                          sorting: true,
+                          pageSize: 9,
+                          pageSizeOptions: [10,50,100 ],
+                        }}
+                    />
+                </CardBody>
+            </Card>
 
              <Dialog open={addopen} onClose={handleAddClose}>
                 <DialogTitle>KPI</DialogTitle>
@@ -484,15 +556,15 @@ export default function DataTable() {
                             <TextField
                                 autoFocus
                                 margin="dense"
-                                id="target"
+                                id="ytd_planned"
                                 label="YTD Planned"
                                 type="number"
                                 fullWidth
                                 style={{marginBottom : '15px'}}
-                                value={target}
+                                value={ytd_planned}
                                 variant="outlined"
                                 onChange = {(event) => {
-                                    setTarget(event.target.value);
+                                    setYTDPlanned(event.target.value);
                                 }}
                             />
                         </Grid>
@@ -501,15 +573,15 @@ export default function DataTable() {
                             <TextField
                                 autoFocus
                                 margin="dense"
-                                id="target"
+                                id="ytd_actual"
                                 label="YTD Actual"
                                 type="number"
                                 fullWidth
                                 style={{marginBottom : '15px'}}
-                                value={target_achieved}
+                                value={ytd_actual}
                                 variant="outlined"
                                 onChange = {(event) => {
-                                    setTargetAchieved(event.target.value);
+                                    setYTDActual(event.target.value);
                                 }}
                             />
                         </Grid>

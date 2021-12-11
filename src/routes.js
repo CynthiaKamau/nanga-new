@@ -5,8 +5,8 @@ import Objectives from "@material-ui/icons/DoneAll";
 import DashboardPage from "views/Dashboard/Dashboard.js";
 import AssignedTasksPage from "views/Tasks/AssignedTasksPage";
 import StrategicObjectives from "views/Objectives/Objectives";
-import KPIsPage from "views/KPI/kpi";
-// import KPIsPageTest from "views/KPI/kpitest";
+// import KPIsPage from "views/KPI/kpi";
+import KPIsPageTest from "views/KPI/kpitest";
 
 // import MyKpis from "views/KPI/mykpi"; 
 import UserProfile from "views/UserProfile/UserProfile";
@@ -75,7 +75,7 @@ var dashRoutes = [
     name: "KPIS",
     rtlName: "الحاجيات",
     icon: VerticalAlignCenterIcon,
-    component: KPIsPage,
+    component: KPIsPageTest,
     layout: "/admin",
   },
   {
