@@ -357,6 +357,7 @@ export default function ObjectiveReport() {
                     sorting: true,
                     pageSize: 10,
                     pageSizeOptions: [10,50,100 ],
+                    exportButton: true
                   }}
                 />
 
