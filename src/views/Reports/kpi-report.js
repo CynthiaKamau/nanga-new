@@ -7,11 +7,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import GridItem from "components/Grid/GridItem.js";
 import GridContainer from "components/Grid/GridContainer.js";
 import Button from "components/CustomButtons/Button.js";
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
+
 import Card from "components/Card/Card.js";
 import CardHeader from "components/Card/CardHeader.js";
 import CardBody from "components/Card/CardBody.js";
@@ -28,11 +24,11 @@ import TextField from '@material-ui/core/TextField';
 import { getKpis } from "actions/kpis";
 import swal from "sweetalert2";
 import Loader from "react-loader-spinner";
-import { LinearProgress } from "@material-ui/core";
 import axios from "axios";
 import { getCategories } from "actions/data";
 import { Grid } from "@material-ui/core";
 import FiberManualRecord from "@material-ui/icons/FiberManualRecord";
+import MaterialTable from 'material-table';
 
 import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
 
@@ -42,7 +38,7 @@ export default function KPIReport() {
     const classes = useStyles();
     const dispatch = useDispatch();
 
-    const { items, error, isLoading } = useSelector(state => state.kpi);
+    const { items } = useSelector(state => state.kpi);
     const { user : currentUser } = useSelector(state => state.auth);
     const { categories }  = useSelector(state => state.data);
     // const { error : category_error, isLoading : category_loading}  = useSelector(state => state.data);
@@ -280,6 +276,60 @@ export default function KPIReport() {
         }
     ]
 
+    const columns = [
+        {
+          field: 'title',
+          title: 'Measure'
+        }, 
+        {
+          field: 'plannedYTD',
+          title: 'YTD Planned'
+        }, 
+        {
+          field: 'actualYTD',
+          title: 'YTD Actual'
+        }, 
+        {
+          field: '',
+          title: 'VAR',
+          render: (list) => {
+            console.log("editing table", list)  
+            if(list.variance === 'amber') {
+                return (<FiberManualRecord style={{color : '#FFC107'}}/>)
+            } else if(list.variance === 'green') {
+                return (<FiberManualRecord style={{color : '#29A15B'}}/>)
+            } else if(list.variance === 'blue') {
+                return (<FiberManualRecord style={{color : '#03A9F4'}}/>)
+            } else if(list.variance === 'red') {
+                return (<FiberManualRecord style={{color : '#F44336'}}/>)
+            } else if(list.variance === null || list.variance === undefined) {
+                return (<FiberManualRecord style={{color : '#F44336'}}/>)
+            } 
+          }
+        }, 
+        {
+          field: 'rootCause',
+          title: 'Root Cause'
+        },
+        {
+          field: 'action',
+          title: 'Action'
+        }, 
+        {
+          field: 'supportRequired',
+          title: 'Support Required'
+          }, 
+        {
+          field: 'actions',
+          title: 'Actions',
+          render: (list) => {
+            console.log("editing table", list)
+              return ( <div> <IconButton aria-label="edit" color="primary" onClick={() => { handleEditClickOpen(); setEditing(list) }} ><EditIcon/></IconButton>
+                </div>)
+          }
+        }
+    ]
+
   return (
     <div>
       <GridContainer>
@@ -287,52 +337,21 @@ export default function KPIReport() {
             <Card>
               <CardHeader color="primary">
                 <h4>KPIs</h4>
-                <p>
-                  KPI Report.
-                </p>
               </CardHeader>
               <CardBody>
               <div className={classes.btnRight}><Button color="primary" size="lg" onClick={handleAddClickOpen}> Add KPI </Button> </div> 
 
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>Measure</TableCell>
-                            <TableCell>YTD Planned</TableCell>
-                            <TableCell>YTD Actual</TableCell>
-                            <TableCell> VAR</TableCell>
-                            <TableCell> Root Cause </TableCell>
-                            <TableCell>Action</TableCell>
-                            <TableCell>Support Required </TableCell>
-                            <TableCell> </TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        { items === null || items === undefined ? (
-                            <TableRow> <TableCell> No KPIs available </TableCell></TableRow>
-                        ) : items ? ( items.map((list, index) => (
-                            <TableRow key={index}>
-                                <TableCell>{list.title} </TableCell>
-                                <TableCell>{list.plannedYTD}</TableCell>
-                                <TableCell>{list.actualYTD} </TableCell>
-                                { list.variance === 'amber' ? (
-                                    <TableCell> <FiberManualRecord style={{color : '#FFC107'}}/> </TableCell>)
-                                : list.variance === 'green' ? (<TableCell> <FiberManualRecord style={{color : '#29A15B'}}/> </TableCell>)
-                                : list.variance === 'blue' ? (<TableCell> <FiberManualRecord style={{color : '#03A9F4'}}/> </TableCell>)
-                                : list.variance === 'red' ? (<TableCell> <FiberManualRecord style={{color : '#F44336'}}/> </TableCell>)
-                                : list.variance === null || list.variance === undefined  ? (<TableCell> <FiberManualRecord style={{color : '#F44336'}}/> </TableCell>)
-                                : null }
-                                <TableCell>{list.rootCause}</TableCell>
-                                <TableCell>{list.action}</TableCell>
-                                <TableCell>{list.supportRequired}</TableCell>
-                                <TableCell><IconButton aria-label="edit" color="primary" onClick={() => { handleEditClickOpen(); setEditing(list) }} ><EditIcon/></IconButton> </TableCell>
-                                {/* <IconButton aria-label="delete" color="secondary" onClick={() => { handleDeleteClickOpen(); setDelete(list) }} ><DeleteIcon /></IconButton> */}
-                            </TableRow>
-                        ))) : error ? (<TableRow> <TableCell> {error} </TableCell></TableRow> 
-                        ) : isLoading ? (<TableRow> <LinearProgress color="success" /> </TableRow>) : null }
-
-                    </TableBody>
-                </Table>
+                <MaterialTable
+                  title="KPI Report."
+                  data={items}
+                  columns={columns}
+                  options={{
+                    search: true,
+                    sorting: true,
+                    pageSize: 10,
+                    pageSizeOptions: [10,50,100 ],
+                  }}
+                />
 
                 <Dialog open={addopen} onClose={handleAddClose}>
                     <DialogTitle>KPI</DialogTitle>

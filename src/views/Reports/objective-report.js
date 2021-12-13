@@ -7,11 +7,6 @@ import { useSelector, useDispatch } from "react-redux";
 import GridItem from "components/Grid/GridItem.js";
 import GridContainer from "components/Grid/GridContainer.js";
 import Button from "components/CustomButtons/Button.js";
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
 import Card from "components/Card/Card.js";
 import CardHeader from "components/Card/CardHeader.js";
 import CardBody from "components/Card/CardBody.js";
@@ -40,6 +35,7 @@ import FiberManualRecord from "@material-ui/icons/FiberManualRecord";
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
+import MaterialTable from 'material-table';
 
 import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
 
@@ -53,7 +49,7 @@ export default function ObjectiveReport() {
     const classes = useStyles();
     const dispatch = useDispatch();
 
-    const { items, item, error, isLoading } = useSelector(state => state.objective);
+    const { items, item } = useSelector(state => state.objective);
     const {  categories, pillars } = useSelector(state => state.data);
     const { user: currentUser } = useSelector(state => state.auth);
     const {  items : kpis } = useSelector(state => state.kpi);
@@ -295,65 +291,74 @@ export default function ObjectiveReport() {
         }
     ]
 
+    const columns = [
+        {
+          field: 'objectives.description',
+          title: 'Strategic Objective'
+        },
+        {
+          field: 'objectives.user.fullnames',
+          title: 'Owner'
+        },
+        {
+          field: '',
+          title: 'Variance',
+          render: (list) => {
+            if(list.objectives.overallStatus === 'COMPLETE' || list.objectives.overallStatus === 'Complete') {
+                return (<FiberManualRecord style={{color : '#29A15B'}} />)
+            }  else if(list.objectives.overallStatus === 'INCOMPLETE' || list.objectives.overallStatus === 'Incomplete' || list.objectives.overallStatus === null ) {
+                return (<FiberManualRecord style={{color : '#F44336'}}/>) 
+            }
+          }
+        },
+        {
+          field: 'objectives.rootCause',
+          title: 'Root Cause and Insight'
+        },
+        {
+          field: 'objectives.action',
+          title: 'Action'
+        },
+        {
+          field: 'objectives.riskOrOpportunity',
+          title: 'Risk/Opportunities'
+        },
+        {
+          field: 'objectives.supportRequired',
+          title: 'Support Required'
+        },
+        {
+          field: '',
+          title: 'Action',
+          render: (list) => {
+            console.log("editing table", list)
+            return (<IconButton aria-label="edit" color="primary" onClick={() => { handleEditClickOpen(); setEditing(list.objectives) }} ><EditIcon/></IconButton>)
+          }
+        }
+    ]
+
   return (
     <div>
       <GridContainer>
       <GridItem xs={12} sm={12} md={12}>
             <Card>
               <CardHeader color="primary">
-                <h4>Strategic Objective Reports</h4>
-                <p>
-                Reports.
-                </p>
+                <h4>Strategic Objectives</h4>
               </CardHeader>
               <CardBody>
               {/* <div className={classes.btnRight}><Button color="primary" size="lg" onClick={handleAddClickOpen}> Add KPI </Button> </div> */}
 
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>Strategic Objective</TableCell>
-                            <TableCell>Owner</TableCell>
-                            <TableCell>Variance</TableCell>
-                            <TableCell>Root Cause and Insight</TableCell>
-                            <TableCell>Action</TableCell>
-                            <TableCell>Risk/Opportunities</TableCell>
-                            <TableCell>Support Required</TableCell>
-                            <TableCell>Action</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        { isLoading ? (<Loader
-                            type="Puff"
-                            color="#29A15B"
-                            height={150}
-                            width={150}
-                            style={{
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
-                                padding: "50px"
-                            }}
-                            />) 
-                        : items ? ( items.map((list, index) => (
-                            <TableRow key={index}>
-                                <TableCell>{list.objectives.description}</TableCell>
-                                <TableCell>{list.objectives.user.fullnames} </TableCell>
-                                <TableCell> <FiberManualRecord style={{color : list.objectives.overallStatus === 'Incomplete' ? 'red' : (list.objectives.overallStatus === 'COMPLETE') ? 'green' : (list.objectives.overallStatus === 'INCOMPLETE') ? 'red'  :'solid 5px black' , marginBottom: '0'}} key={index} /> </TableCell>
-                                <TableCell>{list.objectives.rootCause} </TableCell>
-                                <TableCell>{list.objectives.action} </TableCell>
-                                <TableCell>{list.objectives.riskOrOpportunity} </TableCell>
-                                <TableCell>{list.objectives.supportRequired} </TableCell>
-                                <TableCell>
-                                <IconButton aria-label="edit" color="primary" onClick={() => { handleEditClickOpen(); setEditing(list.objectives) }} ><EditIcon/></IconButton>
-                                {/* <IconButton aria-label="delete" color="secondary" onClick={() => { handleDeleteClickOpen(); setDelete(list) }} ><DeleteIcon /></IconButton> */}
-                                </TableCell>
-                            </TableRow>
-                        ))) : error ? (<TableRow> <TableCell> {error} </TableCell></TableRow>
-                        ) : null }
-
-                    </TableBody>
-                </Table>
+                <MaterialTable
+                  title="Strategic Objective Reports."
+                  data={items}
+                  columns={columns}
+                  options={{
+                    search: true,
+                    sorting: true,
+                    pageSize: 10,
+                    pageSizeOptions: [10,50,100 ],
+                  }}
+                />
 
                 <Dialog open={addopen} onClose={handleAddClose}>
                     <DialogTitle>KPI</DialogTitle>

@@ -6,11 +6,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import GridItem from "components/Grid/GridItem.js";
 import GridContainer from "components/Grid/GridContainer.js";
 import Button from "components/CustomButtons/Button.js";
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
+
 import Card from "components/Card/Card.js";
 import CardHeader from "components/Card/CardHeader.js";
 import CardBody from "components/Card/CardBody.js";
@@ -29,6 +25,7 @@ import swal from "sweetalert2";
 import Loader from "react-loader-spinner";
 import axios from "axios";
 import { getUsers } from "actions/users";
+import MaterialTable from 'material-table';
 
 import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
 
@@ -211,6 +208,28 @@ export default function TeamsPage() {
         },
     ]
 
+    const columns = [
+        {
+          field: 'team_name',
+          title: 'Name'
+        }, 
+        {
+          field: 'team_lead',
+          title: 'Team Lead'
+        }, 
+        {
+          field: 'actions',
+          title: 'Actions',
+          render: (list) => {
+            console.log("editing table", list)
+            if(currentUser.role_id === 0) {
+              return ( <div><IconButton aria-label="edit" color="primary" onClick={() => { handleEditClickOpen(); setEditing(list) }} ><EditIcon /></IconButton>
+                </div>)
+            }
+          }
+          }, 
+    ]
+
     return (
         <div>
             <GridContainer>
@@ -218,35 +237,21 @@ export default function TeamsPage() {
                     <Card>
                         <CardHeader color="primary">
                             <h4>Teams</h4>
-                            <p>
-                                Team details.
-                            </p>
                         </CardHeader>
                         <CardBody>
                         { currentUser.role_id === 0 ? (<div className={classes.btnRight}><Button color="primary" size="lg" onClick={handleAddClickOpen}> Add Team </Button> </div> ) : null}
 
-                            <Table>
-                                <TableHead>
-                                    <TableRow>
-                                        <TableCell>Name</TableCell>
-                                        <TableCell>Team Lead</TableCell>
-                                        { currentUser.role_id === 0 ? (<TableCell>Action</TableCell> ) : null}
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {items && items.map((list, index) => (
-                                        <TableRow key={index}>
-                                            <TableCell>{list.team_name}</TableCell>
-                                            <TableCell>{list.team_lead}</TableCell>
-                                            { currentUser.role_id === 0 ? ( <TableCell>
-                                                <IconButton aria-label="edit" color="primary" onClick={() => { handleEditClickOpen(); setEditing(list) }} ><EditIcon /></IconButton>
-                                                {/* <IconButton aria-label="delete" color="secondary" onClick={() => { handleDeleteClickOpen(); setDelete(list) }} ><DeleteIcon /></IconButton> */}
-                                            </TableCell> ) : null }
-
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
+                            <MaterialTable
+                                title="Team details."
+                                data={items}
+                                columns={columns}
+                                options={{
+                                    search: true,
+                                    sorting: true,
+                                    pageSize: 10,
+                                    pageSizeOptions: [10,50,100 ],
+                                }}
+                            />
 
                             <Dialog open={addopen} onClose={handleAddClose} >
                                 <DialogTitle>Team</DialogTitle>

@@ -354,7 +354,7 @@ export default function DataTable() {
                         options={{
                           search: true,
                           sorting: true,
-                          pageSize: 9,
+                          pageSize: 10,
                           pageSizeOptions: [10,50,100 ],
                         }}
                     />

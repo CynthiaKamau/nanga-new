@@ -2,30 +2,25 @@ import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
 // @material-ui/core
-// import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 // core components
 import GridItem from "components/Grid/GridItem.js";
 import GridContainer from "components/Grid/GridContainer.js";
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
 import Card from "components/Card/Card.js";
 import CardHeader from "components/Card/CardHeader.js";
 import CardBody from "components/Card/CardBody.js";
 import { ArrowForward } from "@material-ui/icons";
 import IconButton from '@material-ui/core/Button';
-import { LinearProgress } from "@material-ui/core";
 import { useHistory } from "react-router";
 import { getUsers } from "actions/users";
+import MaterialTable from 'material-table';
 
-// import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
+import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
 
-// const useStyles = makeStyles(styles);
+const useStyles = makeStyles(styles);
 
 export default function MyTeamPage() {
-
+    const classes = useStyles();
     const history = useHistory();
     const dispatch = useDispatch();
 
@@ -42,6 +37,30 @@ export default function MyTeamPage() {
 
         history.push(`/admin/user-dashboard/id=${user}`);
     }
+
+    const columns = [
+        {
+            field: 'fullnames',
+            title: 'Name'
+        },
+        {
+            field: 'roles.role_name',
+            title: 'Role'
+        },
+        {
+            field: 'status',
+            title: 'Status'
+        },
+        {
+            field: 'actions',
+            title: 'Action',
+            render: (list) => {
+                console.log("editing table", list)
+                return ( <div><IconButton aria-label="redirect" className={classes.textGreen} onClick={() => { handleClickOpen(list.id)}}><ArrowForward /></IconButton>
+                </div>)
+              }
+        }
+    ]
     
     return (
         <div>
@@ -50,40 +69,21 @@ export default function MyTeamPage() {
                     <Card>
                         <CardHeader color="primary">
                             <h4>Teams</h4>
-                            <p>
-                                Team details.
-                            </p>
                         </CardHeader>
                         <CardBody>
 
-                            <Table>
-                                <TableHead>
-                                    <TableRow>
-                                        <TableCell>Name</TableCell>
-                                        <TableCell>Role</TableCell>
-                                        <TableCell>Status</TableCell>
-                                        <TableCell>Action</TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {items ? ( items.map((list, index) => (
-                                        <TableRow key={index}>
-                                            <TableCell>{list.fullnames}</TableCell>
-                                            <TableCell>{list.roles.role_name}</TableCell>
-                                            <TableCell>{list.status}</TableCell>
-                                            <TableCell>
-                                                <IconButton aria-label="view" color="error" onClick={() => {handleClickOpen(list.id)}} ><ArrowForward /></IconButton>
-                                            </TableCell>
+                        <MaterialTable
+                            title="Team details."
+                            data={items}
+                            columns={columns}
+                            options={{
+                            search: true,
+                            sorting: true,
+                            pageSize: 10,
+                            pageSizeOptions: [10,50,100 ],
+                            }}
+                        />
 
-                                        </TableRow>
-                                        ))
-                                    ) : (
-                                        <div style={{ textAlign: "center", marginTop: 10 }}>
-                                            <LinearProgress color="success" />
-                                        </div>
-                                    )}
-                                </TableBody>
-                            </Table>
                         </CardBody>
                     </Card>
                 </GridItem>

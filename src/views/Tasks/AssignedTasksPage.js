@@ -6,11 +6,6 @@ import { makeStyles } from "@material-ui/core/styles";
 // core components
 import GridItem from "components/Grid/GridItem.js";
 import GridContainer from "components/Grid/GridContainer.js";
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
 import Card from "components/Card/Card.js";
 import CardHeader from "components/Card/CardHeader.js";
 import CardBody from "components/Card/CardBody.js";
@@ -36,7 +31,7 @@ import Loader from "react-loader-spinner";
 import MenuItem from '@material-ui/core/MenuItem';
 import { getUserObjectives } from "actions/objectives";
 import Avatar from "../../assets/img/default-avatar.png";
-
+import MaterialTable from 'material-table';
 
 const useStyles = makeStyles(styles);
 
@@ -46,7 +41,7 @@ export default function AssignedTasksPage() {
     const dispatch = useDispatch();
 
     const { user: currentUser } = useSelector(state => state.auth);
-    const { items, error, isLoading } = useSelector(state => state.task);
+    const { items } = useSelector(state => state.task);
     const { statuses } = useSelector(state => state.data);
     const { items: objectives} = useSelector(state => state.objective);
 
@@ -135,12 +130,57 @@ export default function AssignedTasksPage() {
             });
         }
     }
-
     
     const handleOpen = () => {
         setAddOpen(true);
         //history.push(`/admin/user-dashboard/id=${user}`);
     }
+
+    const columns = [
+        {
+          field: 'description',
+          title: 'Management Actions'
+        },
+        {
+            field: 'assignedTasks[0].assigner.fullnames',
+            title: 'From'
+        },
+        {
+          field: 'resource',
+          title: 'Resources',
+          render: list => {
+            return list.assignedTasks.map((detail, index) => {
+                if(detail.assignee.userPicture != null) {
+                    return (<img key={index} src={detail.assignee.userPicture}
+                        alt={detail.assignee.fullnames}  style={{ maxWidth: '50px', maxHeight: '50px', borderRadius: '50%'}} />)
+                } else if (detail.assignee.userPicture === null || detail.assignee.userPicture === undefined) {
+                    return (<img key={index} src={Avatar} alt={detail.assignee.fullnames}  style={{ maxWidth: '50px', maxHeight: '50px', borderRadius: '50%'}} />) 
+                }
+               
+            })
+
+          }
+        },
+        {
+          field: 'duedate',
+          title: 'Due Date',
+          render: list => {
+              return (moment(list.end_date).format('YYYY-MM-DD'))
+          }
+        },
+        {
+          field: 'status',
+          title: 'Progress'
+        },
+        
+        {
+          field: '',
+          title: 'Actions',
+          render: (list) => {
+              return (<IconButton aria-label="view" color="error" onClick={() => {handleOpen(); setObjectiveId(list.objective_id); setDescription(list.description)}} ><ControlPoint /></IconButton>)
+          }
+        }
+    ]
 
     return (
         <div>
@@ -150,64 +190,20 @@ export default function AssignedTasksPage() {
                     <Card>
                         <CardHeader color="primary">
                             <h4>Assigned MAS </h4>
-                            <p>
-                                Assigned MAS details.
-                            </p>
                         </CardHeader>
                         <CardBody>
 
-                            <Table className={classes.tableBorder}>
-                                <TableHead className={classes.tableHeader}>
-                                    <TableRow>
-                                        <TableCell>Management Actions</TableCell>
-                                        <TableCell>From</TableCell>
-                                        <TableCell>Resources</TableCell>
-                                        <TableCell>Due Date</TableCell>
-                                        <TableCell>Progress</TableCell>
-                                        <TableCell>Actions</TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    { isLoading ? (<Loader
-                                        type="Puff"
-                                        color="#29A15B"
-                                        height={150}
-                                        width={150}
-                                        style={{
-                                            display: "flex",
-                                            justifyContent: "center",
-                                            alignItems: "center",
-                                            padding: "50px"
-                                        }}
-                                        />) 
-                                    : items ? ( items.map((list, index) => (
-                                        <TableRow key={index}>
-                                            <TableCell>{list.description}</TableCell>
-                                            <TableCell> {list.assignedTasks[0].assigner.fullnames} </TableCell>
-                                            <TableCell > 
-                                                {list.assignedTasks.map((detail, index) => (
-                                                    <div key={index} style={{ display: 'inline' }}>
-                                                        { detail.assignee.userPicture === null || detail.assignee.userPicture === undefined ? (
-                                                            <img key={index} src={Avatar} alt={detail.assignee.fullnames}  style={{ maxWidth: '50px', maxHeight: '50px', borderRadius: '50%'}} />
-
-                                                        ) : detail.assignee.userPicture != null ? (
-                                                            <img key={index} src={detail.assignee.userPicture}
-                                                            alt={detail.assignee.fullnames}  style={{ maxWidth: '50px', maxHeight: '50px', borderRadius: '50%'}} />
-                                                        ) : null}
-                                                    </div>
-                                                   
-                                                ))}
-                                            </TableCell>
-                                            {/* <TableCell>{moment(list.start_date).format('YYYY-MM-DD')}</TableCell> */}
-                                            <TableCell>{moment(list.end_date).format('YYYY-MM-DD')}</TableCell>
-                                            <TableCell>{list.status}</TableCell>
-                                            <TableCell>
-                                                <IconButton aria-label="view" color="error" onClick={() => {handleOpen(); setObjectiveId(list.objective_id); setDescription(list.description)}} ><ControlPoint /></IconButton>
-                                            </TableCell>
-                                        </TableRow>
-                                    ))) : error ? (<TableRow> <TableCell> {error} </TableCell></TableRow>) : null }
-                                </TableBody>    
-                            </Table>
+                            <MaterialTable
+                                title="Assigned MAS details."
+                                data={items}
+                                columns={columns}
+                                options={{
+                                    search: true,
+                                    sorting: true,
+                                    pageSize: 10,
+                                    pageSizeOptions: [10,50,100 ],
+                                }}
+                                />
 
                         </CardBody>
                     </Card>
