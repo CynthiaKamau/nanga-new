@@ -1121,7 +1121,7 @@ function Dashboard() {
         <div>
           <GridContainer>
 
-            <Box sx={{ bgcolor: 'background.paper' }} width="100%">
+            <Box sx={{ bgcolor: 'background.paper' }} width="100%" style={{ height: '80vh', paddingBottom : '70px' }}>
               <AppBar color="green" position="static">
                 <Tabs
                   value={value}
@@ -1140,9 +1140,8 @@ function Dashboard() {
                 axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
                 index={value}
                 onChangeIndex={handleChangeIndex}
-                variant="scrollable"
               >
-                <TabPanel value={value} index={0} dir={theme.direction}>
+                <TabPanel value={value} index={0} dir={theme.direction} style={{ height: '70vh' }} >
                     {items ? (
                       <GridItem container justify="flex-end"  >
 
@@ -1197,7 +1196,7 @@ function Dashboard() {
                     </GridItem>
                     ) : null }
                 </TabPanel>
-                <TabPanel value={value} index={1} dir={theme.direction}>
+                <TabPanel value={value} index={1} dir={theme.direction} style={{ overflowY: 'scroll', height: '70vh'}}>
                   { objectives === null || objectives === undefined || objectives.length === 0  ? (
                       <Card style={{ textAlign: 'center' }}>
                         <GridItem >
@@ -1349,7 +1348,7 @@ function Dashboard() {
                   </GridItem>
                   ))) : null }
                 </TabPanel>
-                <TabPanel value={value} index={2} dir={theme.direction}>
+                <TabPanel value={value} index={2} dir={theme.direction} style={{ height: '70vh' }}>
                   <Grid
                     container
                     spacing={2}
@@ -1451,7 +1450,7 @@ function Dashboard() {
               </SwipeableViews>
             </Box>
 
-            <Box sx={{ bgcolor: 'background.paper', marginTop: '20px' }} width="100%">
+            <Box sx={{ bgcolor: 'background.paper', marginTop: '20px' }} width="100%" height="50%">
             <h4 style={{ fontWeight: 'bold', textAlign: 'center'}}> Analytics </h4>
 
               <Grid container spacing={2} direction="row" >

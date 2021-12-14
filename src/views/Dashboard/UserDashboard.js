@@ -305,7 +305,7 @@ export default function UserDashboard() {
           <GridContainer>
 
 
-            <Box sx={{ bgcolor: 'background.paper' }} width="100%">
+            <Box sx={{ bgcolor: 'background.paper' }} width="100%" style={{ height: '80vh', paddingBottom : '70px' }}>
               <AppBar color="green" position="static">
                 <Tabs
                   value={value}
@@ -325,7 +325,7 @@ export default function UserDashboard() {
                 index={value}
                 onChangeIndex={handleChangeIndex}
               >
-                <TabPanel value={value} index={0} dir={theme.direction}>
+                <TabPanel value={value} index={0} dir={theme.direction} style={{ height: '70vh' }}>
                     {items ? (
                       <GridItem container justify="flex-end"  >
 
@@ -374,7 +374,7 @@ export default function UserDashboard() {
                     </GridItem>
                     ) : null }
                 </TabPanel>
-                <TabPanel value={value} index={1} dir={theme.direction}>
+                <TabPanel value={value} index={1} dir={theme.direction} style={{ overflowY: 'scroll', height: '70vh'}}>
                   {objectives ? ( objectives.map((list, index) => (
                     <GridItem container justify="flex-end" key={index}  >
 
@@ -523,7 +523,7 @@ export default function UserDashboard() {
                   </GridItem>
                   ))) : null }
                 </TabPanel>
-                <TabPanel value={value} index={2} dir={theme.direction}>
+                <TabPanel value={value} index={2} dir={theme.direction} style={{ height: '70vh' }} >
                   <Grid
                     container
                     spacing={2}

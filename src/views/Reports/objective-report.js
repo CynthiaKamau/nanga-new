@@ -36,6 +36,7 @@ import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
 import MaterialTable from 'material-table';
+import { CardContent } from "@material-ui/core";
 
 import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
 
@@ -84,6 +85,9 @@ export default function ObjectiveReport() {
     const [support_required, setSupportRequired] = useState("");
     const [risk_and_opportunity, setRiskAndOpportunity] = useState(""); 
     const [pillar_id, setPillarId] = useState("");
+    const [monthlyaction, setMonthlyAction ] = useState("");
+    const [monthly_risks, setMonthlyRisks ] = useState("");
+    const [monthly_next_actions, setMonthlyNextActions ] = useState("");
 
     // const handleAddClickOpen = () => {
     //     setAddOpen(true);
@@ -360,6 +364,91 @@ export default function ObjectiveReport() {
                     exportButton: true
                   }}
                 />
+
+                <Grid
+                    container
+                    spacing={2}
+                    direction="row"
+                    >
+
+                    <Grid item xs={12} md={12} sm={12}>
+                        <h4 style={{ textAlign: 'center', marginTop: '20px', fontWeight: 'bold'}}> Update Your Details</h4>
+                    </Grid>
+
+                    <Grid item xs={12} md={4} sm={4}  key="1">
+                        <Card style={{ height: '70%'}}>
+                            <CardContent>
+                            <TextField
+                                fullWidth
+                                label="Action"
+                                id="action"
+                                multiline
+                                rows={5}
+                                required
+                                variant="outlined"
+                                className={classes.textInput}
+                                type="text"
+                                value={monthlyaction}
+                                onChange={(event) => {
+                                    const value = event.target.value;
+                                    setMonthlyAction(value)
+                                }}
+                            />    
+                            </CardContent>
+                        </Card>
+                    </Grid>
+
+                    <Grid item xs={12} md={4} sm={4}  key="2">   
+                        <Card style={{ height: '70%'}}>
+                            
+                            <CardContent>
+                            <TextField
+                                fullWidth
+                                label="Risk/Opportunities"
+                                id="monthly_risks"
+                                multiline
+                                rows={5}
+                                required
+                                variant="outlined"
+                                className={classes.textInput}
+                                type="text"
+                                value={monthly_risks}
+                                onChange={(event) => {
+                                    const value = event.target.value;
+                                    setMonthlyRisks(value)
+                                }}
+                            />  
+                            </CardContent>
+                        </Card>
+                    </Grid>
+
+                    <Grid item xs={12} md={4} sm={4} key="3"> 
+                    <Card style={{ height: '70%'}}>
+                        <CardContent>
+                        <TextField
+                                fullWidth
+                                label="Next Periods Actions"
+                                id="monthly_next_actions"
+                                multiline
+                                rows={5}
+                                required
+                                variant="outlined"
+                                className={classes.textInput}
+                                type="text"
+                                value={monthly_next_actions}
+                                onChange={(event) => {
+                                    const value = event.target.value;
+                                    setMonthlyNextActions(value)
+                                }}
+                            />       
+                        </CardContent>
+                    </Card>
+                    </Grid>
+                </Grid>
+                
+                <Grid container justify="flex-end">
+                    <Button color="primary" size="lg"> Save </Button> 
+                </Grid>
 
                 <Dialog open={addopen} onClose={handleAddClose}>
                     <DialogTitle>KPI</DialogTitle>
