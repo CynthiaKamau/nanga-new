@@ -283,11 +283,11 @@ export default function KPIReport() {
         }, 
         {
           field: 'plannedYTD',
-          title: 'YTD Planned'
+          title: 'Planned YTD'
         }, 
         {
           field: 'actualYTD',
-          title: 'YTD Actual'
+          title: 'Actual YTD '
         }, 
         {
           field: '',
@@ -419,7 +419,7 @@ export default function KPIReport() {
                             autoFocus
                             margin="dense"
                             id="target"
-                            label="YTD Planned"
+                            label="Planned YTD "
                             type="number"
                             fullWidth
                             style={{marginBottom : '15px'}}
@@ -536,7 +536,7 @@ export default function KPIReport() {
                                     autoFocus
                                     margin="dense"
                                     id="ytd_planned"
-                                    label="YTD Planned"
+                                    label="Planned YTD"
                                     type="number"
                                     fullWidth
                                     style={{marginBottom : '15px'}}
@@ -553,7 +553,7 @@ export default function KPIReport() {
                                     autoFocus
                                     margin="dense"
                                     id="ytd_actual"
-                                    label="YTD Actual"
+                                    label="Actual YTD "
                                     type="number"
                                     fullWidth
                                     style={{marginBottom : '15px'}}
