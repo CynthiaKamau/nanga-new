@@ -341,6 +341,56 @@ export default function ObjectiveReport() {
         }
     ]
 
+    const saveMonthlyUpdate = async(e)  => {
+        e.preventDefault();
+        setshowloader(true);
+
+        const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
+
+        const body = JSON.stringify({
+            monthlyaction : monthlyaction,
+            monthly_next_actions : monthly_next_actions,
+            monthly_risks: monthly_risks
+        })
+
+        try {
+
+            let response = await axios.post('', body, config)
+                if (response.status == 201) {
+                    setshowloader(false);
+                    let item = response.data.message
+                    console.log("here", item)
+                    swal.fire({
+                        title: "Success",
+                        text: item,
+                        icon: "success",
+                    })
+                    // .then(() => dispatch(getKpis(currentUser.id)));
+
+                } else {
+                    let error = response.data.message
+                    setshowloader(false);
+                    swal.fire({
+                        title: "Error",
+                        text: error,
+                        icon: "error",
+                        dangerMode: true
+                    });
+                }
+        } catch (error) {
+            let err = error.response.data.message
+            setshowloader(false);
+            swal.fire({
+                title: "Error",
+                text: err,
+                icon: "error",
+                dangerMode: true
+            });
+        }  
+
+    }
+
+
   return (
     <div>
       <GridContainer>
@@ -447,7 +497,7 @@ export default function ObjectiveReport() {
                 </Grid>
                 
                 <Grid container justify="flex-end">
-                    <Button color="primary" size="lg"> Save </Button> 
+                    <Button color="primary" size="lg" onClick={(e) => { saveMonthlyUpdate(e)}}> Save </Button> 
                 </Grid>
 
                 <Dialog open={addopen} onClose={handleAddClose}>
