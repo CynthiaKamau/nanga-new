@@ -21,7 +21,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
-import { getKpis } from "actions/kpis";
+import { getKpis, getKMonthlyActions } from "actions/kpis";
 import swal from "sweetalert2";
 import Loader from "react-loader-spinner";
 import axios from "axios";
@@ -39,16 +39,18 @@ export default function KPIReport() {
     const classes = useStyles();
     const dispatch = useDispatch();
 
-    const { items } = useSelector(state => state.kpi);
+    const { items, monthly_data, monthly_data_error } = useSelector(state => state.kpi);
     const { user : currentUser } = useSelector(state => state.auth);
     const { categories }  = useSelector(state => state.data);
     // const { error : category_error, isLoading : category_loading}  = useSelector(state => state.data);
 
     console.log("categories", categories)
+    console.log("monthly kpi", monthly_data, monthly_data_error)
 
     useEffect(() => {
         dispatch(getKpis(currentUser.id));
         dispatch(getCategories());
+        dispatch(getKMonthlyActions(currentUser.id))
       }, []);
 
     const [addopen, setAddOpen] = useState(false);
@@ -329,11 +331,60 @@ export default function KPIReport() {
           title: 'Actions',
           render: (list) => {
             console.log("editing table", list)
-              return ( <div> <IconButton aria-label="edit" color="primary" onClick={() => { handleEditClickOpen(); setEditing(list) }} ><EditIcon/></IconButton>
+              return ( <div> <IconButton aria-label="edit" className={classes.textGreen} onClick={() => { handleEditClickOpen(); setEditing(list) }} ><EditIcon/></IconButton>
                 </div>)
           }
         }
     ]
+
+    const saveMonthlyUpdate = async(e)  => {
+        e.preventDefault();
+        setshowloader(true);
+
+        const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
+
+        const body = JSON.stringify({
+            monthlyaction : monthlyaction,
+            monthly_next_actions : monthly_next_actions,
+            monthly_risks: monthly_risks
+        })
+
+        try {
+
+            let response = await axios.post('', body, config)
+                if (response.status == 201) {
+                    setshowloader(false);
+                    let item = response.data.message
+                    console.log("here", item)
+                    swal.fire({
+                        title: "Success",
+                        text: item,
+                        icon: "success",
+                    })
+                    // .then(() => dispatch(getKpis(currentUser.id)));
+
+                } else {
+                    let error = response.data.message
+                    setshowloader(false);
+                    swal.fire({
+                        title: "Error",
+                        text: error,
+                        icon: "error",
+                        dangerMode: true
+                    });
+                }
+        } catch (error) {
+            let err = error.response.data.message
+            setshowloader(false);
+            swal.fire({
+                title: "Error",
+                text: err,
+                icon: "error",
+                dangerMode: true
+            });
+        }  
+
+    }
 
   return (
     <div>
@@ -441,7 +492,7 @@ export default function KPIReport() {
                 </Grid>
                 
                 <Grid container justify="flex-end">
-                    <Button color="primary" size="lg"> Save </Button> 
+                    <Button color="primary" size="lg" onClick={(e) => { saveMonthlyUpdate(e)}}> Save </Button> 
                 </Grid>
 
 

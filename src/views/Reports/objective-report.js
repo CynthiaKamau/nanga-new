@@ -23,7 +23,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
 import swal from "sweetalert2";
 import Loader from "react-loader-spinner";
-import { getUserObjectives } from "actions/objectives";
+import { getUserObjectives, getOMonthlyActions } from "actions/objectives";
 import { getCategories, getPillars } from "actions/data";
 import { getKpis } from "actions/kpis";
 import DateFnsUtils from '@date-io/date-fns';
@@ -50,18 +50,21 @@ export default function ObjectiveReport() {
     const classes = useStyles();
     const dispatch = useDispatch();
 
-    const { items, item } = useSelector(state => state.objective);
+    const { items, item, monthly_data, monthly_data_error } = useSelector(state => state.objective);
     const {  categories, pillars } = useSelector(state => state.data);
     const { user: currentUser } = useSelector(state => state.auth);
     const {  items : kpis } = useSelector(state => state.kpi);
 
     console.log("objective",item)
+    console.log("monthly obj", monthly_data, monthly_data_error)
+
 
     useEffect(() => {
         dispatch(getUserObjectives(currentUser.id));
         dispatch(getCategories());
         dispatch(getKpis(currentUser.id));
         dispatch(getPillars());
+        dispatch(getOMonthlyActions(currentUser.id))
     }, [])
 
     const [addopen, setAddOpen] = useState(false);
@@ -336,7 +339,7 @@ export default function ObjectiveReport() {
           title: 'Action',
           render: (list) => {
             console.log("editing table", list)
-            return (<IconButton aria-label="edit" color="primary" onClick={() => { handleEditClickOpen(); setEditing(list.objectives) }} ><EditIcon/></IconButton>)
+            return (<IconButton aria-label="edit" className={classes.textGreen} onClick={() => { handleEditClickOpen(); setEditing(list.objectives) }} ><EditIcon/></IconButton>)
           }
         }
     ]

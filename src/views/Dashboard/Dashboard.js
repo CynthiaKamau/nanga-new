@@ -34,7 +34,7 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import { getMission, getVision, getStatus, getPillars , getTaskCount, getObjectivesCount } from "actions/data";
+import { getMission, getVision, getStatus, getPillars , getTaskCount, getObjectivesCount, getStrategicIntent1, getStrategicIntent2 } from "actions/data";
 import { getUsers } from "actions/users";
 import { getCategories } from "actions/data";
 import { Grid } from "@material-ui/core";
@@ -75,7 +75,7 @@ function Dashboard() {
   const dispatch = useDispatch();
 
   const { user: currentUser } = useSelector(state => state.auth);
-  const {  mission, vision, task_count, objective_count } = useSelector(state => state.data);
+  const {  mission, vision, task_count, objective_count, strategic_intent1, strategic_intent2 } = useSelector(state => state.data);
   const { categories }  = useSelector(state => state.data);
   const { items, error, isLoading } = useSelector(state => state.kpi);
   const { items : objectives } = useSelector(state => state.objective);
@@ -100,6 +100,8 @@ function Dashboard() {
     dispatch(getConstraints(currentUser.id))
     dispatch(getTaskCount(currentUser.id));
     dispatch(getObjectivesCount(currentUser.id))
+    dispatch(getStrategicIntent1(currentUser.id))
+    dispatch(getStrategicIntent2(currentUser.id))
   }, [])
 
   const uoms = [
@@ -218,6 +220,8 @@ function Dashboard() {
   const [addopen, setAddOpen] = useState(false);
   const [editopenmission, setEditMissionOpen] = useState(false);
   const [editopenvision, setEditVisionOpen] = useState(false);
+  const [editopensil1, setEditSIL1Open] = useState(false);
+  const [editopensil2, setEditSIL2Open ] = useState(false);
   const [user_id, setUserId] = useState(currentUser.id);
   const [showloader, setshowloader] = useState(false); 
   const [created_by, setCreatedBy] = useState("");
@@ -243,6 +247,10 @@ function Dashboard() {
   const [err, setError] = useState("");
   const [obj_tasks, setObjTasks] = useState("");
   const [ objectiveId, setObjectiveId] = useState("");
+  const [userstrategicintent1, setStrategicIntent1] = useState("");
+  const [userstrategicintent2, setStrategicIntent2] = useState("");
+  const [strategic_intent1_id, setStrategicIntent1Id] = useState("");
+  const [strategic_intent2_id, setStrategicIntent2Id] = useState("");
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -343,6 +351,14 @@ function Dashboard() {
     setEditVisionOpen(true);
   };
 
+  const handleEditSIL1Close = () => {
+    setEditSIL1Open(false);
+  }
+
+  const handleEditSIL2Close = () => {
+    setEditSIL2Open(false);
+  }
+
   const setEditingMission = (mission) => {
 
     console.log("her",mission)
@@ -359,7 +375,7 @@ function Dashboard() {
 
   const setEditingVision = (vision) => {
     console.log("vision here", vision)
-    if(mission[0] === null || mission[0] === undefined) {
+    if(vision[0] === null || vision[0] === undefined) {
       setUserVision('');
       setVisionId(null);
     } else {
@@ -367,6 +383,244 @@ function Dashboard() {
       setVisionId(vision[0].id)
     }
   }
+
+  const setEditingStrategicIntent1 = (strategic_intent1) => {
+    console.log("strategic_intent1 here", strategic_intent1)
+    if(strategic_intent1[0] === null || strategic_intent1[0] === undefined) {
+      setStrategicIntent1('');
+      setStrategicIntent1Id(null);
+    } else {
+      setStrategicIntent1(strategic_intent1[0].description)
+      setStrategicIntent1Id(strategic_intent1[0].id)
+    }
+  }
+
+  const setEditingStrategicIntent2 = (strategic_intent2) => {
+    console.log("strategic_intent2 here", strategic_intent2)
+    if(strategic_intent2[0] === null || strategic_intent2[0] === undefined) {
+      setStrategicIntent2('');
+      setStrategicIntent2Id(null);
+    } else {
+      setStrategicIntent2(strategic_intent2[0].description)
+      setStrategicIntent2Id(strategic_intent2[0].id)
+    }
+  }
+
+  const editStrategicIntent1 = async (e) => {
+    e.preventDefault();
+    setshowloader(true);
+
+    const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
+
+    if(strategic_intent1_id === null) {
+
+      const body = JSON.stringify({
+        description : userstrategicintent1,
+        userid : user_id,
+        createdBy : user_id,
+      });
+
+      try {
+
+        let response = await axios.post('', body, config)
+        if (response.status == 201) {
+
+          let res = response.data.message;
+          setshowloader(false);
+          setEditSIL1Open(false);
+
+          swal.fire({
+            title: "Success",
+            text: res,
+            icon: "success",
+          }).then(() => dispatch(getStrategicIntent1(currentUser.id)));
+
+      } else {
+        setshowloader(false);
+        setEditSIL1Open(false);
+        let err = response.data.message;
+
+        swal.fire({
+          title: "Error",
+          text: err,
+          icon: "error",
+          dangerMode: true
+        });
+      }
+
+      } catch (error) {
+          setshowloader(false);
+          setEditSIL1Open(false);
+
+          let err = error.response.data.message;
+          swal.fire({
+            title: "Error",
+            text: err,
+            icon: "error",
+            dangerMode: true
+          });
+      }
+
+    } else {  
+      try {
+
+          const body = JSON.stringify({
+            userid : user_id,
+            updatedBy : user_id,
+            description : userstrategicintent1,
+            id : strategic_intent1_id
+          });
+
+          let response = await axios.post('', body, config)
+          console.log("level 1 resp", response.data)
+          if (response.status == 200) {
+            setshowloader(false);
+            setEditSIL1Open(false);
+
+            let resp = response.data.message;
+              swal.fire({
+                title: "Success",
+                text: resp,
+                icon: "success",
+              }).then(() => dispatch(getStrategicIntent1(currentUser.id)));
+
+          } else {
+            setshowloader(false);
+            setEditSIL1Open(false);
+
+            let err = response.data.message;
+
+            swal.fire({
+              title: "Error",
+              text: err,
+              icon: "error",
+              dangerMode: true
+            });
+          }
+
+      } catch (error) {
+          setshowloader(false);
+          setEditSIL1Open(false);
+
+          let err = error.response.data.message;
+          swal.fire({
+            title: "Error",
+            text: err,
+            icon: "error",
+            dangerMode: true
+          });
+      }
+
+    }
+  }  
+
+  const editStrategicIntent2 = async (e) => {
+    e.preventDefault();
+    setshowloader(true);
+
+    const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
+
+    if(strategic_intent2_id === null) {
+
+      const body = JSON.stringify({
+        description : userstrategicintent2,
+        userid : user_id,
+        createdBy : user_id,
+      });
+
+      try {
+
+        let response = await axios.post('', body, config)
+        if (response.status == 202) {
+
+          let res = response.data.message;
+          setshowloader(false);
+          setEditSIL2Open(false);
+
+          swal.fire({
+            title: "Success",
+            text: res,
+            icon: "success",
+          }).then(() => dispatch(getStrategicIntent2(currentUser.id)));
+
+      } else {
+        setshowloader(false);
+        setEditSIL2Open(false);
+        let err = response.data.message;
+
+        swal.fire({
+          title: "Error",
+          text: err,
+          icon: "error",
+          dangerMode: true
+        });
+      }
+
+      } catch (error) {
+          setshowloader(false);
+          setEditSIL2Open(false);
+
+          let err = error.response.data.message;
+          swal.fire({
+            title: "Error",
+            text: err,
+            icon: "error",
+            dangerMode: true
+          });
+      }
+
+    } else {  
+      try {
+
+          const body = JSON.stringify({
+            userid : user_id,
+            updatedBy : user_id,
+            description : userstrategicintent2,
+            id : strategic_intent2_id
+          });
+
+          let response = await axios.post('', body, config)
+          console.log("level 2 resp", response.data)
+          if (response.status == 200) {
+            setshowloader(false);
+            setEditSIL2Open(false);
+
+            let resp = response.data.message;
+              swal.fire({
+                title: "Success",
+                text: resp,
+                icon: "success",
+              }).then(() => dispatch(getStrategicIntent2(currentUser.id)));
+
+          } else {
+            setshowloader(false);
+            setEditSIL2Open(false);
+
+            let err = response.data.message;
+
+            swal.fire({
+              title: "Error",
+              text: err,
+              icon: "error",
+              dangerMode: true
+            });
+          }
+
+      } catch (error) {
+          setshowloader(false);
+          setEditSIL2Open(false);
+
+          let err = error.response.data.message;
+          swal.fire({
+            title: "Error",
+            text: err,
+            icon: "error",
+            dangerMode: true
+          });
+      }
+
+    }
+  }  
 
   const editMission = async (e) => {
     e.preventDefault();
@@ -588,6 +842,7 @@ function Dashboard() {
     }
   }  
 
+
   // const handleEditClickOpen = () => {
   //   setEditOpen(true);
   // };
@@ -728,6 +983,7 @@ function Dashboard() {
           </Card>
       </Grid>
 
+        {/* add KPI */}
         <Dialog open={addopen} onClose={handleAddClose}>
             <DialogTitle>KPI</DialogTitle>
             <DialogContent>
@@ -843,6 +1099,7 @@ function Dashboard() {
             </DialogActions>
         </Dialog>
 
+        {/* edit KPI */}
         <Dialog open={editopen} onClose={handleEditClose}>
             <DialogTitle>KPI</DialogTitle>
             <DialogContent>
@@ -1030,6 +1287,7 @@ function Dashboard() {
             </DialogActions>
         </Dialog>
 
+        {/* edit Mission */}
         <Dialog open={editopenmission} onClose={handleEditMissionClose} disableEnforceFocus>
           <DialogTitle>Personal Mission</DialogTitle>
           <DialogContent>
@@ -1071,6 +1329,7 @@ function Dashboard() {
           </DialogActions>
         </Dialog>
 
+        {/* edit Vision */}
         <Dialog open={editopenvision} onClose={handleEditVisionClose} >
           <DialogTitle>Vision</DialogTitle>
           <DialogContent>
@@ -1110,6 +1369,94 @@ function Dashboard() {
               ) :
               (
                 <Button color="primary" onClick={(e) => { editVision(e); }}>Save</Button>
+              )}
+          </DialogActions>
+        </Dialog>
+
+        {/* edit Strategic Level 1 */}
+        <Dialog open={editopensil1} onClose={handleEditSIL1Close} >
+          <DialogTitle>Strategic Intent Level 1</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Edit Strategic Intent Level 1
+            </DialogContentText>
+
+            <TextField
+              id="outlined-multiline-static"
+              fullWidth
+              autoFocus
+              label="Strategic Level 1"
+              type="text"
+              margin="dense"
+              multiline
+              variant="outlined"
+              rows={4}
+              value={userstrategicintent1}
+              className={classes.textInput}
+              onChange={(event) => {
+                setStrategicIntent1(event.target.value);
+            }}
+            />
+
+          </DialogContent>
+          <DialogActions>
+            <Button color="danger" onClick={handleEditSIL1Close}>Cancel</Button>
+            { showloader === true  ? (
+              <div style={{ textAlign: "center", marginTop: 10 }}>
+                  <Loader
+                      type="Puff"
+                      color="#29A15B"
+                      height={100}
+                      width={100}
+                  />
+              </div>
+              ) :
+              (
+                <Button color="primary" onClick={(e) => { editStrategicIntent1(e); }}>Save</Button>
+              )}
+          </DialogActions>
+        </Dialog>
+
+        {/* edit Strategic Level 2 */}
+        <Dialog open={editopensil2} onClose={handleEditSIL2Close} >
+          <DialogTitle>Strategic Intent Level 2</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Edit Strategic Intent Level 2
+            </DialogContentText>
+
+            <TextField
+              id="outlined-multiline-static"
+              fullWidth
+              autoFocus
+              label="Strategic Level 2"
+              type="text"
+              margin="dense"
+              multiline
+              variant="outlined"
+              rows={4}
+              value={userstrategicintent2}
+              className={classes.textInput}
+              onChange={(event) => {
+                setStrategicIntent2(event.target.value);
+            }}
+            />
+
+          </DialogContent>
+          <DialogActions>
+            <Button color="danger" onClick={handleEditSIL2Close}>Cancel</Button>
+            { showloader === true  ? (
+              <div style={{ textAlign: "center", marginTop: 10 }}>
+                  <Loader
+                      type="Puff"
+                      color="#29A15B"
+                      height={100}
+                      width={100}
+                  />
+              </div>
+              ) :
+              (
+                <Button color="primary" onClick={(e) => { editStrategicIntent2(e); }}>Save</Button>
               )}
           </DialogActions>
         </Dialog>
@@ -1349,6 +1696,43 @@ function Dashboard() {
                   ))) : null }
                 </TabPanel>
                 <TabPanel value={value} index={2} dir={theme.direction} style={{ height: '70vh' }}>
+                <Grid
+                    container
+                    spacing={2}
+                    direction="row"
+                    style={{ paddingBottom: '20px'}}
+                    >
+                      <Grid item xs={12} md={6} sm={6} key="1">
+                        <Card style={{ height: '100%'}} >
+                          <h4 style={{color: 'black', textAlign:'center'}}> One Level Up </h4>
+                         
+                            <CardBody >
+                              <IconButton  style={{float: 'right'}} aria-label="edit" color="primary" onClick={() => { setEditingStrategicIntent1(strategic_intent1) }} ><EditIcon style={{ color : '#000000'}}/></IconButton>
+                              {strategic_intent1 === undefined || strategic_intent1 === null || strategic_intent1.length === 0 ? (
+                                <h4>Not available.</h4>
+                              ) : strategic_intent1 ? (
+                                <h4 > {strategic_intent1[0].description}</h4>
+                              ) : null}
+                            </CardBody>
+
+                          </Card>
+                      </Grid>
+
+                      <Grid item xs={12} md={6} sm={6} key="2">              
+                        <Card style={{ height: '100%'}}>
+                          <h4 style={{color: 'black', textAlign:'center'}}> Level 2 Strategic Intent </h4>          
+                          <CardBody >
+                              <IconButton  style={{float: 'right'}} aria-label="edit" color="primary" onClick={() => { setEditingStrategicIntent2(strategic_intent2) }} ><EditIcon style={{ color : '#000000'}}/></IconButton>
+                              {strategic_intent2 === undefined || strategic_intent2 === null || strategic_intent2.length === 0 ? (
+                                <h4> Not available.</h4>
+                              ) : strategic_intent2 ? (
+                                <h4 > {strategic_intent2[0].description}</h4>
+                              ) : null}
+                            </CardBody>
+                        </Card>
+                      </Grid>
+                  </Grid>
+
                   <Grid
                     container
                     spacing={2}
@@ -1446,6 +1830,7 @@ function Dashboard() {
                         </Card>
                       </Grid>
                   </Grid>
+                  
                 </TabPanel>
               </SwipeableViews>
             </Box>

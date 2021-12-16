@@ -25,6 +25,7 @@ import Card from "components/Card/Card.js";
 import CardHeader from "components/Card/CardHeader.js";
 import CardBody from "components/Card/CardBody.js";
 import MaterialTable from 'material-table';
+import FiberManualRecord from "@material-ui/icons/FiberManualRecord";
 
 const useStyles = makeStyles(styles);
 
@@ -324,6 +325,24 @@ export default function DataTable() {
           title: 'Actual YTD'
         },
         {
+          field: '',
+          title: 'VAR',
+            render: (list) => {
+              console.log("editing table", list)  
+              if(list.variance === 'amber') {
+                  return (<FiberManualRecord style={{color : '#FFC107'}}/>)
+              } else if(list.variance === 'green') {
+                  return (<FiberManualRecord style={{color : '#29A15B'}}/>)
+              } else if(list.variance === 'blue') {
+                  return (<FiberManualRecord style={{color : '#03A9F4'}}/>)
+              } else if(list.variance === 'red') {
+                  return (<FiberManualRecord style={{color : '#F44336'}}/>)
+              } else if(list.variance === null || list.variance === undefined) {
+                  return (<FiberManualRecord style={{color : '#F44336'}}/>)
+              } 
+            }
+        }, 
+        {
           field: 'actions',
           title: 'Actions',
           render: (list) => {
@@ -337,7 +356,7 @@ export default function DataTable() {
       ];
 
   return (
-    <div style={{ height: 400, width: '100%' }}>
+    <div style={{ width: '100%' }}>
         <GridContainer>
         <Grid container justify="flex-end" style={{ marginTop: '10px' }}>
             <Button color="primary" size="lg" onClick={handleAddClickOpen}> Add KPI </Button> 
