@@ -30,6 +30,7 @@ import { Grid } from "@material-ui/core";
 import Button from "components/CustomButtons/Button.js";
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
+import { DeleteForever } from "@material-ui/icons";
 import EditIcon from '@material-ui/icons/Edit';
 import moment from "moment";
 import axios from "axios";
@@ -84,6 +85,9 @@ export default function StrategicObjectives() {
 
     const [addopen, setAddOpen] = useState(false);
     const [addopenindividualtask, setAddOpenIndividualTask] = useState(false);
+    const [deleteopen, setDeleteOpen] = useState(false);
+    const [deletetaskopen, setDeleteTaskOpen] = useState(false);
+
     const [showloader, setshowloader] = useState(false);
     const [description, setDescription] = useState("");
     const [kpi_unit_of_measure, setKpiUom] = useState("");
@@ -118,6 +122,8 @@ export default function StrategicObjectives() {
     const [support_required, setSupportRequired] = useState("");
     const [risk_and_opportunity, setRiskAndOpportunity] = useState(""); 
     const [obj_status, setObjStatus ] = useState("");
+    const [deleteId, setDeleteId] = useState("");
+    const [deleteTaskId, setDeleteTaskId] = useState("");
 
     const handleAddClickOpen = () => {
         setAddOpen(true);
@@ -583,6 +589,123 @@ export default function StrategicObjectives() {
 
     }
 
+    const handleDeleteClickOpen = () => {
+        setDeleteOpen(true);
+    };
+
+    const handleDeleteIndividualTaskOpen = () => {
+        setDeleteTaskOpen(true);
+    }
+
+    const handleDeleteClose = () => {
+        setDeleteOpen(false);
+    };
+
+    const handleDeleteTaskClose = () => {
+        setDeleteTaskOpen(false);
+    };
+
+    const setDeleting = (list) => {
+        console.log("delete items",list)
+        console.log("delete id",list.id)
+        setDeleteId(list.id)
+    }
+
+    const setDeletingTask = (list) => {
+        console.log("delete items",list)
+        console.log("delete id",list.id)
+        setDeleteTaskId(list.id)
+        setObjectiveId(list.objective_id)
+    }
+
+    const deleteObjective = async(e) => {
+        e.preventDefault();
+        setshowloader(true);
+
+        try {
+
+            let response = await axios.delete(`/objectives/deleteObjectiveById?objective_id=${deleteId}`)
+            if (response.status == 200) {
+                setshowloader(false);
+                setDeleteOpen(false);
+                console.log("here", response.data)
+                let item = response.data.message
+
+                swal.fire({
+                    title: "Success",
+                    text: item,
+                    icon: "success",
+                }).then(() => dispatch(getUserObjectives(currentUser.id)));
+            } else {
+                setshowloader(false);
+                setDeleteOpen(false);
+                let error = response.data.message
+                    setshowloader(false);
+                    swal.fire({
+                        title: "Error",
+                        text: error,
+                        icon: "error",
+                        dangerMode: true
+                    }).then(() => dispatch(getUserObjectives(currentUser.id)));
+            } 
+        } catch(error) {
+            setshowloader(false);
+            setDeleteOpen(false);
+            let err = error.response.data.message
+            setshowloader(false);
+            swal.fire({
+                title: "Error",
+                text: err,
+                icon: "error",
+                dangerMode: true
+            }).then(() => dispatch(getUserObjectives(currentUser.id)));
+        } 
+
+    }
+
+    const deleteTask = async(e) => {
+        e.preventDefault();
+        setshowloader(true);
+
+        try {
+
+            let response = await axios.delete(`/tasks/deleteTaskById?task_id=${deleteTaskId}`)
+            if (response.status == 200) {
+                setshowloader(false);
+                setDeleteTaskOpen(false);
+                console.log("here", response.data)
+                let item = response.data.message
+
+                swal.fire({
+                    title: "Success",
+                    text: item,
+                    icon: "success",
+                }).then(() => {setShowObjectivesTask(objectiveId)})
+            } else {
+                setshowloader(false);
+                setDeleteTaskOpen(false);
+                let error = response.data.message
+                    setshowloader(false);
+                    swal.fire({
+                        title: "Error",
+                        text: error,
+                        icon: "error",
+                        dangerMode: true
+                    }).then(() => {setShowObjectivesTask(objectiveId)})            } 
+        } catch(error) {
+            setshowloader(false);
+            setDeleteTaskOpen(false);
+            let err = error.response.data.message
+            setshowloader(false);
+            swal.fire({
+                title: "Error",
+                text: err,
+                icon: "error",
+                dangerMode: true
+            }).then(() => {setShowObjectivesTask(objectiveId)})        } 
+
+    }
+
 
     return (
         <div>
@@ -608,6 +731,7 @@ export default function StrategicObjectives() {
                     <Card style={{borderLeft : list.objectives.overallStatus === 'Incomplete' ? 'solid 5px red' : (list.objectives.overallStatus === 'COMPLETE' || list.objectives.overallStatus === 'Complete') ? 'solid 5px green' : (list.objectives.overallStatus === 'INCOMPLETE' || list.objectives.overallStatus === 'Incomplete' || list.objectives.overallStatus === '' || list.objectives.overallStatus === null ) ? 'solid 5px red'  :'solid 5px black' , marginBottom: '0'}} key={index} >
                         <Grid container justify="flex-end">
                             <IconButton aria-label="edit" className={classes.textGreen} onClick={() => { handleEditClickOpen(); setEditing(list.objectives); }} ><EditIcon /></IconButton>
+                            <IconButton aria-label="delete" style={{color: 'black'}} onClick={() => { setDeleting(list.objectives), handleDeleteClickOpen() }} ><DeleteForever /></IconButton>
                         </Grid>
 
                         <GridItem xs={12} sm={12} md={12}>
@@ -735,7 +859,10 @@ export default function StrategicObjectives() {
                                                         </div>
                                                     ))}
                                                 </TableCell>
-                                                <TableCell> <IconButton aria-label="edit" className={classes.textGreen} onClick={() => {handleEditIndividualTaskOpen(); setEditingIndividualTask(list) }} ><EditIcon /></IconButton></TableCell>
+                                                <TableCell>
+                                                    <IconButton aria-label="edit" className={classes.textGreen} onClick={() => {handleEditIndividualTaskOpen(); setEditingIndividualTask(list) }} ><EditIcon /></IconButton>
+                                                    <IconButton aria-label="delete" style={{color: 'black'}} onClick={() => {handleDeleteIndividualTaskOpen(); setDeletingTask(list) }} ><DeleteForever /></IconButton>
+                                                </TableCell>
                                             </TableRow>
                                         ))) : err ? (<TableRow> <TableCell> {err} </TableCell></TableRow>) 
                                         : null }
@@ -1500,6 +1627,63 @@ export default function StrategicObjectives() {
                     <Button color="primary" onClick={(e) => { saveEditedIndividualTask(e) }}>Save</Button>
                 </DialogActions>
             </Dialog>
+
+            {/* Delete Objective */}
+            <Dialog open={deleteopen} onClose={handleDeleteClose}>
+                <DialogTitle id="alert-dialog-title">
+                {"Are you sure you want to delete this Objective?"}
+                </DialogTitle>
+                <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                    Please confirm that you want to delete this Objective.
+                </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                <Button color="danger" onClick={handleDeleteClose}>Disagree</Button>
+                { showloader === true ? (
+                    <div style={{ textAlign: "center", marginTop: 10 }}>
+                    <Loader
+                        type="Puff"
+                        color="#29A15B"
+                        height={100}
+                        width={100}
+                    />
+                    </div>
+                    ) :
+                    (
+                        <Button color="primary" onClick={(e) => { deleteObjective(e)}} > Agree</Button>
+                    )}
+                </DialogActions>
+            </Dialog>
+
+            {/* Delete Individual Task */}
+            <Dialog open={deletetaskopen} onClose={handleDeleteTaskClose}>
+                <DialogTitle id="alert-dialog-title">
+                {"Are you sure you want to delete this Task?"}
+                </DialogTitle>
+                <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                    Please confirm that you want to delete this Task.
+                </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                <Button color="danger" onClick={handleDeleteClose}>Disagree</Button>
+                { showloader === true ? (
+                    <div style={{ textAlign: "center", marginTop: 10 }}>
+                    <Loader
+                        type="Puff"
+                        color="#29A15B"
+                        height={100}
+                        width={100}
+                    />
+                    </div>
+                    ) :
+                    (
+                        <Button color="primary" onClick={(e) => { deleteTask(e)}} > Agree</Button>
+                    )}
+                </DialogActions>
+            </Dialog>
+
         </div>
     );
 }

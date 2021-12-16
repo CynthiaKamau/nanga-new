@@ -2,6 +2,7 @@ import React, { useEffect, useState,  } from "react";
 import { useSelector, useDispatch } from "react-redux";
 // import axios from "axios";
 import { getBehaviours, getFreedoms, getConstraints } from "actions/bfc";
+import { getStrategicIntent1, getStrategicIntent2 } from "actions/data";
 import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -25,6 +26,7 @@ import TextField from '@material-ui/core/TextField';
 import axios from "axios";
 import IconButton from '@material-ui/core/Button';
 import EditIcon from '@material-ui/icons/Edit';
+import CardBody from "components/Card/CardBody";
 
 const useStyles = makeStyles(styles);
 
@@ -34,7 +36,7 @@ export default function BFC() {
     const dispatch = useDispatch();
 
     const { user: currentUser } = useSelector(state => state.auth);
-    const { behaviours, behaviours_error, freedoms, freedoms_error, constraints, constrains_error} = useSelector(state => state.bfc);
+    const { behaviours, behaviours_error, freedoms, freedoms_error, constraints, constrains_error, strategic_intent1, strategic_intent2} = useSelector(state => state.bfc);
 
     const [addBopen, setAddBOpen] = useState(false);
     const [addFopen, setAddFOpen] = useState(false);
@@ -51,8 +53,13 @@ export default function BFC() {
     const [behaviourId, setBehaviourId] = useState("");
     const [freedomId, setFreedomId] = useState("");
     const [constaraintId, setConstraintId] = useState("");
+    const [userstrategicintent1, setStrategicIntent1] = useState("");
+    const [userstrategicintent2, setStrategicIntent2] = useState("");
+    const [strategic_intent1_id, setStrategicIntent1Id] = useState("");
+    const [strategic_intent2_id, setStrategicIntent2Id] = useState("");
 
     console.log("beh", behaviours, updated_by);
+    console.log(userstrategicintent1, userstrategicintent2, strategic_intent2_id, strategic_intent1_id)
 
 
     useEffect(() => {
@@ -61,6 +68,8 @@ export default function BFC() {
         dispatch(getConstraints(currentUser.id))
         setCreatedBy(currentUser.id)
         setUpdatedBy(currentUser.id)
+        dispatch(getStrategicIntent1(currentUser.id))
+        dispatch(getStrategicIntent2(currentUser.id))
     }, []);
 
     const handleAddBehaviourClickOpen = () => {
@@ -432,8 +441,68 @@ export default function BFC() {
         }
     }
 
+    const setEditingStrategicIntent1 = (strategic_intent1) => {
+        console.log("strategic_intent1 here", strategic_intent1)
+        if(strategic_intent1[0] === null || strategic_intent1[0] === undefined) {
+          setStrategicIntent1('');
+          setStrategicIntent1Id(null);
+        } else {
+          setStrategicIntent1(strategic_intent1[0].description)
+          setStrategicIntent1Id(strategic_intent1[0].id)
+        }
+    }
+    
+    const setEditingStrategicIntent2 = (strategic_intent2) => {
+        console.log("strategic_intent2 here", strategic_intent2)
+        if(strategic_intent2[0] === null || strategic_intent2[0] === undefined) {
+            setStrategicIntent2('');
+            setStrategicIntent2Id(null);
+        } else {
+            setStrategicIntent2(strategic_intent2[0].description)
+            setStrategicIntent2Id(strategic_intent2[0].id)
+        }
+    }
+
     return (
         <div>
+
+            <Grid
+            container
+            spacing={2}
+            direction="row"
+            style={{ paddingBottom: '20px'}}
+            >
+                <Grid item xs={12} md={12} sm={12} key="1">
+                <Card>
+                    <h4 style={{color: 'black', textAlign:'center'}}> Strategic Intent Level 1 </h4>
+                    
+                    <CardBody >
+                        <IconButton  style={{float: 'right'}} aria-label="edit" color="primary" onClick={() => { setEditingStrategicIntent1(strategic_intent1) }} ><EditIcon style={{ color : '#000000'}}/></IconButton>
+                        {strategic_intent1 === undefined || strategic_intent1 === null || strategic_intent1.length === 0 ? (
+                        <h4>Not available.</h4>
+                        ) : strategic_intent1 ? (
+                        <h4 > {strategic_intent1[0].description}</h4>
+                        ) : null}
+                    </CardBody>
+
+                    </Card>
+                </Grid>
+
+                <Grid item xs={12} md={12} sm={12} key="2">              
+                <Card>
+                    <h4 style={{color: 'black', textAlign:'center'}}> Strategic Intent Level 2 </h4>          
+                    <CardBody >
+                        <IconButton  style={{float: 'right'}} aria-label="edit" color="primary" onClick={() => { setEditingStrategicIntent2(strategic_intent2) }} ><EditIcon style={{ color : '#000000'}}/></IconButton>
+                        {strategic_intent2 === undefined || strategic_intent2 === null || strategic_intent2.length === 0 ? (
+                        <h4> Not available.</h4>
+                        ) : strategic_intent2 ? (
+                        <h4 > {strategic_intent2[0].description}</h4>
+                        ) : null}
+                    </CardBody>
+                </Card>
+                </Grid>
+            </Grid>
+
             <Grid
             container
             spacing={2}

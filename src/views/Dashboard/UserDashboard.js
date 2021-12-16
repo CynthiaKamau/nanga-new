@@ -305,7 +305,7 @@ export default function UserDashboard() {
           <GridContainer>
 
 
-            <Box sx={{ bgcolor: 'background.paper' }} width="100%" style={{ height: '80vh', paddingBottom : '70px' }}>
+            <Box sx={{ bgcolor: 'background.paper' }} width="98%" style={{ height: '80vh', paddingBottom : '70px' }}>
               <AppBar color="green" position="static">
                 <Tabs
                   value={value}
@@ -619,7 +619,7 @@ export default function UserDashboard() {
               </SwipeableViews>
             </Box>
 
-            <Box sx={{ bgcolor: 'background.paper', marginTop: '20px' }} width="100%">
+            <Box sx={{ bgcolor: 'background.paper', marginTop: '20px' }} width="98%">
             <h4 style={{ fontWeight: 'bold', textAlign: 'center'}}> Analytics </h4>
 
               <Grid container spacing={2} direction="row" >

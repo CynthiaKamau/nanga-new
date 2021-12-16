@@ -950,7 +950,7 @@ function Dashboard() {
   return (
     <div>
 
-      <GridContainer>
+      <GridContainer >
 
       <Grid container spacing={2} style={{marginRight : '10px', marginLeft : '10px'}}>
         <h3 className={classes.textBold}> THE VISION</h3>
@@ -1466,9 +1466,9 @@ function Dashboard() {
       { items && items.length >= 1 ? (
 
         <div>
-          <GridContainer>
+          <GridContainer spacing={2} style={{width: '100%', textAlign: 'center', justifyContent: 'center'}}>
 
-            <Box sx={{ bgcolor: 'background.paper' }} width="100%" style={{ height: '80vh', paddingBottom : '70px' }}>
+            <Box sx={{ bgcolor: 'background.paper' }} width="98%" style={{ height: '80vh', paddingBottom : '70px' }}>
               <AppBar color="green" position="static">
                 <Tabs
                   value={value}
@@ -1696,7 +1696,7 @@ function Dashboard() {
                   ))) : null }
                 </TabPanel>
                 <TabPanel value={value} index={2} dir={theme.direction} style={{ height: '70vh' }}>
-                <Grid
+                  <Grid
                     container
                     spacing={2}
                     direction="row"
@@ -1704,7 +1704,7 @@ function Dashboard() {
                     >
                       <Grid item xs={12} md={6} sm={6} key="1">
                         <Card style={{ height: '100%'}} >
-                          <h4 style={{color: 'black', textAlign:'center'}}> One Level Up </h4>
+                          <h4 style={{color: 'black', textAlign:'center'}}> Strategic Intent Level 1 </h4>
                          
                             <CardBody >
                               <IconButton  style={{float: 'right'}} aria-label="edit" color="primary" onClick={() => { setEditingStrategicIntent1(strategic_intent1) }} ><EditIcon style={{ color : '#000000'}}/></IconButton>
@@ -1720,7 +1720,7 @@ function Dashboard() {
 
                       <Grid item xs={12} md={6} sm={6} key="2">              
                         <Card style={{ height: '100%'}}>
-                          <h4 style={{color: 'black', textAlign:'center'}}> Level 2 Strategic Intent </h4>          
+                          <h4 style={{color: 'black', textAlign:'center'}}> Strategic Intent Level 2 </h4>          
                           <CardBody >
                               <IconButton  style={{float: 'right'}} aria-label="edit" color="primary" onClick={() => { setEditingStrategicIntent2(strategic_intent2) }} ><EditIcon style={{ color : '#000000'}}/></IconButton>
                               {strategic_intent2 === undefined || strategic_intent2 === null || strategic_intent2.length === 0 ? (
@@ -1835,7 +1835,7 @@ function Dashboard() {
               </SwipeableViews>
             </Box>
 
-            <Box sx={{ bgcolor: 'background.paper', marginTop: '20px' }} width="100%" height="50%">
+            <Box sx={{ bgcolor: 'background.paper', marginTop: '20px' }} width="98%" height="50%">
             <h4 style={{ fontWeight: 'bold', textAlign: 'center'}}> Analytics </h4>
 
               <Grid container spacing={2} direction="row" >

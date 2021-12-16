@@ -251,24 +251,24 @@ export default function KPIReport() {
           label: 'numeric',
         },
         {
-          value: 'KES',
-          label: 'KES',
+          value: 'KES M',
+          label: 'KES M',
         },
         {
-            value: 'TSH',
-            label: 'TSH',
+            value: 'TSH M',
+            label: 'TSH M',
         },
         {
-            value: 'UGX',
-            label: 'UGX',
+            value: 'UGX M',
+            label: 'UGX M',
         },
         {
-            value: 'RWF',
-            label: 'RWF',
+            value: 'RWF M',
+            label: 'RWF M',
         },
         {
-            value: 'USD',
-            label: 'USD',
+            value: 'USD M',
+            label: 'USD M',
         }
     ]
 
