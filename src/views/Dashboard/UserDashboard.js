@@ -52,6 +52,8 @@ import FiberManualRecord from "@material-ui/icons/FiberManualRecord";
 import { getBehaviours, getFreedoms, getConstraints } from "actions/bfc";
 import Highcharts from "highcharts";
 import HighchartsReact from 'highcharts-react-official';
+import Avatar from "../../assets/img/default-avatar.png";
+
 
 const useStyles = makeStyles(styles);
 
@@ -112,7 +114,7 @@ export default function UserDashboard() {
   // const categories = JsonData.Categories;
   // const kpis = JsonData.KPIS;
 
-  const kpi_options = {
+  const obj_options = {
     chart: {
       plotBackgroundColor: null,
       plotBorderWidth: null,
@@ -124,10 +126,26 @@ export default function UserDashboard() {
     },
     series: [{
       data: objective_count
-    }]
+    }],
+    tooltip: {
+      pointFormat: '{name}: <b>{point.y}</b>'
+    },
+    plotOptions: {
+      pie: {
+          allowPointSelect: true,
+          cursor: 'pointer',
+          dataLabels: {
+              enabled: true,
+              format: '<b>{point.name}</b>: {point.y}',
+              style: {
+                  color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+              }
+          }
+      }
+    },
   }
 
-  const obj_options = {
+  const mas_options = {
     chart: {
       plotBackgroundColor: null,
       plotBorderWidth: null,
@@ -138,8 +156,25 @@ export default function UserDashboard() {
       text: 'MAS Breakdown'
     },
     series: [{
+      colorByPoint: true,
       data: task_count
-    }]
+    }],
+    tooltip: {
+      pointFormat: '{name}: <b>{point.y}</b>'
+    },
+    plotOptions: {
+      pie: {
+          allowPointSelect: true,
+          cursor: 'pointer',
+          dataLabels: {
+              enabled: true,
+              format: '<b>{point.name}</b>: {point.y}',
+              style: {
+                  color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+              }
+          }
+      }
+    },
   }
 
   const handleChange = (event, newValue) => {
@@ -270,7 +305,7 @@ export default function UserDashboard() {
           <GridContainer>
 
 
-            <Box sx={{ bgcolor: 'background.paper' }} width="100%">
+            <Box sx={{ bgcolor: 'background.paper' }} width="100%" style={{ height: '80vh', paddingBottom : '70px' }}>
               <AppBar color="green" position="static">
                 <Tabs
                   value={value}
@@ -281,8 +316,8 @@ export default function UserDashboard() {
                   aria-label="full width tabs example"
                 >
                   <Tab label="KPIS" {...a11yProps(0)} />
-                  <Tab label="OBJECTIVES" {...a11yProps(1)} />
-                  <Tab label="BFC" {...a11yProps(2)} />
+                  <Tab label="STRATEGIC OBJECTIVES" {...a11yProps(1)} />
+                  <Tab label="LEADERSHIP TRAITS" {...a11yProps(2)} />
                 </Tabs>
               </AppBar>
               <SwipeableViews
@@ -290,7 +325,7 @@ export default function UserDashboard() {
                 index={value}
                 onChangeIndex={handleChangeIndex}
               >
-                <TabPanel value={value} index={0} dir={theme.direction}>
+                <TabPanel value={value} index={0} dir={theme.direction} style={{ height: '70vh' }}>
                     {items ? (
                       <GridItem container justify="flex-end"  >
 
@@ -339,7 +374,7 @@ export default function UserDashboard() {
                     </GridItem>
                     ) : null }
                 </TabPanel>
-                <TabPanel value={value} index={1} dir={theme.direction}>
+                <TabPanel value={value} index={1} dir={theme.direction} style={{ overflowY: 'scroll', height: '70vh'}}>
                   {objectives ? ( objectives.map((list, index) => (
                     <GridItem container justify="flex-end" key={index}  >
 
@@ -443,7 +478,7 @@ export default function UserDashboard() {
                                             <TableCell>Management Action</TableCell>
                                             <TableCell>Start Date</TableCell>
                                             <TableCell>Due Date</TableCell>
-                                            <TableCell>Status</TableCell>
+                                            <TableCell>Resources</TableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
@@ -459,7 +494,20 @@ export default function UserDashboard() {
                                                 <TableCell>{list.description}</TableCell>
                                                 <TableCell>{moment(list.start_date).format('YYYY-MM-DD')}</TableCell>
                                                 <TableCell>{moment(list.end_date).format('YYYY-MM-DD')}</TableCell>
-                                                <TableCell>{list.status}</TableCell>
+                                                <TableCell>
+                                                  {list.assignedTasks.map((detail, index) => (
+                                                      <div key={index} style={{ display: 'inline' }}>
+                                                          { detail.assignee.userPicture === null || detail.assignee.userPicture === undefined ? (
+                                                              <img key={index} src={Avatar} alt={detail.assignee.fullnames}  style={{ maxWidth: '50px', maxHeight: '50px', borderRadius: '50%'}} />
+
+                                                          ) : detail.assignee.userPicture != null ? (
+                                                              <img key={index} src={detail.assignee.userPicture}
+                                                              alt={detail.assignee.fullnames}  style={{ maxWidth: '50px', maxHeight: '50px', borderRadius: '50%'}} />
+                                                          ) : null}
+                                                      </div>
+                                                    
+                                                  ))}
+                                                </TableCell>
                                             </TableRow>
                                         ))) : err ? (<TableRow> <TableCell> {err} </TableCell></TableRow>) 
                                         : null }
@@ -475,7 +523,7 @@ export default function UserDashboard() {
                   </GridItem>
                   ))) : null }
                 </TabPanel>
-                <TabPanel value={value} index={2} dir={theme.direction}>
+                <TabPanel value={value} index={2} dir={theme.direction} style={{ height: '70vh' }} >
                   <Grid
                     container
                     spacing={2}
@@ -579,14 +627,14 @@ export default function UserDashboard() {
                 <Grid item xs={5} key="1">
                   <HighchartsReact
                     highcharts={Highcharts}
-                    options={kpi_options}
+                    options={obj_options}
                   />                
                 </Grid>
 
                 <Grid item xs={5} key="2">
                   <HighchartsReact
                     highcharts={Highcharts}
-                    options={obj_options}
+                    options={mas_options}
                   />  
                 </Grid>
               </Grid>   

@@ -7,11 +7,6 @@ import { useSelector, useDispatch } from "react-redux";
 import GridItem from "components/Grid/GridItem.js";
 import GridContainer from "components/Grid/GridContainer.js";
 import Button from "components/CustomButtons/Button.js";
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
 import Card from "components/Card/Card.js";
 import CardHeader from "components/Card/CardHeader.js";
 import CardBody from "components/Card/CardBody.js";
@@ -40,6 +35,8 @@ import FiberManualRecord from "@material-ui/icons/FiberManualRecord";
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
+import MaterialTable from 'material-table';
+import { CardContent } from "@material-ui/core";
 
 import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
 
@@ -53,7 +50,7 @@ export default function ObjectiveReport() {
     const classes = useStyles();
     const dispatch = useDispatch();
 
-    const { items, item, error, isLoading } = useSelector(state => state.objective);
+    const { items, item } = useSelector(state => state.objective);
     const {  categories, pillars } = useSelector(state => state.data);
     const { user: currentUser } = useSelector(state => state.auth);
     const {  items : kpis } = useSelector(state => state.kpi);
@@ -88,6 +85,9 @@ export default function ObjectiveReport() {
     const [support_required, setSupportRequired] = useState("");
     const [risk_and_opportunity, setRiskAndOpportunity] = useState(""); 
     const [pillar_id, setPillarId] = useState("");
+    const [monthlyaction, setMonthlyAction ] = useState("");
+    const [monthly_risks, setMonthlyRisks ] = useState("");
+    const [monthly_next_actions, setMonthlyNextActions ] = useState("");
 
     // const handleAddClickOpen = () => {
     //     setAddOpen(true);
@@ -295,65 +295,210 @@ export default function ObjectiveReport() {
         }
     ]
 
+    const columns = [
+        {
+          field: 'objectives.description',
+          title: 'Strategic Objective'
+        },
+        {
+          field: 'objectives.user.fullnames',
+          title: 'Owner'
+        },
+        {
+          field: '',
+          title: 'Variance',
+          render: (list) => {
+            if(list.objectives.overallStatus === 'COMPLETE' || list.objectives.overallStatus === 'Complete') {
+                return (<FiberManualRecord style={{color : '#29A15B'}} />)
+            }  else if(list.objectives.overallStatus === 'INCOMPLETE' || list.objectives.overallStatus === 'Incomplete' || list.objectives.overallStatus === null ) {
+                return (<FiberManualRecord style={{color : '#F44336'}}/>) 
+            }
+          }
+        },
+        {
+          field: 'objectives.rootCause',
+          title: 'Root Cause and Insight'
+        },
+        {
+          field: 'objectives.action',
+          title: 'Action'
+        },
+        {
+          field: 'objectives.riskOrOpportunity',
+          title: 'Risk/Opportunities'
+        },
+        {
+          field: 'objectives.supportRequired',
+          title: 'Support Required'
+        },
+        {
+          field: '',
+          title: 'Action',
+          render: (list) => {
+            console.log("editing table", list)
+            return (<IconButton aria-label="edit" color="primary" onClick={() => { handleEditClickOpen(); setEditing(list.objectives) }} ><EditIcon/></IconButton>)
+          }
+        }
+    ]
+
+    const saveMonthlyUpdate = async(e)  => {
+        e.preventDefault();
+        setshowloader(true);
+
+        const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
+
+        const body = JSON.stringify({
+            monthlyaction : monthlyaction,
+            monthly_next_actions : monthly_next_actions,
+            monthly_risks: monthly_risks
+        })
+
+        try {
+
+            let response = await axios.post('', body, config)
+                if (response.status == 201) {
+                    setshowloader(false);
+                    let item = response.data.message
+                    console.log("here", item)
+                    swal.fire({
+                        title: "Success",
+                        text: item,
+                        icon: "success",
+                    })
+                    // .then(() => dispatch(getKpis(currentUser.id)));
+
+                } else {
+                    let error = response.data.message
+                    setshowloader(false);
+                    swal.fire({
+                        title: "Error",
+                        text: error,
+                        icon: "error",
+                        dangerMode: true
+                    });
+                }
+        } catch (error) {
+            let err = error.response.data.message
+            setshowloader(false);
+            swal.fire({
+                title: "Error",
+                text: err,
+                icon: "error",
+                dangerMode: true
+            });
+        }  
+
+    }
+
+
   return (
     <div>
       <GridContainer>
       <GridItem xs={12} sm={12} md={12}>
             <Card>
               <CardHeader color="primary">
-                <h4>Strategic Objective Reports</h4>
-                <p>
-                Reports.
-                </p>
+                <h4>Strategic Objectives</h4>
               </CardHeader>
               <CardBody>
               {/* <div className={classes.btnRight}><Button color="primary" size="lg" onClick={handleAddClickOpen}> Add KPI </Button> </div> */}
 
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>Strategic Objective</TableCell>
-                            <TableCell>Owner</TableCell>
-                            <TableCell>Variance</TableCell>
-                            <TableCell>Root Cause and Insight</TableCell>
-                            <TableCell>Action</TableCell>
-                            <TableCell>Risk/Opportunities</TableCell>
-                            <TableCell>Support Required</TableCell>
-                            <TableCell>Action</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        { isLoading ? (<Loader
-                            type="Puff"
-                            color="#29A15B"
-                            height={150}
-                            width={150}
-                            style={{
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
-                                padding: "50px"
-                            }}
-                            />) 
-                        : items ? ( items.map((list, index) => (
-                            <TableRow key={index}>
-                                <TableCell>{list.objectives.description}</TableCell>
-                                <TableCell>{list.objectives.user.fullnames} </TableCell>
-                                <TableCell> <FiberManualRecord style={{color : list.objectives.overallStatus === 'Incomplete' ? 'red' : (list.objectives.overallStatus === 'COMPLETE') ? 'green' : (list.objectives.overallStatus === 'INCOMPLETE') ? 'red'  :'solid 5px black' , marginBottom: '0'}} key={index} /> </TableCell>
-                                <TableCell>{list.objectives.rootCause} </TableCell>
-                                <TableCell>{list.objectives.action} </TableCell>
-                                <TableCell>{list.objectives.riskOrOpportunity} </TableCell>
-                                <TableCell>{list.objectives.supportRequired} </TableCell>
-                                <TableCell>
-                                <IconButton aria-label="edit" color="primary" onClick={() => { handleEditClickOpen(); setEditing(list.objectives) }} ><EditIcon/></IconButton>
-                                {/* <IconButton aria-label="delete" color="secondary" onClick={() => { handleDeleteClickOpen(); setDelete(list) }} ><DeleteIcon /></IconButton> */}
-                                </TableCell>
-                            </TableRow>
-                        ))) : error ? (<TableRow> <TableCell> {error} </TableCell></TableRow>
-                        ) : null }
+                <MaterialTable
+                  title="Strategic Objective Reports."
+                  data={items}
+                  columns={columns}
+                  options={{
+                    search: true,
+                    sorting: true,
+                    pageSize: 10,
+                    pageSizeOptions: [10,50,100 ],
+                    exportButton: true
+                  }}
+                />
 
-                    </TableBody>
-                </Table>
+                <Grid
+                    container
+                    spacing={2}
+                    direction="row"
+                    >
+
+                    <Grid item xs={12} md={12} sm={12}>
+                        <h4 style={{ textAlign: 'center', marginTop: '20px', fontWeight: 'bold'}}> Update Your Details</h4>
+                    </Grid>
+
+                    <Grid item xs={12} md={4} sm={4}  key="1">
+                        <Card style={{ height: '70%'}}>
+                            <CardContent>
+                            <TextField
+                                fullWidth
+                                label="Action"
+                                id="action"
+                                multiline
+                                rows={5}
+                                required
+                                variant="outlined"
+                                className={classes.textInput}
+                                type="text"
+                                value={monthlyaction}
+                                onChange={(event) => {
+                                    const value = event.target.value;
+                                    setMonthlyAction(value)
+                                }}
+                            />    
+                            </CardContent>
+                        </Card>
+                    </Grid>
+
+                    <Grid item xs={12} md={4} sm={4}  key="2">   
+                        <Card style={{ height: '70%'}}>
+                            
+                            <CardContent>
+                            <TextField
+                                fullWidth
+                                label="Risk/Opportunities"
+                                id="monthly_risks"
+                                multiline
+                                rows={5}
+                                required
+                                variant="outlined"
+                                className={classes.textInput}
+                                type="text"
+                                value={monthly_risks}
+                                onChange={(event) => {
+                                    const value = event.target.value;
+                                    setMonthlyRisks(value)
+                                }}
+                            />  
+                            </CardContent>
+                        </Card>
+                    </Grid>
+
+                    <Grid item xs={12} md={4} sm={4} key="3"> 
+                    <Card style={{ height: '70%'}}>
+                        <CardContent>
+                        <TextField
+                                fullWidth
+                                label="Next Periods Actions"
+                                id="monthly_next_actions"
+                                multiline
+                                rows={5}
+                                required
+                                variant="outlined"
+                                className={classes.textInput}
+                                type="text"
+                                value={monthly_next_actions}
+                                onChange={(event) => {
+                                    const value = event.target.value;
+                                    setMonthlyNextActions(value)
+                                }}
+                            />       
+                        </CardContent>
+                    </Card>
+                    </Grid>
+                </Grid>
+                
+                <Grid container justify="flex-end">
+                    <Button color="primary" size="lg" onClick={(e) => { saveMonthlyUpdate(e)}}> Save </Button> 
+                </Grid>
 
                 <Dialog open={addopen} onClose={handleAddClose}>
                     <DialogTitle>KPI</DialogTitle>

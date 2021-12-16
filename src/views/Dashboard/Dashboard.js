@@ -59,6 +59,7 @@ import { CardContent } from "@material-ui/core";
 import { getBehaviours, getFreedoms, getConstraints } from "actions/bfc";
 import Highcharts from "highcharts";
 import HighchartsReact from 'highcharts-react-official';
+import Avatar from "../../assets/img/default-avatar.png";
 
 // // Load Highcharts modules
 require("highcharts/modules/exporting")(Highcharts);
@@ -151,7 +152,7 @@ function Dashboard() {
     }
   ]
 
-  const kpi_options = {
+  const obj_options = {
     chart: {
       plotBackgroundColor: null,
       plotBorderWidth: null,
@@ -163,10 +164,26 @@ function Dashboard() {
     },
     series: [{
       data: objective_count
-    }]
+    }],
+    tooltip: {
+      pointFormat: '{name}: <b>{point.y}</b>'
+    },
+    plotOptions: {
+      pie: {
+          allowPointSelect: true,
+          cursor: 'pointer',
+          dataLabels: {
+              enabled: true,
+              format: '<b>{point.name}</b>: {point.y}',
+              style: {
+                  color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+              }
+          }
+      }
+    },
   }
 
-  const obj_options = {
+  const mas_options = {
     chart: {
       plotBackgroundColor: null,
       plotBorderWidth: null,
@@ -177,8 +194,25 @@ function Dashboard() {
       text: 'MAS Breakdown'
     },
     series: [{
+      colorByPoint: true,
       data: task_count
-    }]
+    }],
+    tooltip: {
+      pointFormat: '{name}: <b>{point.y}</b>'
+    },
+    plotOptions: {
+      pie: {
+          allowPointSelect: true,
+          cursor: 'pointer',
+          dataLabels: {
+              enabled: true,
+              format: '<b>{point.name}</b>: {point.y}',
+              style: {
+                  color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+              }
+          }
+      }
+    },
   }
   
   const [addopen, setAddOpen] = useState(false);
@@ -1087,11 +1121,7 @@ function Dashboard() {
         <div>
           <GridContainer>
 
-            <GridItem container justify="flex-end">
-              <Button color="primary" onClick={handleAddClickOpen}> Create New KPI</Button>
-            </GridItem>
-
-            <Box sx={{ bgcolor: 'background.paper' }} width="100%">
+            <Box sx={{ bgcolor: 'background.paper' }} width="100%" style={{ height: '80vh', paddingBottom : '70px' }}>
               <AppBar color="green" position="static">
                 <Tabs
                   value={value}
@@ -1102,8 +1132,8 @@ function Dashboard() {
                   aria-label="full width tabs example"
                 >
                   <Tab label="KPIS" {...a11yProps(0)} />
-                  <Tab label="OBJECTIVES" {...a11yProps(1)} />
-                  <Tab label="BFC" {...a11yProps(2)} />
+                  <Tab label="STRATEGIC OBJECTIVES" {...a11yProps(1)} />
+                  <Tab label="LEADERSHIP TRAITS" {...a11yProps(2)} />
                 </Tabs>
               </AppBar>
               <SwipeableViews
@@ -1111,11 +1141,14 @@ function Dashboard() {
                 index={value}
                 onChangeIndex={handleChangeIndex}
               >
-                <TabPanel value={value} index={0} dir={theme.direction}>
+                <TabPanel value={value} index={0} dir={theme.direction} style={{ height: '70vh' }} >
                     {items ? (
                       <GridItem container justify="flex-end"  >
 
                         <Card>
+                          <GridItem container justify="flex-end">
+                            <Button color="primary" onClick={handleAddClickOpen}> Create New KPI</Button>
+                          </GridItem>
 
                           <CardBody>
                             <Table>
@@ -1124,8 +1157,8 @@ function Dashboard() {
                                       <TableCell>KPI</TableCell>
                                       <TableCell>Unit</TableCell>
                                       <TableCell>Target</TableCell>
-                                      <TableCell>YTD Planned </TableCell>
-                                      <TableCell> YTD Actual</TableCell>
+                                      <TableCell>Planned YTD  </TableCell>
+                                      <TableCell>Actual YTD </TableCell>
                                       <TableCell> Variance </TableCell>
                                   
                                   </TableRow>
@@ -1163,7 +1196,7 @@ function Dashboard() {
                     </GridItem>
                     ) : null }
                 </TabPanel>
-                <TabPanel value={value} index={1} dir={theme.direction}>
+                <TabPanel value={value} index={1} dir={theme.direction} style={{ overflowY: 'scroll', height: '70vh'}}>
                   { objectives === null || objectives === undefined || objectives.length === 0  ? (
                       <Card style={{ textAlign: 'center' }}>
                         <GridItem >
@@ -1276,23 +1309,30 @@ function Dashboard() {
                                             <TableCell>Management Action</TableCell>
                                             <TableCell>Start Date</TableCell>
                                             <TableCell>Due Date</TableCell>
-                                            <TableCell>Status</TableCell>
+                                            <TableCell>Resources</TableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
-                                        {/* <TableRow key=''>
-                                            <TableCell>Task One</TableCell>
-                                            <TableCell>John Doe</TableCell>
-                                            <TableCell>2021-10-01</TableCell>
-                                            <TableCell>Pending</TableCell>
-                                        </TableRow> */}
                                         { obj_tasks ? obj_tasks.length === 0 ? (<TableRow> <TableCell> No tasks available </TableCell></TableRow>)
                                         : (obj_tasks.map((list, index) => (
                                             <TableRow key={index}>
                                                 <TableCell>{list.description}</TableCell>
                                                 <TableCell>{moment(list.start_date).format('YYYY-MM-DD')}</TableCell>
                                                 <TableCell>{moment(list.end_date).format('YYYY-MM-DD')}</TableCell>
-                                                <TableCell>{list.status}</TableCell>
+                                                <TableCell>
+                                                  {list.assignedTasks.map((detail, index) => (
+                                                      <div key={index} style={{ display: 'inline' }}>
+                                                          { detail.assignee.userPicture === null || detail.assignee.userPicture === undefined ? (
+                                                              <img key={index} src={Avatar} alt={detail.assignee.fullnames}  style={{ maxWidth: '50px', maxHeight: '50px', borderRadius: '50%'}} />
+
+                                                          ) : detail.assignee.userPicture != null ? (
+                                                              <img key={index} src={detail.assignee.userPicture}
+                                                              alt={detail.assignee.fullnames}  style={{ maxWidth: '50px', maxHeight: '50px', borderRadius: '50%'}} />
+                                                          ) : null}
+                                                      </div>
+                                                    
+                                                  ))}
+                                                </TableCell>
                                             </TableRow>
                                         ))) : err ? (<TableRow> <TableCell> {err} </TableCell></TableRow>) 
                                         : null }
@@ -1308,7 +1348,7 @@ function Dashboard() {
                   </GridItem>
                   ))) : null }
                 </TabPanel>
-                <TabPanel value={value} index={2} dir={theme.direction}>
+                <TabPanel value={value} index={2} dir={theme.direction} style={{ height: '70vh' }}>
                   <Grid
                     container
                     spacing={2}
@@ -1410,7 +1450,7 @@ function Dashboard() {
               </SwipeableViews>
             </Box>
 
-            <Box sx={{ bgcolor: 'background.paper', marginTop: '20px' }} width="100%">
+            <Box sx={{ bgcolor: 'background.paper', marginTop: '20px' }} width="100%" height="50%">
             <h4 style={{ fontWeight: 'bold', textAlign: 'center'}}> Analytics </h4>
 
               <Grid container spacing={2} direction="row" >
@@ -1418,14 +1458,14 @@ function Dashboard() {
                 <Grid item xs={5} key="1">
                   <HighchartsReact
                     highcharts={Highcharts}
-                    options={kpi_options}
+                    options={obj_options}
                   />                
                 </Grid>
 
                 <Grid item xs={5} key="2">
                   <HighchartsReact
                     highcharts={Highcharts}
-                    options={obj_options}
+                    options={mas_options}
                   />  
                 </Grid>
               </Grid>   

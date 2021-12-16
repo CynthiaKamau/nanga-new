@@ -41,6 +41,7 @@ import styles1 from "assets/jss/material-dashboard-pro-react/views/extendedForms
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
+import Avatar from "../../assets/img/default-avatar.png";
 
 const useStyles = makeStyles(styles, styles1);
 
@@ -508,7 +509,7 @@ export default function StrategicObjectives() {
     }
 
     const setEditingIndividualTask = (list) => {
-        console.log(list);
+        console.log("task", list);
     
         setTaskDescription(list.description)
         setTaskStatus(list.status);
@@ -516,17 +517,18 @@ export default function StrategicObjectives() {
         setTaskEndDate(list.end_date);
         setTaskObjectiveId(list.objective_id);
         setUserId(list.user_id);
-        setId(list.id)
-      }
+        setId(list.id);
+        setObjectiveId(list.objective_id)
+    }
     
-      const saveEditedIndividualTask = async (e) => {
-          e.preventDefault();
-          setshowloader(true);
-    
-          console.log("edit values",  task_description, task_end_date, task_start_date, task_objective_id, user_id, created_by, updated_by, id, task_status, setUpdatedBy)
-    
-          const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
-          const body = JSON.stringify({
+    const saveEditedIndividualTask = async (e) => {
+        e.preventDefault();
+        setshowloader(true);
+
+        console.log("edit values",  task_description, task_end_date, task_start_date, task_objective_id, user_id, created_by, updated_by, id, task_status, setUpdatedBy)
+
+        const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
+        const body = JSON.stringify({
             "id": id,
             "description": task_description,
             "user_id": user_id,
@@ -536,50 +538,50 @@ export default function StrategicObjectives() {
             "status": task_status,
             "created_by": created_by,
             "updated_by": updated_by
-          });
-    
-          console.log("task", body);
-    
-          try {
-    
-              let response = await axios.post('/tasks/update', body, config)
-              if (response.status == 201) {
-                  setshowloader(false);
-                  setEditOpenIndividualTask(false);
-    
-                  let item = response.data.message
-                  swal.fire({
-                      title: "Success",
-                      text: item,
-                      icon: "success",
-                  }).then(() => dispatch(getUserObjectives(currentUser.id)))
+        });
 
-              } else {
-                  let error = response.data.message
-                      setshowloader(false);
-                      setEditOpenIndividualTask(false);
-    
-                      swal.fire({
-                          title: "Error",
-                          text: error,
-                          icon: "error",
-                          dangerMode: true
-                      });
-              }
-          } catch (error) {
-              let err = error.response.data.message
-              setshowloader(false);
-              setEditOpenIndividualTask(false);
-    
-              swal.fire({
-                  title: "Error",
-                  text: err,
-                  icon: "error",
-                  dangerMode: true
-              });
-          }
-    
-      }
+        console.log("task", body);
+
+        try {
+
+            let response = await axios.post('/tasks/update', body, config)
+            if (response.status == 201) {
+                setshowloader(false);
+                setEditOpenIndividualTask(false);
+
+                let item = response.data.message
+                swal.fire({
+                    title: "Success",
+                    text: item,
+                    icon: "success",
+                }).then(() => setShowObjectivesTask(objectiveId))
+
+            } else {
+                let error = response.data.message
+                    setshowloader(false);
+                    setEditOpenIndividualTask(false);
+
+                    swal.fire({
+                        title: "Error",
+                        text: error,
+                        icon: "error",
+                        dangerMode: true
+                    });
+            }
+        } catch (error) {
+            let err = error.response.data.message
+            setshowloader(false);
+            setEditOpenIndividualTask(false);
+
+            swal.fire({
+                title: "Error",
+                text: err,
+                icon: "error",
+                dangerMode: true
+            });
+        }
+
+    }
 
 
     return (
@@ -709,24 +711,30 @@ export default function StrategicObjectives() {
                                             <TableCell>Management Action</TableCell>
                                             <TableCell>Start Date</TableCell>
                                             <TableCell>Due Date</TableCell>
-                                            <TableCell>Status</TableCell>
+                                            <TableCell>Resources</TableCell>
                                             <TableCell>Action</TableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
-                                        {/* <TableRow key=''>
-                                            <TableCell>Task One</TableCell>
-                                            <TableCell>John Doe</TableCell>
-                                            <TableCell>2021-10-01</TableCell>
-                                            <TableCell>Pending</TableCell>
-                                        </TableRow> */}
                                         { obj_tasks ? obj_tasks.length === 0 ? (<TableRow> <TableCell> No tasks available </TableCell></TableRow>)
                                         : (obj_tasks.map((list, index) => (
                                             <TableRow key={index}>
                                                 <TableCell>{list.description}</TableCell>
                                                 <TableCell>{moment(list.start_date).format('YYYY-MM-DD')}</TableCell>
                                                 <TableCell>{moment(list.end_date).format('YYYY-MM-DD')}</TableCell>
-                                                <TableCell>{list.status}</TableCell>
+                                                <TableCell>
+                                                    {list.assignedTasks.map((detail, index) => (
+                                                        <div key={index} style={{ display: 'inline' }}>
+                                                            { detail.assignee.userPicture === null || detail.assignee.userPicture === undefined ? (
+                                                                <img key={index} src={Avatar} alt={detail.assignee.fullnames}  style={{ maxWidth: '50px', maxHeight: '50px', borderRadius: '50%'}} />
+
+                                                            ) : detail.assignee.userPicture != null ? (
+                                                                <img key={index} src={detail.assignee.userPicture}
+                                                                alt={detail.assignee.fullnames}  style={{ maxWidth: '50px', maxHeight: '50px', borderRadius: '50%'}} />
+                                                            ) : null}
+                                                        </div>
+                                                    ))}
+                                                </TableCell>
                                                 <TableCell> <IconButton aria-label="edit" className={classes.textGreen} onClick={() => {handleEditIndividualTaskOpen(); setEditingIndividualTask(list) }} ><EditIcon /></IconButton></TableCell>
                                             </TableRow>
                                         ))) : err ? (<TableRow> <TableCell> {err} </TableCell></TableRow>) 

@@ -6,11 +6,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import GridItem from "components/Grid/GridItem.js";
 import GridContainer from "components/Grid/GridContainer.js";
 import Button from "components/CustomButtons/Button.js";
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
 import Card from "components/Card/Card.js";
 import CardHeader from "components/Card/CardHeader.js";
 import CardBody from "components/Card/CardBody.js";
@@ -33,6 +28,7 @@ import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle
 import { Grid } from "@material-ui/core";
 import { getTeams} from "actions/teams"
 import { getRoles } from "actions/data";
+import MaterialTable from 'material-table';
 
 // import classNames from "classnames";
 
@@ -48,7 +44,7 @@ export default function UsersPage() {
   const { items : teams} = useSelector(state => state.team);
 
   console.log("here error", teams)
-  console.log("here item", item)
+  console.log("here item", items, item)
 
   useEffect(() => {
     dispatch(getUsers());
@@ -300,6 +296,40 @@ export default function UsersPage() {
     }
   }
 
+  const columns = [
+    {
+      field: 'id',
+      title: 'ID'
+    },
+    {
+      field: 'fullnames',
+      title: 'Name'
+    },
+    {
+      field: 'status',
+      title: 'Status'
+    },
+    {
+      field: 'teams.name',
+      title: 'Team'
+    },
+    {
+      field: 'roles.role_name',
+      title: 'Role'
+    },
+    {
+      field: '',
+      title: 'Action',
+      render: (list) => {
+        console.log("editing table", list)
+        if(currentUser.role_id === 0) {
+          return ( <div><IconButton aria-label="edit" className={classes.textGreen} onClick={() => { handleEditClickOpen(); setEditing(list)}}><EditIcon /></IconButton>
+          </div>)
+        }
+      }
+    }
+  ]
+
 
   // const handleDeleteClose = () => {
   //   setDeleteOpen(false);
@@ -319,42 +349,21 @@ export default function UsersPage() {
           <Card>
             <CardHeader color="primary">
               <h4>Users</h4>
-              <p>
-                User details.
-              </p>
             </CardHeader>
             <CardBody>
               { currentUser.role_id === 0 ? (<div className={classes.btnRight}><Button color="primary" size="lg" onClick={handleAddClickOpen}> Add User </Button> </div> ) : null }
 
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>ID</TableCell>
-                    <TableCell>Name</TableCell>
-                    <TableCell>Status</TableCell>
-                    <TableCell>Team</TableCell>
-                    <TableCell>Role</TableCell>
-                    { currentUser.role_id=== 0 ? (<TableCell>Action</TableCell> ) : null}
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {items && items.map((list, index) => (
-                    <TableRow key={index}>
-                      <TableCell>{index}</TableCell>
-                      <TableCell>{list.fullnames}</TableCell>
-                      <TableCell>{list.status}</TableCell>
-                      <TableCell>{list.teams.name}</TableCell>
-                      <TableCell>{list.roles.role_name}</TableCell>
-                      { currentUser.role_id=== 0 ? ( <TableCell>
-                        <IconButton aria-label="edit" color="primary" onClick={() => { handleEditClickOpen(); setEditing(list) }} ><EditIcon /></IconButton>
-                        {/* <IconButton aria-label="delete" color="secondary" onClick={() => { handleDeleteClickOpen(); setDelete(list) }} ><DeleteIcon /></IconButton> */}
-                      </TableCell> ) : null }
-                    </TableRow>
-
-                  ))}
-
-                </TableBody>
-              </Table>
+              <MaterialTable
+                  title="User  details."
+                  data={items}
+                  columns={columns}
+                  options={{
+                    search: true,
+                    sorting: true,
+                    pageSize: 10,
+                    pageSizeOptions: [10,50,100 ],
+                  }}
+              />
 
               <Dialog open={addopen} onClose={handleAddClose}>
                 <DialogTitle>User</DialogTitle>
