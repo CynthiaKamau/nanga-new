@@ -172,7 +172,10 @@ export default function AssignedTasksPage() {
           field: 'status',
           title: 'Progress'
         },
-        
+        {
+          field: 'status',
+          title: 'Status'
+        },
         {
           field: '',
           title: 'Actions',

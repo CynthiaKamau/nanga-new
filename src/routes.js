@@ -88,7 +88,7 @@ var dashRoutes = [
   },
   {
     path: "/shared-tasks",
-    name: "MAS",
+    name: "Assigned MAS",
     rtlName: "صفحات",
     icon: DateRange,
     component: AssignedTasksPage,

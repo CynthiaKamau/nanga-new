@@ -363,6 +363,10 @@ export default function DataTable() {
           title: 'Account'
         },
         {
+          filed: 'target',
+          title: 'Target'
+        },
+        {
           field: 'plannedYTD',
           title: 'Planned YTD'
         },

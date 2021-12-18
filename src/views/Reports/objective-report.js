@@ -58,6 +58,10 @@ export default function ObjectiveReport() {
     console.log("objective",item)
     console.log("monthly obj", monthly_data, monthly_data_error)
 
+    const [monthlyaction, setMonthlyAction ] = useState("");
+    const [monthly_risks, setMonthlyRisks ] = useState("");
+    const [monthly_next_actions, setMonthlyNextActions ] = useState("");
+    const [idm, setIdM] = useState("");
 
     useEffect(() => {
         dispatch(getUserObjectives(currentUser.id));
@@ -66,6 +70,20 @@ export default function ObjectiveReport() {
         dispatch(getPillars());
         dispatch(getOMonthlyActions(currentUser.id))
     }, [])
+
+    useEffect(() => {
+        if(monthly_data.length >= 1) {
+            setMonthlyAction(monthly_data[0].action)
+            setMonthlyRisks(monthly_data[0].risk_opportunity)
+            setMonthlyNextActions(monthly_data[0].nextPeriodAction)
+            setIdM(monthly_data[0].id)
+        } else {
+            setMonthlyAction('Not available')
+            setMonthlyRisks('Not available')
+            setMonthlyNextActions('Not available')
+            setIdM(null)
+        }
+    }, []);
 
     const [addopen, setAddOpen] = useState(false);
     const [editopen, setEditOpen] = useState(false);
@@ -88,9 +106,6 @@ export default function ObjectiveReport() {
     const [support_required, setSupportRequired] = useState("");
     const [risk_and_opportunity, setRiskAndOpportunity] = useState(""); 
     const [pillar_id, setPillarId] = useState("");
-    const [monthlyaction, setMonthlyAction ] = useState("");
-    const [monthly_risks, setMonthlyRisks ] = useState("");
-    const [monthly_next_actions, setMonthlyNextActions ] = useState("");
 
     // const handleAddClickOpen = () => {
     //     setAddOpen(true);
@@ -350,46 +365,98 @@ export default function ObjectiveReport() {
 
         const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
 
-        const body = JSON.stringify({
-            monthlyaction : monthlyaction,
-            monthly_next_actions : monthly_next_actions,
-            monthly_risks: monthly_risks
-        })
+        if(idm === null || idm == undefined) {
 
-        try {
+            const body = JSON.stringify({
+                actions : monthlyaction,
+                nextPeriodActions : monthly_next_actions,
+                riskOrOpportunity: monthly_risks,
+                createdBy: created_by,
+                userId: created_by
+            })
 
-            let response = await axios.post('', body, config)
-                if (response.status == 201) {
-                    setshowloader(false);
-                    let item = response.data.message
-                    console.log("here", item)
-                    swal.fire({
-                        title: "Success",
-                        text: item,
-                        icon: "success",
-                    })
-                    // .then(() => dispatch(getKpis(currentUser.id)));
+            try {
 
-                } else {
-                    let error = response.data.message
-                    setshowloader(false);
-                    swal.fire({
-                        title: "Error",
-                        text: error,
-                        icon: "error",
-                        dangerMode: true
-                    });
-                }
-        } catch (error) {
-            let err = error.response.data.message
-            setshowloader(false);
-            swal.fire({
-                title: "Error",
-                text: err,
-                icon: "error",
-                dangerMode: true
-            });
-        }  
+                let response = await axios.post('/actions/create', body, config)
+                    if (response.status == 201) {
+                        setshowloader(false);
+                        let item = response.data.message
+                        console.log("here", item)
+                        swal.fire({
+                            title: "Success",
+                            text: item,
+                            icon: "success",
+                        }).then(() => dispatch(getOMonthlyActions(currentUser.id)));
+    
+                    } else {
+                        let error = response.data.message
+                        setshowloader(false);
+                        swal.fire({
+                            title: "Error",
+                            text: error,
+                            icon: "error",
+                            dangerMode: true
+                        }).then(() => dispatch(getOMonthlyActions(currentUser.id)));
+                    }
+            } catch (error) {
+                let err = error.response.data.message
+                setshowloader(false);
+                swal.fire({
+                    title: "Error",
+                    text: err,
+                    icon: "error",
+                    dangerMode: true
+                }).then(() => dispatch(getOMonthlyActions(currentUser.id)));
+            } 
+
+        } else {
+
+            const body = JSON.stringify({
+                action : monthlyaction,
+                nextAction : monthly_next_actions,
+                riskOpportunity: monthly_risks,
+                updatedBy: created_by,
+                userId: created_by,
+                id: idm
+            })
+
+            console.log("m body", body)
+
+            try {
+
+                let response = await axios.post('/actions/update', body, config)
+                    if (response.status == 201) {
+                        setshowloader(false);
+                        let item = response.data.message
+                        console.log("here", item)
+                        swal.fire({
+                            title: "Success",
+                            text: item,
+                            icon: "success",
+                        }).then(() => dispatch(getOMonthlyActions(currentUser.id)));
+    
+                    } else {
+                        let error = response.data.message
+                        setshowloader(false);
+                        swal.fire({
+                            title: "Error",
+                            text: error,
+                            icon: "error",
+                            dangerMode: true
+                        }).then(() => dispatch(getOMonthlyActions(currentUser.id)));
+                    }
+            } catch (error) {
+                let err = error.response.data.message
+                setshowloader(false);
+                swal.fire({
+                    title: "Error",
+                    text: err,
+                    icon: "error",
+                    dangerMode: true
+                }).then(() => dispatch(getOMonthlyActions(currentUser.id)));
+            } 
+
+        } 
 
     }
 

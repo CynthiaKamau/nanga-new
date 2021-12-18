@@ -172,7 +172,7 @@ export const getKMonthlyActions = (id) => {
 
         try {
 
-            let response = await axios.get(`${id}`)
+            let response = await axios.get(`/actions/fetchActionsbyUserId?user_id=${id}`)
             if (response.status == 200) {
                 dispatch({ type: KPI_MONTH_ACTION_SUCCESS, payload: response.data })
             } else {

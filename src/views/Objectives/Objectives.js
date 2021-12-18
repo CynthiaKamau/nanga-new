@@ -42,7 +42,7 @@ import styles1 from "assets/jss/material-dashboard-pro-react/views/extendedForms
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
-import Avatar from "../../assets/img/default-avatar.png";
+// import Avatar from "../../assets/img/default-avatar.png";
 
 const useStyles = makeStyles(styles, styles1);
 
@@ -849,12 +849,19 @@ export default function StrategicObjectives() {
                                                 <TableCell>
                                                     {list.assignedTasks.map((detail, index) => (
                                                         <div key={index} style={{ display: 'inline' }}>
-                                                            { detail.assignee.userPicture === null || detail.assignee.userPicture === undefined ? (
+                                                            {/* { detail.assignee.userPicture === null || detail.assignee.userPicture === undefined ? (
                                                                 <img key={index} src={Avatar} alt={detail.assignee.fullnames}  style={{ maxWidth: '50px', maxHeight: '50px', borderRadius: '50%'}} />
 
                                                             ) : detail.assignee.userPicture != null ? (
                                                                 <img key={index} src={detail.assignee.userPicture}
                                                                 alt={detail.assignee.fullnames}  style={{ maxWidth: '50px', maxHeight: '50px', borderRadius: '50%'}} />
+                                                            ) : null} */}
+
+                                                            { detail.assignee.fullnames === null || detail.assignee.fullnames === undefined ? (
+                                                                <p>None </p>
+
+                                                            ) : detail.assignee.fullnames != null ? (
+                                                                <p>{detail.assignee.fullnames}, </p>
                                                             ) : null}
                                                         </div>
                                                     ))}
@@ -881,6 +888,7 @@ export default function StrategicObjectives() {
                 
             ))) :  null}
 
+            {/* add objective */}
             <Dialog open={addopen} onClose={handleAddClose}>
                 <DialogTitle>Strategic Objective</DialogTitle>
                 <DialogContent>
@@ -1046,11 +1054,12 @@ export default function StrategicObjectives() {
                 </DialogActions>
             </Dialog>
 
+            {/* add task */}
             <Dialog open={addopentask} onClose={handleAddTaskClose}>
-                <DialogTitle>Strategic Initiative</DialogTitle>
+                <DialogTitle>Management Actions</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        Add New Strategic Initiative
+                        Add New Management Actions
                     </DialogContentText>
 
                     <TextField
@@ -1173,11 +1182,12 @@ export default function StrategicObjectives() {
                 </DialogActions>
             </Dialog>
 
+            {/* add task */}
             <Dialog open={addopenindividualtask} onClose={handleAddIndividualTaskClose}>
-                <DialogTitle>Strategic Initiative</DialogTitle>
+                <DialogTitle>Management Actions</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        Add New Strategic Initiative
+                        Add New Management Actions
                     </DialogContentText>
 
                     <TextField
@@ -1291,6 +1301,7 @@ export default function StrategicObjectives() {
                 </DialogActions>
             </Dialog>
 
+            {/* edit objectives */}
             <Dialog open={editopen} onClose={handleEditClose}>
                 <DialogTitle>Strategic Objective</DialogTitle>
                 <DialogContent>
@@ -1542,11 +1553,12 @@ export default function StrategicObjectives() {
                 </DialogActions>
             </Dialog>
 
+            {/* edit task */}
             <Dialog open={editopenindividualtask} onClose={handleEditIndividualTaskClose}>
-            <DialogTitle>Strategic Intitative</DialogTitle>
+            <DialogTitle>Management Actions</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        Edit Strategic Intitative Details
+                        Edit Management Actions Details
                     </DialogContentText>
                     <TextField
                         autoFocus
