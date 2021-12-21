@@ -525,6 +525,20 @@ export default function StrategicObjectives() {
         setUserId(list.user_id);
         setId(list.id);
         setObjectiveId(list.objective_id)
+
+        console.log("assignee here", list.assignedTasks)
+
+        if(list.assignedTasks !== null) {
+            let x = [];
+            (list.assignedTasks).map(function (i) {
+                console.log("i", i.id)
+                x.push(i.assignee.id);
+            });
+            setAssigneeId(x);
+            console.log("hapo", x);
+        } else {
+            setAssigneeId([]);
+        }
     }
     
     const saveEditedIndividualTask = async (e) => {
@@ -1575,43 +1589,81 @@ export default function StrategicObjectives() {
                         }}
                     />
 
-                <Grid container spacing={2}>
-                    <Grid item xs={6} lg={6} xl={6} sm={12}>
-                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                            <KeyboardDatePicker
-                                margin="normal"
-                                id="date-picker-dialog"
-                                helperText="Set start date"
-                                format="yyyy/MM/dd"
-                                fullWidth
-                                inputVariant="outlined"
-                                value={task_start_date}
-                                onChange={setTaskStartDate}
-                                KeyboardButtonProps={{
-                                    'aria-label': 'change date',
-                                }}
-                            />
-                        </MuiPickersUtilsProvider>
-                    </Grid>
+                    <label style={{ fontWeight: 'bold', color: 'black' }}> Add A Resource: </label>
+                    <FormControl
+                        fullWidth
+                        className={classes.selectFormControl}
+                    >
+                        <InputLabel
+                        htmlFor="multiple-select"
+                        className={classes.selectLabel}
+                        >
+                        Select Resource
+                        </InputLabel>
+                        <Select
+                        multiple
+                        value={assignee_id}
+                        variant="outlined"
+                        onChange={(event) => {
+                            const value = event.target.value;
+                            setAssigneeId(value)
+                        }}
+                        MenuProps={{ className: classes.selectMenu }}
+                        classes={{ select: classes.select }}
+                        inputProps={{
+                            name: "multipleSelect",
+                            id: "multiple-select",
+                        }}
+                        >
+                            {sysusers && sysusers.map((option) => (
+                            <MenuItem key={option.id} value={option.id}
+                                classes={{
+                                root: classes.selectMenuItem,
+                                selected: classes.selectMenuItemSelectedMultiple,
+                                }}>
+                                {option.fullnames}
+                            </MenuItem>
+                        ))}
+                        </Select>
+                    </FormControl>
 
-                    <Grid item xs={6} lg={6} xl={6} sm={12}>
-                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                            <KeyboardDatePicker
-                                margin="normal"
-                                id="date-picker-dialog"
-                                helperText="Set due date"
-                                format="yyyy/MM/dd"
-                                fullWidth
-                                inputVariant="outlined"
-                                value={task_end_date}
-                                onChange={setTaskEndDate}
-                                KeyboardButtonProps={{
-                                    'aria-label': 'change date',
-                                }}
-                            />
-                        </MuiPickersUtilsProvider>
+                    <Grid container spacing={2}>
+                        <Grid item xs={6} lg={6} xl={6} sm={12}>
+                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                <KeyboardDatePicker
+                                    margin="normal"
+                                    id="date-picker-dialog"
+                                    helperText="Set start date"
+                                    format="yyyy/MM/dd"
+                                    fullWidth
+                                    inputVariant="outlined"
+                                    value={task_start_date}
+                                    onChange={setTaskStartDate}
+                                    KeyboardButtonProps={{
+                                        'aria-label': 'change date',
+                                    }}
+                                />
+                            </MuiPickersUtilsProvider>
+                        </Grid>
+
+                        <Grid item xs={6} lg={6} xl={6} sm={12}>
+                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                <KeyboardDatePicker
+                                    margin="normal"
+                                    id="date-picker-dialog"
+                                    helperText="Set due date"
+                                    format="yyyy/MM/dd"
+                                    fullWidth
+                                    inputVariant="outlined"
+                                    value={task_end_date}
+                                    onChange={setTaskEndDate}
+                                    KeyboardButtonProps={{
+                                        'aria-label': 'change date',
+                                    }}
+                                />
+                            </MuiPickersUtilsProvider>
+                        </Grid>
                     </Grid>
-                </Grid>
 
                     <label style={{ fontWeight: 'bold', color: 'black' }}> Status : </label>
                     <TextField

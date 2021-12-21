@@ -377,7 +377,7 @@ export default function ObjectiveReport() {
 
             try {
 
-                let response = await axios.post('/actions/create', body, config)
+                let response = await axios.post('/objectivesactions/create', body, config)
                     if (response.status == 201) {
                         setshowloader(false);
                         let item = response.data.message
@@ -424,7 +424,7 @@ export default function ObjectiveReport() {
 
             try {
 
-                let response = await axios.post('/actions/update', body, config)
+                let response = await axios.post('/objectivesactions/update', body, config)
                     if (response.status == 201) {
                         setshowloader(false);
                         let item = response.data.message

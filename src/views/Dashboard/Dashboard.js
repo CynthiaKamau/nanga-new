@@ -59,7 +59,7 @@ import { CardContent } from "@material-ui/core";
 import { getBehaviours, getFreedoms, getConstraints } from "actions/bfc";
 import Highcharts from "highcharts";
 import HighchartsReact from 'highcharts-react-official';
-import Avatar from "../../assets/img/default-avatar.png";
+// import Avatar from "../../assets/img/default-avatar.png";
 
 // // Load Highcharts modules
 require("highcharts/modules/exporting")(Highcharts);
@@ -75,13 +75,13 @@ function Dashboard() {
   const dispatch = useDispatch();
 
   const { user: currentUser } = useSelector(state => state.auth);
-  const {  mission, vision, task_count, objective_count, strategic_intent1, strategic_intent2 } = useSelector(state => state.data);
+  const {  mission, vision, task_count, objective_count, strategic_intent1 } = useSelector(state => state.data);
   const { categories }  = useSelector(state => state.data);
   const { items, error, isLoading } = useSelector(state => state.kpi);
   const { items : objectives } = useSelector(state => state.objective);
   const { behaviours, behaviours_error, freedoms, freedoms_error, constraints, constrains_error} = useSelector(state => state.bfc);
 
-  console.log("user", currentUser)
+  console.log("strategic_intent1", strategic_intent1)
 
   useEffect(() => {
     dispatch(getUserObjectives(currentUser.id));
@@ -220,8 +220,8 @@ function Dashboard() {
   const [addopen, setAddOpen] = useState(false);
   const [editopenmission, setEditMissionOpen] = useState(false);
   const [editopenvision, setEditVisionOpen] = useState(false);
-  const [editopensil1, setEditSIL1Open] = useState(false);
-  const [editopensil2, setEditSIL2Open ] = useState(false);
+  // const [editopensil1, setEditSIL1Open] = useState(false);
+  // const [editopensil2, setEditSIL2Open ] = useState(false);
   const [user_id, setUserId] = useState(currentUser.id);
   const [showloader, setshowloader] = useState(false); 
   const [created_by, setCreatedBy] = useState("");
@@ -247,10 +247,10 @@ function Dashboard() {
   const [err, setError] = useState("");
   const [obj_tasks, setObjTasks] = useState("");
   const [ objectiveId, setObjectiveId] = useState("");
-  const [userstrategicintent1, setStrategicIntent1] = useState("");
-  const [userstrategicintent2, setStrategicIntent2] = useState("");
-  const [strategic_intent1_id, setStrategicIntent1Id] = useState("");
-  const [strategic_intent2_id, setStrategicIntent2Id] = useState("");
+  // const [userstrategicintent1, setStrategicIntent1] = useState("");
+  // const [userstrategicintent2, setStrategicIntent2] = useState("");
+  // const [strategic_intent1_id, setStrategicIntent1Id] = useState("");
+  // const [strategic_intent2_id, setStrategicIntent2Id] = useState("");
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -351,13 +351,13 @@ function Dashboard() {
     setEditVisionOpen(true);
   };
 
-  const handleEditSIL1Close = () => {
-    setEditSIL1Open(false);
-  }
+  // const handleEditSIL1Close = () => {
+  //   setEditSIL1Open(false);
+  // }
 
-  const handleEditSIL2Close = () => {
-    setEditSIL2Open(false);
-  }
+  // const handleEditSIL2Close = () => {
+  //   setEditSIL2Open(false);
+  // }
 
   const setEditingMission = (mission) => {
 
@@ -384,243 +384,243 @@ function Dashboard() {
     }
   }
 
-  const setEditingStrategicIntent1 = (strategic_intent1) => {
-    console.log("strategic_intent1 here", strategic_intent1)
-    if(strategic_intent1[0] === null || strategic_intent1[0] === undefined) {
-      setStrategicIntent1('');
-      setStrategicIntent1Id(null);
-    } else {
-      setStrategicIntent1(strategic_intent1[0].description)
-      setStrategicIntent1Id(strategic_intent1[0].id)
-    }
-  }
+  // const setEditingStrategicIntent1 = (strategic_intent1) => {
+  //   console.log("strategic_intent1 here", strategic_intent1)
+  //   if(strategic_intent1[0] === null || strategic_intent1[0] === undefined) {
+  //     setStrategicIntent1('');
+  //     setStrategicIntent1Id(null);
+  //   } else {
+  //     setStrategicIntent1(strategic_intent1[0].description)
+  //     setStrategicIntent1Id(strategic_intent1[0].id)
+  //   }
+  // }
 
-  const setEditingStrategicIntent2 = (strategic_intent2) => {
-    console.log("strategic_intent2 here", strategic_intent2)
-    if(strategic_intent2[0] === null || strategic_intent2[0] === undefined) {
-      setStrategicIntent2('');
-      setStrategicIntent2Id(null);
-    } else {
-      setStrategicIntent2(strategic_intent2[0].description)
-      setStrategicIntent2Id(strategic_intent2[0].id)
-    }
-  }
+  // const setEditingStrategicIntent2 = (strategic_intent2) => {
+  //   console.log("strategic_intent2 here", strategic_intent2)
+  //   if(strategic_intent2[0] === null || strategic_intent2[0] === undefined) {
+  //     setStrategicIntent2('');
+  //     setStrategicIntent2Id(null);
+  //   } else {
+  //     setStrategicIntent2(strategic_intent2[0].description)
+  //     setStrategicIntent2Id(strategic_intent2[0].id)
+  //   }
+  // }
 
-  const editStrategicIntent1 = async (e) => {
-    e.preventDefault();
-    setshowloader(true);
+  // const editStrategicIntent1 = async (e) => {
+  //   e.preventDefault();
+  //   setshowloader(true);
 
-    const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
+  //   const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
 
-    if(strategic_intent1_id === null) {
+  //   if(strategic_intent1_id === null) {
 
-      const body = JSON.stringify({
-        description : userstrategicintent1,
-        userid : user_id,
-        createdBy : user_id,
-      });
+  //     const body = JSON.stringify({
+  //       description : userstrategicintent1,
+  //       userid : user_id,
+  //       createdBy : user_id,
+  //     });
 
-      try {
+  //     try {
 
-        let response = await axios.post('', body, config)
-        if (response.status == 201) {
+  //       let response = await axios.post('', body, config)
+  //       if (response.status == 201) {
 
-          let res = response.data.message;
-          setshowloader(false);
-          setEditSIL1Open(false);
+  //         let res = response.data.message;
+  //         setshowloader(false);
+  //         setEditSIL1Open(false);
 
-          swal.fire({
-            title: "Success",
-            text: res,
-            icon: "success",
-          }).then(() => dispatch(getStrategicIntent1(currentUser.id)));
+  //         swal.fire({
+  //           title: "Success",
+  //           text: res,
+  //           icon: "success",
+  //         }).then(() => dispatch(getStrategicIntent1(currentUser.id)));
 
-      } else {
-        setshowloader(false);
-        setEditSIL1Open(false);
-        let err = response.data.message;
+  //     } else {
+  //       setshowloader(false);
+  //       setEditSIL1Open(false);
+  //       let err = response.data.message;
 
-        swal.fire({
-          title: "Error",
-          text: err,
-          icon: "error",
-          dangerMode: true
-        });
-      }
+  //       swal.fire({
+  //         title: "Error",
+  //         text: err,
+  //         icon: "error",
+  //         dangerMode: true
+  //       });
+  //     }
 
-      } catch (error) {
-          setshowloader(false);
-          setEditSIL1Open(false);
+  //     } catch (error) {
+  //         setshowloader(false);
+  //         setEditSIL1Open(false);
 
-          let err = error.response.data.message;
-          swal.fire({
-            title: "Error",
-            text: err,
-            icon: "error",
-            dangerMode: true
-          });
-      }
+  //         let err = error.response.data.message;
+  //         swal.fire({
+  //           title: "Error",
+  //           text: err,
+  //           icon: "error",
+  //           dangerMode: true
+  //         });
+  //     }
 
-    } else {  
-      try {
+  //   } else {  
+  //     try {
 
-          const body = JSON.stringify({
-            userid : user_id,
-            updatedBy : user_id,
-            description : userstrategicintent1,
-            id : strategic_intent1_id
-          });
+  //         const body = JSON.stringify({
+  //           userid : user_id,
+  //           updatedBy : user_id,
+  //           description : userstrategicintent1,
+  //           id : strategic_intent1_id
+  //         });
 
-          let response = await axios.post('', body, config)
-          console.log("level 1 resp", response.data)
-          if (response.status == 200) {
-            setshowloader(false);
-            setEditSIL1Open(false);
+  //         let response = await axios.post('', body, config)
+  //         console.log("level 1 resp", response.data)
+  //         if (response.status == 200) {
+  //           setshowloader(false);
+  //           setEditSIL1Open(false);
 
-            let resp = response.data.message;
-              swal.fire({
-                title: "Success",
-                text: resp,
-                icon: "success",
-              }).then(() => dispatch(getStrategicIntent1(currentUser.id)));
+  //           let resp = response.data.message;
+  //             swal.fire({
+  //               title: "Success",
+  //               text: resp,
+  //               icon: "success",
+  //             }).then(() => dispatch(getStrategicIntent1(currentUser.id)));
 
-          } else {
-            setshowloader(false);
-            setEditSIL1Open(false);
+  //         } else {
+  //           setshowloader(false);
+  //           setEditSIL1Open(false);
 
-            let err = response.data.message;
+  //           let err = response.data.message;
 
-            swal.fire({
-              title: "Error",
-              text: err,
-              icon: "error",
-              dangerMode: true
-            });
-          }
+  //           swal.fire({
+  //             title: "Error",
+  //             text: err,
+  //             icon: "error",
+  //             dangerMode: true
+  //           });
+  //         }
 
-      } catch (error) {
-          setshowloader(false);
-          setEditSIL1Open(false);
+  //     } catch (error) {
+  //         setshowloader(false);
+  //         setEditSIL1Open(false);
 
-          let err = error.response.data.message;
-          swal.fire({
-            title: "Error",
-            text: err,
-            icon: "error",
-            dangerMode: true
-          });
-      }
+  //         let err = error.response.data.message;
+  //         swal.fire({
+  //           title: "Error",
+  //           text: err,
+  //           icon: "error",
+  //           dangerMode: true
+  //         });
+  //     }
 
-    }
-  }  
+  //   }
+  // }  
 
-  const editStrategicIntent2 = async (e) => {
-    e.preventDefault();
-    setshowloader(true);
+  // const editStrategicIntent2 = async (e) => {
+  //   e.preventDefault();
+  //   setshowloader(true);
 
-    const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
+  //   const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
 
-    if(strategic_intent2_id === null) {
+  //   if(strategic_intent2_id === null) {
 
-      const body = JSON.stringify({
-        description : userstrategicintent2,
-        userid : user_id,
-        createdBy : user_id,
-      });
+  //     const body = JSON.stringify({
+  //       description : userstrategicintent2,
+  //       userid : user_id,
+  //       createdBy : user_id,
+  //     });
 
-      try {
+  //     try {
 
-        let response = await axios.post('', body, config)
-        if (response.status == 202) {
+  //       let response = await axios.post('', body, config)
+  //       if (response.status == 202) {
 
-          let res = response.data.message;
-          setshowloader(false);
-          setEditSIL2Open(false);
+  //         let res = response.data.message;
+  //         setshowloader(false);
+  //         setEditSIL2Open(false);
 
-          swal.fire({
-            title: "Success",
-            text: res,
-            icon: "success",
-          }).then(() => dispatch(getStrategicIntent2(currentUser.id)));
+  //         swal.fire({
+  //           title: "Success",
+  //           text: res,
+  //           icon: "success",
+  //         }).then(() => dispatch(getStrategicIntent2(currentUser.id)));
 
-      } else {
-        setshowloader(false);
-        setEditSIL2Open(false);
-        let err = response.data.message;
+  //     } else {
+  //       setshowloader(false);
+  //       setEditSIL2Open(false);
+  //       let err = response.data.message;
 
-        swal.fire({
-          title: "Error",
-          text: err,
-          icon: "error",
-          dangerMode: true
-        });
-      }
+  //       swal.fire({
+  //         title: "Error",
+  //         text: err,
+  //         icon: "error",
+  //         dangerMode: true
+  //       });
+  //     }
 
-      } catch (error) {
-          setshowloader(false);
-          setEditSIL2Open(false);
+  //     } catch (error) {
+  //         setshowloader(false);
+  //         setEditSIL2Open(false);
 
-          let err = error.response.data.message;
-          swal.fire({
-            title: "Error",
-            text: err,
-            icon: "error",
-            dangerMode: true
-          });
-      }
+  //         let err = error.response.data.message;
+  //         swal.fire({
+  //           title: "Error",
+  //           text: err,
+  //           icon: "error",
+  //           dangerMode: true
+  //         });
+  //     }
 
-    } else {  
-      try {
+  //   } else {  
+  //     try {
 
-          const body = JSON.stringify({
-            userid : user_id,
-            updatedBy : user_id,
-            description : userstrategicintent2,
-            id : strategic_intent2_id
-          });
+  //         const body = JSON.stringify({
+  //           userid : user_id,
+  //           updatedBy : user_id,
+  //           description : userstrategicintent2,
+  //           id : strategic_intent2_id
+  //         });
 
-          let response = await axios.post('', body, config)
-          console.log("level 2 resp", response.data)
-          if (response.status == 200) {
-            setshowloader(false);
-            setEditSIL2Open(false);
+  //         let response = await axios.post('', body, config)
+  //         console.log("level 2 resp", response.data)
+  //         if (response.status == 200) {
+  //           setshowloader(false);
+  //           setEditSIL2Open(false);
 
-            let resp = response.data.message;
-              swal.fire({
-                title: "Success",
-                text: resp,
-                icon: "success",
-              }).then(() => dispatch(getStrategicIntent2(currentUser.id)));
+  //           let resp = response.data.message;
+  //             swal.fire({
+  //               title: "Success",
+  //               text: resp,
+  //               icon: "success",
+  //             }).then(() => dispatch(getStrategicIntent2(currentUser.id)));
 
-          } else {
-            setshowloader(false);
-            setEditSIL2Open(false);
+  //         } else {
+  //           setshowloader(false);
+  //           setEditSIL2Open(false);
 
-            let err = response.data.message;
+  //           let err = response.data.message;
 
-            swal.fire({
-              title: "Error",
-              text: err,
-              icon: "error",
-              dangerMode: true
-            });
-          }
+  //           swal.fire({
+  //             title: "Error",
+  //             text: err,
+  //             icon: "error",
+  //             dangerMode: true
+  //           });
+  //         }
 
-      } catch (error) {
-          setshowloader(false);
-          setEditSIL2Open(false);
+  //     } catch (error) {
+  //         setshowloader(false);
+  //         setEditSIL2Open(false);
 
-          let err = error.response.data.message;
-          swal.fire({
-            title: "Error",
-            text: err,
-            icon: "error",
-            dangerMode: true
-          });
-      }
+  //         let err = error.response.data.message;
+  //         swal.fire({
+  //           title: "Error",
+  //           text: err,
+  //           icon: "error",
+  //           dangerMode: true
+  //         });
+  //     }
 
-    }
-  }  
+  //   }
+  // }  
 
   const editMission = async (e) => {
     e.preventDefault();
@@ -1374,7 +1374,7 @@ function Dashboard() {
         </Dialog>
 
         {/* edit Strategic Level 1 */}
-        <Dialog open={editopensil1} onClose={handleEditSIL1Close} >
+        {/* <Dialog open={editopensil1} onClose={handleEditSIL1Close} >
           <DialogTitle>Strategic Intent Level 1</DialogTitle>
           <DialogContent>
             <DialogContentText>
@@ -1398,6 +1398,23 @@ function Dashboard() {
             }}
             />
 
+            <TextField
+              id="outlined-multiline-static"
+              fullWidth
+              autoFocus
+              label="Strategic Level 2"
+              type="text"
+              margin="dense"
+              multiline
+              variant="outlined"
+              rows={4}
+              value={userstrategicintent2}
+              className={classes.textInput}
+              onChange={(event) => {
+                setStrategicIntent2(event.target.value);
+            }}
+            />
+
           </DialogContent>
           <DialogActions>
             <Button color="danger" onClick={handleEditSIL1Close}>Cancel</Button>
@@ -1415,10 +1432,10 @@ function Dashboard() {
                 <Button color="primary" onClick={(e) => { editStrategicIntent1(e); }}>Save</Button>
               )}
           </DialogActions>
-        </Dialog>
+        </Dialog> */}
 
         {/* edit Strategic Level 2 */}
-        <Dialog open={editopensil2} onClose={handleEditSIL2Close} >
+        {/* <Dialog open={editopensil2} onClose={handleEditSIL2Close} >
           <DialogTitle>Strategic Intent Level 2</DialogTitle>
           <DialogContent>
             <DialogContentText>
@@ -1459,14 +1476,14 @@ function Dashboard() {
                 <Button color="primary" onClick={(e) => { editStrategicIntent2(e); }}>Save</Button>
               )}
           </DialogActions>
-        </Dialog>
+        </Dialog> */}
 
       </GridContainer>
 
       { items && items.length >= 1 ? (
 
         <div>
-          <GridContainer spacing={2} style={{width: '100%', textAlign: 'center', justifyContent: 'center'}}>
+          <GridContainer spacing={2}>
 
             <Box sx={{ bgcolor: 'background.paper' }} width="98%" style={{ height: '80vh', paddingBottom : '70px' }}>
               <AppBar color="green" position="static">
@@ -1669,13 +1686,20 @@ function Dashboard() {
                                                 <TableCell>
                                                   {list.assignedTasks.map((detail, index) => (
                                                       <div key={index} style={{ display: 'inline' }}>
-                                                          { detail.assignee.userPicture === null || detail.assignee.userPicture === undefined ? (
+                                                          {/* { detail.assignee.userPicture === null || detail.assignee.userPicture === undefined ? (
                                                               <img key={index} src={Avatar} alt={detail.assignee.fullnames}  style={{ maxWidth: '50px', maxHeight: '50px', borderRadius: '50%'}} />
 
                                                           ) : detail.assignee.userPicture != null ? (
                                                               <img key={index} src={detail.assignee.userPicture}
                                                               alt={detail.assignee.fullnames}  style={{ maxWidth: '50px', maxHeight: '50px', borderRadius: '50%'}} />
-                                                          ) : null}
+                                                          ) : null} */}
+
+                                                            { detail.assignee.fullnames === null || detail.assignee.fullnames === undefined ? (
+                                                                <p>None </p>
+
+                                                            ) : detail.assignee.fullnames != null ? (
+                                                                <p>{detail.assignee.fullnames}, </p>
+                                                            ) : null}
                                                       </div>
                                                     
                                                   ))}
@@ -1695,41 +1719,34 @@ function Dashboard() {
                   </GridItem>
                   ))) : null }
                 </TabPanel>
-                <TabPanel value={value} index={2} dir={theme.direction} style={{ height: '70vh' }}>
+                <TabPanel value={value} index={2} dir={theme.direction} style={{ height: '70vh', width: '100%'}}>
                   <Grid
                     container
                     spacing={2}
                     direction="row"
-                    style={{ paddingBottom: '20px'}}
                     >
-                      <Grid item xs={12} md={6} sm={6} key="1">
-                        <Card style={{ height: '100%'}} >
-                          <h4 style={{color: 'black', textAlign:'center'}}> Strategic Intent Level 1 </h4>
-                         
-                            <CardBody >
-                              <IconButton  style={{float: 'right'}} aria-label="edit" color="primary" onClick={() => { setEditingStrategicIntent1(strategic_intent1) }} ><EditIcon style={{ color : '#000000'}}/></IconButton>
-                              {strategic_intent1 === undefined || strategic_intent1 === null || strategic_intent1.length === 0 ? (
-                                <h4>Not available.</h4>
-                              ) : strategic_intent1 ? (
-                                <h4 > {strategic_intent1[0].description}</h4>
-                              ) : null}
-                            </CardBody>
-
-                          </Card>
+                      <Grid item xs={12} md={12} sm={12} key="1">
+                        <Card>
+                          <h4 style={{color: 'black', textAlign: 'center', justifyContent: 'center'}}> Strategic Intent Level 1 </h4>
+                            {/* <IconButton  style={{float: 'right'}} aria-label="edit" color="primary" onClick={() => { setEditingStrategicIntent1(strategic_intent1) }} ><EditIcon style={{ color : '#000000'}}/></IconButton> */}
+                            {strategic_intent1 === undefined || strategic_intent1 === null || strategic_intent1.length === 0 ? (
+                              <h4 style={{color: 'black', textAlign: 'center'}} >Not available.</h4>
+                            ) : strategic_intent1 ? (
+                              <h4 style={{color: 'black', textAlign: 'center', justifyContent: 'center'}} > {strategic_intent1[0].level_up_one}</h4>
+                            ) : null}
+                        </Card>
                       </Grid>
 
-                      <Grid item xs={12} md={6} sm={6} key="2">              
-                        <Card style={{ height: '100%'}}>
-                          <h4 style={{color: 'black', textAlign:'center'}}> Strategic Intent Level 2 </h4>          
-                          <CardBody >
-                              <IconButton  style={{float: 'right'}} aria-label="edit" color="primary" onClick={() => { setEditingStrategicIntent2(strategic_intent2) }} ><EditIcon style={{ color : '#000000'}}/></IconButton>
-                              {strategic_intent2 === undefined || strategic_intent2 === null || strategic_intent2.length === 0 ? (
-                                <h4> Not available.</h4>
-                              ) : strategic_intent2 ? (
-                                <h4 > {strategic_intent2[0].description}</h4>
+                      <Grid item xs={12} md={12} sm={12} key="2"> 
+                        {/* <IconButton  style={{float: 'right'}} aria-label="edit" color="primary" onClick={() => { setEditingStrategicIntent1(strategic_intent1) }} ><EditIcon style={{ color : '#000000'}}/></IconButton>          */}
+                          <Card>
+                            <h4 style={{color: 'black', textAlign:'center'}}> Strategic Intent Level 2 </h4> 
+                              {strategic_intent1 === undefined || strategic_intent1 === null || strategic_intent1.length === 0 ? (
+                                <h4 style={{color: 'black', textAlign: 'center'}} > Not available.</h4>
+                              ) : strategic_intent1 ? (
+                                <h4  style={{color: 'black', textAlign: 'center', justifyContent: 'center'}} > {strategic_intent1[0].level_up_two}</h4>
                               ) : null}
-                            </CardBody>
-                        </Card>
+                          </Card>
                       </Grid>
                   </Grid>
 

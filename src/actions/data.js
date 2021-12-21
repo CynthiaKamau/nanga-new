@@ -322,7 +322,7 @@ export const getStrategicIntent1 = (id) => {
 
         try {
 
-            let response = await axios.get(`?user_id=${id}`)
+            let response = await axios.get(`strategicintent/fetchStrategicIntentbyUserId?user_id=${id}`)
             if (response.status == 200) {
                 console.log("here", response.data)
                 dispatch({ type: STRATEGIC_INTENT1_SUCCESS, payload: response.data })

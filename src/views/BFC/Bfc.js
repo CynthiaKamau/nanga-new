@@ -2,7 +2,7 @@ import React, { useEffect, useState,  } from "react";
 import { useSelector, useDispatch } from "react-redux";
 // import axios from "axios";
 import { getBehaviours, getFreedoms, getConstraints } from "actions/bfc";
-import { getStrategicIntent1, getStrategicIntent2 } from "actions/data";
+import { getStrategicIntent1 } from "actions/data";
 import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -36,7 +36,8 @@ export default function BFC() {
     const dispatch = useDispatch();
 
     const { user: currentUser } = useSelector(state => state.auth);
-    const { behaviours, behaviours_error, freedoms, freedoms_error, constraints, constrains_error, strategic_intent1, strategic_intent2} = useSelector(state => state.bfc);
+    const { behaviours, behaviours_error, freedoms, freedoms_error, constraints, constrains_error} = useSelector(state => state.bfc);
+    const { strategic_intent1 } = useSelector(state => state.data);
 
     const [addBopen, setAddBOpen] = useState(false);
     const [addFopen, setAddFOpen] = useState(false);
@@ -56,12 +57,13 @@ export default function BFC() {
     const [userstrategicintent1, setStrategicIntent1] = useState("");
     const [userstrategicintent2, setStrategicIntent2] = useState("");
     const [strategic_intent1_id, setStrategicIntent1Id] = useState("");
-    const [strategic_intent2_id, setStrategicIntent2Id] = useState("");
+    const [user_id, setUserId] = useState(currentUser.id);
+    const [editopensil1, setEditSIL1Open] = useState(false);
 
-    console.log("beh", behaviours, updated_by);
-    console.log(userstrategicintent1, userstrategicintent2, strategic_intent2_id, strategic_intent1_id)
+    // const [strategic_intent2_id, setStrategicIntent2Id] = useState("");
 
-
+    console.log("beh", behaviours, updated_by, setUserId);
+    
     useEffect(() => {
         dispatch(getBehaviours(currentUser.id));
         dispatch(getFreedoms(currentUser.id));
@@ -69,8 +71,10 @@ export default function BFC() {
         setCreatedBy(currentUser.id)
         setUpdatedBy(currentUser.id)
         dispatch(getStrategicIntent1(currentUser.id))
-        dispatch(getStrategicIntent2(currentUser.id))
     }, []);
+
+    console.log("strategic intent", strategic_intent1)
+
 
     const handleAddBehaviourClickOpen = () => {
         setAddBOpen(true);
@@ -441,28 +445,142 @@ export default function BFC() {
         }
     }
 
-    const setEditingStrategicIntent1 = (strategic_intent1) => {
-        console.log("strategic_intent1 here", strategic_intent1)
-        if(strategic_intent1[0] === null || strategic_intent1[0] === undefined) {
-          setStrategicIntent1('');
-          setStrategicIntent1Id(null);
-        } else {
-          setStrategicIntent1(strategic_intent1[0].description)
-          setStrategicIntent1Id(strategic_intent1[0].id)
-        }
-    }
-    
-    const setEditingStrategicIntent2 = (strategic_intent2) => {
-        console.log("strategic_intent2 here", strategic_intent2)
-        if(strategic_intent2[0] === null || strategic_intent2[0] === undefined) {
-            setStrategicIntent2('');
-            setStrategicIntent2Id(null);
-        } else {
-            setStrategicIntent2(strategic_intent2[0].description)
-            setStrategicIntent2Id(strategic_intent2[0].id)
-        }
+    const handleEditSIL1Close = () => {
+        setEditSIL1Open(false);
     }
 
+    const handleEditSIL1Open = () => {
+        setEditSIL1Open(true);
+    }
+    
+    const setEditingStrategicIntent1 = (strategic_intent1) => {
+        console.log("strategic_intent1 here", strategic_intent1)
+        if(strategic_intent1 === undefined || strategic_intent1[0] === null ) {
+          setStrategicIntent1('');
+          setStrategicIntent2('');
+          setStrategicIntent1Id(null);
+        } else {
+          setStrategicIntent1(strategic_intent1[0].level_up_one)
+          setStrategicIntent2(strategic_intent1[0].level_up_two)
+          setStrategicIntent1Id(strategic_intent1[0].id)
+        }
+      }
+
+    const editStrategicIntent1 = async (e) => {
+        e.preventDefault();
+        setshowloader(true);
+    
+        const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
+    
+        if(strategic_intent1_id === null) {
+    
+          const body = JSON.stringify({
+            levelUpTwo : userstrategicintent2,
+            levelUpOne : userstrategicintent1,
+            userId : user_id,
+            createdBy : user_id,
+            strategicIntent : ''
+          });
+    
+          try {
+    
+            let response = await axios.post('/strategicintent/create', body, config)
+            if (response.status == 201) {
+    
+              let res = response.data.message;
+              setshowloader(false);
+              setEditSIL1Open(false);
+    
+              swal.fire({
+                title: "Success",
+                text: res,
+                icon: "success",
+              }).then(() => dispatch(getStrategicIntent1(currentUser.id)));
+    
+          } else {
+            setshowloader(false);
+            setEditSIL1Open(false);
+            let err = response.data.message;
+    
+            swal.fire({
+              title: "Error",
+              text: err,
+              icon: "error",
+              dangerMode: true
+            });
+          }
+    
+          } catch (error) {
+              setshowloader(false);
+              setEditSIL1Open(false);
+    
+              let err = error.response.data.message;
+              swal.fire({
+                title: "Error",
+                text: err,
+                icon: "error",
+                dangerMode: true
+              });
+          }
+    
+        } else {  
+          try {
+    
+              const body = JSON.stringify({
+                userId : user_id,
+                updatedBy : user_id,
+                description : userstrategicintent1,
+                id : strategic_intent1_id,
+                level_up_one : userstrategicintent1,
+                level_up_two : userstrategicintent2,
+                strategic_intent : ''
+              });
+    
+              let response = await axios.post('/strategicintent/update', body, config)
+              console.log("level 1 resp", response.data)
+              if (response.status == 201) {
+                setshowloader(false);
+                setEditSIL1Open(false);
+    
+                let resp = response.data.message;
+                  swal.fire({
+                    title: "Success",
+                    text: resp,
+                    icon: "success",
+                  }).then(() => dispatch(getStrategicIntent1(currentUser.id)));
+    
+              } else {
+                setshowloader(false);
+                setEditSIL1Open(false);
+    
+                let err = response.data.message;
+    
+                swal.fire({
+                  title: "Error",
+                  text: err,
+                  icon: "error",
+                  dangerMode: true
+                });
+              }
+    
+          } catch (error) {
+              setshowloader(false);
+              setEditSIL1Open(false);
+    
+              let err = error.response.data.message;
+              swal.fire({
+                title: "Error",
+                text: err,
+                icon: "error",
+                dangerMode: true
+              });
+          }
+    
+        }
+    }  
+    
+    
+   
     return (
         <div>
 
@@ -473,15 +591,16 @@ export default function BFC() {
             style={{ paddingBottom: '20px'}}
             >
                 <Grid item xs={12} md={12} sm={12} key="1">
+                    <IconButton  style={{float: 'right'}} aria-label="edit" color="primary" onClick={() => { handleEditSIL1Open(); setEditingStrategicIntent1(strategic_intent1) }} ><EditIcon style={{ color : '#000000'}}/></IconButton>
+
                 <Card>
                     <h4 style={{color: 'black', textAlign:'center'}}> Strategic Intent Level 1 </h4>
-                    
+
                     <CardBody >
-                        <IconButton  style={{float: 'right'}} aria-label="edit" color="primary" onClick={() => { setEditingStrategicIntent1(strategic_intent1) }} ><EditIcon style={{ color : '#000000'}}/></IconButton>
                         {strategic_intent1 === undefined || strategic_intent1 === null || strategic_intent1.length === 0 ? (
                         <h4>Not available.</h4>
                         ) : strategic_intent1 ? (
-                        <h4 > {strategic_intent1[0].description}</h4>
+                        <h4 > {strategic_intent1[0].level_up_one}</h4>
                         ) : null}
                     </CardBody>
 
@@ -492,11 +611,10 @@ export default function BFC() {
                 <Card>
                     <h4 style={{color: 'black', textAlign:'center'}}> Strategic Intent Level 2 </h4>          
                     <CardBody >
-                        <IconButton  style={{float: 'right'}} aria-label="edit" color="primary" onClick={() => { setEditingStrategicIntent2(strategic_intent2) }} ><EditIcon style={{ color : '#000000'}}/></IconButton>
-                        {strategic_intent2 === undefined || strategic_intent2 === null || strategic_intent2.length === 0 ? (
+                        {strategic_intent1 === undefined || strategic_intent1 === null || strategic_intent1.length === 0 ? (
                         <h4> Not available.</h4>
-                        ) : strategic_intent2 ? (
-                        <h4 > {strategic_intent2[0].description}</h4>
+                        ) : strategic_intent1 ? (
+                        <h4 > {strategic_intent1[0].level_up_two}</h4>
                         ) : null}
                     </CardBody>
                 </Card>
@@ -852,6 +970,67 @@ export default function BFC() {
                             <Button color="primary" onClick={editConstraint}>Save</Button>
                         )}
                 </DialogActions>
+            </Dialog>
+
+            {/* edit Strategic Level 1 */}
+            <Dialog open={editopensil1} onClose={handleEditSIL1Close} >
+            <DialogTitle>Strategic Intent Level 1</DialogTitle>
+            <DialogContent>
+                <DialogContentText>
+                Edit Strategic Intent Level 1
+                </DialogContentText>
+
+                <TextField
+                id="outlined-multiline-static"
+                fullWidth
+                autoFocus
+                label="Strategic Level 1"
+                type="text"
+                margin="dense"
+                multiline
+                variant="outlined"
+                rows={4}
+                value={userstrategicintent1}
+                className={classes.textInput}
+                onChange={(event) => {
+                    setStrategicIntent1(event.target.value);
+                }}
+                />
+
+                <TextField
+                id="outlined-multiline-static"
+                fullWidth
+                autoFocus
+                label="Strategic Level 2"
+                type="text"
+                margin="dense"
+                multiline
+                variant="outlined"
+                rows={4}
+                value={userstrategicintent2}
+                className={classes.textInput}
+                onChange={(event) => {
+                    setStrategicIntent2(event.target.value);
+                }}
+                />
+
+            </DialogContent>
+            <DialogActions>
+                <Button color="danger" onClick={handleEditSIL1Close}>Cancel</Button>
+                { showloader === true  ? (
+                <div style={{ textAlign: "center", marginTop: 10 }}>
+                    <Loader
+                        type="Puff"
+                        color="#29A15B"
+                        height={100}
+                        width={100}
+                    />
+                </div>
+                ) :
+                (
+                    <Button color="primary" onClick={(e) => { editStrategicIntent1(e); }}>Save</Button>
+                )}
+            </DialogActions>
             </Dialog>
 
         </div>

@@ -189,7 +189,7 @@ export const getOMonthlyActions = (id) => {
 
         try {
 
-            let response = await axios.get(`/actions/fetchActionsbyUserId?user_id=${id}`)
+            let response = await axios.get(`/objectivesactions/fetchActionsbyUserId?user_id=${id}`)
             if (response.status == 200) {
                 dispatch({ type: OBJECTIVES_MONTH_ACTION_SUCCESS, payload: response.data })
             } else {
