@@ -20,11 +20,11 @@ import TextField from '@material-ui/core/TextField';
 import Button from "components/CustomButtons/Button.js";
 import GridItem from "components/Grid/GridItem.js";
 import GridContainer from "components/Grid/GridContainer.js";
-import { CompareArrows } from "@material-ui/icons";
 import Card from "components/Card/Card.js";
 import CardHeader from "components/Card/CardHeader.js";
 import CardBody from "components/Card/CardBody.js";
 import MaterialTable from 'material-table';
+import { DeleteForever, FiberManualRecord, CompareArrows } from "@material-ui/icons";
 
 const useStyles = makeStyles(styles);
 
@@ -48,7 +48,7 @@ export default function DataTable() {
 
     const [addopen, setAddOpen] = useState(false);
     const [editopen, setEditOpen] = useState(false);
-    // const [deleteopen, setDeleteOpen] = useState(false);
+    const [deleteopen, setDeleteOpen] = useState(false);
     const [kpi, setKPI] = useState("");
     const [uom, setUnitOfMeasure] = useState("");
     const [category, setCategory] = useState("");
@@ -60,6 +60,7 @@ export default function DataTable() {
     const [account, setAccount] = useState("");
     const [ytd_planned, setYTDPlanned] = useState("");
     const [ytd_actual, setYTDActual] = useState("");
+    const [deleteId, setDeleteId] = useState("");
     // const [action, setAction] = useState("");
     // const [support_required, setSupportRequired] = useState("");
     // const [root_cause, setRootCause] = useState("");
@@ -205,13 +206,63 @@ export default function DataTable() {
         // setRootCause(list.rootCause)
     }
 
-    // const handleDeleteClickOpen = () => {
-    //     setDeleteOpen(true);
-    // };
+    const handleDeleteClickOpen = () => {
+        setDeleteOpen(true);
+    };
 
-    // const setDelete = (list) => {
-    //     console.log(list)
-    // }
+    const handleDeleteClose = () => {
+        setDeleteOpen(false);
+    };
+
+    const setDeleting = (list) => {
+        console.log("delete items",list)
+        setDeleteId(list.id)
+    }
+
+    const deleteKPI = async(e) => {
+        e.preventDefault();
+        setshowloader(true);
+
+        try {
+
+            let response = await axios.delete(`/kpi/deleteKpiById?kpi_id=${deleteId}`)
+            if (response.status == 200) {
+                setshowloader(false);
+                setDeleteOpen(false);
+                console.log("here", response.data)
+                let item = response.data.message
+
+                swal.fire({
+                    title: "Success",
+                    text: item,
+                    icon: "success",
+                }).then(() => dispatch(getKpis(currentUser.id)));
+            } else {
+                setshowloader(false);
+                setDeleteOpen(false);
+                let error = response.data.message
+                    setshowloader(false);
+                    swal.fire({
+                        title: "Error",
+                        text: error,
+                        icon: "error",
+                        dangerMode: true
+                    }).then(() => dispatch(getKpis(currentUser.id)));
+            } 
+        } catch(error) {
+            setshowloader(false);
+            setDeleteOpen(false);
+            let err = error.response.data.message
+            setshowloader(false);
+            swal.fire({
+                title: "Error",
+                text: err,
+                icon: "error",
+                dangerMode: true
+            }).then(() => dispatch(getKpis(currentUser.id)));
+        } 
+
+    }
 
     const handleAddClose = () => {
         setAddOpen(false);
@@ -244,10 +295,6 @@ export default function DataTable() {
         } 
     }
 
-    // const handleDeleteClose = () => {
-    //     setDeleteOpen(false);
-    // };
-
     const uoms = [
         {
           value: '%',
@@ -266,24 +313,24 @@ export default function DataTable() {
           label: 'numeric',
         },
         {
-          value: 'KES',
-          label: 'KES',
+          value: 'KES  M',
+          label: 'KES  M',
         },
         {
-            value: 'TSH',
-            label: 'TSH',
+            value: 'TSH  M',
+            label: 'TSH M',
         },
         {
-            value: 'UGX',
-            label: 'UGX',
+            value: 'UGX  M',
+            label: 'UGX  M',
         },
         {
-            value: 'RWF',
-            label: 'RWF',
+            value: 'RWF  M',
+            label: 'RWF  M',
         },
         {
-            value: 'USD',
-            label: 'USD',
+            value: 'USD  M',
+            label: 'USD M',
         }
     ]
 
@@ -316,6 +363,10 @@ export default function DataTable() {
           title: 'Account'
         },
         {
+          filed: 'target',
+          title: 'Target'
+        },
+        {
           field: 'plannedYTD',
           title: 'Planned YTD'
         },
@@ -324,12 +375,29 @@ export default function DataTable() {
           title: 'Actual YTD'
         },
         {
+          field: '',
+          title: 'VAR',
+            render: (list) => {
+              if(list.variance === 'amber') {
+                  return (<FiberManualRecord style={{color : '#FFC107'}}/>)
+              } else if(list.variance === 'green') {
+                  return (<FiberManualRecord style={{color : '#29A15B'}}/>)
+              } else if(list.variance === 'blue') {
+                  return (<FiberManualRecord style={{color : '#03A9F4'}}/>)
+              } else if(list.variance === 'red') {
+                  return (<FiberManualRecord style={{color : '#F44336'}}/>)
+              } else if(list.variance === null || list.variance === undefined) {
+                  return (<FiberManualRecord style={{color : '#F44336'}}/>)
+              } 
+            }
+        }, 
+        {
           field: 'actions',
           title: 'Actions',
           render: (list) => {
-            console.log("editing table", list)
             return ( <div><IconButton aria-label="edit" className={classes.textGreen} onClick={() => { handleEditClickOpen(); setEditing(list)}}><EditIcon /></IconButton>
             <IconButton aria-label="invert" color="primary" onClick={() => { handleInvert(list) }} ><CompareArrows /></IconButton>
+            <IconButton aria-label="delete" style={{color: 'black'}} onClick={() => { setDeleting(list), handleDeleteClickOpen() }} ><DeleteForever /></IconButton>
             </div>)
           }
     
@@ -337,7 +405,7 @@ export default function DataTable() {
       ];
 
   return (
-    <div style={{ height: 400, width: '100%' }}>
+    <div style={{ width: '100%' }}>
         <GridContainer>
         <Grid container justify="flex-end" style={{ marginTop: '10px' }}>
             <Button color="primary" size="lg" onClick={handleAddClickOpen}> Add KPI </Button> 
@@ -350,7 +418,7 @@ export default function DataTable() {
                 </CardHeader>
                 <CardBody>
                     <MaterialTable
-                        title="KPI  details."
+                        title="KPI targets for a full year."
                         data={items}
                         columns={columns}
                         options={{
@@ -669,8 +737,8 @@ export default function DataTable() {
                     <Loader
                         type="Puff"
                         color="#29A15B"
-                        height={150}
-                        width={150}
+                        height={100}
+                        width={100}
                     />
                     </div>
                     ) :
@@ -680,14 +748,9 @@ export default function DataTable() {
                 </DialogActions>
             </Dialog>
 
-            {/* <Dialog
-                open={deleteopen}
-                onClose={handleDeleteClose}
-                aria-labelledby="alert-dialog-title"
-                aria-describedby="alert-dialog-description"
-            >
+            <Dialog open={deleteopen} onClose={handleDeleteClose}>
                 <DialogTitle id="alert-dialog-title">
-                {"Are you sure you want to delete the team?"}
+                {"Are you sure you want to delete this KPI?"}
                 </DialogTitle>
                 <DialogContent>
                 <DialogContentText id="alert-dialog-description">
@@ -696,11 +759,21 @@ export default function DataTable() {
                 </DialogContent>
                 <DialogActions>
                 <Button color="danger" onClick={handleDeleteClose}>Disagree</Button>
-                <Button color="primary" onClick={handleDeleteClose} autoFocus>
-                    Agree
-                </Button>
+                { showloader === true ? (
+                    <div style={{ textAlign: "center", marginTop: 10 }}>
+                    <Loader
+                        type="Puff"
+                        color="#29A15B"
+                        height={100}
+                        width={100}
+                    />
+                    </div>
+                    ) :
+                    (
+                        <Button color="primary" onClick={(e) => { deleteKPI(e)}} > Agree</Button>
+                    )}
                 </DialogActions>
-            </Dialog> */}
+            </Dialog>
 
         </GridItem>
       </GridContainer>

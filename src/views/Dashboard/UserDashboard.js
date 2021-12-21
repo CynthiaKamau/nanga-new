@@ -36,7 +36,7 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import { getMission, getVision, getTaskCount, getObjectivesCount, getUserById } from "actions/data";
+import { getMission, getVision, getTaskCount, getObjectivesCount, getUserById, getStrategicIntent1 } from "actions/data";
 import CardHeader from "components/Card/CardHeader";
 import { CardContent } from "@material-ui/core";
 import Box from '@material-ui/core/Box';
@@ -52,7 +52,7 @@ import FiberManualRecord from "@material-ui/icons/FiberManualRecord";
 import { getBehaviours, getFreedoms, getConstraints } from "actions/bfc";
 import Highcharts from "highcharts";
 import HighchartsReact from 'highcharts-react-official';
-import Avatar from "../../assets/img/default-avatar.png";
+// import Avatar from "../../assets/img/default-avatar.png";
 
 
 const useStyles = makeStyles(styles);
@@ -68,7 +68,7 @@ export default function UserDashboard() {
   const { items : objectives } = useSelector(state => state.objective);
   const {  mission, vision, spec_user, task_count, objective_count } = useSelector(state => state.data);
   const { items, error, isLoading } = useSelector(state => state.kpi);
-  const { behaviours, behaviours_error, freedoms, freedoms_error, constraints, constrains_error} = useSelector(state => state.bfc);
+  const { behaviours, behaviours_error, freedoms, freedoms_error, constraints, constrains_error, strategic_intent1} = useSelector(state => state.bfc);
 
   // const {  categories } = useSelector(state => state.data);
 
@@ -101,7 +101,8 @@ export default function UserDashboard() {
         dispatch(getFreedoms(chars));
         dispatch(getConstraints(chars));
         dispatch(getTaskCount(chars));
-        dispatch(getObjectivesCount(chars))
+        dispatch(getObjectivesCount(chars));
+        dispatch(getStrategicIntent1(chars))
     }
     
   }, [chars])
@@ -305,7 +306,7 @@ export default function UserDashboard() {
           <GridContainer>
 
 
-            <Box sx={{ bgcolor: 'background.paper' }} width="100%" style={{ height: '80vh', paddingBottom : '70px' }}>
+            <Box sx={{ bgcolor: 'background.paper' }} width="98%" style={{ height: '80vh', paddingBottom : '70px' }}>
               <AppBar color="green" position="static">
                 <Tabs
                   value={value}
@@ -497,13 +498,20 @@ export default function UserDashboard() {
                                                 <TableCell>
                                                   {list.assignedTasks.map((detail, index) => (
                                                       <div key={index} style={{ display: 'inline' }}>
-                                                          { detail.assignee.userPicture === null || detail.assignee.userPicture === undefined ? (
+                                                          {/* { detail.assignee.userPicture === null || detail.assignee.userPicture === undefined ? (
                                                               <img key={index} src={Avatar} alt={detail.assignee.fullnames}  style={{ maxWidth: '50px', maxHeight: '50px', borderRadius: '50%'}} />
 
                                                           ) : detail.assignee.userPicture != null ? (
                                                               <img key={index} src={detail.assignee.userPicture}
                                                               alt={detail.assignee.fullnames}  style={{ maxWidth: '50px', maxHeight: '50px', borderRadius: '50%'}} />
-                                                          ) : null}
+                                                          ) : null} */}
+
+                                                            { detail.assignee.fullnames === null || detail.assignee.fullnames === undefined ? (
+                                                                <p>None </p>
+
+                                                            ) : detail.assignee.fullnames != null ? (
+                                                                <p>{detail.assignee.fullnames}, </p>
+                                                            ) : null}
                                                       </div>
                                                     
                                                   ))}
@@ -524,6 +532,37 @@ export default function UserDashboard() {
                   ))) : null }
                 </TabPanel>
                 <TabPanel value={value} index={2} dir={theme.direction} style={{ height: '70vh' }} >
+
+                  <Grid
+                    container
+                    spacing={2}
+                    direction="row"
+                    >
+                      <Grid item xs={12} md={12} sm={12} key="1">
+                        <Card>
+                          <h4 style={{color: 'black', textAlign: 'center', justifyContent: 'center'}}> Strategic Intent Level 1 </h4>
+                            {/* <IconButton  style={{float: 'right'}} aria-label="edit" color="primary" onClick={() => { setEditingStrategicIntent1(strategic_intent1) }} ><EditIcon style={{ color : '#000000'}}/></IconButton> */}
+                            {strategic_intent1 === undefined || strategic_intent1 === null || strategic_intent1.length === 0 ? (
+                              <h4 style={{color: 'black', textAlign: 'center'}} >Not available.</h4>
+                            ) : strategic_intent1 ? (
+                              <h4 style={{color: 'black', textAlign: 'center'}} > {strategic_intent1[0].level_up_one}</h4>
+                            ) : null}
+                        </Card>
+                      </Grid>
+
+                      <Grid item xs={12} md={12} sm={12} key="2"> 
+                        {/* <IconButton  style={{float: 'right'}} aria-label="edit" color="primary" onClick={() => { setEditingStrategicIntent1(strategic_intent1) }} ><EditIcon style={{ color : '#000000'}}/></IconButton>          */}
+                          <Card>
+                            <h4 style={{color: 'black', textAlign:'center'}}> Strategic Intent Level 2 </h4> 
+                              {strategic_intent1 === undefined || strategic_intent1 === null || strategic_intent1.length === 0 ? (
+                                <h4 style={{color: 'black', textAlign: 'center'}} > Not available.</h4>
+                              ) : strategic_intent1 ? (
+                                <h4  style={{color: 'black', textAlign: 'center'}} > {strategic_intent1[0].level_up_two}</h4>
+                              ) : null}
+                          </Card>
+                      </Grid>
+                  </Grid>
+
                   <Grid
                     container
                     spacing={2}
@@ -619,7 +658,7 @@ export default function UserDashboard() {
               </SwipeableViews>
             </Box>
 
-            <Box sx={{ bgcolor: 'background.paper', marginTop: '20px' }} width="100%">
+            <Box sx={{ bgcolor: 'background.paper', marginTop: '20px' }} width="98%">
             <h4 style={{ fontWeight: 'bold', textAlign: 'center'}}> Analytics </h4>
 
               <Grid container spacing={2} direction="row" >
@@ -640,7 +679,6 @@ export default function UserDashboard() {
               </Grid>   
             </Box> 
 
-            
           </GridContainer>
         </div>
 

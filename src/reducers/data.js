@@ -43,6 +43,14 @@ import {
     OBJECTIVE_COUNT_FETCH_REQUEST,
     OBJECTIVE_COUNT_FAIL,
 
+    STRATEGIC_INTENT1_SUCCESS,
+    STRATEGIC_INTENT1_FETCH_REQUEST,
+    STRATEGIC_INTENT1_FAIL,
+
+    STRATEGIC_INTENT2_SUCCESS,
+    STRATEGIC_INTENT2_FETCH_REQUEST,
+    STRATEGIC_INTENT2_FAIL
+
 } from '../actions/types';
 
 const initialState = {
@@ -58,6 +66,10 @@ const initialState = {
     vision : [],
     error : [],
     task_count : [],
+    strategic_intent1 : [],
+    strategic_intent2 : [],
+    strategic_intent1_error : null,
+    strategic_intent2_error : null,
     objective_count : [],
     isLoading : false
 }
@@ -75,6 +87,8 @@ export default function(state = initialState, action) {
         case SPEC_USER_FETCH_REQUEST :
         case TASK_COUNT_FETCH_REQUEST :
         case OBJECTIVE_COUNT_FETCH_REQUEST :
+        case STRATEGIC_INTENT1_FETCH_REQUEST :
+        case STRATEGIC_INTENT2_FETCH_REQUEST :
             return {
                 ...state,
                 isLoading: true
@@ -84,6 +98,18 @@ export default function(state = initialState, action) {
             return {
                 ...state,
                 categories : action.payload,
+                error : null
+            }
+        case STRATEGIC_INTENT1_SUCCESS :
+            return {
+                ...state,
+                strategic_intent1 : action.payload,
+                error : null
+            }
+        case STRATEGIC_INTENT2_SUCCESS :
+            return {
+                ...state,
+                strategic_intent2 : action.payload,
                 error : null
             }
         case ALL_ROLES_SUCCESS : 
@@ -210,7 +236,22 @@ export default function(state = initialState, action) {
                 vision: null,
                 error: action.payload.message
             }
+
+        case STRATEGIC_INTENT1_FAIL :
+            return {
+                ...state,
+                isLoading : false,
+                strategic_intent1 : null,
+                strategic_intent1_error : action.payload.message
+            }
   
+        case STRATEGIC_INTENT2_FAIL :
+            return {
+                ...state,
+                isLoading : false,
+                strategic_intent2 : null,
+                strategic_intent2_error : action.payload.message
+            }
         
         default : return state;
 

@@ -21,7 +21,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
-import { getKpis } from "actions/kpis";
+import { getKpis, getKMonthlyActions } from "actions/kpis";
 import swal from "sweetalert2";
 import Loader from "react-loader-spinner";
 import axios from "axios";
@@ -39,17 +39,38 @@ export default function KPIReport() {
     const classes = useStyles();
     const dispatch = useDispatch();
 
-    const { items } = useSelector(state => state.kpi);
+    const { items, monthly_data, monthly_data_error } = useSelector(state => state.kpi);
     const { user : currentUser } = useSelector(state => state.auth);
     const { categories }  = useSelector(state => state.data);
     // const { error : category_error, isLoading : category_loading}  = useSelector(state => state.data);
 
     console.log("categories", categories)
+    console.log("monthly kpi", monthly_data, monthly_data_error)
+
+    const [monthlyaction, setMonthlyAction ] = useState("");
+    const [monthly_risks, setMonthlyRisks ] = useState("");
+    const [monthly_next_actions, setMonthlyNextActions ] = useState("");
+    const [idm, setIdM] = useState("");
 
     useEffect(() => {
         dispatch(getKpis(currentUser.id));
         dispatch(getCategories());
+        dispatch(getKMonthlyActions(currentUser.id))
       }, []);
+
+    useEffect(() => {
+        if(monthly_data.length >= 1) {
+            setMonthlyAction(monthly_data[0].action)
+            setMonthlyRisks(monthly_data[0].risk_opportunity)
+            setMonthlyNextActions(monthly_data[0].nextPeriodAction)
+            setIdM(monthly_data[0].id)
+        } else {
+            setMonthlyAction('Not available')
+            setMonthlyRisks('Not available')
+            setMonthlyNextActions('Not available')
+            setIdM(null)
+        }
+    }, []);
 
     const [addopen, setAddOpen] = useState(false);
     const [editopen, setEditOpen] = useState(false);
@@ -67,10 +88,6 @@ export default function KPIReport() {
     const [ytd_actual, setYTDActual] = useState("");    const [action, setAction] = useState("");
     const [support_required, setSupportRequired] = useState("");
     const [root_cause, setRootCause] = useState("");
-    const [monthlyaction, setMonthlyAction ] = useState("");
-    const [monthly_risks, setMonthlyRisks ] = useState("");
-    const [monthly_next_actions, setMonthlyNextActions ] = useState("");
-
 
     const handleAddClickOpen = () => {
         setAddOpen(true);
@@ -249,24 +266,24 @@ export default function KPIReport() {
           label: 'numeric',
         },
         {
-          value: 'KES',
-          label: 'KES',
+          value: 'KES M',
+          label: 'KES M',
         },
         {
-            value: 'TSH',
-            label: 'TSH',
+            value: 'TSH M',
+            label: 'TSH M',
         },
         {
-            value: 'UGX',
-            label: 'UGX',
+            value: 'UGX M',
+            label: 'UGX M',
         },
         {
-            value: 'RWF',
-            label: 'RWF',
+            value: 'RWF M',
+            label: 'RWF M',
         },
         {
-            value: 'USD',
-            label: 'USD',
+            value: 'USD M',
+            label: 'USD M',
         }
     ]
 
@@ -329,11 +346,112 @@ export default function KPIReport() {
           title: 'Actions',
           render: (list) => {
             console.log("editing table", list)
-              return ( <div> <IconButton aria-label="edit" color="primary" onClick={() => { handleEditClickOpen(); setEditing(list) }} ><EditIcon/></IconButton>
+              return ( <div> <IconButton aria-label="edit" className={classes.textGreen} onClick={() => { handleEditClickOpen(); setEditing(list) }} ><EditIcon/></IconButton>
                 </div>)
           }
         }
     ]
+
+    const saveMonthlyUpdate = async(e)  => {
+        e.preventDefault();
+        setshowloader(true);
+
+        const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
+
+        if(idm === null || idm == undefined) {
+
+            const body = JSON.stringify({
+                actions : monthlyaction,
+                nextPeriodActions : monthly_next_actions,
+                riskOrOpportunity: monthly_risks,
+                createdBy: created_by,
+                userId: created_by
+            })
+
+            try {
+
+                let response = await axios.post('/kpiactions/create', body, config)
+                    if (response.status == 201) {
+                        setshowloader(false);
+                        let item = response.data.message
+                        console.log("here", item)
+                        swal.fire({
+                            title: "Success",
+                            text: item,
+                            icon: "success",
+                        }).then(() => dispatch(getKMonthlyActions(currentUser.id)));
+    
+                    } else {
+                        let error = response.data.message
+                        setshowloader(false);
+                        swal.fire({
+                            title: "Error",
+                            text: error,
+                            icon: "error",
+                            dangerMode: true
+                        }).then(() => dispatch(getKMonthlyActions(currentUser.id)));
+                    }
+            } catch (error) {
+                let err = error.response.data.message
+                setshowloader(false);
+                swal.fire({
+                    title: "Error",
+                    text: err,
+                    icon: "error",
+                    dangerMode: true
+                }).then(() => dispatch(getKMonthlyActions(currentUser.id)));
+            } 
+
+        } else {
+
+            const body = JSON.stringify({
+                action : monthlyaction,
+                nextAction : monthly_next_actions,
+                riskOpportunity: monthly_risks,
+                updatedBy: created_by,
+                userId: created_by,
+                id: idm
+            })
+
+            console.log("m body", body)
+
+            try {
+
+                let response = await axios.post('/kpiactions/update', body, config)
+                    if (response.status == 201) {
+                        setshowloader(false);
+                        let item = response.data.message
+                        console.log("here", item)
+                        swal.fire({
+                            title: "Success",
+                            text: item,
+                            icon: "success",
+                        }).then(() => dispatch(getKMonthlyActions(currentUser.id)));
+    
+                    } else {
+                        let error = response.data.message
+                        setshowloader(false);
+                        swal.fire({
+                            title: "Error",
+                            text: error,
+                            icon: "error",
+                            dangerMode: true
+                        }).then(() => dispatch(getKMonthlyActions(currentUser.id)));
+                    }
+            } catch (error) {
+                let err = error.response.data.message
+                setshowloader(false);
+                swal.fire({
+                    title: "Error",
+                    text: err,
+                    icon: "error",
+                    dangerMode: true
+                }).then(() => dispatch(getKMonthlyActions(currentUser.id)));
+            } 
+
+        } 
+
+    }
 
   return (
     <div>
@@ -441,7 +559,7 @@ export default function KPIReport() {
                 </Grid>
                 
                 <Grid container justify="flex-end">
-                    <Button color="primary" size="lg"> Save </Button> 
+                    <Button color="primary" size="lg" onClick={(e) => { saveMonthlyUpdate(e)}}> Save </Button> 
                 </Grid>
 
 

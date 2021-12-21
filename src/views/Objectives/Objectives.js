@@ -30,6 +30,7 @@ import { Grid } from "@material-ui/core";
 import Button from "components/CustomButtons/Button.js";
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
+import { DeleteForever } from "@material-ui/icons";
 import EditIcon from '@material-ui/icons/Edit';
 import moment from "moment";
 import axios from "axios";
@@ -41,7 +42,7 @@ import styles1 from "assets/jss/material-dashboard-pro-react/views/extendedForms
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
-import Avatar from "../../assets/img/default-avatar.png";
+// import Avatar from "../../assets/img/default-avatar.png";
 
 const useStyles = makeStyles(styles, styles1);
 
@@ -84,6 +85,9 @@ export default function StrategicObjectives() {
 
     const [addopen, setAddOpen] = useState(false);
     const [addopenindividualtask, setAddOpenIndividualTask] = useState(false);
+    const [deleteopen, setDeleteOpen] = useState(false);
+    const [deletetaskopen, setDeleteTaskOpen] = useState(false);
+
     const [showloader, setshowloader] = useState(false);
     const [description, setDescription] = useState("");
     const [kpi_unit_of_measure, setKpiUom] = useState("");
@@ -118,6 +122,8 @@ export default function StrategicObjectives() {
     const [support_required, setSupportRequired] = useState("");
     const [risk_and_opportunity, setRiskAndOpportunity] = useState(""); 
     const [obj_status, setObjStatus ] = useState("");
+    const [deleteId, setDeleteId] = useState("");
+    const [deleteTaskId, setDeleteTaskId] = useState("");
 
     const handleAddClickOpen = () => {
         setAddOpen(true);
@@ -519,6 +525,20 @@ export default function StrategicObjectives() {
         setUserId(list.user_id);
         setId(list.id);
         setObjectiveId(list.objective_id)
+
+        console.log("assignee here", list.assignedTasks)
+
+        if(list.assignedTasks !== null) {
+            let x = [];
+            (list.assignedTasks).map(function (i) {
+                console.log("i", i.id)
+                x.push(i.assignee.id);
+            });
+            setAssigneeId(x);
+            console.log("hapo", x);
+        } else {
+            setAssigneeId([]);
+        }
     }
     
     const saveEditedIndividualTask = async (e) => {
@@ -583,6 +603,123 @@ export default function StrategicObjectives() {
 
     }
 
+    const handleDeleteClickOpen = () => {
+        setDeleteOpen(true);
+    };
+
+    const handleDeleteIndividualTaskOpen = () => {
+        setDeleteTaskOpen(true);
+    }
+
+    const handleDeleteClose = () => {
+        setDeleteOpen(false);
+    };
+
+    const handleDeleteTaskClose = () => {
+        setDeleteTaskOpen(false);
+    };
+
+    const setDeleting = (list) => {
+        console.log("delete items",list)
+        console.log("delete id",list.id)
+        setDeleteId(list.id)
+    }
+
+    const setDeletingTask = (list) => {
+        console.log("delete items",list)
+        console.log("delete id",list.id)
+        setDeleteTaskId(list.id)
+        setObjectiveId(list.objective_id)
+    }
+
+    const deleteObjective = async(e) => {
+        e.preventDefault();
+        setshowloader(true);
+
+        try {
+
+            let response = await axios.delete(`/objectives/deleteObjectiveById?objective_id=${deleteId}`)
+            if (response.status == 200) {
+                setshowloader(false);
+                setDeleteOpen(false);
+                console.log("here", response.data)
+                let item = response.data.message
+
+                swal.fire({
+                    title: "Success",
+                    text: item,
+                    icon: "success",
+                }).then(() => dispatch(getUserObjectives(currentUser.id)));
+            } else {
+                setshowloader(false);
+                setDeleteOpen(false);
+                let error = response.data.message
+                    setshowloader(false);
+                    swal.fire({
+                        title: "Error",
+                        text: error,
+                        icon: "error",
+                        dangerMode: true
+                    }).then(() => dispatch(getUserObjectives(currentUser.id)));
+            } 
+        } catch(error) {
+            setshowloader(false);
+            setDeleteOpen(false);
+            let err = error.response.data.message
+            setshowloader(false);
+            swal.fire({
+                title: "Error",
+                text: err,
+                icon: "error",
+                dangerMode: true
+            }).then(() => dispatch(getUserObjectives(currentUser.id)));
+        } 
+
+    }
+
+    const deleteTask = async(e) => {
+        e.preventDefault();
+        setshowloader(true);
+
+        try {
+
+            let response = await axios.delete(`/tasks/deleteTaskById?task_id=${deleteTaskId}`)
+            if (response.status == 200) {
+                setshowloader(false);
+                setDeleteTaskOpen(false);
+                console.log("here", response.data)
+                let item = response.data.message
+
+                swal.fire({
+                    title: "Success",
+                    text: item,
+                    icon: "success",
+                }).then(() => {setShowObjectivesTask(objectiveId)})
+            } else {
+                setshowloader(false);
+                setDeleteTaskOpen(false);
+                let error = response.data.message
+                    setshowloader(false);
+                    swal.fire({
+                        title: "Error",
+                        text: error,
+                        icon: "error",
+                        dangerMode: true
+                    }).then(() => {setShowObjectivesTask(objectiveId)})            } 
+        } catch(error) {
+            setshowloader(false);
+            setDeleteTaskOpen(false);
+            let err = error.response.data.message
+            setshowloader(false);
+            swal.fire({
+                title: "Error",
+                text: err,
+                icon: "error",
+                dangerMode: true
+            }).then(() => {setShowObjectivesTask(objectiveId)})        } 
+
+    }
+
 
     return (
         <div>
@@ -608,6 +745,7 @@ export default function StrategicObjectives() {
                     <Card style={{borderLeft : list.objectives.overallStatus === 'Incomplete' ? 'solid 5px red' : (list.objectives.overallStatus === 'COMPLETE' || list.objectives.overallStatus === 'Complete') ? 'solid 5px green' : (list.objectives.overallStatus === 'INCOMPLETE' || list.objectives.overallStatus === 'Incomplete' || list.objectives.overallStatus === '' || list.objectives.overallStatus === null ) ? 'solid 5px red'  :'solid 5px black' , marginBottom: '0'}} key={index} >
                         <Grid container justify="flex-end">
                             <IconButton aria-label="edit" className={classes.textGreen} onClick={() => { handleEditClickOpen(); setEditing(list.objectives); }} ><EditIcon /></IconButton>
+                            <IconButton aria-label="delete" style={{color: 'black'}} onClick={() => { setDeleting(list.objectives), handleDeleteClickOpen() }} ><DeleteForever /></IconButton>
                         </Grid>
 
                         <GridItem xs={12} sm={12} md={12}>
@@ -725,17 +863,27 @@ export default function StrategicObjectives() {
                                                 <TableCell>
                                                     {list.assignedTasks.map((detail, index) => (
                                                         <div key={index} style={{ display: 'inline' }}>
-                                                            { detail.assignee.userPicture === null || detail.assignee.userPicture === undefined ? (
+                                                            {/* { detail.assignee.userPicture === null || detail.assignee.userPicture === undefined ? (
                                                                 <img key={index} src={Avatar} alt={detail.assignee.fullnames}  style={{ maxWidth: '50px', maxHeight: '50px', borderRadius: '50%'}} />
 
                                                             ) : detail.assignee.userPicture != null ? (
                                                                 <img key={index} src={detail.assignee.userPicture}
                                                                 alt={detail.assignee.fullnames}  style={{ maxWidth: '50px', maxHeight: '50px', borderRadius: '50%'}} />
+                                                            ) : null} */}
+
+                                                            { detail.assignee.fullnames === null || detail.assignee.fullnames === undefined ? (
+                                                                <p>None </p>
+
+                                                            ) : detail.assignee.fullnames != null ? (
+                                                                <p>{detail.assignee.fullnames}, </p>
                                                             ) : null}
                                                         </div>
                                                     ))}
                                                 </TableCell>
-                                                <TableCell> <IconButton aria-label="edit" className={classes.textGreen} onClick={() => {handleEditIndividualTaskOpen(); setEditingIndividualTask(list) }} ><EditIcon /></IconButton></TableCell>
+                                                <TableCell>
+                                                    <IconButton aria-label="edit" className={classes.textGreen} onClick={() => {handleEditIndividualTaskOpen(); setEditingIndividualTask(list) }} ><EditIcon /></IconButton>
+                                                    <IconButton aria-label="delete" style={{color: 'black'}} onClick={() => {handleDeleteIndividualTaskOpen(); setDeletingTask(list) }} ><DeleteForever /></IconButton>
+                                                </TableCell>
                                             </TableRow>
                                         ))) : err ? (<TableRow> <TableCell> {err} </TableCell></TableRow>) 
                                         : null }
@@ -754,6 +902,7 @@ export default function StrategicObjectives() {
                 
             ))) :  null}
 
+            {/* add objective */}
             <Dialog open={addopen} onClose={handleAddClose}>
                 <DialogTitle>Strategic Objective</DialogTitle>
                 <DialogContent>
@@ -919,11 +1068,12 @@ export default function StrategicObjectives() {
                 </DialogActions>
             </Dialog>
 
+            {/* add task */}
             <Dialog open={addopentask} onClose={handleAddTaskClose}>
-                <DialogTitle>Strategic Initiative</DialogTitle>
+                <DialogTitle>Management Actions</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        Add New Strategic Initiative
+                        Add New Management Actions
                     </DialogContentText>
 
                     <TextField
@@ -1046,11 +1196,12 @@ export default function StrategicObjectives() {
                 </DialogActions>
             </Dialog>
 
+            {/* add task */}
             <Dialog open={addopenindividualtask} onClose={handleAddIndividualTaskClose}>
-                <DialogTitle>Strategic Initiative</DialogTitle>
+                <DialogTitle>Management Actions</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        Add New Strategic Initiative
+                        Add New Management Actions
                     </DialogContentText>
 
                     <TextField
@@ -1164,6 +1315,7 @@ export default function StrategicObjectives() {
                 </DialogActions>
             </Dialog>
 
+            {/* edit objectives */}
             <Dialog open={editopen} onClose={handleEditClose}>
                 <DialogTitle>Strategic Objective</DialogTitle>
                 <DialogContent>
@@ -1415,11 +1567,12 @@ export default function StrategicObjectives() {
                 </DialogActions>
             </Dialog>
 
+            {/* edit task */}
             <Dialog open={editopenindividualtask} onClose={handleEditIndividualTaskClose}>
-            <DialogTitle>Strategic Intitative</DialogTitle>
+            <DialogTitle>Management Actions</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        Edit Strategic Intitative Details
+                        Edit Management Actions Details
                     </DialogContentText>
                     <TextField
                         autoFocus
@@ -1436,43 +1589,81 @@ export default function StrategicObjectives() {
                         }}
                     />
 
-                <Grid container spacing={2}>
-                    <Grid item xs={6} lg={6} xl={6} sm={12}>
-                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                            <KeyboardDatePicker
-                                margin="normal"
-                                id="date-picker-dialog"
-                                helperText="Set start date"
-                                format="yyyy/MM/dd"
-                                fullWidth
-                                inputVariant="outlined"
-                                value={task_start_date}
-                                onChange={setTaskStartDate}
-                                KeyboardButtonProps={{
-                                    'aria-label': 'change date',
-                                }}
-                            />
-                        </MuiPickersUtilsProvider>
-                    </Grid>
+                    <label style={{ fontWeight: 'bold', color: 'black' }}> Add A Resource: </label>
+                    <FormControl
+                        fullWidth
+                        className={classes.selectFormControl}
+                    >
+                        <InputLabel
+                        htmlFor="multiple-select"
+                        className={classes.selectLabel}
+                        >
+                        Select Resource
+                        </InputLabel>
+                        <Select
+                        multiple
+                        value={assignee_id}
+                        variant="outlined"
+                        onChange={(event) => {
+                            const value = event.target.value;
+                            setAssigneeId(value)
+                        }}
+                        MenuProps={{ className: classes.selectMenu }}
+                        classes={{ select: classes.select }}
+                        inputProps={{
+                            name: "multipleSelect",
+                            id: "multiple-select",
+                        }}
+                        >
+                            {sysusers && sysusers.map((option) => (
+                            <MenuItem key={option.id} value={option.id}
+                                classes={{
+                                root: classes.selectMenuItem,
+                                selected: classes.selectMenuItemSelectedMultiple,
+                                }}>
+                                {option.fullnames}
+                            </MenuItem>
+                        ))}
+                        </Select>
+                    </FormControl>
 
-                    <Grid item xs={6} lg={6} xl={6} sm={12}>
-                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                            <KeyboardDatePicker
-                                margin="normal"
-                                id="date-picker-dialog"
-                                helperText="Set due date"
-                                format="yyyy/MM/dd"
-                                fullWidth
-                                inputVariant="outlined"
-                                value={task_end_date}
-                                onChange={setTaskEndDate}
-                                KeyboardButtonProps={{
-                                    'aria-label': 'change date',
-                                }}
-                            />
-                        </MuiPickersUtilsProvider>
+                    <Grid container spacing={2}>
+                        <Grid item xs={6} lg={6} xl={6} sm={12}>
+                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                <KeyboardDatePicker
+                                    margin="normal"
+                                    id="date-picker-dialog"
+                                    helperText="Set start date"
+                                    format="yyyy/MM/dd"
+                                    fullWidth
+                                    inputVariant="outlined"
+                                    value={task_start_date}
+                                    onChange={setTaskStartDate}
+                                    KeyboardButtonProps={{
+                                        'aria-label': 'change date',
+                                    }}
+                                />
+                            </MuiPickersUtilsProvider>
+                        </Grid>
+
+                        <Grid item xs={6} lg={6} xl={6} sm={12}>
+                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                <KeyboardDatePicker
+                                    margin="normal"
+                                    id="date-picker-dialog"
+                                    helperText="Set due date"
+                                    format="yyyy/MM/dd"
+                                    fullWidth
+                                    inputVariant="outlined"
+                                    value={task_end_date}
+                                    onChange={setTaskEndDate}
+                                    KeyboardButtonProps={{
+                                        'aria-label': 'change date',
+                                    }}
+                                />
+                            </MuiPickersUtilsProvider>
+                        </Grid>
                     </Grid>
-                </Grid>
 
                     <label style={{ fontWeight: 'bold', color: 'black' }}> Status : </label>
                     <TextField
@@ -1500,6 +1691,63 @@ export default function StrategicObjectives() {
                     <Button color="primary" onClick={(e) => { saveEditedIndividualTask(e) }}>Save</Button>
                 </DialogActions>
             </Dialog>
+
+            {/* Delete Objective */}
+            <Dialog open={deleteopen} onClose={handleDeleteClose}>
+                <DialogTitle id="alert-dialog-title">
+                {"Are you sure you want to delete this Objective?"}
+                </DialogTitle>
+                <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                    Please confirm that you want to delete this Objective.
+                </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                <Button color="danger" onClick={handleDeleteClose}>Disagree</Button>
+                { showloader === true ? (
+                    <div style={{ textAlign: "center", marginTop: 10 }}>
+                    <Loader
+                        type="Puff"
+                        color="#29A15B"
+                        height={100}
+                        width={100}
+                    />
+                    </div>
+                    ) :
+                    (
+                        <Button color="primary" onClick={(e) => { deleteObjective(e)}} > Agree</Button>
+                    )}
+                </DialogActions>
+            </Dialog>
+
+            {/* Delete Individual Task */}
+            <Dialog open={deletetaskopen} onClose={handleDeleteTaskClose}>
+                <DialogTitle id="alert-dialog-title">
+                {"Are you sure you want to delete this Task?"}
+                </DialogTitle>
+                <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                    Please confirm that you want to delete this Task.
+                </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                <Button color="danger" onClick={handleDeleteClose}>Disagree</Button>
+                { showloader === true ? (
+                    <div style={{ textAlign: "center", marginTop: 10 }}>
+                    <Loader
+                        type="Puff"
+                        color="#29A15B"
+                        height={100}
+                        width={100}
+                    />
+                    </div>
+                    ) :
+                    (
+                        <Button color="primary" onClick={(e) => { deleteTask(e)}} > Agree</Button>
+                    )}
+                </DialogActions>
+            </Dialog>
+
         </div>
     );
 }
