@@ -44,6 +44,14 @@ import {
     OBJECTIVE_COUNT_FETCH_REQUEST,
     OBJECTIVE_COUNT_FAIL,
 
+    STRATEGIC_INTENT1_SUCCESS,
+    STRATEGIC_INTENT1_FETCH_REQUEST,
+    STRATEGIC_INTENT1_FAIL,
+
+    STRATEGIC_INTENT2_SUCCESS,
+    STRATEGIC_INTENT2_FETCH_REQUEST,
+    STRATEGIC_INTENT2_FAIL,
+
 } from './types';
 
 //all categories
@@ -303,6 +311,54 @@ export const getObjectivesCount = (id) => {
             dispatch({ type: OBJECTIVE_COUNT_FAIL, payload: error.response })
         }
     }
+}
+
+//strategic intent1
+export const getStrategicIntent1 = (id) => {
+
+    return async function (dispatch) {
+
+        dispatch({ type: STRATEGIC_INTENT1_FETCH_REQUEST });
+
+        try {
+
+            let response = await axios.get(`strategicintent/fetchStrategicIntentbyUserId?user_id=${id}`)
+            if (response.status == 200) {
+                console.log("here", response.data)
+                dispatch({ type: STRATEGIC_INTENT1_SUCCESS, payload: response.data })
+            } else {
+                dispatch({ type: STRATEGIC_INTENT1_FAIL, payload: response.data })
+            }
+
+        } catch (error) {
+            dispatch({ type: STRATEGIC_INTENT1_FAIL, payload: error.response })
+        }
+    }
+
+}
+
+//strategic intent2
+export const getStrategicIntent2 = (id) => {
+
+    return async function (dispatch) {
+
+        dispatch({ type: STRATEGIC_INTENT2_FETCH_REQUEST });
+
+        try {
+
+            let response = await axios.get(`?user_id=${id}`)
+            if (response.status == 200) {
+                console.log("here", response.data)
+                dispatch({ type: STRATEGIC_INTENT2_SUCCESS, payload: response.data })
+            } else {
+                dispatch({ type: STRATEGIC_INTENT2_FAIL, payload: response.data })
+            }
+
+        } catch (error) {
+            dispatch({ type: STRATEGIC_INTENT2_FAIL, payload: error.response })
+        }
+    }
+
 }
 
 

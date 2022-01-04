@@ -23,7 +23,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
 import swal from "sweetalert2";
 import Loader from "react-loader-spinner";
-import { getUserObjectives } from "actions/objectives";
+import { getUserObjectives, getOMonthlyActions } from "actions/objectives";
 import { getCategories, getPillars } from "actions/data";
 import { getKpis } from "actions/kpis";
 import DateFnsUtils from '@date-io/date-fns';
@@ -36,6 +36,7 @@ import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
 import MaterialTable from 'material-table';
+import { CardContent } from "@material-ui/core";
 
 import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
 
@@ -49,19 +50,40 @@ export default function ObjectiveReport() {
     const classes = useStyles();
     const dispatch = useDispatch();
 
-    const { items, item } = useSelector(state => state.objective);
+    const { items, item, monthly_data, monthly_data_error } = useSelector(state => state.objective);
     const {  categories, pillars } = useSelector(state => state.data);
     const { user: currentUser } = useSelector(state => state.auth);
     const {  items : kpis } = useSelector(state => state.kpi);
 
     console.log("objective",item)
+    console.log("monthly obj", monthly_data, monthly_data_error)
+
+    const [monthlyaction, setMonthlyAction ] = useState("");
+    const [monthly_risks, setMonthlyRisks ] = useState("");
+    const [monthly_next_actions, setMonthlyNextActions ] = useState("");
+    const [idm, setIdM] = useState("");
 
     useEffect(() => {
         dispatch(getUserObjectives(currentUser.id));
         dispatch(getCategories());
         dispatch(getKpis(currentUser.id));
         dispatch(getPillars());
+        dispatch(getOMonthlyActions(currentUser.id))
     }, [])
+
+    useEffect(() => {
+        if(monthly_data.length >= 1) {
+            setMonthlyAction(monthly_data[0].action)
+            setMonthlyRisks(monthly_data[0].risk_opportunity)
+            setMonthlyNextActions(monthly_data[0].nextPeriodAction)
+            setIdM(monthly_data[0].id)
+        } else {
+            setMonthlyAction('Not available')
+            setMonthlyRisks('Not available')
+            setMonthlyNextActions('Not available')
+            setIdM(null)
+        }
+    }, []);
 
     const [addopen, setAddOpen] = useState(false);
     const [editopen, setEditOpen] = useState(false);
@@ -332,10 +354,112 @@ export default function ObjectiveReport() {
           title: 'Action',
           render: (list) => {
             console.log("editing table", list)
-            return (<IconButton aria-label="edit" color="primary" onClick={() => { handleEditClickOpen(); setEditing(list.objectives) }} ><EditIcon/></IconButton>)
+            return (<IconButton aria-label="edit" className={classes.textGreen} onClick={() => { handleEditClickOpen(); setEditing(list.objectives) }} ><EditIcon/></IconButton>)
           }
         }
     ]
+
+    const saveMonthlyUpdate = async(e)  => {
+        e.preventDefault();
+        setshowloader(true);
+
+        const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
+
+        if(idm === null || idm == undefined) {
+
+            const body = JSON.stringify({
+                actions : monthlyaction,
+                nextPeriodActions : monthly_next_actions,
+                riskOrOpportunity: monthly_risks,
+                createdBy: created_by,
+                userId: created_by
+            })
+
+            try {
+
+                let response = await axios.post('/objectivesactions/create', body, config)
+                    if (response.status == 201) {
+                        setshowloader(false);
+                        let item = response.data.message
+                        console.log("here", item)
+                        swal.fire({
+                            title: "Success",
+                            text: item,
+                            icon: "success",
+                        }).then(() => dispatch(getOMonthlyActions(currentUser.id)));
+    
+                    } else {
+                        let error = response.data.message
+                        setshowloader(false);
+                        swal.fire({
+                            title: "Error",
+                            text: error,
+                            icon: "error",
+                            dangerMode: true
+                        }).then(() => dispatch(getOMonthlyActions(currentUser.id)));
+                    }
+            } catch (error) {
+                let err = error.response.data.message
+                setshowloader(false);
+                swal.fire({
+                    title: "Error",
+                    text: err,
+                    icon: "error",
+                    dangerMode: true
+                }).then(() => dispatch(getOMonthlyActions(currentUser.id)));
+            } 
+
+        } else {
+
+            const body = JSON.stringify({
+                action : monthlyaction,
+                nextAction : monthly_next_actions,
+                riskOpportunity: monthly_risks,
+                updatedBy: created_by,
+                userId: created_by,
+                id: idm
+            })
+
+            console.log("m body", body)
+
+            try {
+
+                let response = await axios.post('/objectivesactions/update', body, config)
+                    if (response.status == 201) {
+                        setshowloader(false);
+                        let item = response.data.message
+                        console.log("here", item)
+                        swal.fire({
+                            title: "Success",
+                            text: item,
+                            icon: "success",
+                        }).then(() => dispatch(getOMonthlyActions(currentUser.id)));
+    
+                    } else {
+                        let error = response.data.message
+                        setshowloader(false);
+                        swal.fire({
+                            title: "Error",
+                            text: error,
+                            icon: "error",
+                            dangerMode: true
+                        }).then(() => dispatch(getOMonthlyActions(currentUser.id)));
+                    }
+            } catch (error) {
+                let err = error.response.data.message
+                setshowloader(false);
+                swal.fire({
+                    title: "Error",
+                    text: err,
+                    icon: "error",
+                    dangerMode: true
+                }).then(() => dispatch(getOMonthlyActions(currentUser.id)));
+            } 
+
+        } 
+
+    }
+
 
   return (
     <div>
@@ -357,8 +481,94 @@ export default function ObjectiveReport() {
                     sorting: true,
                     pageSize: 10,
                     pageSizeOptions: [10,50,100 ],
+                    exportButton: true
                   }}
                 />
+
+                <Grid
+                    container
+                    spacing={2}
+                    direction="row"
+                    >
+
+                    <Grid item xs={12} md={12} sm={12}>
+                        <h4 style={{ textAlign: 'center', marginTop: '20px', fontWeight: 'bold'}}> Update Your Details</h4>
+                    </Grid>
+
+                    <Grid item xs={12} md={4} sm={4}  key="1">
+                        <Card style={{ height: '70%'}}>
+                            <CardContent>
+                            <TextField
+                                fullWidth
+                                label="Action"
+                                id="action"
+                                multiline
+                                rows={5}
+                                required
+                                variant="outlined"
+                                className={classes.textInput}
+                                type="text"
+                                value={monthlyaction}
+                                onChange={(event) => {
+                                    const value = event.target.value;
+                                    setMonthlyAction(value)
+                                }}
+                            />    
+                            </CardContent>
+                        </Card>
+                    </Grid>
+
+                    <Grid item xs={12} md={4} sm={4}  key="2">   
+                        <Card style={{ height: '70%'}}>
+                            
+                            <CardContent>
+                            <TextField
+                                fullWidth
+                                label="Risk/Opportunities"
+                                id="monthly_risks"
+                                multiline
+                                rows={5}
+                                required
+                                variant="outlined"
+                                className={classes.textInput}
+                                type="text"
+                                value={monthly_risks}
+                                onChange={(event) => {
+                                    const value = event.target.value;
+                                    setMonthlyRisks(value)
+                                }}
+                            />  
+                            </CardContent>
+                        </Card>
+                    </Grid>
+
+                    <Grid item xs={12} md={4} sm={4} key="3"> 
+                    <Card style={{ height: '70%'}}>
+                        <CardContent>
+                        <TextField
+                                fullWidth
+                                label="Next Periods Actions"
+                                id="monthly_next_actions"
+                                multiline
+                                rows={5}
+                                required
+                                variant="outlined"
+                                className={classes.textInput}
+                                type="text"
+                                value={monthly_next_actions}
+                                onChange={(event) => {
+                                    const value = event.target.value;
+                                    setMonthlyNextActions(value)
+                                }}
+                            />       
+                        </CardContent>
+                    </Card>
+                    </Grid>
+                </Grid>
+                
+                <Grid container justify="flex-end">
+                    <Button color="primary" size="lg" onClick={(e) => { saveMonthlyUpdate(e)}}> Save </Button> 
+                </Grid>
 
                 <Dialog open={addopen} onClose={handleAddClose}>
                     <DialogTitle>KPI</DialogTitle>

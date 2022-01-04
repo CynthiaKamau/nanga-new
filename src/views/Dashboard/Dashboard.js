@@ -34,7 +34,7 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import { getMission, getVision, getStatus, getPillars , getTaskCount, getObjectivesCount } from "actions/data";
+import { getMission, getVision, getStatus, getPillars , getTaskCount, getObjectivesCount, getStrategicIntent1, getStrategicIntent2 } from "actions/data";
 import { getUsers } from "actions/users";
 import { getCategories } from "actions/data";
 import { Grid } from "@material-ui/core";
@@ -59,6 +59,7 @@ import { CardContent } from "@material-ui/core";
 import { getBehaviours, getFreedoms, getConstraints } from "actions/bfc";
 import Highcharts from "highcharts";
 import HighchartsReact from 'highcharts-react-official';
+// import Avatar from "../../assets/img/default-avatar.png";
 
 // // Load Highcharts modules
 require("highcharts/modules/exporting")(Highcharts);
@@ -74,13 +75,13 @@ function Dashboard() {
   const dispatch = useDispatch();
 
   const { user: currentUser } = useSelector(state => state.auth);
-  const {  mission, vision, task_count, objective_count } = useSelector(state => state.data);
+  const {  mission, vision, task_count, objective_count, strategic_intent1 } = useSelector(state => state.data);
   const { categories }  = useSelector(state => state.data);
   const { items, error, isLoading } = useSelector(state => state.kpi);
   const { items : objectives } = useSelector(state => state.objective);
   const { behaviours, behaviours_error, freedoms, freedoms_error, constraints, constrains_error} = useSelector(state => state.bfc);
 
-  console.log("user", currentUser)
+  console.log("strategic_intent1", strategic_intent1)
 
   useEffect(() => {
     dispatch(getUserObjectives(currentUser.id));
@@ -99,6 +100,8 @@ function Dashboard() {
     dispatch(getConstraints(currentUser.id))
     dispatch(getTaskCount(currentUser.id));
     dispatch(getObjectivesCount(currentUser.id))
+    dispatch(getStrategicIntent1(currentUser.id))
+    dispatch(getStrategicIntent2(currentUser.id))
   }, [])
 
   const uoms = [
@@ -151,7 +154,7 @@ function Dashboard() {
     }
   ]
 
-  const kpi_options = {
+  const obj_options = {
     chart: {
       plotBackgroundColor: null,
       plotBorderWidth: null,
@@ -163,10 +166,26 @@ function Dashboard() {
     },
     series: [{
       data: objective_count
-    }]
+    }],
+    tooltip: {
+      pointFormat: '{name}: <b>{point.y}</b>'
+    },
+    plotOptions: {
+      pie: {
+          allowPointSelect: true,
+          cursor: 'pointer',
+          dataLabels: {
+              enabled: true,
+              format: '<b>{point.name}</b>: {point.y}',
+              style: {
+                  color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+              }
+          }
+      }
+    },
   }
 
-  const obj_options = {
+  const mas_options = {
     chart: {
       plotBackgroundColor: null,
       plotBorderWidth: null,
@@ -177,13 +196,32 @@ function Dashboard() {
       text: 'MAS Breakdown'
     },
     series: [{
+      colorByPoint: true,
       data: task_count
-    }]
+    }],
+    tooltip: {
+      pointFormat: '{name}: <b>{point.y}</b>'
+    },
+    plotOptions: {
+      pie: {
+          allowPointSelect: true,
+          cursor: 'pointer',
+          dataLabels: {
+              enabled: true,
+              format: '<b>{point.name}</b>: {point.y}',
+              style: {
+                  color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+              }
+          }
+      }
+    },
   }
   
   const [addopen, setAddOpen] = useState(false);
   const [editopenmission, setEditMissionOpen] = useState(false);
   const [editopenvision, setEditVisionOpen] = useState(false);
+  // const [editopensil1, setEditSIL1Open] = useState(false);
+  // const [editopensil2, setEditSIL2Open ] = useState(false);
   const [user_id, setUserId] = useState(currentUser.id);
   const [showloader, setshowloader] = useState(false); 
   const [created_by, setCreatedBy] = useState("");
@@ -209,6 +247,10 @@ function Dashboard() {
   const [err, setError] = useState("");
   const [obj_tasks, setObjTasks] = useState("");
   const [ objectiveId, setObjectiveId] = useState("");
+  // const [userstrategicintent1, setStrategicIntent1] = useState("");
+  // const [userstrategicintent2, setStrategicIntent2] = useState("");
+  // const [strategic_intent1_id, setStrategicIntent1Id] = useState("");
+  // const [strategic_intent2_id, setStrategicIntent2Id] = useState("");
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -309,6 +351,14 @@ function Dashboard() {
     setEditVisionOpen(true);
   };
 
+  // const handleEditSIL1Close = () => {
+  //   setEditSIL1Open(false);
+  // }
+
+  // const handleEditSIL2Close = () => {
+  //   setEditSIL2Open(false);
+  // }
+
   const setEditingMission = (mission) => {
 
     console.log("her",mission)
@@ -325,7 +375,7 @@ function Dashboard() {
 
   const setEditingVision = (vision) => {
     console.log("vision here", vision)
-    if(mission[0] === null || mission[0] === undefined) {
+    if(vision[0] === null || vision[0] === undefined) {
       setUserVision('');
       setVisionId(null);
     } else {
@@ -333,6 +383,244 @@ function Dashboard() {
       setVisionId(vision[0].id)
     }
   }
+
+  // const setEditingStrategicIntent1 = (strategic_intent1) => {
+  //   console.log("strategic_intent1 here", strategic_intent1)
+  //   if(strategic_intent1[0] === null || strategic_intent1[0] === undefined) {
+  //     setStrategicIntent1('');
+  //     setStrategicIntent1Id(null);
+  //   } else {
+  //     setStrategicIntent1(strategic_intent1[0].description)
+  //     setStrategicIntent1Id(strategic_intent1[0].id)
+  //   }
+  // }
+
+  // const setEditingStrategicIntent2 = (strategic_intent2) => {
+  //   console.log("strategic_intent2 here", strategic_intent2)
+  //   if(strategic_intent2[0] === null || strategic_intent2[0] === undefined) {
+  //     setStrategicIntent2('');
+  //     setStrategicIntent2Id(null);
+  //   } else {
+  //     setStrategicIntent2(strategic_intent2[0].description)
+  //     setStrategicIntent2Id(strategic_intent2[0].id)
+  //   }
+  // }
+
+  // const editStrategicIntent1 = async (e) => {
+  //   e.preventDefault();
+  //   setshowloader(true);
+
+  //   const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
+
+  //   if(strategic_intent1_id === null) {
+
+  //     const body = JSON.stringify({
+  //       description : userstrategicintent1,
+  //       userid : user_id,
+  //       createdBy : user_id,
+  //     });
+
+  //     try {
+
+  //       let response = await axios.post('', body, config)
+  //       if (response.status == 201) {
+
+  //         let res = response.data.message;
+  //         setshowloader(false);
+  //         setEditSIL1Open(false);
+
+  //         swal.fire({
+  //           title: "Success",
+  //           text: res,
+  //           icon: "success",
+  //         }).then(() => dispatch(getStrategicIntent1(currentUser.id)));
+
+  //     } else {
+  //       setshowloader(false);
+  //       setEditSIL1Open(false);
+  //       let err = response.data.message;
+
+  //       swal.fire({
+  //         title: "Error",
+  //         text: err,
+  //         icon: "error",
+  //         dangerMode: true
+  //       });
+  //     }
+
+  //     } catch (error) {
+  //         setshowloader(false);
+  //         setEditSIL1Open(false);
+
+  //         let err = error.response.data.message;
+  //         swal.fire({
+  //           title: "Error",
+  //           text: err,
+  //           icon: "error",
+  //           dangerMode: true
+  //         });
+  //     }
+
+  //   } else {  
+  //     try {
+
+  //         const body = JSON.stringify({
+  //           userid : user_id,
+  //           updatedBy : user_id,
+  //           description : userstrategicintent1,
+  //           id : strategic_intent1_id
+  //         });
+
+  //         let response = await axios.post('', body, config)
+  //         console.log("level 1 resp", response.data)
+  //         if (response.status == 200) {
+  //           setshowloader(false);
+  //           setEditSIL1Open(false);
+
+  //           let resp = response.data.message;
+  //             swal.fire({
+  //               title: "Success",
+  //               text: resp,
+  //               icon: "success",
+  //             }).then(() => dispatch(getStrategicIntent1(currentUser.id)));
+
+  //         } else {
+  //           setshowloader(false);
+  //           setEditSIL1Open(false);
+
+  //           let err = response.data.message;
+
+  //           swal.fire({
+  //             title: "Error",
+  //             text: err,
+  //             icon: "error",
+  //             dangerMode: true
+  //           });
+  //         }
+
+  //     } catch (error) {
+  //         setshowloader(false);
+  //         setEditSIL1Open(false);
+
+  //         let err = error.response.data.message;
+  //         swal.fire({
+  //           title: "Error",
+  //           text: err,
+  //           icon: "error",
+  //           dangerMode: true
+  //         });
+  //     }
+
+  //   }
+  // }  
+
+  // const editStrategicIntent2 = async (e) => {
+  //   e.preventDefault();
+  //   setshowloader(true);
+
+  //   const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
+
+  //   if(strategic_intent2_id === null) {
+
+  //     const body = JSON.stringify({
+  //       description : userstrategicintent2,
+  //       userid : user_id,
+  //       createdBy : user_id,
+  //     });
+
+  //     try {
+
+  //       let response = await axios.post('', body, config)
+  //       if (response.status == 202) {
+
+  //         let res = response.data.message;
+  //         setshowloader(false);
+  //         setEditSIL2Open(false);
+
+  //         swal.fire({
+  //           title: "Success",
+  //           text: res,
+  //           icon: "success",
+  //         }).then(() => dispatch(getStrategicIntent2(currentUser.id)));
+
+  //     } else {
+  //       setshowloader(false);
+  //       setEditSIL2Open(false);
+  //       let err = response.data.message;
+
+  //       swal.fire({
+  //         title: "Error",
+  //         text: err,
+  //         icon: "error",
+  //         dangerMode: true
+  //       });
+  //     }
+
+  //     } catch (error) {
+  //         setshowloader(false);
+  //         setEditSIL2Open(false);
+
+  //         let err = error.response.data.message;
+  //         swal.fire({
+  //           title: "Error",
+  //           text: err,
+  //           icon: "error",
+  //           dangerMode: true
+  //         });
+  //     }
+
+  //   } else {  
+  //     try {
+
+  //         const body = JSON.stringify({
+  //           userid : user_id,
+  //           updatedBy : user_id,
+  //           description : userstrategicintent2,
+  //           id : strategic_intent2_id
+  //         });
+
+  //         let response = await axios.post('', body, config)
+  //         console.log("level 2 resp", response.data)
+  //         if (response.status == 200) {
+  //           setshowloader(false);
+  //           setEditSIL2Open(false);
+
+  //           let resp = response.data.message;
+  //             swal.fire({
+  //               title: "Success",
+  //               text: resp,
+  //               icon: "success",
+  //             }).then(() => dispatch(getStrategicIntent2(currentUser.id)));
+
+  //         } else {
+  //           setshowloader(false);
+  //           setEditSIL2Open(false);
+
+  //           let err = response.data.message;
+
+  //           swal.fire({
+  //             title: "Error",
+  //             text: err,
+  //             icon: "error",
+  //             dangerMode: true
+  //           });
+  //         }
+
+  //     } catch (error) {
+  //         setshowloader(false);
+  //         setEditSIL2Open(false);
+
+  //         let err = error.response.data.message;
+  //         swal.fire({
+  //           title: "Error",
+  //           text: err,
+  //           icon: "error",
+  //           dangerMode: true
+  //         });
+  //     }
+
+  //   }
+  // }  
 
   const editMission = async (e) => {
     e.preventDefault();
@@ -554,6 +842,7 @@ function Dashboard() {
     }
   }  
 
+
   // const handleEditClickOpen = () => {
   //   setEditOpen(true);
   // };
@@ -661,7 +950,7 @@ function Dashboard() {
   return (
     <div>
 
-      <GridContainer>
+      <GridContainer >
 
       <Grid container spacing={2} style={{marginRight : '10px', marginLeft : '10px'}}>
         <h3 className={classes.textBold}> THE VISION</h3>
@@ -694,6 +983,7 @@ function Dashboard() {
           </Card>
       </Grid>
 
+        {/* add KPI */}
         <Dialog open={addopen} onClose={handleAddClose}>
             <DialogTitle>KPI</DialogTitle>
             <DialogContent>
@@ -809,6 +1099,7 @@ function Dashboard() {
             </DialogActions>
         </Dialog>
 
+        {/* edit KPI */}
         <Dialog open={editopen} onClose={handleEditClose}>
             <DialogTitle>KPI</DialogTitle>
             <DialogContent>
@@ -996,6 +1287,7 @@ function Dashboard() {
             </DialogActions>
         </Dialog>
 
+        {/* edit Mission */}
         <Dialog open={editopenmission} onClose={handleEditMissionClose} disableEnforceFocus>
           <DialogTitle>Personal Mission</DialogTitle>
           <DialogContent>
@@ -1037,6 +1329,7 @@ function Dashboard() {
           </DialogActions>
         </Dialog>
 
+        {/* edit Vision */}
         <Dialog open={editopenvision} onClose={handleEditVisionClose} >
           <DialogTitle>Vision</DialogTitle>
           <DialogContent>
@@ -1080,18 +1373,119 @@ function Dashboard() {
           </DialogActions>
         </Dialog>
 
+        {/* edit Strategic Level 1 */}
+        {/* <Dialog open={editopensil1} onClose={handleEditSIL1Close} >
+          <DialogTitle>Strategic Intent Level 1</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Edit Strategic Intent Level 1
+            </DialogContentText>
+
+            <TextField
+              id="outlined-multiline-static"
+              fullWidth
+              autoFocus
+              label="Strategic Level 1"
+              type="text"
+              margin="dense"
+              multiline
+              variant="outlined"
+              rows={4}
+              value={userstrategicintent1}
+              className={classes.textInput}
+              onChange={(event) => {
+                setStrategicIntent1(event.target.value);
+            }}
+            />
+
+            <TextField
+              id="outlined-multiline-static"
+              fullWidth
+              autoFocus
+              label="Strategic Level 2"
+              type="text"
+              margin="dense"
+              multiline
+              variant="outlined"
+              rows={4}
+              value={userstrategicintent2}
+              className={classes.textInput}
+              onChange={(event) => {
+                setStrategicIntent2(event.target.value);
+            }}
+            />
+
+          </DialogContent>
+          <DialogActions>
+            <Button color="danger" onClick={handleEditSIL1Close}>Cancel</Button>
+            { showloader === true  ? (
+              <div style={{ textAlign: "center", marginTop: 10 }}>
+                  <Loader
+                      type="Puff"
+                      color="#29A15B"
+                      height={100}
+                      width={100}
+                  />
+              </div>
+              ) :
+              (
+                <Button color="primary" onClick={(e) => { editStrategicIntent1(e); }}>Save</Button>
+              )}
+          </DialogActions>
+        </Dialog> */}
+
+        {/* edit Strategic Level 2 */}
+        {/* <Dialog open={editopensil2} onClose={handleEditSIL2Close} >
+          <DialogTitle>Strategic Intent Level 2</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Edit Strategic Intent Level 2
+            </DialogContentText>
+
+            <TextField
+              id="outlined-multiline-static"
+              fullWidth
+              autoFocus
+              label="Strategic Level 2"
+              type="text"
+              margin="dense"
+              multiline
+              variant="outlined"
+              rows={4}
+              value={userstrategicintent2}
+              className={classes.textInput}
+              onChange={(event) => {
+                setStrategicIntent2(event.target.value);
+            }}
+            />
+
+          </DialogContent>
+          <DialogActions>
+            <Button color="danger" onClick={handleEditSIL2Close}>Cancel</Button>
+            { showloader === true  ? (
+              <div style={{ textAlign: "center", marginTop: 10 }}>
+                  <Loader
+                      type="Puff"
+                      color="#29A15B"
+                      height={100}
+                      width={100}
+                  />
+              </div>
+              ) :
+              (
+                <Button color="primary" onClick={(e) => { editStrategicIntent2(e); }}>Save</Button>
+              )}
+          </DialogActions>
+        </Dialog> */}
+
       </GridContainer>
 
       { items && items.length >= 1 ? (
 
         <div>
-          <GridContainer>
+          <GridContainer spacing={2}>
 
-            <GridItem container justify="flex-end">
-              <Button color="primary" onClick={handleAddClickOpen}> Create New KPI</Button>
-            </GridItem>
-
-            <Box sx={{ bgcolor: 'background.paper' }} width="100%">
+            <Box sx={{ bgcolor: 'background.paper' }} width="98%" style={{ height: '80vh', paddingBottom : '70px' }}>
               <AppBar color="green" position="static">
                 <Tabs
                   value={value}
@@ -1102,8 +1496,8 @@ function Dashboard() {
                   aria-label="full width tabs example"
                 >
                   <Tab label="KPIS" {...a11yProps(0)} />
-                  <Tab label="OBJECTIVES" {...a11yProps(1)} />
-                  <Tab label="BFC" {...a11yProps(2)} />
+                  <Tab label="STRATEGIC OBJECTIVES" {...a11yProps(1)} />
+                  <Tab label="LEADERSHIP TRAITS" {...a11yProps(2)} />
                 </Tabs>
               </AppBar>
               <SwipeableViews
@@ -1111,11 +1505,14 @@ function Dashboard() {
                 index={value}
                 onChangeIndex={handleChangeIndex}
               >
-                <TabPanel value={value} index={0} dir={theme.direction}>
+                <TabPanel value={value} index={0} dir={theme.direction} style={{ height: '70vh' }} >
                     {items ? (
                       <GridItem container justify="flex-end"  >
 
                         <Card>
+                          <GridItem container justify="flex-end">
+                            <Button color="primary" onClick={handleAddClickOpen}> Create New KPI</Button>
+                          </GridItem>
 
                           <CardBody>
                             <Table>
@@ -1124,8 +1521,8 @@ function Dashboard() {
                                       <TableCell>KPI</TableCell>
                                       <TableCell>Unit</TableCell>
                                       <TableCell>Target</TableCell>
-                                      <TableCell>YTD Planned </TableCell>
-                                      <TableCell> YTD Actual</TableCell>
+                                      <TableCell>Planned YTD  </TableCell>
+                                      <TableCell>Actual YTD </TableCell>
                                       <TableCell> Variance </TableCell>
                                   
                                   </TableRow>
@@ -1163,7 +1560,7 @@ function Dashboard() {
                     </GridItem>
                     ) : null }
                 </TabPanel>
-                <TabPanel value={value} index={1} dir={theme.direction}>
+                <TabPanel value={value} index={1} dir={theme.direction} style={{ overflowY: 'scroll', height: '70vh'}}>
                   { objectives === null || objectives === undefined || objectives.length === 0  ? (
                       <Card style={{ textAlign: 'center' }}>
                         <GridItem >
@@ -1276,23 +1673,37 @@ function Dashboard() {
                                             <TableCell>Management Action</TableCell>
                                             <TableCell>Start Date</TableCell>
                                             <TableCell>Due Date</TableCell>
-                                            <TableCell>Status</TableCell>
+                                            <TableCell>Resources</TableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
-                                        {/* <TableRow key=''>
-                                            <TableCell>Task One</TableCell>
-                                            <TableCell>John Doe</TableCell>
-                                            <TableCell>2021-10-01</TableCell>
-                                            <TableCell>Pending</TableCell>
-                                        </TableRow> */}
                                         { obj_tasks ? obj_tasks.length === 0 ? (<TableRow> <TableCell> No tasks available </TableCell></TableRow>)
                                         : (obj_tasks.map((list, index) => (
                                             <TableRow key={index}>
                                                 <TableCell>{list.description}</TableCell>
                                                 <TableCell>{moment(list.start_date).format('YYYY-MM-DD')}</TableCell>
                                                 <TableCell>{moment(list.end_date).format('YYYY-MM-DD')}</TableCell>
-                                                <TableCell>{list.status}</TableCell>
+                                                <TableCell>
+                                                  {list.assignedTasks.map((detail, index) => (
+                                                      <div key={index} style={{ display: 'inline' }}>
+                                                          {/* { detail.assignee.userPicture === null || detail.assignee.userPicture === undefined ? (
+                                                              <img key={index} src={Avatar} alt={detail.assignee.fullnames}  style={{ maxWidth: '50px', maxHeight: '50px', borderRadius: '50%'}} />
+
+                                                          ) : detail.assignee.userPicture != null ? (
+                                                              <img key={index} src={detail.assignee.userPicture}
+                                                              alt={detail.assignee.fullnames}  style={{ maxWidth: '50px', maxHeight: '50px', borderRadius: '50%'}} />
+                                                          ) : null} */}
+
+                                                            { detail.assignee.fullnames === null || detail.assignee.fullnames === undefined ? (
+                                                                <p>None </p>
+
+                                                            ) : detail.assignee.fullnames != null ? (
+                                                                <p>{detail.assignee.fullnames}, </p>
+                                                            ) : null}
+                                                      </div>
+                                                    
+                                                  ))}
+                                                </TableCell>
                                             </TableRow>
                                         ))) : err ? (<TableRow> <TableCell> {err} </TableCell></TableRow>) 
                                         : null }
@@ -1308,7 +1719,37 @@ function Dashboard() {
                   </GridItem>
                   ))) : null }
                 </TabPanel>
-                <TabPanel value={value} index={2} dir={theme.direction}>
+                <TabPanel value={value} index={2} dir={theme.direction} style={{ height: '70vh', width: '100%'}}>
+                  <Grid
+                    container
+                    spacing={2}
+                    direction="row"
+                    >
+                      <Grid item xs={12} md={12} sm={12} key="1">
+                        <Card>
+                          <h4 style={{color: 'black', textAlign: 'center', justifyContent: 'center'}}> Strategic Intent Level 1 </h4>
+                            {/* <IconButton  style={{float: 'right'}} aria-label="edit" color="primary" onClick={() => { setEditingStrategicIntent1(strategic_intent1) }} ><EditIcon style={{ color : '#000000'}}/></IconButton> */}
+                            {strategic_intent1 === undefined || strategic_intent1 === null || strategic_intent1.length === 0 ? (
+                              <h4 style={{color: 'black', textAlign: 'center'}} >Not available.</h4>
+                            ) : strategic_intent1 ? (
+                              <h4 style={{color: 'black', textAlign: 'center', justifyContent: 'center'}} > {strategic_intent1[0].level_up_one}</h4>
+                            ) : null}
+                        </Card>
+                      </Grid>
+
+                      <Grid item xs={12} md={12} sm={12} key="2"> 
+                        {/* <IconButton  style={{float: 'right'}} aria-label="edit" color="primary" onClick={() => { setEditingStrategicIntent1(strategic_intent1) }} ><EditIcon style={{ color : '#000000'}}/></IconButton>          */}
+                          <Card>
+                            <h4 style={{color: 'black', textAlign:'center'}}> Strategic Intent Level 2 </h4> 
+                              {strategic_intent1 === undefined || strategic_intent1 === null || strategic_intent1.length === 0 ? (
+                                <h4 style={{color: 'black', textAlign: 'center'}} > Not available.</h4>
+                              ) : strategic_intent1 ? (
+                                <h4  style={{color: 'black', textAlign: 'center', justifyContent: 'center'}} > {strategic_intent1[0].level_up_two}</h4>
+                              ) : null}
+                          </Card>
+                      </Grid>
+                  </Grid>
+
                   <Grid
                     container
                     spacing={2}
@@ -1406,11 +1847,12 @@ function Dashboard() {
                         </Card>
                       </Grid>
                   </Grid>
+                  
                 </TabPanel>
               </SwipeableViews>
             </Box>
 
-            <Box sx={{ bgcolor: 'background.paper', marginTop: '20px' }} width="100%">
+            <Box sx={{ bgcolor: 'background.paper', marginTop: '20px' }} width="98%" height="50%">
             <h4 style={{ fontWeight: 'bold', textAlign: 'center'}}> Analytics </h4>
 
               <Grid container spacing={2} direction="row" >
@@ -1418,14 +1860,14 @@ function Dashboard() {
                 <Grid item xs={5} key="1">
                   <HighchartsReact
                     highcharts={Highcharts}
-                    options={kpi_options}
+                    options={obj_options}
                   />                
                 </Grid>
 
                 <Grid item xs={5} key="2">
                   <HighchartsReact
                     highcharts={Highcharts}
-                    options={obj_options}
+                    options={mas_options}
                   />  
                 </Grid>
               </Grid>   
