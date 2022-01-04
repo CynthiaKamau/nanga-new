@@ -557,7 +557,8 @@ export default function StrategicObjectives() {
             "end_date": task_end_date,
             "status": task_status,
             "created_by": created_by,
-            "updated_by": updated_by
+            "updated_by": updated_by,
+            "user_ids": assignee_id
         });
 
         console.log("task", body);
