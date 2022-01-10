@@ -84,7 +84,7 @@ export default function AssignedTasksPage() {
         description: description,
         start_date: start_date,
         end_date: end_date,
-        user_ids: user_id,
+        user_id: user_id,
         created_by: user_id,
         objective_id: objective_id
         }

@@ -42,11 +42,13 @@ import styles1 from "assets/jss/material-dashboard-pro-react/views/extendedForms
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
+import { ListItemText, Checkbox, ListItemIcon } from "@material-ui/core";
 // import Avatar from "../../assets/img/default-avatar.png";
 
 const useStyles = makeStyles(styles, styles1);
 
 export default function StrategicObjectives() {
+
     const classes = useStyles();
     const dispatch = useDispatch();
 
@@ -558,7 +560,7 @@ export default function StrategicObjectives() {
             "status": task_status,
             "created_by": created_by,
             "updated_by": updated_by,
-            "user_ids": assignee_id
+            // "user_ids": assignee_id
         });
 
         console.log("task", body);
@@ -925,6 +927,7 @@ export default function StrategicObjectives() {
                             setDescription(value)
                         }}
                     />
+
                     <Grid container spacing={2}>
                         <Grid item xs={6} lg={6} xl={6} sm={12}>
                             <label> KPI : </label>
@@ -959,7 +962,11 @@ export default function StrategicObjectives() {
                                         root: classes.selectMenuItem,
                                         selected: classes.selectMenuItemSelectedMultiple,
                                         }}>
-                                        {option.title}
+                                        {/* {option.title} */}
+                                        <ListItemIcon>
+                                            <Checkbox selected={kpi_id.indexOf(option) > -1} />
+                                        </ListItemIcon>
+                                        <ListItemText primary={option.title} />
                                     </MenuItem>
                                 ))}
                                 </Select>

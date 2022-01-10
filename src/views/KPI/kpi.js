@@ -158,7 +158,7 @@ export default function DataTable() {
         try {
 
             let response = await axios.post('/kpi/update', body, config)
-            if (response.status == 201) {
+            if (response.status == 200) {
                 setshowloader(false);
                     let item = response.data.message
                     swal.fire({
@@ -191,7 +191,7 @@ export default function DataTable() {
     }
 
     const setEditing = (list) => {
-        console.log(list);
+        console.log("my kpi",list);
 
         setKPI(list.title);
         setUnitOfMeasure(list.kpi_unit_of_measure);
@@ -200,7 +200,8 @@ export default function DataTable() {
         setAccount(list.account);
         setTarget(list.target);
         setYTDPlanned(list.plannedYTD);
-        setYTDActual(list.actualYTD)
+        setYTDActual(list.actualYTD);
+        setUpdatedBy(list.updated_by);
         // setSupportRequired(list.supportRequired);
         // setAction(list.action);
         // setRootCause(list.rootCause)
@@ -418,7 +419,7 @@ export default function DataTable() {
                 </CardHeader>
                 <CardBody>
                     <MaterialTable
-                        title="KPI targets for a full year."
+                        title="KPIs"
                         data={items}
                         columns={columns}
                         options={{

@@ -129,7 +129,7 @@ export default function UserDashboard() {
       data: objective_count
     }],
     tooltip: {
-      pointFormat: '{name}: <b>{point.y}</b>'
+      pointFormat: '{name}: <br>{point.percentage:.1f} %<br>Total: {point.y}'
     },
     plotOptions: {
       pie: {
@@ -137,7 +137,7 @@ export default function UserDashboard() {
           cursor: 'pointer',
           dataLabels: {
               enabled: true,
-              format: '<b>{point.name}</b>: {point.y}',
+              format: '<b>{point.name}</b>:<br>{point.percentage:.1f} %<br>Total: {point.y}',
               style: {
                   color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
               }
@@ -161,7 +161,7 @@ export default function UserDashboard() {
       data: task_count
     }],
     tooltip: {
-      pointFormat: '{name}: <b>{point.y}</b>'
+      pointFormat: '{point.name}: <br>{point.percentage:.1f} %<br>Total: {point.y}'
     },
     plotOptions: {
       pie: {
@@ -169,7 +169,7 @@ export default function UserDashboard() {
           cursor: 'pointer',
           dataLabels: {
               enabled: true,
-              format: '<b>{point.name}</b>: {point.y}',
+              format: '<b>{point.name}</b>:<br>{point.percentage:.1f} %<br>Total: {point.y}',
               style: {
                   color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
               }

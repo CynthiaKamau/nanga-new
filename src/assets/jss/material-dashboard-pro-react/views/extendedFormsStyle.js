@@ -30,6 +30,18 @@ const extendedFormsStyle = {
   mlAuto: {
     marginLeft: "auto",
   },
+  selectAllText: {
+    fontWeight: 500
+  },
+  selectedAll: {
+    backgroundColor: "rgba(0, 0, 0, 0.08)",
+    "&:hover": {
+      backgroundColor: "rgba(0, 0, 0, 0.08)"
+    }
+  },
+  indeterminateColor: {
+    color: "#f50057"
+  },
 };
 
 export default extendedFormsStyle;
