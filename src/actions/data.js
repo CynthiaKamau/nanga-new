@@ -44,6 +44,10 @@ import {
     OBJECTIVE_COUNT_FETCH_REQUEST,
     OBJECTIVE_COUNT_FAIL,
 
+    KPI_COUNT_SUCCESS,
+    KPI_COUNT_FETCH_REQUEST,
+    KPI_COUNT_FAIL,
+
     STRATEGIC_INTENT1_SUCCESS,
     STRATEGIC_INTENT1_FETCH_REQUEST,
     STRATEGIC_INTENT1_FAIL,
@@ -312,6 +316,29 @@ export const getObjectivesCount = (id) => {
         }
     }
 }
+
+//user kpi count
+export const getKpiCount = (id) => {
+
+    return async function (dispatch) {
+
+        dispatch({ type: KPI_COUNT_FETCH_REQUEST });
+
+        try {
+
+            let response = await axios.get(`/kpi/kpiPieChart?user_id=${id}`)
+            if (response.status == 200) {
+                dispatch({ type: KPI_COUNT_SUCCESS, payload: response.data.data })
+            } else {
+                dispatch({ type: KPI_COUNT_FAIL, payload: response.data })
+            }
+
+        } catch (error) {
+            dispatch({ type: KPI_COUNT_FAIL, payload: error.response })
+        }
+    }
+}
+
 
 //strategic intent1
 export const getStrategicIntent1 = (id) => {

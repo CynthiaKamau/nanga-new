@@ -36,7 +36,7 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import { getMission, getVision, getTaskCount, getObjectivesCount, getUserById, getStrategicIntent1 } from "actions/data";
+import { getMission, getVision, getTaskCount, getObjectivesCount, getUserById, getStrategicIntent1, getKpiCount } from "actions/data";
 import CardHeader from "components/Card/CardHeader";
 import { CardContent } from "@material-ui/core";
 import Box from '@material-ui/core/Box';
@@ -66,7 +66,7 @@ export default function UserDashboard() {
   const dispatch = useDispatch();
 
   const { items : objectives } = useSelector(state => state.objective);
-  const {  mission, vision, spec_user, task_count, objective_count } = useSelector(state => state.data);
+  const {  mission, vision, spec_user, task_count, objective_count, kpi_count } = useSelector(state => state.data);
   const { items, error, isLoading } = useSelector(state => state.kpi);
   const { behaviours, behaviours_error, freedoms, freedoms_error, constraints, constrains_error, strategic_intent1} = useSelector(state => state.bfc);
 
@@ -102,6 +102,7 @@ export default function UserDashboard() {
         dispatch(getConstraints(chars));
         dispatch(getTaskCount(chars));
         dispatch(getObjectivesCount(chars));
+        dispatch(getKpiCount(chars))
         dispatch(getStrategicIntent1(chars))
     }
     
@@ -114,6 +115,37 @@ export default function UserDashboard() {
 
   // const categories = JsonData.Categories;
   // const kpis = JsonData.KPIS;
+  const kpi_options = {
+    chart: {
+      plotBackgroundColor: null,
+      plotBorderWidth: null,
+      plotShadow: false,
+      type: 'pie'
+    },
+    title: {
+      text: 'KPI Breakdown'
+    },
+    series: [{
+      data: kpi_count
+    }],
+    tooltip: {
+      pointFormat: '{name}: <br>{point.percentage:.1f} %<br>Total: {point.y}'
+
+    },
+    plotOptions: {
+      pie: {
+          allowPointSelect: true,
+          cursor: 'pointer',
+          dataLabels: {
+              enabled: true,
+              format: '<b>{point.name}</b>:<br>{point.percentage:.1f} %<br>Total: {point.y}',
+              style: {
+                  color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+              }
+          }
+      }
+    },
+  }
 
   const obj_options = {
     chart: {
@@ -663,14 +695,21 @@ export default function UserDashboard() {
 
               <Grid container spacing={2} direction="row" >
                 
-                <Grid item xs={5} key="1">
+                <Grid item xs={4} key="1">
+                  <HighchartsReact
+                    highcharts={Highcharts}
+                    options={kpi_options}
+                  />                
+                </Grid>
+
+                <Grid item xs={4} key="2">
                   <HighchartsReact
                     highcharts={Highcharts}
                     options={obj_options}
                   />                
                 </Grid>
 
-                <Grid item xs={5} key="2">
+                <Grid item xs={4} key="3">
                   <HighchartsReact
                     highcharts={Highcharts}
                     options={mas_options}

@@ -42,7 +42,7 @@ import styles1 from "assets/jss/material-dashboard-pro-react/views/extendedForms
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
-import { ListItemText, Checkbox, ListItemIcon } from "@material-ui/core";
+// import { ListItemText, Checkbox, ListItemIcon } from "@material-ui/core";
 // import Avatar from "../../assets/img/default-avatar.png";
 
 const useStyles = makeStyles(styles, styles1);
@@ -868,7 +868,6 @@ export default function StrategicObjectives() {
                                                         <div key={index} style={{ display: 'inline' }}>
                                                             {/* { detail.assignee.userPicture === null || detail.assignee.userPicture === undefined ? (
                                                                 <img key={index} src={Avatar} alt={detail.assignee.fullnames}  style={{ maxWidth: '50px', maxHeight: '50px', borderRadius: '50%'}} />
-
                                                             ) : detail.assignee.userPicture != null ? (
                                                                 <img key={index} src={detail.assignee.userPicture}
                                                                 alt={detail.assignee.fullnames}  style={{ maxWidth: '50px', maxHeight: '50px', borderRadius: '50%'}} />
@@ -962,11 +961,11 @@ export default function StrategicObjectives() {
                                         root: classes.selectMenuItem,
                                         selected: classes.selectMenuItemSelectedMultiple,
                                         }}>
-                                        {/* {option.title} */}
-                                        <ListItemIcon>
+                                        {option.title}
+                                        {/* <ListItemIcon>
                                             <Checkbox selected={kpi_id.indexOf(option) > -1} />
                                         </ListItemIcon>
-                                        <ListItemText primary={option.title} />
+                                        <ListItemText primary={option.title} /> */}
                                     </MenuItem>
                                 ))}
                                 </Select>
@@ -1459,7 +1458,6 @@ export default function StrategicObjectives() {
                             setRootCause(value)
                         }}
                     />
-
                     <TextField
                         fullWidth
                         label="Support Required"
@@ -1476,7 +1474,6 @@ export default function StrategicObjectives() {
                             setSupportRequired(value)
                         }}
                     />
-
                     <TextField
                         fullWidth
                         label="Action"
@@ -1493,7 +1490,6 @@ export default function StrategicObjectives() {
                             setAction(value)
                         }}
                     />
-
                     <TextField
                         fullWidth
                         label="Risk And Opportunity"

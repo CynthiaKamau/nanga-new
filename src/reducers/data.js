@@ -43,6 +43,10 @@ import {
     OBJECTIVE_COUNT_FETCH_REQUEST,
     OBJECTIVE_COUNT_FAIL,
 
+    KPI_COUNT_SUCCESS,
+    KPI_COUNT_FETCH_REQUEST,
+    KPI_COUNT_FAIL,
+
     STRATEGIC_INTENT1_SUCCESS,
     STRATEGIC_INTENT1_FETCH_REQUEST,
     STRATEGIC_INTENT1_FAIL,
@@ -71,6 +75,7 @@ const initialState = {
     strategic_intent1_error : null,
     strategic_intent2_error : null,
     objective_count : [],
+    kpi_count : [],
     isLoading : false
 }
 
@@ -89,6 +94,7 @@ export default function(state = initialState, action) {
         case OBJECTIVE_COUNT_FETCH_REQUEST :
         case STRATEGIC_INTENT1_FETCH_REQUEST :
         case STRATEGIC_INTENT2_FETCH_REQUEST :
+        case KPI_COUNT_FETCH_REQUEST :
             return {
                 ...state,
                 isLoading: true
@@ -156,6 +162,14 @@ export default function(state = initialState, action) {
                 objective_count : action.payload,
                 error : null
             }
+
+        case KPI_COUNT_SUCCESS :
+            return {
+                ...state,
+                kpi_count : action.payload,
+                error : null
+            }
+
         case SPEC_USER_SUCCESS :
             return {
                 ...state,
@@ -216,9 +230,18 @@ export default function(state = initialState, action) {
             return {
                 ...state,
                 isLoading: false,
-                task_count : null,
+                objectives_count : null,
                 error: action.payload.message
             }
+
+        case KPI_COUNT_FAIL :
+            return {
+                ...state,
+                isLoading: false,
+                kpi_count : null,
+                error: action.payload.message
+            }
+
         case EDIT_MISSION_FAIL :
         case MISSION_FAIL :
             return {
