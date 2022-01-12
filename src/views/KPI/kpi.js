@@ -145,7 +145,7 @@ export default function DataTable() {
             kpiUnitOfMeasure : uom,
             categoryId : category,
             createdBy : created_by,
-            updatedBy : updated_by,
+            updatedBy : created_by,
             id: id, 
             userId: created_by,
             account: account,
@@ -364,8 +364,8 @@ export default function DataTable() {
           title: 'Account'
         },
         {
-          filed: 'target',
-          title: 'Target'
+            field: 'target',
+            title: 'Target'
         },
         {
           field: 'plannedYTD',
@@ -497,7 +497,7 @@ export default function DataTable() {
                         autoFocus
                         margin="dense"
                         id="target"
-                        label="Target"
+                        label="Target For The Year"
                         type="number"
                         fullWidth
                         style={{marginBottom : '15px'}}
@@ -612,7 +612,7 @@ export default function DataTable() {
                             autoFocus
                             margin="dense"
                             id="target"
-                            label="Target"
+                            label="Target For The Year"
                             type="number"
                             fullWidth
                             style={{marginBottom : '15px'}}

@@ -163,8 +163,9 @@ function Dashboard() {
       plotBackgroundColor: null,
       plotBorderWidth: null,
       plotShadow: false,
-      type: 'pie'
+      type: 'pie',
     },
+    colors: ['blue', 'amber', 'red', 'green'],
     title: {
       text: 'KPI Breakdown'
     },
@@ -173,7 +174,6 @@ function Dashboard() {
     }],
     tooltip: {
       pointFormat: '{name}: <br>{point.percentage:.1f} %<br>Total: {point.y}'
-
     },
     plotOptions: {
       pie: {
@@ -182,9 +182,6 @@ function Dashboard() {
           dataLabels: {
               enabled: true,
               format: '<b>{point.name}</b>:<br>{point.percentage:.1f} %<br>Total: {point.y}',
-              style: {
-                  color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
-              }
           }
       }
     },

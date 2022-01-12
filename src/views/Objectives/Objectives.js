@@ -42,7 +42,7 @@ import styles1 from "assets/jss/material-dashboard-pro-react/views/extendedForms
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
-// import { ListItemText, Checkbox, ListItemIcon } from "@material-ui/core";
+// import { Checkbox, ListItemIcon, ListItemText } from "@material-ui/core";
 // import Avatar from "../../assets/img/default-avatar.png";
 
 const useStyles = makeStyles(styles, styles1);
@@ -66,6 +66,7 @@ export default function StrategicObjectives() {
         dispatch(getKpis(currentUser.id));
         setUserId(currentUser.id);
         setCreatedBy(currentUser.id);
+        setUpdatedBy(currentUser.id);
         dispatch(getStatus());
         dispatch(getPillars());
         dispatch(getUsers())
@@ -108,7 +109,7 @@ export default function StrategicObjectives() {
     const [created_by, setCreatedBy] = useState("");
     const [editopen, setEditOpen] = useState(false);
     const [id, setId] = useState("");
-    const [updated_by, setUpdatedBy] = useState(currentUser.id);
+    const [updated_by, setUpdatedBy] = useState("");
     const [show_tasks, setShowTasks] = useState(false);
     const [setIndex, setSelectedIndex] = useState("");
     const [err, setError] = useState("");
@@ -336,7 +337,7 @@ export default function StrategicObjectives() {
     const editObjective = async (e) => {
         e.preventDefault();
         setshowloader(true)
-        setUserId();
+        setUserId(currentUser.id);
         setId();
 
         let end_date = moment(end_date).format('YYYY-MM-DD');
@@ -955,18 +956,18 @@ export default function StrategicObjectives() {
                                     id: "multiple-select",
                                 }}
                                 >
-                                    {kpis && kpis.map((option) => (
+                                {kpis && kpis.map((option) => (
                                     <MenuItem key={option.id} value={option.id}
                                         classes={{
                                         root: classes.selectMenuItem,
                                         selected: classes.selectMenuItemSelectedMultiple,
-                                        }}>
+                                        }}> 
                                         {option.title}
                                         {/* <ListItemIcon>
-                                            <Checkbox selected={kpi_id.indexOf(option) > -1} />
+                                        <Checkbox checked={kpi_id.includes(option.id)} />
                                         </ListItemIcon>
-                                        <ListItemText primary={option.title} /> */}
-                                    </MenuItem>
+                                        <ListItemText primary={option.title} title={option.title}> {option.title}</ListItemText> */}
+                                    </MenuItem>   
                                 ))}
                                 </Select>
                             </FormControl>

@@ -122,6 +122,7 @@ export default function UserDashboard() {
       plotShadow: false,
       type: 'pie'
     },
+    colors: ['blue', 'amber', 'red', 'green'],
     title: {
       text: 'KPI Breakdown'
     },
@@ -130,7 +131,6 @@ export default function UserDashboard() {
     }],
     tooltip: {
       pointFormat: '{name}: <br>{point.percentage:.1f} %<br>Total: {point.y}'
-
     },
     plotOptions: {
       pie: {
@@ -139,9 +139,6 @@ export default function UserDashboard() {
           dataLabels: {
               enabled: true,
               format: '<b>{point.name}</b>:<br>{point.percentage:.1f} %<br>Total: {point.y}',
-              style: {
-                  color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
-              }
           }
       }
     },
