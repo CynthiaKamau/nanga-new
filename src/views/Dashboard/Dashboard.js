@@ -979,7 +979,7 @@ function Dashboard() {
   }
 
   const objectivesRouteChange = () => {
-    history.push('/admin/bfc')
+    history.push('/admin/strategic-objectives')
   }
 
   return (
@@ -1553,6 +1553,7 @@ function Dashboard() {
                             <Table>
                               <TableHead style={{backgroundColor : '#29A15B'}}>
                                   <TableRow>
+                                      <TableCell>Category</TableCell>
                                       <TableCell>KPI</TableCell>
                                       <TableCell>Unit</TableCell>
                                       <TableCell>Target</TableCell>
@@ -1570,6 +1571,7 @@ function Dashboard() {
                                       </TableRow>
                                   ) : items ? ( items.map((list, index) => (
                                       <TableRow key={index}>
+                                          <TableCell>{list.categories.description} </TableCell>
                                           <TableCell>{list.title} </TableCell>
                                           <TableCell>{list.kpi_unit_of_measure} </TableCell>
                                           <TableCell>{list.target} </TableCell>
@@ -1708,6 +1710,7 @@ function Dashboard() {
                                             <TableCell>Management Action</TableCell>
                                             <TableCell>Start Date</TableCell>
                                             <TableCell>Due Date</TableCell>
+                                            <TableCell>Status</TableCell>
                                             <TableCell>Resources</TableCell>
                                         </TableRow>
                                     </TableHead>
@@ -1718,6 +1721,7 @@ function Dashboard() {
                                                 <TableCell>{list.description}</TableCell>
                                                 <TableCell>{moment(list.start_date).format('YYYY-MM-DD')}</TableCell>
                                                 <TableCell>{moment(list.end_date).format('YYYY-MM-DD')}</TableCell>
+                                                <TableCell>{list.status}</TableCell>
                                                 <TableCell>
                                                   {list.assignedTasks.map((detail, index) => (
                                                       <div key={index} style={{ display: 'inline' }}>
@@ -1760,29 +1764,41 @@ function Dashboard() {
                     spacing={2}
                     direction="row"
                     >
-                      <Grid item xs={12} md={12} sm={12} key="1">
-                        <Card>
-                          <h4 style={{color: 'black', textAlign: 'center', justifyContent: 'center'}}> Strategic Intent Level 1 </h4>
-                            {/* <IconButton  style={{float: 'right'}} aria-label="edit" color="primary" onClick={() => { setEditingStrategicIntent1(strategic_intent1) }} ><EditIcon style={{ color : '#000000'}}/></IconButton> */}
-                            {strategic_intent1 === undefined || strategic_intent1 === null || strategic_intent1.length === 0 ? (
-                              <h4 style={{color: 'black', textAlign: 'center'}} >Not available.</h4>
-                            ) : strategic_intent1 ? (
-                              <h4 style={{color: 'black', textAlign: 'center', justifyContent: 'center'}} > {strategic_intent1[0].level_up_one}</h4>
-                            ) : null}
-                        </Card>
-                      </Grid>
+                      {strategic_intent1.length > 0 ? (
+                          <Grid container spacing={3}>
+                            <Grid item xs={12} md={12} sm={12} key="1">
+                              <Card style={{width: '100%'}}>
+                                <h4 style={{color: 'black', textAlign: 'center', justifyContent: 'center'}}> Strategic Intent Level 1 </h4>
+                                  {/* <IconButton  style={{float: 'right'}} aria-label="edit" color="primary" onClick={() => { setEditingStrategicIntent1(strategic_intent1) }} ><EditIcon style={{ color : '#000000'}}/></IconButton> */}
+                                  {strategic_intent1 === undefined || strategic_intent1 === null || strategic_intent1.length === 0 ? (
+                                    <h4 style={{color: 'black', textAlign: 'center'}} >Not available.</h4>
+                                  ) : strategic_intent1 ? (
+                                    <h4 style={{color: 'black', textAlign: 'center', justifyContent: 'center'}} > {strategic_intent1[0].level_up_one}</h4>
+                                  ) : null}
+                              </Card>
+                            </Grid>
 
-                      <Grid item xs={12} md={12} sm={12} key="2"> 
-                        {/* <IconButton  style={{float: 'right'}} aria-label="edit" color="primary" onClick={() => { setEditingStrategicIntent1(strategic_intent1) }} ><EditIcon style={{ color : '#000000'}}/></IconButton>          */}
-                          <Card>
-                            <h4 style={{color: 'black', textAlign:'center'}}> Strategic Intent Level 2 </h4> 
-                              {strategic_intent1 === undefined || strategic_intent1 === null || strategic_intent1.length === 0 ? (
-                                <h4 style={{color: 'black', textAlign: 'center'}} > Not available.</h4>
-                              ) : strategic_intent1 ? (
-                                <h4  style={{color: 'black', textAlign: 'center', justifyContent: 'center'}} > {strategic_intent1[0].level_up_two}</h4>
-                              ) : null}
-                          </Card>
-                      </Grid>
+                            <Grid item xs={12} md={12} sm={12} key="2"> 
+                              {/* <IconButton  style={{float: 'right'}} aria-label="edit" color="primary" onClick={() => { setEditingStrategicIntent1(strategic_intent1) }} ><EditIcon style={{ color : '#000000'}}/></IconButton>          */}
+                                <Card style={{width: '100%'}}>
+                                  <h4 style={{color: 'black', textAlign:'center'}}> Strategic Intent Level 2 </h4> 
+                                    {strategic_intent1 === undefined || strategic_intent1 === null || strategic_intent1.length === 0 ? (
+                                      <h4 style={{color: 'black', textAlign: 'center'}} > Not available.</h4>
+                                    ) : strategic_intent1 ? (
+                                      <h4  style={{color: 'black', textAlign: 'center', justifyContent: 'center'}} > {strategic_intent1[0].level_up_two}</h4>
+                                    ) : null}
+                                </Card>
+                            </Grid>
+
+                          </Grid>
+
+                        ) : (
+                          <GridItem container justify="flex-end">
+                            <Button color="primary" onClick={bfcRouteChange}> Create New Leadership Traits</Button>
+                          </GridItem>
+                        )
+                      }
+                      
                   </Grid>
 
                   <Grid

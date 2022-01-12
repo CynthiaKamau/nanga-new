@@ -100,7 +100,7 @@ export default function StrategicObjectives() {
     const [kpi_id, setKpiId] = useState([]);
     const [target, setTarget] = useState("");
     const [target_achieved_on_review, setTargetAtReview] = useState("");
-    const [target_achieved, setTargetAchieved] = useState("");
+    // const [target_achieved, setTargetAchieved] = useState("");
     const [user_id, setUserId] = useState(currentUser.id);
     const [task_description, setTaskDescription] = useState("");
     const [task_start_date, setTaskStartDate] = useState("");
@@ -316,7 +316,6 @@ export default function StrategicObjectives() {
 
         setId(list.id);
         setTarget(list.target);
-        setTargetAchieved(list.target_achieved);
         setTargetAtReview(list.target_achieved_on_review);
         setStartDate(list.start_date);
         setEndDate(list.end_date)
@@ -343,7 +342,7 @@ export default function StrategicObjectives() {
         let end_date = moment(end_date).format('YYYY-MM-DD');
         let start_date = moment(start_date).format('YYYY-MM-DD');
 
-        console.log("save objective", id, description, end_date, kpi_id, start_date, target, user_id, obj_status, target_achieved, target_achieved_on_review, pillar_id, root_cause, action, support_required, risk_and_opportunity, setUpdatedBy())
+        console.log("save objective", id, description, end_date, kpi_id, start_date, user_id, obj_status, target_achieved_on_review, pillar_id, root_cause, action, support_required, risk_and_opportunity, setUpdatedBy())
 
         const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
         const body = JSON.stringify({ 
@@ -353,8 +352,8 @@ export default function StrategicObjectives() {
             user_id : user_id,
             start_date : start_date,
             end_date : end_date,
-            target : target,
-            target_achieved : target_achieved,
+            // target : target,
+            // target_achieved : target_achieved,
             pillar_id : pillar_id,
             overallStatus : obj_status,
             // root_cause : root_cause,
@@ -966,7 +965,7 @@ export default function StrategicObjectives() {
                                         {/* <ListItemIcon>
                                         <Checkbox checked={kpi_id.includes(option.id)} />
                                         </ListItemIcon>
-                                        <ListItemText primary={option.title} title={option.title}> {option.title}</ListItemText> */}
+                                        <ListItemText primary={option.title} title={option.title} /> */}
                                     </MenuItem>   
                                 ))}
                                 </Select>
@@ -1406,42 +1405,6 @@ export default function StrategicObjectives() {
                         </MenuItem>
                         ))}
                     </TextField>
-
-                    <Grid container spacing={2}>
-                        <Grid item xs={6} lg={6} xl={6} sm={12}>
-                            <TextField
-                            autoFocus
-                            margin="dense"
-                            id="target"
-                            label="Target"
-                            type="text"
-                            fullWidth
-                            style={{ marginBottom: '15px' }}
-                            value={target}
-                            variant="outlined"
-                            onChange={(event) => {
-                                setTarget(event.target.value);
-                            }}
-                            />
-                        </Grid>
-
-                        <Grid item xs={6} lg={6} xl={6} sm={12}>
-                            <TextField
-                            autoFocus
-                            margin="dense"
-                            id="target_achieved"
-                            label="Target Achieved"
-                            type="text"
-                            fullWidth
-                            style={{ marginBottom: '15px' }}
-                            value={target_achieved}
-                            variant="outlined"
-                            onChange={(event) => {
-                                setTargetAchieved(event.target.value);
-                            }}
-                            />
-                        </Grid>
-                    </Grid>
 
                     {/* <TextField
                         fullWidth

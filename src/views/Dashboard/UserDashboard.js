@@ -508,6 +508,7 @@ export default function UserDashboard() {
                                             <TableCell>Management Action</TableCell>
                                             <TableCell>Start Date</TableCell>
                                             <TableCell>Due Date</TableCell>
+                                            <TableCell>Status</TableCell>
                                             <TableCell>Resources</TableCell>
                                         </TableRow>
                                     </TableHead>
@@ -524,6 +525,7 @@ export default function UserDashboard() {
                                                 <TableCell>{list.description}</TableCell>
                                                 <TableCell>{moment(list.start_date).format('YYYY-MM-DD')}</TableCell>
                                                 <TableCell>{moment(list.end_date).format('YYYY-MM-DD')}</TableCell>
+                                                <TableCell>{list.status}</TableCell>
                                                 <TableCell>
                                                   {list.assignedTasks.map((detail, index) => (
                                                       <div key={index} style={{ display: 'inline' }}>

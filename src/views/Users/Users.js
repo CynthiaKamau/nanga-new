@@ -27,9 +27,8 @@ import axios from "axios";
 import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
 import { Grid } from "@material-ui/core";
 import { getTeams} from "actions/teams"
-import { getRoles } from "actions/data";
+import { getRoles, getPillars } from "actions/data";
 import MaterialTable from 'material-table';
-
 // import classNames from "classnames";
 
 const useStyles = makeStyles(styles);
@@ -40,7 +39,7 @@ export default function UsersPage() {
 
   const { items , item } = useSelector(state => state.user);
   const { user : currentUser } = useSelector(state => state.auth);
-  const { roles} = useSelector(state => state.data);
+  const { roles, sysusers} = useSelector(state => state.data);
   const { items : teams} = useSelector(state => state.team);
 
   console.log("here error", teams)
@@ -49,7 +48,9 @@ export default function UsersPage() {
   useEffect(() => {
     dispatch(getUsers());
     dispatch(getTeams());
-    dispatch(getRoles())
+    dispatch(getRoles());
+    dispatch(getPillars());
+    dispatch(getUsers())
   }, []);
 
 
@@ -72,7 +73,7 @@ export default function UsersPage() {
   const [search_email, setSearchEmail] = useState("");
   const [showSearchLoading, setShowSearchLoading] = useState("");
   const [setUserError, setShowUserError] = useState("");
-  
+  const [line_manager, setLineManager] = useState("");  
   // const [selectedUser, setSelectedUser] = useState("");
 
   // const statuses = JsonData.Status;
@@ -105,6 +106,7 @@ export default function UsersPage() {
         email : search_email,
         extension : 0,
         view : true,
+        line_manager : line_manager,
         created_by : created_by
     });
 
@@ -162,6 +164,7 @@ export default function UsersPage() {
     setEmail(list.email);
     setExtension(list.extension);
     setView(list.view)
+    setLineManager(list.line_manager.id);
 
   }
 
@@ -186,6 +189,7 @@ export default function UsersPage() {
         team_id : team, 
         role_id : role,
         updated_by_id : updated_by,
+        line_manager : line_manager,
         view : view,
         
         });
@@ -346,12 +350,17 @@ export default function UsersPage() {
     <div>
       <GridContainer>
         <GridItem xs={12} sm={12} md={12}>
+        { currentUser.role_id == 0 ? (
+          <div style={{ paddingBottom : '60px'}}>
+            <div className={classes.btnRight}><Button color="primary" size="lg" onClick={handleAddClickOpen}> Add User </Button> </div>
+          </div>
+        ) : null} 
+
           <Card>
             <CardHeader color="primary">
               <h4>Users</h4>
             </CardHeader>
             <CardBody>
-              { currentUser.role_id === 0 ? (<div className={classes.btnRight}><Button color="primary" size="lg" onClick={handleAddClickOpen}> Add User </Button> </div> ) : null }
 
               <MaterialTable
                   title="User  details."
@@ -436,6 +445,26 @@ export default function UsersPage() {
                           {option.role_name}
                         </MenuItem>
                       ))}
+                      </TextField>
+
+                      <label> Line Manager : </label>
+                      <TextField
+                        id="outlined-select-type"
+                        select
+                        fullWidth
+                        variant="outlined"
+                        label="Select"
+                        value={line_manager}
+                        onChange = {(event) => {
+                          setLineManager(event.target.value);
+                        }}
+                        helperText="Please select your line manager"
+                      >
+                        {sysusers.map((option) => (
+                          <MenuItem key={option.value} value={option.value}>
+                            {option.label}
+                          </MenuItem>
+                        ))}
                       </TextField>
 
                       <label style={{ fontWeight: 'bold', color: 'black' }}> Team : </label>

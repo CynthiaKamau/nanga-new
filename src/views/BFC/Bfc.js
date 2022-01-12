@@ -479,7 +479,7 @@ export default function BFC() {
             levelUpOne : userstrategicintent1,
             userId : user_id,
             createdBy : user_id,
-            strategicIntent : ''
+            strategicIntent : null
           });
     
           try {
@@ -533,7 +533,7 @@ export default function BFC() {
                 id : strategic_intent1_id,
                 level_up_one : userstrategicintent1,
                 level_up_two : userstrategicintent2,
-                strategic_intent : ''
+                strategic_intent : null
               });
     
               let response = await axios.post('/strategicintent/update', body, config)
