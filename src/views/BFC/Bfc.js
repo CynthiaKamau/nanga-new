@@ -148,7 +148,10 @@ export default function BFC() {
                         title: "Success",
                         text: item,
                         icon: "success",
-                    }).then(() => dispatch(getBehaviours(currentUser.id)));
+                    }).then(() => {
+                        setBehaviour("");
+                        dispatch(getBehaviours(currentUser.id))
+                    }) 
     
                 } else {
                     let error = response.data.message
@@ -183,7 +186,7 @@ export default function BFC() {
     
         const body = JSON.stringify({ 
             createdBy: created_by,
-            description: behaviour_description,
+            description: freedom_description,
             userId: created_by
         });
 
@@ -198,7 +201,10 @@ export default function BFC() {
                         title: "Success",
                         text: item,
                         icon: "success",
-                    }).then(() => dispatch(getFreedoms(currentUser.id)));
+                    }).then(() =>  {
+                        setFreedom("");
+                        dispatch(getFreedoms(currentUser.id))
+                    });
     
                 } else {
                     let error = response.data.message
@@ -248,7 +254,10 @@ export default function BFC() {
                         title: "Success",
                         text: item,
                         icon: "success",
-                    }).then(() => dispatch(getConstraints(currentUser.id)));
+                    }).then(() => {
+                        setConstraint("")
+                        dispatch(getConstraints(currentUser.id))
+                    });
     
                 } else {
                     let error = response.data.message

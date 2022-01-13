@@ -106,8 +106,15 @@ export default function DataTable() {
                         title: "Success",
                         text: item,
                         icon: "success",
-                    }).then(() => dispatch(getKpis(currentUser.id)));
+                    }).then(() => {
+                        setKPI("")
+                        setUnitOfMeasure("")
+                        setCategory("")
+                        setAccount("")
+                        setTarget("")
+                        dispatch(getKpis(currentUser.id));
 
+                    })
                 } else {
                     let error = response.data.message
                     setshowloader(false);

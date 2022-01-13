@@ -60,6 +60,10 @@ export default function StrategicObjectives() {
     const { statuses, pillars } = useSelector(state => state.data);
     const { sys_resources} = useSelector(state => state.user)
 
+    function convertUTCDateToLocalDate(date) {
+        var newDate = new Date(date.getTime() - date.getTimezoneOffset()*60*1000);
+        return newDate;   
+    }
 
     useEffect(() => {
         dispatch(getUserObjectives(currentUser.id));
@@ -136,6 +140,8 @@ export default function StrategicObjectives() {
         setAddOpen(false);
         
         console.log("kpi uom", kpi_unit_of_measure)
+        console.log("start date", start_date)
+        console.log("end_date", end_date )
     
         let end_date = moment(end_date).format('YYYY-MM-DD');
         let start_date = moment(start_date).format('YYYY-MM-DD');
@@ -226,7 +232,18 @@ export default function StrategicObjectives() {
                     text: "Objective and task added successfully!",
                     icon: "success",
                     dangerMode: false
-                    }).then(() => dispatch(getUserObjectives(currentUser.id)));
+                    }).then(() => {
+                        setAssigneeId([]);
+                        setTaskDescription("")
+                        setTaskStartDate("")
+                        setTaskEndDate("")
+                        setEndDate("")
+                        setStartDate("")
+                        setKpiId([])
+                        setTarget("")
+                        setPillar("")
+                        dispatch(getUserObjectives(currentUser.id))
+                    });
                     
                 } else {
             
@@ -478,7 +495,13 @@ export default function StrategicObjectives() {
                   text: "Task added successfully!",
                   icon: "success",
                   dangerMode: false
-                }).then(() => {setShowObjectivesTask(objectiveId)})
+                }).then(() => {
+                    setTaskStartDate("")
+                    setTaskEndDate("")
+                    setTaskDescription("")
+                    setAssigneeId([])
+                    setObjectiveId("")
+                    setShowObjectivesTask(objectiveId)})
                 
               } else {
         
@@ -546,6 +569,9 @@ export default function StrategicObjectives() {
         e.preventDefault();
         setshowloader(true);
 
+        let task_end_date = convertUTCDateToLocalDate(task_end_date).toISOString();
+        let task_start_date = convertUTCDateToLocalDate(task_start_date).toISOString();
+
         console.log("edit values",  task_description, task_end_date, task_start_date, task_objective_id, user_id, created_by, updated_by, id, task_status, setUpdatedBy)
 
         const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
@@ -567,18 +593,11 @@ export default function StrategicObjectives() {
         try {
 
             let response = await axios.post('/tasks/update', body, config)
-            if (response.status == 201) {
-                setshowloader(false);
-                setEditOpenIndividualTask(false);
 
-                let item = response.data.message
-                swal.fire({
-                    title: "Success",
-                    text: item,
-                    icon: "success",
-                }).then(() => setShowObjectivesTask(objectiveId))
+            console.log("update response", response)
 
-            } else {
+            if (response.data.success === false) {
+
                 let error = response.data.message
                     setshowloader(false);
                     setEditOpenIndividualTask(false);
@@ -589,8 +608,56 @@ export default function StrategicObjectives() {
                         icon: "error",
                         dangerMode: true
                     });
+
+            } else {
+
+                const body = JSON.stringify({
+                task_id : id ,
+                assigner_id : created_by,
+                user_ids : assignee_id
+                })
+
+                try {
+  
+                    let response2 = await axios.post('/assignedtasks/update', body, config)
+                    if (response2.status == 201) {
+                      setshowloader(false);
+                      setEditOpenIndividualTask(false);
+                      swal.fire({
+                        title: "Success",
+                        text: "Task updated successfully!",
+                        icon: "success",
+                        dangerMode: false
+                      }).then(() => {setShowObjectivesTask(objectiveId)})
+                      
+                    } else {
+              
+                        let error = response2.data.message
+                        setshowloader(false);
+                        setEditOpenIndividualTask(false);
+                        swal.fire({
+                            title: "Error",
+                            text: error,
+                            icon: "error",
+                            dangerMode: true
+                        });
+                    }
+                  } catch (error) {
+              
+                    let err = error.response.data.message
+                        setshowloader(false);
+                        setEditOpenIndividualTask(false);
+                        swal.fire({
+                            title: "Error",
+                            text: err,
+                            icon: "error",
+                            dangerMode: true
+                        });
+                  }
+
             }
         } catch (error) {
+
             let err = error.response.data.message
             setshowloader(false);
             setEditOpenIndividualTask(false);
@@ -1150,18 +1217,21 @@ export default function StrategicObjectives() {
                         <Grid item xs={6} lg={6} xl={6} sm={12}>
                             <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                 <KeyboardDatePicker
+                                    // format={DateFormatEnum.DayMonthYearPtBr}
                                     margin="normal"
                                     id="date-picker-dialog"
                                     helperText="Set start date"
                                     format="yyyy/MM/dd"
                                     fullWidth
                                     inputVariant="outlined"
+                                    // value={parseISO(task_start_date)}
                                     value={task_start_date}
                                     onChange={setTaskStartDate}
                                     KeyboardButtonProps={{
                                         'aria-label': 'change date',
                                     }}
                                 />
+
                             </MuiPickersUtilsProvider>
                         </Grid>
 

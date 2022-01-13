@@ -106,7 +106,7 @@ export default function UsersPage() {
         email : search_email,
         extension : 0,
         view : true,
-        line_manager : line_manager,
+        lineManager : line_manager,
         created_by : created_by
     });
 
@@ -164,7 +164,7 @@ export default function UsersPage() {
     setEmail(list.email);
     setExtension(list.extension);
     setView(list.view)
-    setLineManager(list.line_manager.id);
+    setLineManager(list.lineManager);
 
   }
 
@@ -189,7 +189,7 @@ export default function UsersPage() {
         team_id : team, 
         role_id : role,
         updated_by_id : updated_by,
-        line_manager : line_manager,
+        lineManager : line_manager,
         view : view,
         
         });
@@ -320,6 +320,10 @@ export default function UsersPage() {
     {
       field: 'roles.role_name',
       title: 'Role'
+    },
+    {
+      field: 'lineManager',
+      title: 'Line Manager'
     },
     {
       field: '',

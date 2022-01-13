@@ -1,4 +1,4 @@
-import UsersPage from "views/Users/Users";
+// import UsersPage from "views/Users/Users";
 // import TeamsPage from "views/Teams/Teams.js";
 // import MyTeamPage from "views/Teams/MyTeam";
 import Objectives from "@material-ui/icons/DoneAll";
@@ -11,8 +11,8 @@ import KPIsPage from "views/KPI/kpi";
 // import MyKpis from "views/KPI/mykpi"; 
 import UserProfile from "views/UserProfile/UserProfile";
 // import UserDashboard from "views/Dashboard/UserDashboard";
-import ObjectiveReport from "views/Reports/objective-report";
-import KPIReport from "views/Reports/kpi-report";
+// /import ObjectiveReport from "views/Reports/objective-report";
+// import KPIReport from "views/Reports/kpi-report";
 
 import BFC from "views/BFC/Bfc";
 
@@ -20,10 +20,10 @@ import BFC from "views/BFC/Bfc";
 import DashboardIcon from "@material-ui/icons/Dashboard";
 import DateRange from "@material-ui/icons/DateRange";
 // import MyTeamIcon from "@material-ui/icons/PeopleAltRounded";
-import PersonAdd from "@material-ui/icons/PersonAdd";
+// import PersonAdd from "@material-ui/icons/PersonAdd";
 import { PersonOutline} from "@material-ui/icons";
 import VerticalAlignCenterIcon from '@material-ui/icons/VerticalAlignCenter';
-import { Poll } from "@material-ui/icons";
+// import { Poll } from "@material-ui/icons";
 
 
 var dashRoutes = [
@@ -75,14 +75,14 @@ var dashRoutes = [
     component: UserProfile,
     layout: "/admin",
   },
-  {
-    path: "/users",
-    name: "Users",
-    rtlName: "لوحة القيادة",
-    icon: PersonAdd,
-    component: UsersPage,
-    layout: "/admin",
-  },
+  // {
+  //   path: "/users",
+  //   name: "Users",
+  //   rtlName: "لوحة القيادة",
+  //   icon: PersonAdd,
+  //   component: UsersPage,
+  //   layout: "/admin",
+  // },
   // {
   //   collapse: true,
   //   name: "Teams",
@@ -110,33 +110,33 @@ var dashRoutes = [
   //     },
   //   ],
   // },
-  {
-    collapse: true,
-    name: "Reports",
-    rtlName: "صفحات",
-    icon: Poll,
-    state: "tablesCollapse",
-    views: [
-      {
-        path: "/kpis-report",
-        name: "KPI Report",
-        rtlName: "عالتسعير",
-        mini: "KR",
-        rtlMini: "ع",
-        component: KPIReport,
-        layout: "/admin",
-      },
-      {
-        path: "/strategic-objectives-report",
-        name: "Objective Report",
-        rtlName: "عالتسعير",
-        mini: "SR",
-        rtlMini: "ع",
-        component: ObjectiveReport,
-        layout: "/admin",
-      },
-    ],
-  },
+  // {
+  //   collapse: true,
+  //   name: "Reports",
+  //   rtlName: "صفحات",
+  //   icon: Poll,
+  //   state: "tablesCollapse",
+  //   views: [
+  //     {
+  //       path: "/kpis-report",
+  //       name: "KPI Report",
+  //       rtlName: "عالتسعير",
+  //       mini: "KR",
+  //       rtlMini: "ع",
+  //       component: KPIReport,
+  //       layout: "/admin",
+  //     },
+  //     {
+  //       path: "/strategic-objectives-report",
+  //       name: "Objective Report",
+  //       rtlName: "عالتسعير",
+  //       mini: "SR",
+  //       rtlMini: "ع",
+  //       component: ObjectiveReport,
+  //       layout: "/admin",
+  //     },
+  //   ],
+  // },
   // {
   //   path: "/user-dashboard/:id",
   //   name: "",

@@ -115,6 +115,12 @@ export default function AssignedTasksPage() {
                     title: "Success",
                     text: "Task added successfully!",
                     icon: "success",
+                }).then(() => {
+                    setStartDate("")
+                    setEndDate("")
+                    setDescription("")
+                    setObjectiveId("")
+                    dispatch(getAssignedTasks(user_id))
                 });
             }
         } catch (error) {
