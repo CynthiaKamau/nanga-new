@@ -54,6 +54,7 @@ export default function BFC() {
     const [behaviourId, setBehaviourId] = useState("");
     const [freedomId, setFreedomId] = useState("");
     const [constaraintId, setConstraintId] = useState("");
+    const [userstrategicintent0, setStrategicIntent0] = useState("");
     const [userstrategicintent1, setStrategicIntent1] = useState("");
     const [userstrategicintent2, setStrategicIntent2] = useState("");
     const [strategic_intent1_id, setStrategicIntent1Id] = useState("");
@@ -458,10 +459,12 @@ export default function BFC() {
         if(strategic_intent1 === undefined || strategic_intent1[0] === null ) {
           setStrategicIntent1('');
           setStrategicIntent2('');
+          setStrategicIntent0('');
           setStrategicIntent1Id(null);
         } else {
           setStrategicIntent1(strategic_intent1[0].level_up_one)
           setStrategicIntent2(strategic_intent1[0].level_up_two)
+          setStrategicIntent0(strategic_intent1[0].strategic_intent)
           setStrategicIntent1Id(strategic_intent1[0].id)
         }
       }
@@ -479,7 +482,7 @@ export default function BFC() {
             levelUpOne : userstrategicintent1,
             userId : user_id,
             createdBy : user_id,
-            strategicIntent : null
+            strategicIntent : userstrategicintent0
           });
     
           try {
@@ -533,7 +536,7 @@ export default function BFC() {
                 id : strategic_intent1_id,
                 level_up_one : userstrategicintent1,
                 level_up_two : userstrategicintent2,
-                strategic_intent : null
+                strategic_intent : userstrategicintent0
               });
     
               let response = await axios.post('/strategicintent/update', body, config)
@@ -594,7 +597,22 @@ export default function BFC() {
                     <IconButton  style={{float: 'right'}} aria-label="edit" color="primary" onClick={() => { handleEditSIL1Open(); setEditingStrategicIntent1(strategic_intent1) }} ><EditIcon style={{ color : '#000000'}}/></IconButton>
 
                 <Card>
-                    <h4 style={{color: 'black', textAlign:'center'}}> Strategic Intent Level 1 </h4>
+                    <h4 style={{color: 'black', textAlign:'center'}}> Mission, Zero Level Up </h4>
+
+                    <CardBody >
+                        {strategic_intent1 === undefined || strategic_intent1 === null || strategic_intent1.length === 0 ? (
+                        <h4>Not available.</h4>
+                        ) : strategic_intent1 ? (
+                        <h4 > {strategic_intent1[0].strategic_intent}</h4>
+                        ) : null}
+                    </CardBody>
+
+                    </Card>
+                </Grid>
+
+                <Grid item xs={12} md={12} sm={12} key="1">
+                <Card>
+                    <h4 style={{color: 'black', textAlign:'center'}}> Mission, One Level Up </h4>
 
                     <CardBody >
                         {strategic_intent1 === undefined || strategic_intent1 === null || strategic_intent1.length === 0 ? (
@@ -609,7 +627,7 @@ export default function BFC() {
 
                 <Grid item xs={12} md={12} sm={12} key="2">              
                 <Card>
-                    <h4 style={{color: 'black', textAlign:'center'}}> Strategic Intent Level 2 </h4>          
+                    <h4 style={{color: 'black', textAlign:'center'}}> Mission, Two Levels Up </h4>          
                     <CardBody >
                         {strategic_intent1 === undefined || strategic_intent1 === null || strategic_intent1.length === 0 ? (
                         <h4> Not available.</h4>
@@ -984,7 +1002,23 @@ export default function BFC() {
                 id="outlined-multiline-static"
                 fullWidth
                 autoFocus
-                label="Strategic Level 1"
+                label="Mission Zero Level Up"
+                type="text"
+                margin="dense"
+                multiline
+                variant="outlined"
+                rows={4}
+                value={userstrategicintent0}
+                className={classes.textInput}
+                onChange={(event) => {
+                    setStrategicIntent0(event.target.value);
+                }}
+                />
+                <TextField
+                id="outlined-multiline-static"
+                fullWidth
+                autoFocus
+                label="Mission One Level Up"
                 type="text"
                 margin="dense"
                 multiline
@@ -1001,7 +1035,7 @@ export default function BFC() {
                 id="outlined-multiline-static"
                 fullWidth
                 autoFocus
-                label="Strategic Level 2"
+                label="Mission Two Levels Up"
                 type="text"
                 margin="dense"
                 multiline

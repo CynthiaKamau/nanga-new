@@ -37,7 +37,7 @@ import axios from "axios";
 import { getUserObjectives } from "actions/objectives";
 import { getKpis } from "actions/kpis";
 import { getStatus, getPillars } from "actions/data";
-import { getUsers } from "actions/users";
+import { getResourceUsers } from "actions/users";
 import styles1 from "assets/jss/material-dashboard-pro-react/views/extendedFormsStyle.js";
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
@@ -58,19 +58,18 @@ export default function StrategicObjectives() {
     const { items, error, isLoading} = useSelector(state => state.objective);
     const {  items : kpis } = useSelector(state => state.kpi);
     const { statuses, pillars } = useSelector(state => state.data);
-    const { items : sysusers} = useSelector(state => state.user)
+    const { sys_resources} = useSelector(state => state.user)
 
 
     useEffect(() => {
         dispatch(getUserObjectives(currentUser.id));
+        dispatch(getResourceUsers(currentUser.id));
         dispatch(getKpis(currentUser.id));
         setUserId(currentUser.id);
         setCreatedBy(currentUser.id);
         setUpdatedBy(currentUser.id);
         dispatch(getStatus());
         dispatch(getPillars());
-        dispatch(getUsers())
-
     }, [])
 
     const obj_statuses = [
@@ -84,7 +83,7 @@ export default function StrategicObjectives() {
         }
     ]
 
-    console.log(sysusers)
+    console.log("resources", sys_resources)
 
     const [addopen, setAddOpen] = useState(false);
     const [addopenindividualtask, setAddOpenIndividualTask] = useState(false);
@@ -1135,7 +1134,7 @@ export default function StrategicObjectives() {
                             id: "multiple-select",
                         }}
                         >
-                            {sysusers && sysusers.map((option) => (
+                            {sys_resources && sys_resources.map((option) => (
                             <MenuItem key={option.id} value={option.id}
                                 classes={{
                                 root: classes.selectMenuItem,
@@ -1254,7 +1253,7 @@ export default function StrategicObjectives() {
                             id: "multiple-select",
                         }}
                         >
-                            {sysusers && sysusers.map((option) => (
+                            {sys_resources && sys_resources.map((option) => (
                             <MenuItem key={option.id} value={option.id}
                                 classes={{
                                 root: classes.selectMenuItem,
@@ -1583,7 +1582,7 @@ export default function StrategicObjectives() {
                             id: "multiple-select",
                         }}
                         >
-                            {sysusers && sysusers.map((option) => (
+                            {sys_resources && sys_resources.map((option) => (
                             <MenuItem key={option.id} value={option.id}
                                 classes={{
                                 root: classes.selectMenuItem,

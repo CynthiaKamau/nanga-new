@@ -3,6 +3,10 @@ import {
     ALL_USERS_FETCH_REQUEST,
     ALL_USERS_FAIL,
 
+    ALL_RESOURCE_USERS_SUCCESS,
+    ALL_RESOURCE_USERS_FETCH_REQUEST,
+    ALL_RESOURCE_USERS_FAIL,
+
     USER_SUCCESS,
     USER_FETCH_REQUEST,
     USER_FAIL,
@@ -22,6 +26,7 @@ import {
 
 const initialState = {
     items: [],
+    sys_resources: [],
     item: [],
     error: [],
     isLoading: false
@@ -30,6 +35,7 @@ const initialState = {
 export default function (state = initialState, action) {
     switch (action.type) {
         case ALL_USERS_FETCH_REQUEST:
+        case ALL_RESOURCE_USERS_FETCH_REQUEST:
         case USER_FETCH_REQUEST:
         case ADD_USER_FETCH_REQUEST:
         case EDIT_USER_FETCH_REQUEST:
@@ -46,6 +52,15 @@ export default function (state = initialState, action) {
                 isLoading: false,
                 error: null
             }
+
+        case ALL_RESOURCE_USERS_SUCCESS:
+            return {
+                ...state,
+                sys_resources: action.payload,
+                isLoading: false,
+                error: null
+            }
+
         case USER_SUCCESS:
         case ADD_USER_SUCCESS:
         case EDIT_USER_SUCCESS:
@@ -64,6 +79,15 @@ export default function (state = initialState, action) {
                 items: null,
                 error: action.payload.message
             }
+
+        case ALL_RESOURCE_USERS_FAIL:
+            return {
+                ...state,
+                isLoading: false,
+                sys_resources: null,
+                error: action.payload.message
+            }
+
         case USER_FAIL:
         case ADD_USER_FAIL:
         case EDIT_USER_FAIL:

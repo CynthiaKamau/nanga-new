@@ -28,7 +28,7 @@ import { getKpis } from "actions/kpis";
 import swal from "sweetalert2";
 import Loader from "react-loader-spinner";
 import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
-import EditIcon from '@material-ui/icons/Edit';
+// import EditIcon from '@material-ui/icons/Edit';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -76,13 +76,13 @@ function Dashboard() {
   const dispatch = useDispatch();
 
   const { user: currentUser } = useSelector(state => state.auth);
-  const {  mission, vision, task_count, objective_count, kpi_count, strategic_intent1 } = useSelector(state => state.data);
+  const { task_count, objective_count, kpi_count, strategic_intent1 } = useSelector(state => state.data);
   const { categories }  = useSelector(state => state.data);
   const { items, error, isLoading } = useSelector(state => state.kpi);
   const { items : objectives } = useSelector(state => state.objective);
   const { behaviours, behaviours_error, freedoms, freedoms_error, constraints, constrains_error} = useSelector(state => state.bfc);
 
-  console.log("strategic_intent1", strategic_intent1)
+  console.log("strategic_intent1", strategic_intent1, setUserId, user_id)
 
   console.log("kpi count", kpi_count)
 
@@ -253,17 +253,17 @@ function Dashboard() {
   }
   
   const [addopen, setAddOpen] = useState(false);
-  const [editopenmission, setEditMissionOpen] = useState(false);
-  const [editopenvision, setEditVisionOpen] = useState(false);
+  // const [editopenmission, setEditMissionOpen] = useState(false);
+  // const [editopenvision, setEditVisionOpen] = useState(false);
   // const [editopensil1, setEditSIL1Open] = useState(false);
   // const [editopensil2, setEditSIL2Open ] = useState(false);
   const [user_id, setUserId] = useState(currentUser.id);
   const [showloader, setshowloader] = useState(false); 
   const [created_by, setCreatedBy] = useState("");
-  const [usermission, setUserMission] = useState("");
-  const [uservision, setUserVision] = useState("");
-  const [ missionId, setMissionId] = useState("");
-  const [ visionId, setVisionId] = useState("");
+  // const [usermission, setUserMission] = useState("");
+  // const [uservision, setUserVision] = useState("");
+  // const [ missionId, setMissionId] = useState("");
+  // const [ visionId, setVisionId] = useState("");
   const [kpi, setKPI] = useState("");
   const [uom, setUnitOfMeasure] = useState("");
   const [target, setTarget] = useState("");
@@ -315,13 +315,13 @@ function Dashboard() {
   //   history.push('/admin/tasks');
   // }
 
-  const handleEditMissionClose = () => {
-    setEditMissionOpen(false);
-  };
+  // const handleEditMissionClose = () => {
+  //   setEditMissionOpen(false);
+  // };
 
-  const handleEditVisionClose = () => {
-    setEditVisionOpen(false);
-  };
+  // const handleEditVisionClose = () => {
+  //   setEditVisionOpen(false);
+  // };
 
   const saveKpi = async (e) => {
     e.preventDefault();
@@ -378,13 +378,13 @@ function Dashboard() {
 
   }
 
-  const handleEditMissionClickOpen = () => {
-    setEditMissionOpen(true);
-  };
+  // const handleEditMissionClickOpen = () => {
+  //   setEditMissionOpen(true);
+  // };
 
-  const handleEditVisionClickOpen = () => {
-    setEditVisionOpen(true);
-  };
+  // const handleEditVisionClickOpen = () => {
+  //   setEditVisionOpen(true);
+  // };
 
   // const handleEditSIL1Close = () => {
   //   setEditSIL1Open(false);
@@ -394,30 +394,30 @@ function Dashboard() {
   //   setEditSIL2Open(false);
   // }
 
-  const setEditingMission = (mission) => {
+  // const setEditingMission = (mission) => {
 
-    console.log("her",mission)
+  //   console.log("her",mission)
 
-    if(mission[0] === null || mission[0] === undefined) {
-      setUserMission('');
-      setMissionId(null);
-    } else {
-      setUserMission(mission[0].description)
-      setMissionId(mission[0].id)
-    }
+  //   if(mission[0] === null || mission[0] === undefined) {
+  //     setUserMission('');
+  //     setMissionId(null);
+  //   } else {
+  //     setUserMission(mission[0].description)
+  //     setMissionId(mission[0].id)
+  //   }
   
-  }
+  // }
 
-  const setEditingVision = (vision) => {
-    console.log("vision here", vision)
-    if(vision[0] === null || vision[0] === undefined) {
-      setUserVision('');
-      setVisionId(null);
-    } else {
-      setUserVision(vision[0].description)
-      setVisionId(vision[0].id)
-    }
-  }
+  // const setEditingVision = (vision) => {
+  //   console.log("vision here", vision)
+  //   if(vision[0] === null || vision[0] === undefined) {
+  //     setUserVision('');
+  //     setVisionId(null);
+  //   } else {
+  //     setUserVision(vision[0].description)
+  //     setVisionId(vision[0].id)
+  //   }
+  // }
 
   // const setEditingStrategicIntent1 = (strategic_intent1) => {
   //   console.log("strategic_intent1 here", strategic_intent1)
@@ -657,225 +657,225 @@ function Dashboard() {
   //   }
   // }  
 
-  const editMission = async (e) => {
-    e.preventDefault();
-    setshowloader(true);
+  // const editMission = async (e) => {
+  //   e.preventDefault();
+  //   setshowloader(true);
 
-    const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
+  //   const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
 
-    if(missionId === null) {
+  //   if(missionId === null) {
 
-      const body = JSON.stringify({
-        userid : user_id,
-        createdBy : user_id,
-        description : usermission,
-      });
+  //     const body = JSON.stringify({
+  //       userid : user_id,
+  //       createdBy : user_id,
+  //       description : usermission,
+  //     });
 
-      console.log("mission", body)
+  //     console.log("mission", body)
 
-      try {
+  //     try {
 
-          let response = await axios.post('/missions/create', body, config)
-          if (response.status == 201) {
+  //         let response = await axios.post('/missions/create', body, config)
+  //         if (response.status == 201) {
 
-            let res = response.data.message;
-            setshowloader(false);
-            setEditMissionOpen(false);
+  //           let res = response.data.message;
+  //           setshowloader(false);
+  //           setEditMissionOpen(false);
 
-              swal.fire({
-                title: "Success",
-                text: res,
-                icon: "success",
-              }).then(() => dispatch(getMission(currentUser.id)));
+  //             swal.fire({
+  //               title: "Success",
+  //               text: res,
+  //               icon: "success",
+  //             }).then(() => dispatch(getMission(currentUser.id)));
 
-          } else {
-            setshowloader(false);
-            setEditMissionOpen(false);
-            let err = response.data.message;
+  //         } else {
+  //           setshowloader(false);
+  //           setEditMissionOpen(false);
+  //           let err = response.data.message;
 
-            swal.fire({
-              title: "Error",
-              text: err,
-              icon: "error",
-              dangerMode: true
-            });
-          }
+  //           swal.fire({
+  //             title: "Error",
+  //             text: err,
+  //             icon: "error",
+  //             dangerMode: true
+  //           });
+  //         }
 
-      } catch (error) {
-          setshowloader(false);
-          setEditMissionOpen(false);
+  //     } catch (error) {
+  //         setshowloader(false);
+  //         setEditMissionOpen(false);
 
-          let err = error.response.data.message;
-          swal.fire({
-            title: "Error",
-            text: err,
-            icon: "error",
-            dangerMode: true
-          });
-      }
+  //         let err = error.response.data.message;
+  //         swal.fire({
+  //           title: "Error",
+  //           text: err,
+  //           icon: "error",
+  //           dangerMode: true
+  //         });
+  //     }
 
-    } else {
+  //   } else {
 
-      const body = JSON.stringify({
-        userId : user_id,
-        updatedBy : user_id,
-        description : usermission,
-        id : missionId
-      });
+  //     const body = JSON.stringify({
+  //       userId : user_id,
+  //       updatedBy : user_id,
+  //       description : usermission,
+  //       id : missionId
+  //     });
 
-    console.log("mission", body)
+  //   console.log("mission", body)
 
-      try {
-          let response = await axios.post('/missions/update', body, config)
-          if (response.status == 201) {
+  //     try {
+  //         let response = await axios.post('/missions/update', body, config)
+  //         if (response.status == 201) {
 
-            let res = response.data.message;
-            setshowloader(false);
-            setEditMissionOpen(false);
+  //           let res = response.data.message;
+  //           setshowloader(false);
+  //           setEditMissionOpen(false);
 
-              swal.fire({
-                title: "Success",
-                text: res,
-                icon: "success",
-              }).then(() => dispatch(getMission(currentUser.id)));
+  //             swal.fire({
+  //               title: "Success",
+  //               text: res,
+  //               icon: "success",
+  //             }).then(() => dispatch(getMission(currentUser.id)));
 
-          } else {
-            setshowloader(false);
-            setEditMissionOpen(false);
-            let err = response.data.message;
+  //         } else {
+  //           setshowloader(false);
+  //           setEditMissionOpen(false);
+  //           let err = response.data.message;
 
-            swal.fire({
-              title: "Error",
-              text: err,
-              icon: "error",
-              dangerMode: true
-            });
-          }
+  //           swal.fire({
+  //             title: "Error",
+  //             text: err,
+  //             icon: "error",
+  //             dangerMode: true
+  //           });
+  //         }
 
-      } catch (error) {
-          setshowloader(false);
-          setEditMissionOpen(false);
+  //     } catch (error) {
+  //         setshowloader(false);
+  //         setEditMissionOpen(false);
 
-          let err = error.response.data.message;
-          swal.fire({
-            title: "Error",
-            text: err,
-            icon: "error",
-            dangerMode: true
-          });
-      }
+  //         let err = error.response.data.message;
+  //         swal.fire({
+  //           title: "Error",
+  //           text: err,
+  //           icon: "error",
+  //           dangerMode: true
+  //         });
+  //     }
 
-    }
+  //   }
 
-  }
+  // }
 
-  const editVision = async (e) => {
-    e.preventDefault();
-    setshowloader(true);
+  // const editVision = async (e) => {
+  //   e.preventDefault();
+  //   setshowloader(true);
 
-    const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
+  //   const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
 
-    if(visionId === null) {
+  //   if(visionId === null) {
 
-      const body = JSON.stringify({
-        description : uservision,
-        userid : user_id,
-        createdBy : user_id,
-      });
+  //     const body = JSON.stringify({
+  //       description : uservision,
+  //       userid : user_id,
+  //       createdBy : user_id,
+  //     });
 
-      try {
+  //     try {
 
-        let response = await axios.post('/vision/create', body, config)
-        if (response.status == 201) {
+  //       let response = await axios.post('/vision/create', body, config)
+  //       if (response.status == 201) {
 
-          let res = response.data.message;
-          setshowloader(false);
-          setEditVisionOpen(false);
+  //         let res = response.data.message;
+  //         setshowloader(false);
+  //         setEditVisionOpen(false);
 
-          swal.fire({
-            title: "Success",
-            text: res,
-            icon: "success",
-          }).then(() => dispatch(getVision(currentUser.id)));
+  //         swal.fire({
+  //           title: "Success",
+  //           text: res,
+  //           icon: "success",
+  //         }).then(() => dispatch(getVision(currentUser.id)));
 
-      } else {
-        setshowloader(false);
-        setEditVisionOpen(false);
-        let err = response.data.message;
+  //     } else {
+  //       setshowloader(false);
+  //       setEditVisionOpen(false);
+  //       let err = response.data.message;
 
-        swal.fire({
-          title: "Error",
-          text: err,
-          icon: "error",
-          dangerMode: true
-        });
-      }
+  //       swal.fire({
+  //         title: "Error",
+  //         text: err,
+  //         icon: "error",
+  //         dangerMode: true
+  //       });
+  //     }
 
-      } catch (error) {
-          setshowloader(false);
-          setEditVisionOpen(false);
+  //     } catch (error) {
+  //         setshowloader(false);
+  //         setEditVisionOpen(false);
 
-          let err = error.response.data.message;
-          swal.fire({
-            title: "Error",
-            text: err,
-            icon: "error",
-            dangerMode: true
-          });
-      }
+  //         let err = error.response.data.message;
+  //         swal.fire({
+  //           title: "Error",
+  //           text: err,
+  //           icon: "error",
+  //           dangerMode: true
+  //         });
+  //     }
 
-    } else {  
-      try {
+  //   } else {  
+  //     try {
 
-          const body = JSON.stringify({
-            userid : user_id,
-            updatedBy : user_id,
-            description : uservision,
-            id : visionId
-          });
+  //         const body = JSON.stringify({
+  //           userid : user_id,
+  //           updatedBy : user_id,
+  //           description : uservision,
+  //           id : visionId
+  //         });
 
-          let response = await axios.post('vision/update', body, config)
-          console.log("vision resp", response.data)
-          if (response.status == 200) {
-            setshowloader(false);
-            setEditVisionOpen(false);
+  //         let response = await axios.post('vision/update', body, config)
+  //         console.log("vision resp", response.data)
+  //         if (response.status == 200) {
+  //           setshowloader(false);
+  //           setEditVisionOpen(false);
 
-            let resp = response.data.message;
-              swal.fire({
-                title: "Success",
-                text: resp,
-                icon: "success",
-              }).then(() => dispatch(getVision(currentUser.id)));
+  //           let resp = response.data.message;
+  //             swal.fire({
+  //               title: "Success",
+  //               text: resp,
+  //               icon: "success",
+  //             }).then(() => dispatch(getVision(currentUser.id)));
 
-          } else {
-            setshowloader(false);
-            setEditVisionOpen(false);
+  //         } else {
+  //           setshowloader(false);
+  //           setEditVisionOpen(false);
 
-            let err = response.data.message;
+  //           let err = response.data.message;
 
-            swal.fire({
-              title: "Error",
-              text: err,
-              icon: "error",
-              dangerMode: true
-            });
-          }
+  //           swal.fire({
+  //             title: "Error",
+  //             text: err,
+  //             icon: "error",
+  //             dangerMode: true
+  //           });
+  //         }
 
-      } catch (error) {
-          setshowloader(false);
-          setEditVisionOpen(false);
+  //     } catch (error) {
+  //         setshowloader(false);
+  //         setEditVisionOpen(false);
 
-          let err = error.response.data.message;
-          swal.fire({
-            title: "Error",
-            text: err,
-            icon: "error",
-            dangerMode: true
-          });
-      }
+  //         let err = error.response.data.message;
+  //         swal.fire({
+  //           title: "Error",
+  //           text: err,
+  //           icon: "error",
+  //           dangerMode: true
+  //         });
+  //     }
 
-    }
-  }  
+  //   }
+  // }  
 
 
   // const handleEditClickOpen = () => {
@@ -992,11 +992,10 @@ function Dashboard() {
 
         <Card className={classes.cardGrey} style={{margin: '0px'}}>
           <CardBody >
-            <IconButton  style={{float: 'right'}} aria-label="edit" color="primary" onClick={() => { handleEditVisionClickOpen(); setEditingVision(vision) }} ><EditIcon style={{ color : '#000000'}}/></IconButton>
-            {vision === undefined || vision === null || vision.length === 0 ? (
-              <h4> </h4>
-            ) : vision ? (
-              <h4 > {vision[0].description}</h4>
+            {strategic_intent1 === undefined || strategic_intent1 === null || strategic_intent1.length === 0 ? (
+            <h4>Not available.</h4>
+            ) : strategic_intent1 ? (
+            <h4 > {strategic_intent1[0].level_up_one}</h4>
             ) : null}
           </CardBody>
 
@@ -1008,11 +1007,10 @@ function Dashboard() {
         <h3 className={classes.textBold}> PERSONAL MISSION </h3>
           <Card className={classes.cardGrey} style={{margin: '0px'}}>
             <CardBody>
-              <IconButton style={{float: 'right'}} aria-label="edit" color="primary" onClick={() => { handleEditMissionClickOpen(); setEditingMission(mission) }} ><EditIcon style={{ color : '#000000'}}/></IconButton>
-              { mission === undefined || mission === null|| mission.length === 0 ? (
-                <h4>Please update your mission</h4>
-              ) : mission ? (
-                <h4>{mission[0].description}</h4>
+              {strategic_intent1 === undefined || strategic_intent1 === null || strategic_intent1.length === 0 ? (
+              <h4>Not available.</h4>
+              ) : strategic_intent1 ? (
+              <h4 > {strategic_intent1[0].strategic_intent}</h4>
               ) : null}
             </CardBody>
           </Card>
@@ -1323,7 +1321,7 @@ function Dashboard() {
         </Dialog>
 
         {/* edit Mission */}
-        <Dialog open={editopenmission} onClose={handleEditMissionClose} disableEnforceFocus>
+        {/* <Dialog open={editopenmission} onClose={handleEditMissionClose} disableEnforceFocus>
           <DialogTitle>Personal Mission</DialogTitle>
           <DialogContent>
             <DialogContentText>
@@ -1362,10 +1360,10 @@ function Dashboard() {
               )}
 
           </DialogActions>
-        </Dialog>
+        </Dialog> */}
 
         {/* edit Vision */}
-        <Dialog open={editopenvision} onClose={handleEditVisionClose} >
+        {/* <Dialog open={editopenvision} onClose={handleEditVisionClose} >
           <DialogTitle>Vision</DialogTitle>
           <DialogContent>
             <DialogContentText>
@@ -1406,7 +1404,7 @@ function Dashboard() {
                 <Button color="primary" onClick={(e) => { editVision(e); }}>Save</Button>
               )}
           </DialogActions>
-        </Dialog>
+        </Dialog> */}
 
         {/* edit Strategic Level 1 */}
         {/* <Dialog open={editopensil1} onClose={handleEditSIL1Close} >
@@ -1545,9 +1543,9 @@ function Dashboard() {
                       <GridItem container justify="flex-end"  >
 
                         <Card>
-                          <GridItem container justify="flex-end">
+                          {/* <GridItem container justify="flex-end">
                             <Button color="primary" onClick={handleAddClickOpen}> Create New KPI</Button>
-                          </GridItem>
+                          </GridItem> */}
 
                           <CardBody>
                             <Table>

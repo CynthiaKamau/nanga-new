@@ -264,10 +264,10 @@ export default function UserDashboard() {
 
         <Card className={classes.cardGrey} style={{margin: '0px'}}>
           <CardBody >
-            {vision === undefined || vision === null || vision.length === 0 ? (
-              <h4> No vision found. </h4>
-            ) : vision ? (
-              <h4 > {vision[0].description}</h4>
+          {strategic_intent1 === undefined || strategic_intent1 === null || strategic_intent1.length === 0 ? (
+            <h4>Not available.</h4>
+            ) : strategic_intent1 ? (
+            <h4 > {strategic_intent1[0].level_up_one}</h4>
             ) : null}
           </CardBody>
 
@@ -278,10 +278,10 @@ export default function UserDashboard() {
         <h3 className={classes.textBold}> PERSONAL MISSION </h3>
           <Card className={classes.cardGrey} style={{margin: '0px'}}>
             <CardBody>
-              { mission === undefined || mission === null|| mission.length === 0 ? (
-                <h4>Please update your mission</h4>
-              ) : mission ? (
-                <h4>{mission[0].description}</h4>
+            {strategic_intent1 === undefined || strategic_intent1 === null || strategic_intent1.length === 0 ? (
+              <h4>Not available.</h4>
+              ) : strategic_intent1 ? (
+              <h4 > {strategic_intent1[0].strategic_intent}</h4>
               ) : null}
             </CardBody>
           </Card>
