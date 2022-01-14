@@ -106,8 +106,12 @@ export default function LoginPage() {
             });
         } else if(isAuthenticated  === true) {
             setshowloader(false);
-            console.log(user)
-            history.push(`/admin/dashboard`);
+            console.log("login user", user)
+            if(user.role_id == 0) {
+                history.push(`/admin/dashboard`);
+            } else {
+                history.push(`/user/dashboard`);
+            }
         }
 
     }

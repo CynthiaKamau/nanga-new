@@ -25,6 +25,8 @@ export default function MyTeamPage() {
     const dispatch = useDispatch();
 
     const { items } = useSelector(state => state.user)
+    const { user : currentUser } = useSelector(state => state.auth);
+
 
     useEffect(() => {
         dispatch(getUsers())
@@ -34,8 +36,11 @@ export default function MyTeamPage() {
     // const { error } = useSelector(state => state.team);
 
     const handleClickOpen = (user) => {
-
-        history.push(`/admin/user-dashboard/id=${user}`);
+        if(currentUser.role_id === 0) {
+            history.push(`/admin/user-dashboard/id=${user}`);
+        } else {
+            history.push(`/user/user-dashboard/id=${user}`);
+        }
     }
 
     const columns = [

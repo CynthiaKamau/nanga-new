@@ -173,7 +173,7 @@ function Dashboard() {
       data: kpi_count
     }],
     tooltip: {
-      pointFormat: '{name}: <br>{point.percentage:.1f} %<br>Total: {point.y}'
+      pointFormat: '{name}: <br>{point.percentage:.1f} %, Total: {point.y}'
     },
     plotOptions: {
       pie: {
@@ -181,7 +181,7 @@ function Dashboard() {
           cursor: 'pointer',
           dataLabels: {
               enabled: true,
-              format: '<b>{point.name}</b>:<br>{point.percentage:.1f} %<br>Total: {point.y}',
+              format: '<b>{point.name}</b>:<br>{point.percentage:.1f} %, Total: {point.y}',
           }
       }
     },
@@ -201,7 +201,7 @@ function Dashboard() {
       data: objective_count
     }],
     tooltip: {
-      pointFormat: '{name}: <br>{point.percentage:.1f} %<br>Total: {point.y}'
+      pointFormat: '{name}: <br>{point.percentage:.1f} %, Total: {point.y}'
 
     },
     plotOptions: {
@@ -210,7 +210,7 @@ function Dashboard() {
           cursor: 'pointer',
           dataLabels: {
               enabled: true,
-              format: '<b>{point.name}</b>:<br>{point.percentage:.1f} %<br>Total: {point.y}',
+              format: '<b>{point.name}</b>:<br>{point.percentage:.1f} %, Total: {point.y}',
               style: {
                   color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
               }
@@ -234,7 +234,7 @@ function Dashboard() {
       data: task_count
     }],
     tooltip: {
-      pointFormat: '{point.name}: <br>{point.percentage:.1f} %<br>Total: {point.y}'
+      pointFormat: '{point.name}: <br>{point.percentage:.1f} %, Total: {point.y}'
 
     },
     plotOptions: {
@@ -243,7 +243,7 @@ function Dashboard() {
           cursor: 'pointer',
           dataLabels: {
               enabled: true,
-              format: '<b>{point.name}</b>:<br>{point.percentage:.1f} %<br>Total: {point.y}',
+              format: '<b>{point.name}</b>:<br>{point.percentage:.1f} %, Total: {point.y}',
               style: {
                   color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
               }
@@ -299,9 +299,9 @@ function Dashboard() {
   console.log("obj count", objective_count)
 
 
-  const handleAddClickOpen = () => {
-    setAddOpen(true);
-  };
+  // const handleAddClickOpen = () => {
+  //   setAddOpen(true);
+  // };
 
   const handleAddClose = () => {
     setAddOpen(false);
@@ -971,15 +971,27 @@ function Dashboard() {
   }
 
   const kpiRouteChange = () => {
-    history.push('/admin/kpis')
+    if(currentUser.role_id === 0) {
+      history.push('/admin/kpis')
+    } else {
+      history.push('/user/kpis')
+    }
   }
 
   const bfcRouteChange = () => {
-    history.push('/admin/bfc')
+    if(currentUser.role_id === 0) {
+      history.push('/admin/kpis')
+    } else {
+      history.push('/user/bfc')
+    }
   }
 
   const objectivesRouteChange = () => {
-    history.push('/admin/strategic-objectives')
+    if(currentUser.role_id === 0) {
+      history.push('/admin/strategic-objectives')
+    } else {
+      history.push('/user/strategic-objectives')
+    }
   }
 
   return (
@@ -988,7 +1000,7 @@ function Dashboard() {
       <GridContainer >
 
       <Grid container spacing={2} style={{marginRight : '10px', marginLeft : '10px'}}>
-        <h3 className={classes.textBold}> THE VISION</h3>
+        <h3 className={classes.textBold}> MISSION: ONE LEVEL UP</h3>
 
         <Card className={classes.cardGrey} style={{margin: '0px'}}>
           <CardBody >
@@ -1940,8 +1952,8 @@ function Dashboard() {
 
             <Card style={{ textAlign: 'center' }}>
               <GridItem >
-                <h2> You have not set any KPIS </h2>
-                <IconButton> <AddCircleOutlineIcon className={classes.iconAdd} onClick={handleAddClickOpen} /> </IconButton>
+                {/* <h2> You have not set any KPIS </h2> */}
+                <IconButton> <AddCircleOutlineIcon className={classes.iconAdd} onClick={bfcRouteChange} /> </IconButton>
                 <h4>Click here to start</h4>
               </GridItem>
             </Card>
@@ -1995,5 +2007,3 @@ function a11yProps(index) {
 //     width: 500,
 //   },
 // }));
-
-

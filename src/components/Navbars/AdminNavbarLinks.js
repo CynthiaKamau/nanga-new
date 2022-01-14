@@ -55,7 +55,11 @@ export default function HeaderLinks(props) {
   }
 
   const handleClickProf = () => {
-    history.push('/admin/user-profile')
+    if(currentUser.role_id == 0) {
+      history.push('/admin/user-profile')
+    } else {
+      history.push('/user/user-profile')
+    }
   }
 
   const [openProfile, setOpenProfile] = React.useState(null);

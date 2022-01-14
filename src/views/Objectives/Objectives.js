@@ -28,7 +28,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import { Grid } from "@material-ui/core";
 import Button from "components/CustomButtons/Button.js";
-import DateFnsUtils from '@date-io/date-fns';
+import DateFnsUtils from '@date-io/date-fns'
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import { DeleteForever } from "@material-ui/icons";
 import EditIcon from '@material-ui/icons/Edit';
@@ -42,6 +42,8 @@ import styles1 from "assets/jss/material-dashboard-pro-react/views/extendedForms
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
+// import { format } from 'date-fns';
+
 // import { Checkbox, ListItemIcon, ListItemText } from "@material-ui/core";
 // import Avatar from "../../assets/img/default-avatar.png";
 
@@ -60,10 +62,10 @@ export default function StrategicObjectives() {
     const { statuses, pillars } = useSelector(state => state.data);
     const { sys_resources} = useSelector(state => state.user)
 
-    function convertUTCDateToLocalDate(date) {
-        var newDate = new Date(date.getTime() - date.getTimezoneOffset()*60*1000);
-        return newDate;   
-    }
+    // function convertUTCDateToLocalDate(date) {
+    //     var newDate = new Date(date.getTime() - date.getTimezoneOffset()*60*1000);
+    //     return newDate;   
+    // }
 
     useEffect(() => {
         dispatch(getUserObjectives(currentUser.id));
@@ -98,16 +100,16 @@ export default function StrategicObjectives() {
     const [description, setDescription] = useState("");
     const [kpi_unit_of_measure, setKpiUom] = useState("");
 
-    const [start_date, setStartDate] = useState("");
-    const [end_date, setEndDate] = useState("");
+
     const [kpi_id, setKpiId] = useState([]);
     const [target, setTarget] = useState("");
     const [target_achieved_on_review, setTargetAtReview] = useState("");
     // const [target_achieved, setTargetAchieved] = useState("");
     const [user_id, setUserId] = useState(currentUser.id);
+    const [year, setYear] = useState("");
     const [task_description, setTaskDescription] = useState("");
-    const [task_start_date, setTaskStartDate] = useState("");
-    const [task_end_date, setTaskEndDate] = useState("");
+    const [task_start_date, setTaskStartDate] = useState(new Date());
+    const [task_end_date, setTaskEndDate] = useState(new Date());
     const [addopentask, setAddOpenTask] = useState("");
     const [created_by, setCreatedBy] = useState("");
     const [editopen, setEditOpen] = useState(false);
@@ -140,21 +142,16 @@ export default function StrategicObjectives() {
         setAddOpen(false);
         
         console.log("kpi uom", kpi_unit_of_measure)
-        console.log("start date", start_date)
-        console.log("end_date", end_date )
     
-        let end_date = moment(end_date).format('YYYY-MM-DD');
-        let start_date = moment(start_date).format('YYYY-MM-DD');
-    
-        console.log("save objective", description, end_date, kpi_id, start_date, target, user_id, created_by, pillar_id);
+        console.log("save objective", description, kpi_id, target, user_id, created_by, pillar_id);
     
         const config = { headers: { 'Content-Type': 'application/json' } }
     
-        let body = ({description,
-            end_date: end_date,
+        let body = ({
+            description : description,
+            year: year,
             kpi_ids : kpi_id,
-            start_date : start_date,
-            target : target,
+            target :  0,
             user_id : user_id,
             created_by : created_by,
             pillar_id : pillar_id
@@ -181,10 +178,7 @@ export default function StrategicObjectives() {
               setAddOpenTask(false);
     
               console.log("objective id", response.data.data.id)
-    
-              let task_end_date = moment(task_end_date).format('YYYY-MM-DD');
-              let task_start_date = moment(task_start_date).format('YYYY-MM-DD');
-    
+
               let task = {
                 description: task_description,
                 start_date: task_start_date,
@@ -237,11 +231,11 @@ export default function StrategicObjectives() {
                         setTaskDescription("")
                         setTaskStartDate("")
                         setTaskEndDate("")
-                        setEndDate("")
-                        setStartDate("")
+                        setYear("")
                         setKpiId([])
                         setTarget("")
                         setPillar("")
+                        setDescription("")
                         dispatch(getUserObjectives(currentUser.id))
                     });
                     
@@ -308,7 +302,7 @@ export default function StrategicObjectives() {
 
     const setEditing = (list) => {
 
-        console.log("kpi", list)
+        console.log("objective", list)
 
         setDescription(list.description);
 
@@ -333,13 +327,13 @@ export default function StrategicObjectives() {
         setId(list.id);
         setTarget(list.target);
         setTargetAtReview(list.target_achieved_on_review);
-        setStartDate(list.start_date);
-        setEndDate(list.end_date)
+        setYear(list.year)
         setPillar(list.pillar_id)
         setSupportRequired(list.supportRequired);
         setAction(list.action);
         setRootCause(list.rootCause)
         setRiskAndOpportunity(list.riskOrOpportunity)
+        setUpdatedBy(list.user.id)
         if(list.overallStatus !== null){
             setObjStatus(list.overallStatus);
             // setObjStatus((list.overallStatus).toUpperCase());
@@ -355,10 +349,7 @@ export default function StrategicObjectives() {
         setUserId(currentUser.id);
         setId();
 
-        let end_date = moment(end_date).format('YYYY-MM-DD');
-        let start_date = moment(start_date).format('YYYY-MM-DD');
-
-        console.log("save objective", id, description, end_date, kpi_id, start_date, user_id, obj_status, target_achieved_on_review, pillar_id, root_cause, action, support_required, risk_and_opportunity, setUpdatedBy())
+        console.log("save objective", id, description, kpi_id, user_id, obj_status, target_achieved_on_review, pillar_id, root_cause, action, support_required, risk_and_opportunity, setUpdatedBy())
 
         const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
         const body = JSON.stringify({ 
@@ -366,8 +357,7 @@ export default function StrategicObjectives() {
             description : description,
             kpi_ids : kpi_id,
             user_id : user_id,
-            start_date : start_date,
-            end_date : end_date,
+            year : year,
             // target : target,
             // target_achieved : target_achieved,
             pillar_id : pillar_id,
@@ -390,7 +380,15 @@ export default function StrategicObjectives() {
                     title: "Success",
                     text: item,
                     icon: "success",
-                }).then(() => dispatch(getUserObjectives(currentUser.id)));
+                }).then(() => {
+                    setAssigneeId([]);
+                    setYear("")
+                    setKpiId([])
+                    setTarget("")
+                    setPillar("")
+                    setDescription("")
+                    dispatch(getUserObjectives(currentUser.id))
+                })
 
             } else {
                 setshowloader(false);
@@ -443,9 +441,8 @@ export default function StrategicObjectives() {
         setshowloader(true);
 
         const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
-    
-        let task_end_date = moment(task_end_date).format('YYYY-MM-DD');
-        let task_start_date = moment(task_start_date).format('YYYY-MM-DD');
+
+        console.log("raw data", task_start_date, task_end_date)
 
         let task = {
         description: task_description,
@@ -501,7 +498,9 @@ export default function StrategicObjectives() {
                     setTaskDescription("")
                     setAssigneeId([])
                     setObjectiveId("")
-                    setShowObjectivesTask(objectiveId)})
+                    setShowObjectivesTask(objectiveId)
+                    dispatch(getUserObjectives(currentUser.id));
+                })
                 
               } else {
         
@@ -549,6 +548,7 @@ export default function StrategicObjectives() {
         setUserId(list.user_id);
         setId(list.id);
         setObjectiveId(list.objective_id)
+        setUpdatedBy(list.user_id)
 
         console.log("assignee here", list.assignedTasks)
 
@@ -569,8 +569,10 @@ export default function StrategicObjectives() {
         e.preventDefault();
         setshowloader(true);
 
-        let task_end_date = convertUTCDateToLocalDate(task_end_date).toISOString();
-        let task_start_date = convertUTCDateToLocalDate(task_start_date).toISOString();
+        // let task_start_date = moment.tz(task_start_date, 'yyyy-MM-dd HH:mm:ss', 'UTC+03:00').format() // "2018-07-17T19:00:00Z"
+        // let task_end_date = moment.tz(task_end_date, 'yyyy-MM-dd HH:mm:ss', 'UTC+03:00').format() // "2018-07-17T19:00:00Z"
+
+        console.log("new date", task_start_date, task_end_date)
 
         console.log("edit values",  task_description, task_end_date, task_start_date, task_objective_id, user_id, created_by, updated_by, id, task_status, setUpdatedBy)
 
@@ -628,7 +630,15 @@ export default function StrategicObjectives() {
                         text: "Task updated successfully!",
                         icon: "success",
                         dangerMode: false
-                      }).then(() => {setShowObjectivesTask(objectiveId)})
+                      }).then(() => {
+                        setTaskStartDate("")
+                        setTaskEndDate("")
+                        setTaskDescription("")
+                        setAssigneeId([])
+                        setObjectiveId("")
+                        setShowObjectivesTask(objectiveId)
+                        dispatch(getUserObjectives(created_by));
+                    })
                       
                     } else {
               
@@ -918,6 +928,7 @@ export default function StrategicObjectives() {
                                             <TableCell>Management Action</TableCell>
                                             <TableCell>Start Date</TableCell>
                                             <TableCell>Due Date</TableCell>
+                                            <TableCell>Status</TableCell>
                                             <TableCell>Resources</TableCell>
                                             <TableCell>Action</TableCell>
                                         </TableRow>
@@ -927,8 +938,9 @@ export default function StrategicObjectives() {
                                         : (obj_tasks.map((list, index) => (
                                             <TableRow key={index}>
                                                 <TableCell>{list.description}</TableCell>
-                                                <TableCell>{moment(list.start_date).format('YYYY-MM-DD')}</TableCell>
-                                                <TableCell>{moment(list.end_date).format('YYYY-MM-DD')}</TableCell>
+                                                <TableCell>{moment(list.start_date).format('DD-MM-YYYY')}</TableCell>
+                                                <TableCell>{moment(list.end_date).format('DD-MM-YYYY')}</TableCell>
+                                                <TableCell>{list.status}</TableCell>
                                                 <TableCell>
                                                     {list.assignedTasks.map((detail, index) => (
                                                         <div key={index} style={{ display: 'inline' }}>
@@ -1064,63 +1076,19 @@ export default function StrategicObjectives() {
                         </Grid>
                     </Grid>
 
-                    <Grid item xs={6} lg={6} xl={6} sm={12}>
-                        <TextField
-                        autoFocus
-                        margin="dense"
-                        id="target"
-                        label="Target"
-                        className={classes.textInput}
-                        type="number"
+                    <TextField
+                        label="Year"
                         fullWidth
-                        style={{ marginBottom: '15px' }}
-                        value={target}
+                        id="year"
                         variant="outlined"
+                        className={classes.textInput}
+                        type="text"
+                        value={year}
                         onChange={(event) => {
-                            setTarget(event.target.value);
+                            const value = event.target.value;
+                            setYear(value)
                         }}
-                        />
-                    </Grid>
-
-                    <Grid container spacing={2}>
-                        <Grid item xs={6} lg={6} xl={6} sm={12}>
-                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                            <KeyboardDatePicker
-                                margin="normal"
-                                id="date-picker-dialog"
-                                helperText="Set start date"
-                                format="yyyy/MM/dd"
-                                fullWidth
-                                inputVariant="outlined"
-                                value={start_date}
-                                onChange={setStartDate}
-                                KeyboardButtonProps={{
-                                    'aria-label': 'change date',
-                                }}
-                            />
-                            </MuiPickersUtilsProvider>
-
-                        </Grid>
-
-                        <Grid item xs={6} lg={6} xl={6} sm={12}>
-                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                            <KeyboardDatePicker
-                                margin="normal"
-                                id="date-picker-dialog"
-                                helperText="Set end date"
-                                format="yyyy/MM/dd"
-                                fullWidth
-                                inputVariant="outlined"
-                                value={end_date}
-                                onChange={setEndDate}
-                                KeyboardButtonProps={{
-                                    'aria-label': 'change date',
-                                }}
-                            />
-                            </MuiPickersUtilsProvider>
-                            
-                        </Grid>
-                    </Grid>
+                    />
 
                 </DialogContent>
                 <DialogActions>
@@ -1217,14 +1185,12 @@ export default function StrategicObjectives() {
                         <Grid item xs={6} lg={6} xl={6} sm={12}>
                             <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                 <KeyboardDatePicker
-                                    // format={DateFormatEnum.DayMonthYearPtBr}
                                     margin="normal"
-                                    id="date-picker-dialog"
+                                    id="date-picker-ddialog"
                                     helperText="Set start date"
-                                    format="yyyy/MM/dd"
+                                    format="yyyy-MM-dd"
                                     fullWidth
                                     inputVariant="outlined"
-                                    // value={parseISO(task_start_date)}
                                     value={task_start_date}
                                     onChange={setTaskStartDate}
                                     KeyboardButtonProps={{
@@ -1239,9 +1205,9 @@ export default function StrategicObjectives() {
                             <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                 <KeyboardDatePicker
                                     margin="normal"
-                                    id="date-picker-dialog"
+                                    id="date-picker-ddialog"
                                     helperText="Set end date"
-                                    format="yyyy/MM/dd"
+                                    format="yyyy-MM-dd"
                                     fullWidth
                                     inputVariant="outlined"
                                     value={task_end_date}
@@ -1340,9 +1306,9 @@ export default function StrategicObjectives() {
                             <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                 <KeyboardDatePicker
                                     margin="normal"
-                                    id="date-picker-dialog"
+                                    id="date-picker-ddialog"
                                     helperText="Set start date"
-                                    format="yyyy/MM/dd"
+                                    format="yyyy-MM-dd"
                                     fullWidth
                                     inputVariant="outlined"
                                     value={task_start_date}
@@ -1358,9 +1324,9 @@ export default function StrategicObjectives() {
                             <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                 <KeyboardDatePicker
                                     margin="normal"
-                                    id="date-picker-dialog"
+                                    id="date-picker-ddialog"
                                     helperText="Set end date"
-                                    format="yyyy/MM/dd"
+                                    format="yyyy-MM-dd"
                                     fullWidth
                                     inputVariant="outlined"
                                     value={task_end_date}
@@ -1559,43 +1525,19 @@ export default function StrategicObjectives() {
                         ))}
                     </TextField>
 
-                    <Grid container spacing={2}>
-                        <Grid item xs={6} lg={6} xl={6} sm={12}>
-                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                            <KeyboardDatePicker
-                                margin="normal"
-                                id="date-picker-dialog"
-                                helperText="Set start date"
-                                format="yyyy/MM/dd"
-                                fullWidth
-                                inputVariant="outlined"
-                                value={start_date}
-                                onChange={setStartDate}
-                                KeyboardButtonProps={{
-                                    'aria-label': 'change date',
-                                }}
-                            />
-                            </MuiPickersUtilsProvider>
-                        </Grid>
-
-                        <Grid item xs={6} lg={6} xl={6} sm={12}>
-                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                            <KeyboardDatePicker
-                                margin="normal"
-                                id="date-picker-dialog"
-                                helperText="Set end date"
-                                format="yyyy/MM/dd"
-                                fullWidth
-                                inputVariant="outlined"
-                                value={end_date}
-                                onChange={setEndDate}
-                                KeyboardButtonProps={{
-                                    'aria-label': 'change date',
-                                }}
-                            />
-                            </MuiPickersUtilsProvider>
-                        </Grid>
-                    </Grid>
+                    <TextField
+                        label="Year"
+                        fullWidth
+                        id="year"
+                        variant="outlined"
+                        className={classes.textInput}
+                        type="text"
+                        value={year}
+                        onChange={(event) => {
+                            const value = event.target.value;
+                            setYear(value)
+                        }}
+                    />
 
                 </DialogContent>
                 <DialogActions>
@@ -1669,9 +1611,9 @@ export default function StrategicObjectives() {
                             <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                 <KeyboardDatePicker
                                     margin="normal"
-                                    id="date-picker-dialog"
+                                    id="date-picker-ddialog"
                                     helperText="Set start date"
-                                    format="yyyy/MM/dd"
+                                    format="yyyy-MM-dd"
                                     fullWidth
                                     inputVariant="outlined"
                                     value={task_start_date}
@@ -1687,9 +1629,9 @@ export default function StrategicObjectives() {
                             <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                 <KeyboardDatePicker
                                     margin="normal"
-                                    id="date-picker-dialog"
+                                    id="date-picker-ddialog"
                                     helperText="Set due date"
-                                    format="yyyy/MM/dd"
+                                    format="yyyy-MM-dd"
                                     fullWidth
                                     inputVariant="outlined"
                                     value={task_end_date}
@@ -1731,11 +1673,11 @@ export default function StrategicObjectives() {
 
             {/* Delete Objective */}
             <Dialog open={deleteopen} onClose={handleDeleteClose}>
-                <DialogTitle id="alert-dialog-title">
+                <DialogTitle id="alert-ddialog-title">
                 {"Are you sure you want to delete this Objective?"}
                 </DialogTitle>
                 <DialogContent>
-                <DialogContentText id="alert-dialog-description">
+                <DialogContentText id="alert-ddialog-ddescription">
                     Please confirm that you want to delete this Objective.
                 </DialogContentText>
                 </DialogContent>
@@ -1759,11 +1701,11 @@ export default function StrategicObjectives() {
 
             {/* Delete Individual Task */}
             <Dialog open={deletetaskopen} onClose={handleDeleteTaskClose}>
-                <DialogTitle id="alert-dialog-title">
+                <DialogTitle id="alert-ddialog-title">
                 {"Are you sure you want to delete this Task?"}
                 </DialogTitle>
                 <DialogContent>
-                <DialogContentText id="alert-dialog-description">
+                <DialogContentText id="alert-ddialog-ddescription">
                     Please confirm that you want to delete this Task.
                 </DialogContentText>
                 </DialogContent>

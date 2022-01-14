@@ -26,9 +26,6 @@ import Loader from "react-loader-spinner";
 import { getUserObjectives, getOMonthlyActions } from "actions/objectives";
 import { getCategories, getPillars } from "actions/data";
 import { getKpis } from "actions/kpis";
-import DateFnsUtils from '@date-io/date-fns';
-import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
-import moment from "moment";
 import { Grid } from "@material-ui/core";
 import axios from "axios";
 import FiberManualRecord from "@material-ui/icons/FiberManualRecord";
@@ -51,11 +48,11 @@ export default function ObjectiveReport() {
     const dispatch = useDispatch();
 
     const { items, item, monthly_data, monthly_data_error } = useSelector(state => state.objective);
-    const {  categories, pillars } = useSelector(state => state.data);
+    const { pillars } = useSelector(state => state.data);
     const { user: currentUser } = useSelector(state => state.auth);
     const {  items : kpis } = useSelector(state => state.kpi);
 
-    console.log("objective",item)
+    console.log("objective",item, setCreatedBy)
     console.log("monthly obj", monthly_data, monthly_data_error)
 
     const [monthlyaction, setMonthlyAction ] = useState("");
@@ -85,19 +82,15 @@ export default function ObjectiveReport() {
         }
     }, []);
 
-    const [addopen, setAddOpen] = useState(false);
     const [editopen, setEditOpen] = useState(false);
     const [description, setDescription] = useState("");
-    const [uom, setUnitOfMeasure] = useState("");
-    const [category, setCategory] = useState("");
     const [target, setTarget] = useState("");
     const [target_achieved_on_review, setTargetAtReview] = useState("");
     const [showloader, setshowloader] = useState(false);  
     const [id, setId] = useState("");
     const [created_by, setCreatedBy] = useState(currentUser.id);
     const [updated_by, setUpdatedBy] = useState(currentUser.id);
-    const [start_date, setStartDate] = useState("");
-    const [end_date, setEndDate] = useState("");
+    const [year, setYear] = useState("");
     const [kpi_id, setKpiId] = useState("");
     const [user_id, setUserId] = useState(currentUser.id);
     const [target_achieved, setTargetAchieved] = useState("");
@@ -105,55 +98,8 @@ export default function ObjectiveReport() {
     const [action, setAction] = useState("");
     const [support_required, setSupportRequired] = useState("");
     const [risk_and_opportunity, setRiskAndOpportunity] = useState(""); 
-    const [pillar_id, setPillarId] = useState("");
+    const [pillar_id, setPillarId] = useState("")
 
-    // const handleAddClickOpen = () => {
-    //     setAddOpen(true);
-    // };
-
-    const saveKpi = async (e) => {
-        e.preventDefault();
-        setshowloader(true);
-        
-        const config = { headers: { 'Content-Type': 'application/json' } }
-
-        console.log(setCreatedBy)
-
-        const body = JSON.stringify({ user_id, target, start_date, kpi_id, end_date, description, created_by });
-
-        try {
-
-            let response = await axios.post('/objectives/create', body, config)
-            if (response.status == 201) {
-                setshowloader(false);
-                let item = response.data.message
-                swal.fire({
-                    title: "Success",
-                    text: item,
-                    icon: "success",
-                });
-            } else {
-                let error = response.data.message
-                    setshowloader(false);
-                    swal.fire({
-                        title: "Error",
-                        text: error,
-                        icon: "error",
-                        dangerMode: true
-                    });
-            }
-        } catch (error) {
-            let err = error.response.data.message
-            setshowloader(false);
-            swal.fire({
-                title: "Error",
-                text: err,
-                icon: "error",
-                dangerMode: true
-            });
-        }
-    
-      }
 
     const handleEditClickOpen = () => {
         setEditOpen(true);
@@ -181,22 +127,20 @@ export default function ObjectiveReport() {
         setTarget(list.target);
         setTargetAchieved(list.target_achieved);
         setTargetAtReview(list.target_achieved_on_review);
-        setStartDate(list.start_date);
-        setEndDate(list.end_date)
+        setYear(list.year);
         setTargetAchieved(list.target_achieved);
         setSupportRequired(list.supportRequired);
         setAction(list.action);
         setRootCause(list.rootCause)
         setRiskAndOpportunity(list.riskOrOpportunity)
+        setUpdatedBy(list.user.id)
     }
 
     const saveEdited = async (e) => {
         e.preventDefault();
         setshowloader(true);
-        let end_date = moment(end_date).format('YYYY-MM-DD');
-        let start_date = moment(start_date).format('YYYY-MM-DD');
 
-        console.log("edit values", id, description, kpi_id, user_id, pillar_id, start_date, end_date,  target, target_achieved, root_cause, risk_and_opportunity, action, support_required, created_by, updated_by, setUpdatedBy(), setUserId, setPillarId)
+        console.log("edit values", id, description, kpi_id, user_id, pillar_id, target, target_achieved, root_cause, risk_and_opportunity, action, support_required, created_by, updated_by, target_achieved_on_review, setUpdatedBy(), setUserId, setPillarId)
 
         const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
         const body = JSON.stringify({
@@ -205,8 +149,7 @@ export default function ObjectiveReport() {
             kpi_ids : kpi_id,
             user_id : user_id,
             pillar_id : pillar_id,
-            start_date : start_date,
-            end_date : end_date, 
+            year : year,
             target : target,
             target_achieved : target_achieved,
             root_cause : root_cause,
@@ -227,7 +170,21 @@ export default function ObjectiveReport() {
                         title: "Success",
                         text: item,
                         icon: "success",
-                    }).then(() => dispatch(getUserObjectives(currentUser.id)));
+                    }).then(() => {
+                            setDescription("")
+                            setKpiId([])
+                            setId("")
+                            setPillarId("")
+                            setYear("")
+                            setTarget("")
+                            setTargetAchieved("")
+                            setRootCause("")
+                            setRiskAndOpportunity("")
+                            setAction("")
+                            setSupportRequired("")
+                            dispatch(getUserObjectives(currentUser.id))
+                        }
+                    );
 
             } else {
                 let error = response.data.message
@@ -254,64 +211,10 @@ export default function ObjectiveReport() {
     
     }
 
-    // const handleDeleteClickOpen = () => {
-    //     setDeleteOpen(true);
-    // };
-
-    // const setDelete = (list) => {
-    //     console.log(list)
-    // }
-
-    const handleAddClose = () => {
-        setAddOpen(false);
-    };
 
     const handleEditClose = () => {
         setEditOpen(false);
     };
-
-    // const handleDeleteClose = () => {
-    //     setDeleteOpen(false);
-    // };
-
-    const uoms = [
-        {
-          value: '%',
-          label: '%',
-        },
-        {
-        value: '<%',
-        label: '<%',
-        },
-        {
-        value: '%>',
-        label: '%>',
-        },
-        {
-          value: 'numeric',
-          label: 'numeric',
-        },
-        {
-          value: 'KES',
-          label: 'KES',
-        },
-        {
-            value: 'TSH',
-            label: 'TSH',
-        },
-        {
-            value: 'UGX',
-            label: 'UGX',
-        },
-        {
-            value: 'RWF',
-            label: 'RWF',
-        },
-        {
-            value: 'USD',
-            label: 'USD',
-        }
-    ]
 
     const columns = [
         {
@@ -570,136 +473,11 @@ export default function ObjectiveReport() {
                     <Button color="primary" size="lg" onClick={(e) => { saveMonthlyUpdate(e)}}> Save </Button> 
                 </Grid>
 
-                <Dialog open={addopen} onClose={handleAddClose}>
-                    <DialogTitle>KPI</DialogTitle>
-                    <DialogContent>
-                    <DialogContentText>
-                        Create New KPI 
-                    </DialogContentText>
-                        <TextField
-                            autoFocus
-                            margin="dense"
-                            id="kpi"
-                            label="KPI"
-                            type="text"
-                            fullWidth
-                            style={{marginBottom : '15px'}}
-                            value={description}
-                            variant="outlined"
-                            onChange = {(event) => {
-                                setDescription(event.target.value);
-                            }}
-                        />
-
-                        <label style={{ fontWeight: 'bold', color: 'black'}}> Unit Of Measure : </label>
-                        <TextField
-                            id="outlined-select-uom"
-                            select
-                            fullWidth
-                            variant="outlined"
-                            label="Select"
-                            value={uom}
-                            onChange = {(event) => {
-                            setUnitOfMeasure(event.target.value);
-                            }}
-                            helperText="Please select your unit of measure"
-                        >
-                            {uoms.map((option) => (
-                            <MenuItem key={option.value} value={option.value}>
-                                {option.label}
-                            </MenuItem>
-                            ))}
-                        </TextField>
-
-                        <label style={{ fontWeight: 'bold', color: 'black'}}> Category : </label>
-                        <TextField
-                            id="outlined-select-category"
-                            select
-                            fullWidth
-                            variant="outlined"
-                            label="Select"
-                            value={category}
-                            onChange = {(event) => {
-                            setCategory(event.target.value);
-                            }}
-                            helperText="Please select your category"
-                        >
-                            {categories.map((option) => (
-                            <MenuItem key={option.id} value={option.id}>
-                                {option.description}
-                            </MenuItem>
-                            ))}
-                        </TextField>
-
-                        <TextField
-                            autoFocus
-                            margin="dense"
-                            id="target"
-                            label="Target"
-                            type="number"
-                            fullWidth
-                            style={{marginBottom : '15px'}}
-                            value={target}
-                            variant="standard"
-                            onChange = {(event) => {
-                                setTarget(event.target.value);
-                            }}
-                        />
-
-                        <TextField
-                            autoFocus
-                            margin="dense"
-                            id="target_achieved_on_review"
-                            label="Target At Review"
-                            type="text"
-                            fullWidth
-                            style={{marginBottom : '15px'}}
-                            value={target_achieved_on_review}
-                            variant="standard"
-                            onChange = {(event) => {
-                                setTargetAtReview(event.target.value);
-                            }}
-                        />
-
-                        <TextField
-                            autoFocus
-                            margin="dense"
-                            id="target_achieved"
-                            label="Target Achieved"
-                            type="text"
-                            fullWidth
-                            style={{marginBottom : '15px'}}
-                            value={target_achieved}
-                            variant="standard"
-                            onChange = {(event) => {
-                                setTargetAchieved(event.target.value);
-                            }}
-                        />
-
-                    </DialogContent>
-                    <DialogActions>
-                    <Button color="danger" onClick={handleAddClose}>Cancel</Button>
-                    { showloader === true ? (
-                      <div style={{ textAlign: "center", marginTop: 10 }}>
-                        <Loader
-                            type="Puff"
-                            color="#29A15B"
-                            height={150}
-                            width={150}
-                        />
-                      </div>
-                      ) :
-                      (
-                        <Button color="primary" onClick={(e) => { handleAddClose(); saveKpi(e)}}>Save</Button>
-                      )}                        
-                    </DialogActions>
-                </Dialog>
-
                 <Dialog open={editopen} onClose={handleEditClose}>
-                    <DialogTitle>KPI</DialogTitle>
+                    <DialogTitle>Strategic Objective</DialogTitle>
                     <DialogContent>
                     <DialogContentText>
-                        Edit KPI 
+                        Edit Strategic Objective 
                     </DialogContentText>
                         <TextField
                             autoFocus
@@ -886,44 +664,6 @@ export default function ObjectiveReport() {
                                 setRiskAndOpportunity(value)
                             }}
                         />
-
-                        <Grid container spacing={2}>
-                            <Grid item xs={6} lg={6} xl={6} sm={12}>
-                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                <KeyboardDatePicker
-                                    margin="normal"
-                                    id="date-picker-dialog"
-                                    helperText="Set start date"
-                                    format="yyyy/MM/dd"
-                                    fullWidth
-                                    inputVariant="outlined"
-                                    value={start_date}
-                                    onChange={setStartDate}
-                                    KeyboardButtonProps={{
-                                        'aria-label': 'change date',
-                                    }}
-                                />
-                                </MuiPickersUtilsProvider>
-                            </Grid>
-
-                            <Grid item xs={6} lg={6} xl={6} sm={12}>
-                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                <KeyboardDatePicker
-                                    margin="normal"
-                                    id="date-picker-dialog"
-                                    helperText="Set end date"
-                                    format="yyyy/MM/dd"
-                                    fullWidth
-                                    inputVariant="outlined"
-                                    value={end_date}
-                                    onChange={setEndDate}
-                                    KeyboardButtonProps={{
-                                        'aria-label': 'change date',
-                                    }}
-                                />
-                            </MuiPickersUtilsProvider>
-                            </Grid>
-                        </Grid>
 
                     </DialogContent>
                     <DialogActions>

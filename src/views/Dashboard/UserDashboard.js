@@ -66,7 +66,7 @@ export default function UserDashboard() {
   const dispatch = useDispatch();
 
   const { items : objectives } = useSelector(state => state.objective);
-  const {  mission, vision, spec_user, task_count, objective_count, kpi_count } = useSelector(state => state.data);
+  const { spec_user, task_count, objective_count, kpi_count } = useSelector(state => state.data);
   const { items, error, isLoading } = useSelector(state => state.kpi);
   const { behaviours, behaviours_error, freedoms, freedoms_error, constraints, constrains_error, strategic_intent1} = useSelector(state => state.bfc);
 
@@ -215,8 +215,6 @@ export default function UserDashboard() {
     setValue(index);
   };
 
-  console.log("user mission", mission)
-
   const handleEditMissionClose = () => {
     setEditMissionOpen(false);
     setEditingMission
@@ -260,11 +258,11 @@ export default function UserDashboard() {
         <div> <h4 className={classes.textBold} style={{display : 'inline-block'}}> {spec_user.fullnames} | </h4>  <h6 style={{display : 'inline-block'}}> {spec_user.roles.role_name}</h6> </div> ) : null}
 
       <Grid container spacing={2} style={{marginRight : '10px', marginLeft : '10px'}}>
-        <h3 className={classes.textBold}> THE VISION</h3>
+        <h3 className={classes.textBold}> MISSION: ONE LEVEL UP</h3>
 
         <Card className={classes.cardGrey} style={{margin: '0px'}}>
           <CardBody >
-          {strategic_intent1 === undefined || strategic_intent1 === null || strategic_intent1.length === 0 ? (
+            {strategic_intent1 === undefined || strategic_intent1 === null || strategic_intent1.length === 0 ? (
             <h4>Not available.</h4>
             ) : strategic_intent1 ? (
             <h4 > {strategic_intent1[0].level_up_one}</h4>
@@ -274,11 +272,11 @@ export default function UserDashboard() {
         </Card>
       </Grid>
 
-      <Grid container spacing={2} style={{marginRight : '10px', marginLeft : '10px', marginBottom : '20px'}}>
+      <Grid container spacing={2} style={{marginRight : '10px', marginLeft : '10px', marginBottom: '20px'}}>
         <h3 className={classes.textBold}> PERSONAL MISSION </h3>
           <Card className={classes.cardGrey} style={{margin: '0px'}}>
             <CardBody>
-            {strategic_intent1 === undefined || strategic_intent1 === null || strategic_intent1.length === 0 ? (
+              {strategic_intent1 === undefined || strategic_intent1 === null || strategic_intent1.length === 0 ? (
               <h4>Not available.</h4>
               ) : strategic_intent1 ? (
               <h4 > {strategic_intent1[0].strategic_intent}</h4>

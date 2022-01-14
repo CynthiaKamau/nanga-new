@@ -39,7 +39,7 @@ export default function UsersPage() {
 
   const { items , item } = useSelector(state => state.user);
   const { user : currentUser } = useSelector(state => state.auth);
-  const { roles, sysusers} = useSelector(state => state.data);
+  const { roles } = useSelector(state => state.data);
   const { items : teams} = useSelector(state => state.team);
 
   console.log("here error", teams)
@@ -464,9 +464,9 @@ export default function UsersPage() {
                         }}
                         helperText="Please select your line manager"
                       >
-                        {sysusers.map((option) => (
-                          <MenuItem key={option.value} value={option.value}>
-                            {option.label}
+                        {items.map((option) => (
+                          <MenuItem key={option.id} value={option.id}>
+                            {option.fullnames}
                           </MenuItem>
                         ))}
                       </TextField>
@@ -581,6 +581,26 @@ export default function UsersPage() {
                       </MenuItem>
                     ))}
                   </TextField>
+
+                  <label> Line Manager : </label>
+                      <TextField
+                        id="outlined-select-type"
+                        select
+                        fullWidth
+                        variant="outlined"
+                        label="Select"
+                        value={line_manager}
+                        onChange = {(event) => {
+                          setLineManager(event.target.value);
+                        }}
+                        helperText="Please select your line manager"
+                      >
+                        {items.map((option) => (
+                          <MenuItem key={option.id} value={option.id}>
+                            {option.fullnames}
+                          </MenuItem>
+                        ))}
+                      </TextField>
 
                   <label style={{ fontWeight: 'bold', color: 'black' }}> Team : </label>
                   <TextField

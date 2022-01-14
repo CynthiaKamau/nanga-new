@@ -142,8 +142,6 @@ export default function DataTable() {
         e.preventDefault();
         setshowloader(true);
 
-        console.log(setUpdatedBy());
-
         console.log("edit values", id, kpi, uom, category, created_by, updated_by)
 
         const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
@@ -152,7 +150,7 @@ export default function DataTable() {
             kpiUnitOfMeasure : uom,
             categoryId : category,
             createdBy : created_by,
-            updatedBy : created_by,
+            updatedBy : updated_by,
             id: id, 
             userId: created_by,
             account: account,
@@ -172,7 +170,17 @@ export default function DataTable() {
                         title: "Success",
                         text: item,
                         icon: "success",
-                    }).then(() => dispatch(getKpis(currentUser.id)));
+                    }).then(() => {
+                        setKPI("");
+                        setUnitOfMeasure("");
+                        setCategory("");
+                        setId("");
+                        setAccount("");
+                        setTarget("");
+                        setYTDPlanned("");
+                        setYTDActual("");
+                        dispatch(getKpis(currentUser.id))
+                    });
                     
             } else {
                 let error = response.data.message
@@ -199,6 +207,7 @@ export default function DataTable() {
 
     const setEditing = (list) => {
         console.log("my kpi",list);
+        console.log(setUpdatedBy());
 
         setKPI(list.title);
         setUnitOfMeasure(list.kpi_unit_of_measure);
@@ -208,7 +217,7 @@ export default function DataTable() {
         setTarget(list.target);
         setYTDPlanned(list.plannedYTD);
         setYTDActual(list.actualYTD);
-        setUpdatedBy(list.updated_by);
+        setUpdatedBy(list.user_id);
         // setSupportRequired(list.supportRequired);
         // setAction(list.action);
         // setRootCause(list.rootCause)

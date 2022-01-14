@@ -30,7 +30,7 @@ import swal from "sweetalert2";
 import Loader from "react-loader-spinner";
 import MenuItem from '@material-ui/core/MenuItem';
 import { getUserObjectives } from "actions/objectives";
-import Avatar from "../../assets/img/default-avatar.png";
+// import Avatar from "../../assets/img/default-avatar.png";
 import MaterialTable from 'material-table';
 
 const useStyles = makeStyles(styles);
@@ -152,20 +152,8 @@ export default function AssignedTasksPage() {
             title: 'From'
         },
         {
-          field: 'resource',
-          title: 'Resources',
-          render: list => {
-            return list.assignedTasks.map((detail, index) => {
-                if(detail.assignee.userPicture != null) {
-                    return (<img key={index} src={detail.assignee.userPicture}
-                        alt={detail.assignee.fullnames}  style={{ maxWidth: '50px', maxHeight: '50px', borderRadius: '50%'}} />)
-                } else if (detail.assignee.userPicture === null || detail.assignee.userPicture === undefined) {
-                    return (<img key={index} src={Avatar} alt={detail.assignee.fullnames}  style={{ maxWidth: '50px', maxHeight: '50px', borderRadius: '50%'}} />) 
-                }
-               
-            })
-
-          }
+          field: 'assignee.fullnames',
+          title: 'Resources'
         },
         {
           field: 'duedate',
@@ -173,10 +161,6 @@ export default function AssignedTasksPage() {
           render: list => {
               return (moment(list.end_date).format('YYYY-MM-DD'))
           }
-        },
-        {
-          field: 'status',
-          title: 'Progress'
         },
         {
           field: 'status',

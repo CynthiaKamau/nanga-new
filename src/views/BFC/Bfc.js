@@ -600,28 +600,23 @@ export default function BFC() {
             container
             spacing={2}
             direction="row"
-            style={{ paddingBottom: '20px'}}
             >
-                <Grid item xs={12} md={12} sm={12} key="1">
-                    <IconButton  style={{float: 'right'}} aria-label="edit" color="primary" onClick={() => { handleEditSIL1Open(); setEditingStrategicIntent1(strategic_intent1) }} ><EditIcon style={{ color : '#000000'}}/></IconButton>
-
+                <Grid item xs={12} md={12} sm={12} key="2" style={{margin: '0', padding: '0px'}}>              
                 <Card>
-                    <h4 style={{color: 'black', textAlign:'center'}}> Mission, Zero Level Up </h4>
-
+                    <h4 style={{color: 'black', textAlign:'center'}}> Mission: Two Levels Up </h4>          
                     <CardBody >
                         {strategic_intent1 === undefined || strategic_intent1 === null || strategic_intent1.length === 0 ? (
-                        <h4>Not available.</h4>
+                        <h4> Not available.</h4>
                         ) : strategic_intent1 ? (
-                        <h4 > {strategic_intent1[0].strategic_intent}</h4>
+                        <h4 > {strategic_intent1[0].level_up_two}</h4>
                         ) : null}
                     </CardBody>
-
-                    </Card>
+                </Card>
                 </Grid>
 
-                <Grid item xs={12} md={12} sm={12} key="1">
+                <Grid item xs={12} md={12} sm={12} key="1" style={{margin: '0', padding: '0px'}}>
                 <Card>
-                    <h4 style={{color: 'black', textAlign:'center'}}> Mission, One Level Up </h4>
+                    <h4 style={{color: 'black', textAlign:'center'}}> Mission: One Level Up </h4>
 
                     <CardBody >
                         {strategic_intent1 === undefined || strategic_intent1 === null || strategic_intent1.length === 0 ? (
@@ -634,18 +629,23 @@ export default function BFC() {
                     </Card>
                 </Grid>
 
-                <Grid item xs={12} md={12} sm={12} key="2">              
-                <Card>
-                    <h4 style={{color: 'black', textAlign:'center'}}> Mission, Two Levels Up </h4>          
+                <Grid item xs={12} md={12} sm={12} key="0" style={{margin: '0px', padding: '0px'}}>
+                    <IconButton  style={{float: 'right'}} aria-label="edit" color="primary" onClick={() => { handleEditSIL1Open(); setEditingStrategicIntent1(strategic_intent1) }} ><EditIcon style={{ color : '#000000'}}/></IconButton>
+
+                    <Card>
+                    <h4 style={{color: 'black', textAlign:'center'}}> MY MISSION </h4>
+
                     <CardBody >
                         {strategic_intent1 === undefined || strategic_intent1 === null || strategic_intent1.length === 0 ? (
-                        <h4> Not available.</h4>
+                        <h4>Not available.</h4>
                         ) : strategic_intent1 ? (
-                        <h4 > {strategic_intent1[0].level_up_two}</h4>
+                        <h4 > {strategic_intent1[0].strategic_intent}</h4>
                         ) : null}
                     </CardBody>
-                </Card>
+
+                    </Card>
                 </Grid>
+
             </Grid>
 
             <Grid
