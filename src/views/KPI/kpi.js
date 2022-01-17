@@ -434,7 +434,8 @@ export default function DataTable() {
                     <h4>KPIS </h4>
                 </CardHeader>
                 <CardBody>
-                    <MaterialTable
+                    {items !== null ? (
+                        <MaterialTable
                         title="KPIs"
                         data={items}
                         columns={columns}
@@ -445,6 +446,22 @@ export default function DataTable() {
                           pageSizeOptions: [10,50,100 ],
                         }}
                     />
+
+                    ) :
+                    
+                    <MaterialTable
+                        title="KPIs"
+                        data={[]}
+                        columns={columns}
+                        options={{
+                          search: true,
+                          sorting: true,
+                          pageSize: 10,
+                          pageSizeOptions: [10,50,100 ],
+                        }}
+                    />
+                    }
+                    
                 </CardBody>
             </Card>
 

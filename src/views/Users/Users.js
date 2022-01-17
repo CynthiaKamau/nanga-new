@@ -322,7 +322,7 @@ export default function UsersPage() {
       title: 'Role'
     },
     {
-      field: 'lineManager',
+      field: 'lineManagerUser.fullnames',
       title: 'Line Manager'
     },
     {

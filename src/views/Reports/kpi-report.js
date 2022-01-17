@@ -464,18 +464,33 @@ export default function KPIReport() {
               <CardBody>
               <div className={classes.btnRight}><Button color="primary" size="lg" onClick={handleAddClickOpen}> Add KPI </Button> </div> 
 
+              {items !== null ? (
                 <MaterialTable
-                  title="KPI Report."
-                  data={items}
-                  columns={columns}
-                  options={{
+                title="KPIs"
+                data={items}
+                columns={columns}
+                options={{
                     search: true,
                     sorting: true,
                     pageSize: 10,
                     pageSizeOptions: [10,50,100 ],
-                    exportButton: true
-                  }}
-                />
+                }}
+            />
+
+            ) :
+            
+            <MaterialTable
+                title="KPIs"
+                data={[]}
+                columns={columns}
+                options={{
+                    search: true,
+                    sorting: true,
+                    pageSize: 10,
+                    pageSizeOptions: [10,50,100 ],
+                }}
+            />
+            }
 
                 <Grid
                     container

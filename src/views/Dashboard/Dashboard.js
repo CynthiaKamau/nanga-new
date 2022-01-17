@@ -175,6 +175,11 @@ function Dashboard() {
     tooltip: {
       pointFormat: '{name}: <br>{point.percentage:.1f} %, Total: {point.y}'
     },
+    accessibility: {
+      point: {
+          valueSuffix: '%'
+      }
+    },
     plotOptions: {
       pie: {
           allowPointSelect: true,
@@ -182,7 +187,13 @@ function Dashboard() {
           dataLabels: {
               enabled: true,
               format: '<b>{point.name}</b>:<br>{point.percentage:.1f} %, Total: {point.y}',
-          }
+          },
+          distance: -30,
+                filter: {
+                    property: 'percentage',
+                    operator: '>',
+                    value: 4
+                }
       }
     },
   }

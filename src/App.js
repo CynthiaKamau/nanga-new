@@ -25,7 +25,7 @@ const App = () => {
 
   // const { REACT_APP_SERVER_URL } = process.env;
 
-  axios.defaults.baseURL = `http://172.27.11.20:5406/strategy/api/`;
+  axios.defaults.baseURL = `http://172.27.11.21:5406/strategy/api/`;
 
   return (
     <BrowserRouter history={hist}>
