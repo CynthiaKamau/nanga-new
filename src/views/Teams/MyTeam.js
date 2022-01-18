@@ -26,8 +26,7 @@ export default function MyTeamPage() {
 
     const { items } = useSelector(state => state.user)
     const { user : currentUser } = useSelector(state => state.auth);
-
-
+    
     useEffect(() => {
         dispatch(getUsers())
     }, []);
@@ -76,18 +75,32 @@ export default function MyTeamPage() {
                             <h4>Teams</h4>
                         </CardHeader>
                         <CardBody>
+                            {items !== null ? (
 
-                        <MaterialTable
-                            title="Team details."
-                            data={items}
-                            columns={columns}
-                            options={{
-                            search: true,
-                            sorting: true,
-                            pageSize: 10,
-                            pageSizeOptions: [10,50,100 ],
-                            }}
-                        />
+                                <MaterialTable
+                                    title="Team details."
+                                    data={items}
+                                    columns={columns}
+                                    options={{
+                                    search: true,
+                                    sorting: true,
+                                    pageSize: 10,
+                                    pageSizeOptions: [10,50,100 ],
+                                    }}
+                                />
+                            ) : 
+                                <MaterialTable
+                                    title="Team details."
+                                    data={[]}
+                                    columns={columns}
+                                    options={{
+                                    search: true,
+                                    sorting: true,
+                                    pageSize: 10,
+                                    pageSizeOptions: [10,50,100 ],
+                                    }}
+                                />
+                            }
 
                         </CardBody>
                     </Card>

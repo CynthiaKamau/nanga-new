@@ -991,7 +991,7 @@ function Dashboard() {
 
   const bfcRouteChange = () => {
     if(currentUser.role_id === 0) {
-      history.push('/admin/kpis')
+      history.push('/admin/bfc')
     } else {
       history.push('/user/bfc')
     }

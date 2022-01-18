@@ -39,6 +39,8 @@ export default function TeamsPage() {
     const { user : currentUser } = useSelector(state => state.auth);
     const { items : teamleads} = useSelector(state => state.user)
 
+    console.log("here", teamleads)
+
     useEffect(() => {
         dispatch(getTeams());
         dispatch(getUsers());
@@ -87,7 +89,13 @@ export default function TeamsPage() {
                     title: "Success",
                     text: item,
                     icon: "success",
-                }).then(() => dispatch(getTeams()));
+                }).then(() => {
+                    setName("");
+                    setTeamLead("");
+                    setIsParent(true)
+                    dispatch(getTeams())
+
+                });
 
             } else {
                 let error = response.data.message
@@ -153,7 +161,12 @@ export default function TeamsPage() {
                     title: "Success",
                     text: item,
                     icon: "success",
-                }).then(() => dispatch(getTeams()));
+                }).then(() => {
+                    setName("");
+                    setTeamLead("");
+                    setIsParent(true);
+                    dispatch(getTeams());
+                })
                 
             } else {
                 let error = response.data.message;
@@ -234,13 +247,19 @@ export default function TeamsPage() {
         <div>
             <GridContainer>
                 <GridItem xs={12} sm={12} md={12}>
+                { currentUser.role_id === 0 ? (
+                    <div style={{ paddingBottom : '60px'}}>
+                        <div className={classes.btnRight}><Button color="primary" size="lg" onClick={handleAddClickOpen}> Add Team </Button> </div>
+                    </div>
+                ) : null}
+
                     <Card>
                         <CardHeader color="primary">
                             <h4>Teams</h4>
                         </CardHeader>
                         <CardBody>
-                        { currentUser.role_id === 0 ? (<div className={classes.btnRight}><Button color="primary" size="lg" onClick={handleAddClickOpen}> Add Team </Button> </div> ) : null}
 
+                        {items !== null ? (
                             <MaterialTable
                                 title="Team details."
                                 data={items}
@@ -252,6 +271,21 @@ export default function TeamsPage() {
                                     pageSizeOptions: [10,50,100 ],
                                 }}
                             />
+                        ) : 
+
+                            <MaterialTable
+                                title="Team details."
+                                data={[]}
+                                columns={columns}
+                                options={{
+                                    search: true,
+                                    sorting: true,
+                                    pageSize: 10,
+                                    pageSizeOptions: [10,50,100 ],
+                                }}
+                            />
+                        }
+
 
                             <Dialog open={addopen} onClose={handleAddClose} >
                                 <DialogTitle>Team</DialogTitle>
@@ -288,7 +322,7 @@ export default function TeamsPage() {
                                         }}
                                         helperText="Please select your team lead"
                                     >
-                                        {teamleads.map((option) => (
+                                        {teamleads.length >= 1 && teamleads.map((option) => (
                                             <MenuItem key={option.id} value={option.id}>
                                                 {option.fullnames}
                                             </MenuItem>

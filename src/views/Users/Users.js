@@ -37,13 +37,12 @@ export default function UsersPage() {
   const classes = useStyles();
   const dispatch = useDispatch();
 
-  const { items , item } = useSelector(state => state.user);
+  const { items } = useSelector(state => state.user);
   const { user : currentUser } = useSelector(state => state.auth);
   const { roles } = useSelector(state => state.data);
   const { items : teams} = useSelector(state => state.team);
 
   console.log("here error", teams)
-  console.log("here item", items, item)
 
   useEffect(() => {
     dispatch(getUsers());
@@ -365,18 +364,33 @@ export default function UsersPage() {
               <h4>Users</h4>
             </CardHeader>
             <CardBody>
+              {items.length !== null ? (
+                <MaterialTable
+                    title="User  details."
+                    data={items}
+                    columns={columns}
+                    options={{
+                      search: true,
+                      sorting: true,
+                      pageSize: 10,
+                      pageSizeOptions: [10,50,100 ],
+                    }}
+                />
+              ) : 
 
-              <MaterialTable
-                  title="User  details."
-                  data={items}
-                  columns={columns}
-                  options={{
-                    search: true,
-                    sorting: true,
-                    pageSize: 10,
-                    pageSizeOptions: [10,50,100 ],
-                  }}
-              />
+                <MaterialTable
+                    title="User  details."
+                    data={[]}
+                    columns={columns}
+                    options={{
+                      search: true,
+                      sorting: true,
+                      pageSize: 10,
+                      pageSizeOptions: [10,50,100 ],
+                    }}
+                />
+              }  
+
 
               <Dialog open={addopen} onClose={handleAddClose}>
                 <DialogTitle>User</DialogTitle>
@@ -595,7 +609,7 @@ export default function UsersPage() {
                         }}
                         helperText="Please select your line manager"
                       >
-                        {items.map((option) => (
+                        {items.length >= 1 && items.map((option) => (
                           <MenuItem key={option.id} value={option.id}>
                             {option.fullnames}
                           </MenuItem>
