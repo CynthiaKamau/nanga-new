@@ -74,7 +74,7 @@ export default function BFC() {
         dispatch(getStrategicIntent1(currentUser.id))
     }, []);
 
-    console.log("strategic intent", strategic_intent1)
+    console.log("constraints", constraints)
 
 
     const handleAddBehaviourClickOpen = () => {
@@ -239,7 +239,7 @@ export default function BFC() {
     
         const body = JSON.stringify({ 
             createdBy: created_by,
-            description: behaviour_description,
+            description: constraint_description,
             userId: created_by
         });
 
@@ -314,7 +314,10 @@ export default function BFC() {
                         title: "Success",
                         text: item,
                         icon: "success",
-                    }).then(() => dispatch(getBehaviours(currentUser.id)));
+                    }).then(() => {
+                        setBehaviour("");
+                        dispatch(getBehaviours(currentUser.id))
+                    });
     
                 } else {
                     let error = response.data.message
@@ -372,7 +375,10 @@ export default function BFC() {
                         title: "Success",
                         text: item,
                         icon: "success",
-                    }).then(() => dispatch(getFreedoms(currentUser.id)));
+                    }).then(() => {
+                        setFreedom("");
+                        dispatch(getFreedoms(currentUser.id))
+                    });
     
                 } else {
                     let error = response.data.message
@@ -429,7 +435,10 @@ export default function BFC() {
                         title: "Success",
                         text: item,
                         icon: "success",
-                    }).then(() => dispatch(getConstraints(currentUser.id)));
+                    }).then(() => {
+                        setConstraint("")
+                        dispatch(getConstraints(currentUser.id))
+                    });
     
                 } else {
                     let error = response.data.message
@@ -465,7 +474,8 @@ export default function BFC() {
     
     const setEditingStrategicIntent1 = (strategic_intent1) => {
         console.log("strategic_intent1 here", strategic_intent1)
-        if(strategic_intent1 === undefined || strategic_intent1[0] === null ) {
+        console.log("strategic_intent1 here here", strategic_intent1[0])
+        if(strategic_intent1.length < 1 ||strategic_intent1 === undefined || strategic_intent1 === null ) {
           setStrategicIntent1('');
           setStrategicIntent2('');
           setStrategicIntent0('');
@@ -507,7 +517,14 @@ export default function BFC() {
                 title: "Success",
                 text: res,
                 icon: "success",
-              }).then(() => dispatch(getStrategicIntent1(currentUser.id)));
+              }).then(() => {
+                setStrategicIntent1("")
+                setStrategicIntent2("")
+                setStrategicIntent0("")
+                dispatch(getStrategicIntent1(currentUser.id))
+
+            })
+              
     
           } else {
             setshowloader(false);
@@ -541,7 +558,6 @@ export default function BFC() {
               const body = JSON.stringify({
                 userId : user_id,
                 updatedBy : user_id,
-                description : userstrategicintent1,
                 id : strategic_intent1_id,
                 level_up_one : userstrategicintent1,
                 level_up_two : userstrategicintent2,
@@ -559,7 +575,12 @@ export default function BFC() {
                     title: "Success",
                     text: resp,
                     icon: "success",
-                  }).then(() => dispatch(getStrategicIntent1(currentUser.id)));
+                  }).then(() =>  {
+                    setStrategicIntent1("")
+                    setStrategicIntent2("")
+                    setStrategicIntent0("")
+                    dispatch(getStrategicIntent1(currentUser.id))
+                  })
     
               } else {
                 setshowloader(false);
@@ -601,7 +622,10 @@ export default function BFC() {
             spacing={2}
             direction="row"
             >
-                <Grid item xs={12} md={12} sm={12} key="2" style={{margin: '0', padding: '0px'}}>              
+                <Grid item xs={12} md={12} sm={12} key="2" style={{margin: '0', padding: '0px'}}>     
+                <IconButton  style={{float: 'right'}} aria-label="edit" color="primary" onClick={() => { handleEditSIL1Open(); setEditingStrategicIntent1(strategic_intent1) }} ><EditIcon style={{ color : '#000000'}}/></IconButton>
+
+
                 <Card>
                     <h4 style={{color: 'black', textAlign:'center'}}> Mission: Two Levels Up </h4>          
                     <CardBody >
@@ -630,8 +654,6 @@ export default function BFC() {
                 </Grid>
 
                 <Grid item xs={12} md={12} sm={12} key="0" style={{margin: '0px', padding: '0px'}}>
-                    <IconButton  style={{float: 'right'}} aria-label="edit" color="primary" onClick={() => { handleEditSIL1Open(); setEditingStrategicIntent1(strategic_intent1) }} ><EditIcon style={{ color : '#000000'}}/></IconButton>
-
                     <Card>
                     <h4 style={{color: 'black', textAlign:'center'}}> MY MISSION </h4>
 

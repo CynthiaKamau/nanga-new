@@ -218,6 +218,7 @@ export default function DataTable() {
         setYTDPlanned(list.plannedYTD);
         setYTDActual(list.actualYTD);
         setUpdatedBy(list.user_id);
+        setCreatedBy(list.user_id);
         // setSupportRequired(list.supportRequired);
         // setAction(list.action);
         // setRootCause(list.rootCause)
