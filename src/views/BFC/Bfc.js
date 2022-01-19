@@ -150,6 +150,7 @@ export default function BFC() {
                         icon: "success",
                     }).then(() => {
                         setBehaviour("");
+                        setCreatedBy(currentUser.id)
                         dispatch(getBehaviours(currentUser.id))
                     }) 
     
@@ -203,6 +204,7 @@ export default function BFC() {
                         icon: "success",
                     }).then(() =>  {
                         setFreedom("");
+                        setCreatedBy(currentUser.id)
                         dispatch(getFreedoms(currentUser.id))
                     });
     
@@ -256,6 +258,7 @@ export default function BFC() {
                         icon: "success",
                     }).then(() => {
                         setConstraint("")
+                        setCreatedBy(currentUser.id)
                         dispatch(getConstraints(currentUser.id))
                     });
     
@@ -521,6 +524,7 @@ export default function BFC() {
                 setStrategicIntent1("")
                 setStrategicIntent2("")
                 setStrategicIntent0("")
+                setCreatedBy(currentUser.id)
                 dispatch(getStrategicIntent1(currentUser.id))
 
             })
@@ -611,8 +615,6 @@ export default function BFC() {
     
         }
     }  
-    
-    
    
     return (
         <div>

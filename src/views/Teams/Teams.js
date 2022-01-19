@@ -93,6 +93,7 @@ export default function TeamsPage() {
                     setName("");
                     setTeamLead("");
                     setIsParent(true)
+                    setCreatedBy(currentUser.id)
                     dispatch(getTeams())
 
                 });

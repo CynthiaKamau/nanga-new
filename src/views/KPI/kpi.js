@@ -80,8 +80,6 @@ export default function DataTable() {
         setshowloader(true);
         console.log(setCreatedBy())
 
-        console.log("save values", kpi, uom, category, created_by)
-
         const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
         
         const body = JSON.stringify({ 
@@ -93,6 +91,8 @@ export default function DataTable() {
             target : target,
             userId : created_by
         });
+
+        console.log("save values", body)
 
         try {
 
@@ -112,6 +112,7 @@ export default function DataTable() {
                         setCategory("")
                         setAccount("")
                         setTarget("")
+                        setCreatedBy(currentUser.id)
                         dispatch(getKpis(currentUser.id));
 
                     })

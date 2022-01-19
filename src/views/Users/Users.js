@@ -121,7 +121,15 @@ export default function UsersPage() {
             title: "Success",
             text: item,
             icon: "success",
-        }).then(() => dispatch(getUsers()));
+        }).then(() => {
+          setName("")
+          setTeam("")
+          setRole("")
+          setEmail("")
+          setLineManager("")
+          setCreatedBy(currentUser.id)
+          dispatch(getUsers())
+        });
         
       } else {
 
