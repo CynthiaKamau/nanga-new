@@ -312,8 +312,8 @@ export default function KPIReport() {
           title: 'Actual YTD '
         }, 
         {
-          field: '',
-          title: 'VAR',
+          field: 'var',
+          title: 'Variance',
           render: (list) => {
             console.log("editing table", list)  
             if(list.variance === 'amber') {
@@ -327,7 +327,14 @@ export default function KPIReport() {
             } else if(list.variance === null || list.variance === undefined) {
                 return (<FiberManualRecord style={{color : '#F44336'}}/>)
             } 
-          }
+          },
+          export: false
+        }, 
+        {
+          field: 'var',
+          title: 'Variance',
+          hidden: true,
+          export: true
         }, 
         {
           field: 'rootCause',
@@ -348,7 +355,8 @@ export default function KPIReport() {
             console.log("editing table", list)
               return ( <div> <IconButton aria-label="edit" className={classes.textGreen} onClick={() => { handleEditClickOpen(); setEditing(list) }} ><EditIcon/></IconButton>
                 </div>)
-          }
+          },
+          export: false
         }
     ]
 
@@ -474,6 +482,7 @@ export default function KPIReport() {
                     sorting: true,
                     pageSize: 10,
                     pageSizeOptions: [10,50,100 ],
+                    exportButton: true
                 }}
             />
 
@@ -488,6 +497,7 @@ export default function KPIReport() {
                     sorting: true,
                     pageSize: 10,
                     pageSizeOptions: [10,50,100 ],
+                    exportButton: true
                 }}
             />
             }

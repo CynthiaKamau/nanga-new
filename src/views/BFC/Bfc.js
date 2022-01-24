@@ -11,7 +11,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import CardHeader from "components/Card/CardHeader";
 import { CardContent } from "@material-ui/core";
-import { Grid } from "@material-ui/core";
+import { Grid, IconButton } from "@material-ui/core";
 import Card from "components/Card/Card.js";
 import { makeStyles } from "@material-ui/core/styles";
 import Dialog from '@material-ui/core/Dialog';
@@ -24,7 +24,7 @@ import swal from "sweetalert2";
 import Loader from "react-loader-spinner";
 import TextField from '@material-ui/core/TextField';
 import axios from "axios";
-import IconButton from '@material-ui/core/Button';
+import { DeleteForever} from '@material-ui/icons';
 import EditIcon from '@material-ui/icons/Edit';
 import CardBody from "components/Card/CardBody";
 
@@ -54,12 +54,18 @@ export default function BFC() {
     const [behaviourId, setBehaviourId] = useState("");
     const [freedomId, setFreedomId] = useState("");
     const [constaraintId, setConstraintId] = useState("");
+    const [behaviourDeleteId, setBehaviourDeleteId] = useState("");
+    const [freedomDeleteId, setFreedomDeleteId] = useState("");
+    const [constaraintDeleteId, setConstraintDeleteId] = useState("");
     const [userstrategicintent0, setStrategicIntent0] = useState("");
     const [userstrategicintent1, setStrategicIntent1] = useState("");
     const [userstrategicintent2, setStrategicIntent2] = useState("");
     const [strategic_intent1_id, setStrategicIntent1Id] = useState("");
     const [user_id, setUserId] = useState(currentUser.id);
     const [editopensil1, setEditSIL1Open] = useState(false);
+    const [deletebehaviouropen, setDeleteBehaviourOpen] = useState(false);
+    const [deletefreedomsopen, setDeleteFreedomsOpen] = useState(false);
+    const [deleteconstraintsopen, setDeleteConstraintsOpen] = useState(false);
 
     // const [strategic_intent2_id, setStrategicIntent2Id] = useState("");
 
@@ -614,7 +620,178 @@ export default function BFC() {
           }
     
         }
-    }  
+    } 
+    
+    const handleDeleteBehaviourClickOpen = () => {
+        setDeleteBehaviourOpen(true);
+    };
+
+    const handleDeleteBehaviourClose = () => {
+        setDeleteBehaviourOpen(false);
+    };
+
+    const handleDeleteConstraintsClickOpen = () => {
+        setDeleteConstraintsOpen(true);
+    };
+
+    const handleDeleteConstraintsClose = () => {
+        setDeleteConstraintsOpen(false);
+    };
+
+    const handleDeleteFreedomsClickOpen = () => {
+        setDeleteFreedomsOpen(true);
+    };
+
+    const handleDeleteFreedomsClose = () => {
+        setDeleteFreedomsOpen(false);
+    };
+
+    const setDeletingBehaviour =(list) => {
+        setBehaviourDeleteId(list.id)
+    }
+
+    const deleteBehaviour = async(e) => {
+        e.preventDefault();
+        setshowloader(true);
+
+        try {
+
+            let response = await axios.delete(`/behaviours/deleteBehaviourById?behaviour_id=${behaviourDeleteId}`)
+            if (response.status == 200) {
+                setshowloader(false);
+                setDeleteBehaviourOpen(false);
+                console.log("here", response.data)
+                let item = response.data.message
+
+                swal.fire({
+                    title: "Success",
+                    text: item,
+                    icon: "success",
+                }).then(() => dispatch(getBehaviours(currentUser.id)));
+            } else {
+                setshowloader(false);
+                setDeleteBehaviourOpen(false);
+                let error = response.data.message
+                    setshowloader(false);
+                    swal.fire({
+                        title: "Error",
+                        text: error,
+                        icon: "error",
+                        dangerMode: true
+                    }).then(() => dispatch(getBehaviours(currentUser.id)));
+            } 
+        } catch(error) {
+            setshowloader(false);
+            setDeleteBehaviourOpen(false);
+            let err = error.response.data.message
+            setshowloader(false);
+            swal.fire({
+                title: "Error",
+                text: err,
+                icon: "error",
+                dangerMode: true
+            }).then(() => dispatch(getBehaviours(currentUser.id)));
+        } 
+
+    }
+
+    const setDeletingFreedoms =(list) => {
+        setFreedomDeleteId(list.id)
+    }
+
+    const deleteFreedoms = async(e) => {
+        e.preventDefault();
+        setshowloader(true);
+
+        try {
+
+            let response = await axios.delete(`/freedoms/deleteFreedomById?freedom_id=${freedomDeleteId}`)
+            if (response.status == 200) {
+                setshowloader(false);
+                setDeleteFreedomsOpen(false);
+                console.log("here", response.data)
+                let item = response.data.message
+
+                swal.fire({
+                    title: "Success",
+                    text: item,
+                    icon: "success",
+                }).then(() => dispatch(getFreedoms(currentUser.id)));
+            } else {
+                setshowloader(false);
+                setDeleteFreedomsOpen(false);
+                let error = response.data.message
+                    setshowloader(false);
+                    swal.fire({
+                        title: "Error",
+                        text: error,
+                        icon: "error",
+                        dangerMode: true
+                    }).then(() => dispatch(getFreedoms(currentUser.id)));
+            } 
+        } catch(error) {
+            setshowloader(false);
+            setDeleteFreedomsOpen(false);
+            let err = error.response.data.message
+            setshowloader(false);
+            swal.fire({
+                title: "Error",
+                text: err,
+                icon: "error",
+                dangerMode: true
+            }).then(() => dispatch(getFreedoms(currentUser.id)));
+        } 
+
+    }
+
+    const setDeletingConstraints =(list) => {
+        setConstraintDeleteId(list.id)
+    }
+
+    const deleteConstraints = async(e) => {
+        e.preventDefault();
+        setshowloader(true);
+
+        try {
+
+            let response = await axios.delete(`/constraints/deleteConstraintsById?constraints_id=${constaraintDeleteId}`)
+            if (response.status == 200) {
+                setshowloader(false);
+                setDeleteConstraintsOpen(false);
+                console.log("here", response.data)
+                let item = response.data.message
+
+                swal.fire({
+                    title: "Success",
+                    text: item,
+                    icon: "success",
+                }).then(() => dispatch(getConstraints(currentUser.id)));
+            } else {
+                setshowloader(false);
+                setDeleteConstraintsOpen(false);
+                let error = response.data.message
+                    setshowloader(false);
+                    swal.fire({
+                        title: "Error",
+                        text: error,
+                        icon: "error",
+                        dangerMode: true
+                    }).then(() => dispatch(getConstraints(currentUser.id)));
+            } 
+        } catch(error) {
+            setshowloader(false);
+            setDeleteConstraintsOpen(false);
+            let err = error.response.data.message
+            setshowloader(false);
+            swal.fire({
+                title: "Error",
+                text: err,
+                icon: "error",
+                dangerMode: true
+            }).then(() => dispatch(getConstraints(currentUser.id)));
+        } 
+
+    }
    
     return (
         <div>
@@ -701,7 +878,10 @@ export default function BFC() {
                             ) : behaviours ? ( behaviours.map((list, index) => (
                                 <TableRow key={index}>
                                     <TableCell>{list.currentDescription}</TableCell>
-                                    <TableCell> <IconButton aria-label="edit" className={classes.textGreen} onClick={() => {handleEditBehaviourOpen(); setEditingBehaviour(list) }} ><EditIcon /></IconButton></TableCell>
+                                    <TableCell>
+                                        <IconButton aria-label="edit" className={classes.textGreen} onClick={() => {handleEditBehaviourOpen(); setEditingBehaviour(list) }} ><EditIcon /></IconButton>
+                                        <IconButton aria-label="delete" style={{color: 'black'}} onClick={() => { handleDeleteBehaviourClickOpen(); setDeletingBehaviour(list)  }} ><DeleteForever /></IconButton>
+                                    </TableCell>
                                 </TableRow>
                             ))) : behaviours_error ? (<TableRow> <TableCell> {behaviours_error} </TableCell></TableRow> ) : null }
                         </TableBody>
@@ -733,7 +913,10 @@ export default function BFC() {
                             ) :freedoms ? ( freedoms.map((list, index) => (
                                 <TableRow key={index}>
                                     <TableCell>{list.currentDescription}</TableCell>
-                                    <TableCell> <IconButton aria-label="edit" className={classes.textGreen} onClick={() => {handleEditFreedomOpen(); setEditingFreedom(list) }} ><EditIcon /></IconButton></TableCell>
+                                    <TableCell>
+                                        <IconButton aria-label="edit" className={classes.textGreen} onClick={() => {handleEditFreedomOpen(); setEditingFreedom(list) }} ><EditIcon /></IconButton>
+                                        <IconButton aria-label="delete" style={{color: 'black'}} onClick={() => { handleDeleteFreedomsClickOpen(); setDeletingFreedoms(list)  }} ><DeleteForever /></IconButton>
+                                    </TableCell>
                                 </TableRow>
                             ))) : freedoms_error ? (<TableRow> <TableCell> {freedoms_error} </TableCell></TableRow>) : null }
                         </TableBody>
@@ -765,7 +948,10 @@ export default function BFC() {
                             ) : constraints ? ( constraints.map((list, index) => (
                                 <TableRow key={index}>
                                     <TableCell>{list.currentDescription}</TableCell>
-                                    <TableCell> <IconButton aria-label="edit" className={classes.textGreen} onClick={() => {handleEditConstraintOpen(); setEditingConstraint(list) }} ><EditIcon /></IconButton></TableCell>
+                                    <TableCell>
+                                        <IconButton aria-label="edit" className={classes.textGreen} onClick={() => {handleEditConstraintOpen(); setEditingConstraint(list) }} ><EditIcon /></IconButton>
+                                        <IconButton aria-label="delete" style={{color: 'black'}} onClick={() => { handleDeleteConstraintsClickOpen(); setDeletingConstraints(list)  }} ><DeleteForever /></IconButton>
+                                    </TableCell>
                                 </TableRow>
                             ))) : constrains_error ? (<TableRow> <TableCell> {constrains_error} </TableCell></TableRow>) : null }
                         </TableBody>
@@ -1035,7 +1221,7 @@ export default function BFC() {
                 id="outlined-multiline-static"
                 fullWidth
                 autoFocus
-                label="Mission Zero Level Up"
+                label="Your Mission"
                 type="text"
                 margin="dense"
                 multiline
@@ -1098,6 +1284,88 @@ export default function BFC() {
                     <Button color="primary" onClick={(e) => { editStrategicIntent1(e); }}>Save</Button>
                 )}
             </DialogActions>
+            </Dialog>
+
+            {/* Deleting Modals */}
+            <Dialog open={deletebehaviouropen} onClose={handleDeleteBehaviourClose}>
+                <DialogTitle id="alert-dialog-title">
+                {"Are you sure you want to delete this behaviour?"}
+                </DialogTitle>
+                <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                    Please confirm that you want to delete this behaviour.
+                </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                <Button color="danger" onClick={handleDeleteBehaviourClose}>Disagree</Button>
+                { showloader === true ? (
+                    <div style={{ textAlign: "center", marginTop: 10 }}>
+                    <Loader
+                        type="Puff"
+                        color="#29A15B"
+                        height={100}
+                        width={100}
+                    />
+                    </div>
+                    ) :
+                    (
+                        <Button color="primary" onClick={(e) => { deleteBehaviour(e)}} > Agree</Button>
+                    )}
+                </DialogActions>
+            </Dialog>
+
+            <Dialog open={deletefreedomsopen} onClose={handleDeleteFreedomsClose}>
+                <DialogTitle id="alert-dialog-title">
+                {"Are you sure you want to delete this freedom?"}
+                </DialogTitle>
+                <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                    Please confirm that you want to delete this freedom.
+                </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                <Button color="danger" onClick={handleDeleteFreedomsClose}>Disagree</Button>
+                { showloader === true ? (
+                    <div style={{ textAlign: "center", marginTop: 10 }}>
+                    <Loader
+                        type="Puff"
+                        color="#29A15B"
+                        height={100}
+                        width={100}
+                    />
+                    </div>
+                    ) :
+                    (
+                        <Button color="primary" onClick={(e) => { deleteFreedoms(e)}} > Agree</Button>
+                    )}
+                </DialogActions>
+            </Dialog>
+
+            <Dialog open={deleteconstraintsopen} onClose={handleDeleteConstraintsClose}>
+                <DialogTitle id="alert-dialog-title">
+                {"Are you sure you want to delete this constraint?"}
+                </DialogTitle>
+                <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                    Please confirm that you want to delete this constraint.
+                </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                <Button color="danger" onClick={handleDeleteConstraintsClose}>Disagree</Button>
+                { showloader === true ? (
+                    <div style={{ textAlign: "center", marginTop: 10 }}>
+                    <Loader
+                        type="Puff"
+                        color="#29A15B"
+                        height={100}
+                        width={100}
+                    />
+                    </div>
+                    ) :
+                    (
+                        <Button color="primary" onClick={(e) => { deleteConstraints(e)}} > Agree</Button>
+                    )}
+                </DialogActions>
             </Dialog>
 
         </div>

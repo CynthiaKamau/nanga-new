@@ -57,7 +57,7 @@ export default function MyTeamPage() {
         },
         {
             field: 'actions',
-            title: 'Action',
+            title: 'View Dashboard',
             render: (list) => {
                 console.log("editing table", list)
                 return ( <div><IconButton aria-label="redirect" className={classes.textGreen} onClick={() => { handleClickOpen(list.id)}}><ArrowForward /></IconButton>

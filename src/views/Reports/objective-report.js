@@ -237,6 +237,13 @@ export default function ObjectiveReport() {
           }
         },
         {
+            field: 'var',
+            title: 'Variance',
+            export: true,
+            hidden: true
+            
+          },
+        {
           field: 'objectives.rootCause',
           title: 'Root Cause and Insight'
         },
@@ -258,7 +265,8 @@ export default function ObjectiveReport() {
           render: (list) => {
             console.log("editing table", list)
             return (<IconButton aria-label="edit" className={classes.textGreen} onClick={() => { handleEditClickOpen(); setEditing(list.objectives) }} ><EditIcon/></IconButton>)
-          }
+          },
+          export: false
         }
     ]
 

@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
+
+import { useForm, Controller } from 'react-hook-form';
+import Select from "react-select";
+
 // @material-ui/core
 import { makeStyles } from "@material-ui/core/styles";
 // core components
@@ -37,12 +41,12 @@ export default function UsersPage() {
   const classes = useStyles();
   const dispatch = useDispatch();
 
+  const methods = useForm();
+
   const { items } = useSelector(state => state.user);
   const { user : currentUser } = useSelector(state => state.auth);
   const { roles } = useSelector(state => state.data);
   const { items : teams} = useSelector(state => state.team);
-
-  console.log("here error", teams)
 
   useEffect(() => {
     dispatch(getUsers());
@@ -73,6 +77,7 @@ export default function UsersPage() {
   const [showSearchLoading, setShowSearchLoading] = useState("");
   const [setUserError, setShowUserError] = useState("");
   const [line_manager, setLineManager] = useState("");  
+  const [myuser, setMyUser] = useState("")
   // const [selectedUser, setSelectedUser] = useState("");
 
   // const statuses = JsonData.Status;
@@ -162,7 +167,7 @@ export default function UsersPage() {
   };
 
   const setEditing = (list) => {
-
+    console.log("list here", list)
     setName(list.fullnames);
     setTeam(list.teams.id);
     setRole(list.roles.id);
@@ -172,6 +177,7 @@ export default function UsersPage() {
     setExtension(list.extension);
     setView(list.view)
     setLineManager(list.lineManager);
+    setMyUser(list.lineManagerUser)
 
   }
 
@@ -336,9 +342,8 @@ export default function UsersPage() {
       field: '',
       title: 'Action',
       render: (list) => {
-        console.log("editing table", list)
         if(currentUser.role_id === 0) {
-          return ( <div><IconButton aria-label="edit" className={classes.textGreen} onClick={() => { handleEditClickOpen(); setEditing(list)}}><EditIcon /></IconButton>
+          return ( <div><IconButton aria-label="edit" className={classes.textGreen} onClick={() => { setEditing(list); handleEditClickOpen();}}><EditIcon /></IconButton>
           </div>)
         }
       }
@@ -474,7 +479,28 @@ export default function UsersPage() {
                       </TextField>
 
                       <label> Line Manager : </label>
-                      <TextField
+                      <Controller
+                        control={methods.control}
+                        className="basic-single"
+                        classNamePrefix="select"
+                        styles={{ marginTop : '10px', marginBottom : '10px'}}
+                        name="line_manager"
+                        render={({ value, ref }) => (
+                          <Select
+                            inputRef={ref}
+                            options={items}
+                            className="basic-multi-select"
+                            menuPortalTarget={document.body} 
+                            styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
+                            value={items.find(c => c.id === value)}
+                            onChange={val => setLineManager(val.id)}
+                            getOptionLabel={items => items.fullnames}
+                            getOptionValue={items => items.id}
+                          />
+                        )}
+                      />
+
+                      {/* <TextField
                         id="outlined-select-type"
                         select
                         fullWidth
@@ -486,12 +512,12 @@ export default function UsersPage() {
                         }}
                         helperText="Please select your line manager"
                       >
-                        {items.map((option) => (
+                        {items.length >= 1 && items.map((option) => (
                           <MenuItem key={option.id} value={option.id}>
                             {option.fullnames}
                           </MenuItem>
                         ))}
-                      </TextField>
+                      </TextField> */}
 
                       <label style={{ fontWeight: 'bold', color: 'black' }}> Team : </label>
                       <TextField
@@ -605,24 +631,27 @@ export default function UsersPage() {
                   </TextField>
 
                   <label> Line Manager : </label>
-                      <TextField
-                        id="outlined-select-type"
-                        select
-                        fullWidth
-                        variant="outlined"
-                        label="Select"
-                        value={line_manager}
-                        onChange = {(event) => {
-                          setLineManager(event.target.value);
-                        }}
-                        helperText="Please select your line manager"
-                      >
-                        {items.length >= 1 && items.map((option) => (
-                          <MenuItem key={option.id} value={option.id}>
-                            {option.fullnames}
-                          </MenuItem>
-                        ))}
-                      </TextField>
+                  <Controller
+                    control={methods.control}
+                    className="basic-single"
+                    classNamePrefix="select"
+                    styles={{ marginTop : '10px', marginBottom : '10px'}}
+                    name="line_manager"
+                    render={({ value, ref }) => (
+                      <Select
+                        inputRef={ref}
+                        options={items}
+                        className="basic-multi-select"
+                        menuPortalTarget={document.body} 
+                        styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
+                        defaultValue={myuser}
+                        value={items.find(c => c.id === value)}
+                        onChange={val => setLineManager(val.id)}
+                        getOptionLabel={items => items.fullnames}
+                        getOptionValue={items => items.id}
+                      />
+                    )}
+                  />
 
                   <label style={{ fontWeight: 'bold', color: 'black' }}> Team : </label>
                   <TextField

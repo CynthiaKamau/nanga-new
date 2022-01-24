@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useHistory } from "react-router";
 // @material-ui/core components
 import { makeStyles } from "@material-ui/core/styles";
 import InputAdornment from "@material-ui/core/InputAdornment";
@@ -17,7 +16,7 @@ import OutlinedInput from '@material-ui/core/OutlinedInput';
 import Background from "assets/img/background.png";
 import TextField from '@material-ui/core/TextField';
 import InputLabel from '@material-ui/core/InputLabel';
-
+import { useHistory } from "react-router-dom";
 // core components
 import GridContainer from "components/Grid/GridContainer.js";
 import GridItem from "components/Grid/GridItem.js";
@@ -37,17 +36,13 @@ import styles from "assets/jss/material-dashboard-pro-react/views/loginPageStyle
 const useStyles = makeStyles(styles);
 
 export default function LoginPage() {
-    const { isAuthenticated, isLoading, error, user  } = useSelector(state => state.auth);
+    // const { isAuthenticated, isLoading, error, user  } = useSelector(state => state.auth);
+    const { isLoading } = useSelector(state => state.auth);
 
+    const history = useHistory();
     const dispatch = useDispatch();
 
     const classes = useStyles();
-
-    const history = useHistory();
-
-    // if(isAuthenticated === true) {
-    //     history.push(`/admin/dashboard`);
-    // }
 
     const [username, setusername] = useState("");
     const [password, setPassword] = useState("");
@@ -95,24 +90,48 @@ export default function LoginPage() {
         }
 
         dispatch(login(username, password))
-        if (error !== null) {
-            console.log("login err", error)
-            setshowloader(false);
-            swal.fire({
-                title: "Error",
-                text: error,
-                icon: "error",
-                dangerMode: true
-            });
-        } else if(isAuthenticated  === true) {
-            setshowloader(false);
-            console.log("login user", user)
-            if(user.role_id == 0) {
-                history.push(`/admin/dashboard`);
-            } else {
-                history.push(`/user/dashboard`);
-            }
-        }
+            .then(response => {
+                console.log("here res", response)
+                console.log("here res role", response.user.role_id)
+
+                if(response.success === true) {
+                    setshowloader(false);
+                    if(response.user.role_id == 0) {
+                        history.push(`/admin/dashboard`);
+                    } else {
+                        history.push(`/user/dashboard`);
+                    }
+                } else {
+                    let err = response.message;
+
+                    setshowloader(false);
+                    swal.fire({
+                        title: "Error",
+                        text: err,
+                        icon: "error",
+                        dangerMode: true
+                    });
+                }
+            })
+
+        // if (error !== null) {
+        //     console.log("login err", error)
+        //     setshowloader(false);
+        //     swal.fire({
+        //         title: "Error",
+        //         text: error,
+        //         icon: "error",
+        //         dangerMode: true
+        //     });
+        // } else if(isAuthenticated  === true) {
+        //     setshowloader(false);
+        //     console.log("login user", user)
+        //     if(user.role_id == 0) {
+        //         history.push(`/admin/dashboard`);
+        //     } else {
+        //         history.push(`/user/dashboard`);
+        //     }
+        // }
 
     }
 

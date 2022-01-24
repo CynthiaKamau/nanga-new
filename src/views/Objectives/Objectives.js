@@ -980,7 +980,13 @@ export default function StrategicObjectives() {
                     ) : null }
                 </div>
                 
-            ))) :  null}
+            ))) : items == null ? (
+                <Grid container spacing={2} style={{marginRight : '10px', marginLeft : '10px'}}>
+                    <Card>
+                        <h3 style={{textAlign : 'center'}}> You have no objectives set </h3>
+                    </Card>
+                </Grid>
+            ) :  null}
 
             {/* add objective */}
             <Dialog open={addopen} onClose={handleAddClose}>
