@@ -152,8 +152,17 @@ export default function AssignedTasksPage() {
             title: 'From'
         },
         {
-          field: 'assignee.fullnames',
-          title: 'Resources'
+            field: 'resource',
+            title: 'Resources',
+            render: list => {
+              return list.assignedTasks.map((detail, index) => {
+                  if(detail.assignee.fullnames != null) {
+                      return (<p key={index}>{detail.assignee.fullnames}</p>)
+                  } else if (detail.assignee.fullnames === null || detail.assignee.fullnames === undefined) {
+                    return (<p key={index}>None</p>)                  }
+              })
+  
+            }
         },
         {
           field: 'duedate',

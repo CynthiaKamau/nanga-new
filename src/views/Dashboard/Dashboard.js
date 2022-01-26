@@ -1011,7 +1011,7 @@ function Dashboard() {
       <GridContainer >
 
       <Grid container spacing={2} style={{marginRight : '10px', marginLeft : '10px'}}>
-        <h3 className={classes.textBold}> VISSION </h3>
+        <h3 className={classes.textBold}> VISION </h3>
 
         <Card className={classes.cardGrey} style={{margin: '0px'}}>
           <CardBody >
