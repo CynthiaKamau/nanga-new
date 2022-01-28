@@ -89,8 +89,6 @@ export default function StrategicObjectives() {
         }
     ]
 
-    console.log("resources", sys_resources)
-
     const [addopen, setAddOpen] = useState(false);
     const [addopenindividualtask, setAddOpenIndividualTask] = useState(false);
     const [deleteopen, setDeleteOpen] = useState(false);
@@ -143,13 +141,14 @@ export default function StrategicObjectives() {
         
         console.log("kpi uom", kpi_unit_of_measure)
     
-        console.log("save objective", description, kpi_id, target, user_id, created_by, pillar_id);
+        console.log("save objective", description, kpi_id, target, obj_status, user_id, created_by, pillar_id);
     
         const config = { headers: { 'Content-Type': 'application/json' } }
     
         let body = ({
             description : description,
             year: year,
+            status: obj_status,
             kpi_ids : kpi_id,
             target :  0,
             user_id : user_id,
@@ -1081,6 +1080,25 @@ export default function StrategicObjectives() {
                             </TextField>
                         </Grid>
                     </Grid>
+
+                    <TextField
+                        id="outlined-select-status"
+                        select
+                        fullWidth
+                        variant="outlined"
+                        label="Select Status"
+                        value={obj_status}
+                        onChange={(event) => {
+                            setObjStatus(event.target.value);
+                        }}
+                        helperText="Please select the status"
+                    >
+                        {obj_statuses.map((option) => (
+                            <MenuItem key={option.value} value={option.value}>
+                                {option.label}
+                            </MenuItem>
+                        ))}
+                    </TextField>
 
                     <TextField
                         label="Year"

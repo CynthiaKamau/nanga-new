@@ -284,6 +284,7 @@ export default function UsersPage() {
 
         if (response.data.success === false) {
           setShowSearchLoading(false);
+          setName("");
           setShowUserError("User not found!")
         } else {
 
@@ -292,6 +293,7 @@ export default function UsersPage() {
           if(response.data.accountname === null) {
 
             setSearchUser(false)
+            setName("");
             setShowUserError("User not found!");
 
           } else {
@@ -302,6 +304,7 @@ export default function UsersPage() {
         }
       } catch (error) {
         setShowSearchLoading(false);
+        setName("");
           swal.fire({
               title: "Error",
               text: "User not found!",

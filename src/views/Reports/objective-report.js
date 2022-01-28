@@ -222,10 +222,6 @@ export default function ObjectiveReport() {
           title: 'Strategic Objective'
         },
         {
-          field: 'objectives.user.fullnames',
-          title: 'Owner'
-        },
-        {
           field: '',
           title: 'Variance',
           render: (list) => {
@@ -259,6 +255,10 @@ export default function ObjectiveReport() {
           field: 'objectives.supportRequired',
           title: 'Support Required'
         },
+        {
+            field: '',
+            title: 'Priorities for the quarter'
+          },
         {
           field: '',
           title: 'Action',

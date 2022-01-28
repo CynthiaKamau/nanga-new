@@ -1211,10 +1211,10 @@ export default function BFC() {
 
             {/* edit Strategic Level 1 */}
             <Dialog open={editopensil1} onClose={handleEditSIL1Close} >
-            <DialogTitle>Strategic Intent Level 1</DialogTitle>
+            <DialogTitle>Leadership Traits</DialogTitle>
             <DialogContent>
                 <DialogContentText>
-                Edit Strategic Intent Level 1
+                Edit Leadership Traits
                 </DialogContentText>
 
                 <TextField
