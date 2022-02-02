@@ -23,7 +23,7 @@ switch(action.type) {
             isLoading : true,
         }
     case LOGIN_SUCCESS :
-        localStorage.setItem('token', action.payload.token)
+        localStorage.setItem('token', action.payload.accessToken)
         return {
             ...state, 
             isAuthenticated : true,

@@ -39,7 +39,7 @@ export const getUser = (id) => {
 export const login = (code, session_state) => (dispatch) => {
     return AuthService.login(code, session_state)
     .then((res) => {
-        dispatch({ type: LOGIN_SUCCESS, payload: { user: res.data.user } });
+        dispatch({ type: LOGIN_SUCCESS, payload:  res.data });
             //return Promise.resolve();
             return res.data;
         },
