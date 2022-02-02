@@ -44,7 +44,7 @@ export default function UsersPage() {
   const methods = useForm();
 
   const { items } = useSelector(state => state.user);
-  const { user : currentUser } = useSelector(state => state.auth);
+  const { user : currentUser, token } = useSelector(state => state.auth);
   const { roles } = useSelector(state => state.data);
   const { items : teams} = useSelector(state => state.team);
 
@@ -222,7 +222,15 @@ export default function UsersPage() {
                     title: "Success",
                     text: item,
                     icon: "success",
-                }).then(() => dispatch(getUsers()));
+                }).then(() => {
+                  setName("")
+                  setTeam("")
+                  setRole("")
+                  setEmail("")
+                  setLineManager("")
+                  setCreatedBy(currentUser.id)
+                  dispatch(getUsers())
+                });
 
             } else {
               let error = response.data.message
@@ -274,17 +282,18 @@ export default function UsersPage() {
 
       setShowSearchLoading(true)
 
-      console.log("name", name)
+      console.log("name", email)
 
       const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
-      let body = JSON.stringify({ username : name});
 
       try {
-        let response = await axios.post('/searchldap', body, config);
+        // let response = await axios.post('/searchldap', body, config);
+
+        let response = await axios.get(`fetchUsertoAdd?mail=${email}&accessToken=${token}`, config)
 
         if (response.data.success === false) {
           setShowSearchLoading(false);
-          setName("");
+          setEmail("");
           setShowUserError("User not found!")
         } else {
 
@@ -293,7 +302,7 @@ export default function UsersPage() {
           if(response.data.accountname === null) {
 
             setSearchUser(false)
-            setName("");
+            setEmail("");
             setShowUserError("User not found!");
 
           } else {
@@ -419,13 +428,13 @@ export default function UsersPage() {
                     autoFocus
                     margin="dense"
                     id="name"
-                    label="Enter AD Username"
+                    label="Enter AD Email"
                     type="text"
                     fullWidth
-                    value={name}
+                    value={email}
                     variant="outlined"
                     onChange={(event) => {
-                      setName(event.target.value);
+                      setEmail(event.target.value);
                     }}
                     onKeyDown={(e) => {handleSearchUser(e)}}
                   />

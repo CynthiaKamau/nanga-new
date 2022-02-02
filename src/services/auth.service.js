@@ -1,8 +1,13 @@
 import axios from 'axios';
 
 class AuthService {
-    login = (username, password) => {
-        return axios.post("/authenticate", {username, password })
+
+    // const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
+
+    login = (code, session_state) => {
+        return axios.get(`/fetchTokenfromCode?code=${code}&session_state=${session_state}`,
+            { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
+        )
         .then((response) => {return response})
     }
 

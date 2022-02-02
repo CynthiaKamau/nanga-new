@@ -1,22 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 // @material-ui/core components
 import { makeStyles } from "@material-ui/core/styles";
-import InputAdornment from "@material-ui/core/InputAdornment";
-// import Icon from "@material-ui/core/Icon";
 
-// // @material-ui/icons
-// import Face from "@material-ui/icons/Face";
-// import Email from "@material-ui/icons/Email";
-// import LockOutline from "@material-ui/icons/LockOutline";
-import IconButton from "@material-ui/core/IconButton";
-import Visibility from "@material-ui/icons/Visibility";
-import VisibilityOff from "@material-ui/icons/VisibilityOff";
-import OutlinedInput from '@material-ui/core/OutlinedInput';
 import Background from "assets/img/background.png";
-import TextField from '@material-ui/core/TextField';
-import InputLabel from '@material-ui/core/InputLabel';
 import { useHistory } from "react-router-dom";
+import { useDispatch } from "react-redux";
 // core components
 import GridContainer from "components/Grid/GridContainer.js";
 import GridItem from "components/Grid/GridItem.js";
@@ -26,7 +15,7 @@ import Card from "components/Card/Card.js";
 import CardBody from "components/Card/CardBody.js";
 // import CardHeader from "components/Card/CardHeader.js";
 import CardFooter from "components/Card/CardFooter.js";
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 import swal from "sweetalert2";
 import Loader from "react-loader-spinner";
 import { login } from "../../actions/auth";
@@ -44,10 +33,11 @@ export default function LoginPage() {
 
     const classes = useStyles();
 
-    const [username, setusername] = useState("");
-    const [password, setPassword] = useState("");
-    const [values, setValues] = useState({ showPassword: false });
+    const [code, setCode] = useState("");
+    const [session_code, setSessionCode] = useState("");
     const [showloader, setshowloader] = useState(false);
+
+    console.log(setCode, setSessionCode);
 
     useEffect(() => {
         if (isLoading) {
@@ -65,31 +55,33 @@ export default function LoginPage() {
         }
     }, [showloader]);
 
-    const handleClickShowPassword = () => {
-        setValues({
-            ...values,
-            showPassword: !values.showPassword,
-        });
-    };
-
-    const handleMouseDownPassword = (event) => {
-        event.preventDefault();
-    };
-
     const handleLogin = e => {
         e.preventDefault();
         setshowloader(true);
 
-        if(username === "" || password === ""  ) {
-            swal.fire({
-                title: "Error",
-                text: "Username and Password are required!",
-                icon: "error",
-                dangerMode: true
-            });
-        }
+        console.log(code, session_code)
 
-        dispatch(login(username, password))
+        const urlParams = new URLSearchParams(window.location.search);
+        console.log("url", urlParams)
+        const azure_code = urlParams.get('code');
+        setCode(azure_code)
+
+        const azure_session_state = urlParams.get('session_state');
+        setSessionCode(azure_session_state)
+
+        console.log("code", azure_code);
+        console.log("session", azure_session_state)
+
+        // if(code === "" || session_code === ""  ) {
+        //     swal.fire({
+        //         title: "Error",
+        //         text: "Code is required!",
+        //         icon: "error",
+        //         dangerMode: true
+        //     });
+        // }
+
+        dispatch(login(azure_code, azure_session_state))
             .then(response => {
                 console.log("here res", response)
                 console.log("here res role", response.user.role_id)
@@ -101,6 +93,14 @@ export default function LoginPage() {
                     } else {
                         history.push(`/user/dashboard`);
                     }
+
+                    if(response.user== 0) {
+                        history.push(`/admin/dashboard`);
+                    } else {
+                        history.push(`/user/dashboard`);
+                    }
+
+
                 } else {
                     let err = response.message;
 
@@ -113,25 +113,6 @@ export default function LoginPage() {
                     });
                 }
             })
-
-        // if (error !== null) {
-        //     console.log("login err", error)
-        //     setshowloader(false);
-        //     swal.fire({
-        //         title: "Error",
-        //         text: error,
-        //         icon: "error",
-        //         dangerMode: true
-        //     });
-        // } else if(isAuthenticated  === true) {
-        //     setshowloader(false);
-        //     console.log("login user", user)
-        //     if(user.role_id == 0) {
-        //         history.push(`/admin/dashboard`);
-        //     } else {
-        //         history.push(`/user/dashboard`);
-        //     }
-        // }
 
     }
 
@@ -162,57 +143,8 @@ export default function LoginPage() {
                                 <p style={{ textAlign: "center", fontWeight: "bold" }}> UAP Old Mutual Portal </p>
                                 <CardBody>
 
-                                    <TextField
-                                        id="outlined-select-uname"
-                                        fullWidth
-                                        style={{ marginBottom: '15px' }}
-                                        variant="outlined"
-                                        label="Username"
-                                        required
-                                        value={username}
-                                        onChange={(event) => {
-                                            setusername(event.target.value);
-                                        }}
-                                        helperText="Please input your username">
-                                    </TextField>
-
-                                    <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
-                                    <OutlinedInput
-                                        id="outlined-adornment-password"
-                                        type={values.showPassword ? 'text' : 'password'}
-                                        value={values.password}
-                                        fullWidth
-                                        required
-                                        onChange={(event) => {
-                                            setPassword(event.target.value)
-                                        }}
-                                        endAdornment={
-                                            <InputAdornment position="end">
-                                                <IconButton
-                                                    aria-label="toggle password visibility"
-                                                    onClick={handleClickShowPassword}
-                                                    onMouseDown={handleMouseDownPassword}
-                                                    edge="end"
-                                                >
-                                                    {values.showPassword ? <VisibilityOff /> : <Visibility />}
-                                                </IconButton>
-                                            </InputAdornment>
-                                        }
-                                        label="Password"
-                                    />
-
                                 </CardBody>
                                 <CardFooter className={classes.cardFooter}>
-                                    {/* <GridItem xs={12} sm={10} md={8} lg={8}>
-                          <Button
-                              color="primary"
-                              size="lg"
-                              fullWidth
-                              onClick={handleLogin}
-                          >
-                              Login
-                          </Button>
-                          </GridItem> */}
 
                                     <GridItem xs={12} sm={12} md={12} lg={12} style={{ textAlign: "center" }}>
                                         {showloader === true ? (
@@ -245,16 +177,10 @@ export default function LoginPage() {
                                     lg={12}
                                     style={{ textAlign: "center", marginBottom: 20 }}
                                 >
-                                    <Link to={"/reset-password"}>
-                                        {" "}
-                                        <strong style={{ fontSize: 16 }}>
-                                            {" "}
-                                            Forgot Password?{" "}
-                                        </strong>{" "}
-                                    </Link>
 
                                     <p> By using this portal you agree to UAP Old Mutuals Terms of Use and Privacy Policy</p>
                                 </GridItem>
+
                             </form>
                         </Card>
                     </GridItem>

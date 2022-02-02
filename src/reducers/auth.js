@@ -7,7 +7,7 @@ import { LOGIN_SUCCESS,
     LOGOUT } from '../actions/types';
 
 const initialState = {
-token : localStorage.getItem('token'),
+token : null,
 isAuthenticated : null,
 isLoading : false,
 user : null,
@@ -29,7 +29,7 @@ switch(action.type) {
             isAuthenticated : true,
             isLoading : false,
             user : action.payload.user,
-            token : action.payload.token,
+            token : action.payload.accessToken,
             error : null
         }
     case USER_FETCHED :
