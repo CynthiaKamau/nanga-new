@@ -84,17 +84,12 @@ export default function LoginPage() {
         dispatch(login(azure_code, azure_session_state))
             .then(response => {
                 console.log("here res", response)
+                console.log("here res status ", response.status)
                 console.log("here res role", response.user.role_id)
 
-                if(response.success === true) {
+                if(response.success == true) {
                     setshowloader(false);
-                    if(response.user.role_id == 0) {
-                        history.push(`/admin/dashboard`);
-                    } else {
-                        history.push(`/user/dashboard`);
-                    }
-
-                    if(response.user== 0) {
+                    if(response.user.role_id === 0) {
                         history.push(`/admin/dashboard`);
                     } else {
                         history.push(`/user/dashboard`);

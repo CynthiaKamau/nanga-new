@@ -46,7 +46,7 @@ export const login = (code, session_state) => (dispatch) => {
         (error) => {
             dispatch({ type: LOGIN_FAIL, payload: error.message });
             //return Promise.reject();
-            return error.message;
+            return error;
         }
     )
 }
