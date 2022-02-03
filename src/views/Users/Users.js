@@ -282,7 +282,7 @@ export default function UsersPage() {
 
       setShowSearchLoading(true)
 
-      console.log("name", email)
+      console.log("email", email)
 
       const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
 
@@ -290,6 +290,7 @@ export default function UsersPage() {
         // let response = await axios.post('/searchldap', body, config);
 
         let response = await axios.get(`fetchUsertoAdd?mail=${email}&accessToken=${token}`, config)
+        console.log("hh", response.data.firstname)
 
         if (response.data.success === false) {
           setShowSearchLoading(false);
