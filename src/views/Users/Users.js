@@ -300,10 +300,14 @@ export default function UsersPage() {
 
           setShowSearchLoading(false);
 
-          if(response.data.accountname === null) {
+          if(response.data.accountname === null || response.data.accountname == undefined) {
 
             setSearchUser(false)
             setEmail("");
+            setTeam("");
+            setRole("");
+            setEmail("");
+            setLineManager("")
             setShowUserError("User not found!");
 
           } else {
