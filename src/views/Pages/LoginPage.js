@@ -84,10 +84,10 @@ export default function LoginPage() {
         dispatch(login(azure_code, azure_session_state))
             .then(response => {
                 console.log("here res", response)
-                console.log("here res status ", response.status)
+                console.log("here res success ", response.success)
                 console.log("here res role", response.user.role_id)
 
-                if(response.success == true) {
+                if(response.success == true && response.message == "Login successful") {
                     setshowloader(false);
                     if(response.user.role_id === 0) {
                         history.push(`/admin/dashboard`);
@@ -97,16 +97,27 @@ export default function LoginPage() {
 
 
                 } else {
-                    let err = response.message;
 
                     setshowloader(false);
                     swal.fire({
                         title: "Error",
-                        text: err,
+                        text: 'An error occured, please try again.',
                         icon: "error",
                         dangerMode: true
                     });
                 }
+            }).catch(err => {
+
+                console.log("login err", err)
+
+                setshowloader(false);
+                swal.fire({
+                    title: "Error",
+                    text: 'An error occured, please try again.',
+                    icon: "error",
+                    dangerMode: true
+
+                })
             })
 
     }
