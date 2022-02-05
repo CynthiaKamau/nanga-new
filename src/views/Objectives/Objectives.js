@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { useForm, Controller } from "react-hook-form";
+import Select from "react-select";
 
 // @material-ui/core
 import { makeStyles } from "@material-ui/core/styles";
@@ -39,9 +41,9 @@ import { getKpis } from "actions/kpis";
 import { getStatus, getPillars } from "actions/data";
 import { getResourceUsers } from "actions/users";
 import styles1 from "assets/jss/material-dashboard-pro-react/views/extendedFormsStyle.js";
-import FormControl from "@material-ui/core/FormControl";
-import InputLabel from "@material-ui/core/InputLabel";
-import Select from "@material-ui/core/Select";
+// import FormControl from "@material-ui/core/FormControl";
+// import InputLabel from "@material-ui/core/InputLabel";
+// import Select from "@material-ui/core/Select";
 // import { format } from 'date-fns';
 
 // import { Checkbox, ListItemIcon, ListItemText } from "@material-ui/core";
@@ -53,6 +55,7 @@ export default function StrategicObjectives() {
 
     const classes = useStyles();
     const dispatch = useDispatch();
+    const methods = useForm();
 
     // const history = useHistory();
 
@@ -130,6 +133,8 @@ export default function StrategicObjectives() {
     const [obj_status, setObjStatus ] = useState("");
     const [deleteId, setDeleteId] = useState("");
     const [deleteTaskId, setDeleteTaskId] = useState("");
+    const [myKpis, setMyKpis] = useState("");
+    const [myResources, setMyResources] = useState("");
 
     const handleAddClickOpen = () => {
         setAddOpen(true);
@@ -139,9 +144,9 @@ export default function StrategicObjectives() {
         // e.preventDefault();
         setAddOpen(false);
         
-        console.log("kpi uom", kpi_unit_of_measure)
+        console.log("kpi", kpi_id)
     
-        console.log("save objective", description, kpi_id, target, obj_status, user_id, created_by, pillar_id);
+        console.log("save objective", description, kpi_id, target, obj_status, user_id, created_by, pillar_id, kpi_unit_of_measure);
     
         const config = { headers: { 'Content-Type': 'application/json' } }
     
@@ -206,6 +211,8 @@ export default function StrategicObjectives() {
               console.log(response1)
               } else {
                 console.log("task add", response1.data.data)
+
+                console.log("users", assignee_id)
 
                 const body = JSON.stringify({
                 task_id : response1.data.data.id ,
@@ -323,6 +330,10 @@ export default function StrategicObjectives() {
             setKpiId([]);
         }
 
+        if(list.kpis !== null) {
+            setMyKpis(list.kpis)
+        }
+
         setId(list.id);
         setTarget(list.target);
         setTargetAtReview(list.target_achieved_on_review);
@@ -386,6 +397,7 @@ export default function StrategicObjectives() {
                     setTarget("")
                     setPillar("")
                     setDescription("")
+                    setMyKpis("")
                     dispatch(getUserObjectives(currentUser.id))
                 })
 
@@ -561,6 +573,18 @@ export default function StrategicObjectives() {
             console.log("hapo", x);
         } else {
             setAssigneeId([]);
+        }
+
+        if(list.assignedTasks !== null) {
+            let y = [];
+            (list.assignedTasks).map(function (i) {
+                console.log("my i", i)
+                y.push(i.assignee);
+            });
+            setMyResources(y);
+            console.log("hapo", y);
+        } else {
+            setMyResources([]);
         }
     }
     
@@ -820,7 +844,7 @@ export default function StrategicObjectives() {
                 />
             ) : items ? ( items.map((list, index) => (
                 <div key={index} style={{ justifyContent: 'center' }} >
-                    <Card style={{borderLeft : list.objectives.overallStatus === 'Incomplete' ? 'solid 5px red' : (list.objectives.overallStatus === 'COMPLETE' || list.objectives.overallStatus === 'Complete') ? 'solid 5px green' : (list.objectives.overallStatus === 'INCOMPLETE' || list.objectives.overallStatus === 'Incomplete' || list.objectives.overallStatus === '' || list.objectives.overallStatus === null ) ? 'solid 5px red'  :'solid 5px black' , marginBottom: '0'}} key={index} >
+                    <Card style={{borderLeft : list.objectives.overallStatus === 'Incomplete' ? 'solid 5px red' : (list.objectives.overallStatus === 'ONGOING' || list.objectives.overallStatus === 'Ongoing') ? 'solid 5px #ff9800' : (list.objectives.overallStatus === 'COMPLETE' || list.objectives.overallStatus === 'Complete') ? 'solid 5px green' : (list.objectives.overallStatus === 'INCOMPLETE' || list.objectives.overallStatus === 'Incomplete' || list.objectives.overallStatus === '' || list.objectives.overallStatus === null ) ? 'solid 5px red'  :'solid 5px black' , marginBottom: '0'}} key={index} >
                         <Grid container justify="flex-end">
                             <IconButton aria-label="edit" className={classes.textGreen} onClick={() => { handleEditClickOpen(); setEditing(list.objectives); }} ><EditIcon /></IconButton>
                             <IconButton aria-label="delete" style={{color: 'black'}} onClick={() => { setDeleting(list.objectives), handleDeleteClickOpen() }} ><DeleteForever /></IconButton>
@@ -1013,46 +1037,27 @@ export default function StrategicObjectives() {
                     <Grid container spacing={2}>
                         <Grid item xs={6} lg={6} xl={6} sm={12}>
                             <label> KPI : </label>
-                            <FormControl
-                                fullWidth
-                                className={classes.selectFormControl}
-                            >
-                                <InputLabel
-                                htmlFor="multiple-select"
-                                className={classes.selectLabel}
-                                >
-                                Select KPI
-                                </InputLabel>
+                            <Controller
+                                control={methods.control}
+                                className="basic-single"
+                                classNamePrefix="select"
+                                styles={{ marginTop: "10px", marginBottom: "10px" }}
+                                name="kpi_id"
+                                render={({ value, ref }) => (
                                 <Select
-                                multiple
-                                value={kpi_id}
-                                variant="outlined"
-                                onChange={(event) => {
-                                    const value = event.target.value;
-                                    setKpiId(value)
-                                }}
-                                MenuProps={{ className: classes.selectMenu }}
-                                classes={{ select: classes.select }}
-                                inputProps={{
-                                    name: "multipleSelect",
-                                    id: "multiple-select",
-                                }}
-                                >
-                                {kpis && kpis.map((option) => (
-                                    <MenuItem key={option.id} value={option.id}
-                                        classes={{
-                                        root: classes.selectMenuItem,
-                                        selected: classes.selectMenuItemSelectedMultiple,
-                                        }}> 
-                                        {option.title}
-                                        {/* <ListItemIcon>
-                                        <Checkbox checked={kpi_id.includes(option.id)} />
-                                        </ListItemIcon>
-                                        <ListItemText primary={option.title} title={option.title} /> */}
-                                    </MenuItem>   
-                                ))}
-                                </Select>
-                            </FormControl>
+                                    inputRef={ref}
+                                    options={kpis}
+                                    isMulti
+                                    className="basic-multi-select"
+                                    menuPortalTarget={document.body}
+                                    styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
+                                    value={kpis.find((c) => c.id === value)}
+                                    onChange={(val) => setKpiId(val.map(v => v.id))}
+                                    getOptionLabel={(kpis) => kpis.title}
+                                    getOptionValue={(kpis) => kpis.id}
+                                />
+                                )}
+                            />
 
                         </Grid>
                         <Grid item xs={6} lg={6} xl={6} sm={12}>
@@ -1168,42 +1173,27 @@ export default function StrategicObjectives() {
                     />
 
                     <label style={{ fontWeight: 'bold', color: 'black' }}> Add A Resource: </label>
-                    <FormControl
-                        fullWidth
-                        className={classes.selectFormControl}
-                    >
-                        <InputLabel
-                        htmlFor="multiple-select"
-                        className={classes.selectLabel}
-                        >
-                        Select Resource
-                        </InputLabel>
+                    <Controller
+                        control={methods.control}
+                        className="basic-single"
+                        classNamePrefix="select"
+                        styles={{ marginTop: "10px", marginBottom: "10px" }}
+                        name="assignee_id"
+                        render={({ value, ref }) => (
                         <Select
-                        multiple
-                        value={assignee_id}
-                        variant="outlined"
-                        onChange={(event) => {
-                            const value = event.target.value;
-                            setAssigneeId(value)
-                        }}
-                        MenuProps={{ className: classes.selectMenu }}
-                        classes={{ select: classes.select }}
-                        inputProps={{
-                            name: "multipleSelect",
-                            id: "multiple-select",
-                        }}
-                        >
-                            {sys_resources && sys_resources.map((option) => (
-                            <MenuItem key={option.id} value={option.id}
-                                classes={{
-                                root: classes.selectMenuItem,
-                                selected: classes.selectMenuItemSelectedMultiple,
-                                }}>
-                                {option.fullnames}
-                            </MenuItem>
-                        ))}
-                        </Select>
-                    </FormControl>
+                            inputRef={ref}
+                            options={sys_resources}
+                            isMulti
+                            className="basic-multi-select"
+                            menuPortalTarget={document.body}
+                            styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
+                            value={sys_resources.find((c) => c.id === value)}
+                            onChange={(val) => setAssigneeId(val.map(v => v.id))}
+                            getOptionLabel={(sys_resources) => sys_resources.fullnames}
+                            getOptionValue={(sys_resources) => sys_resources.id}
+                        />
+                        )}
+                    />
 
                     <Grid container spacing={2}>
                         <Grid item xs={6} lg={6} xl={6} sm={12}>
@@ -1288,42 +1278,27 @@ export default function StrategicObjectives() {
                     />
 
                     <label style={{ fontWeight: 'bold', color: 'black' }}> Add A Resource: </label>
-                    <FormControl
-                        fullWidth
-                        className={classes.selectFormControl}
-                    >
-                        <InputLabel
-                        htmlFor="multiple-select"
-                        className={classes.selectLabel}
-                        >
-                        Select Resource
-                        </InputLabel>
+                    <Controller
+                        control={methods.control}
+                        className="basic-single"
+                        classNamePrefix="select"
+                        styles={{ marginTop: "10px", marginBottom: "10px" }}
+                        name="assignee_id"
+                        render={({ value, ref }) => (
                         <Select
-                        multiple
-                        value={assignee_id}
-                        variant="outlined"
-                        onChange={(event) => {
-                            const value = event.target.value;
-                            setAssigneeId(value)
-                        }}
-                        MenuProps={{ className: classes.selectMenu }}
-                        classes={{ select: classes.select }}
-                        inputProps={{
-                            name: "multipleSelect",
-                            id: "multiple-select",
-                        }}
-                        >
-                            {sys_resources && sys_resources.map((option) => (
-                            <MenuItem key={option.id} value={option.id}
-                                classes={{
-                                root: classes.selectMenuItem,
-                                selected: classes.selectMenuItemSelectedMultiple,
-                                }}>
-                                {option.fullnames}
-                            </MenuItem>
-                        ))}
-                        </Select>
-                    </FormControl>
+                            inputRef={ref}
+                            options={sys_resources}
+                            isMulti
+                            className="basic-multi-select"
+                            menuPortalTarget={document.body}
+                            styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
+                            value={sys_resources.find((c) => c.id === value)}
+                            onChange={(val) => setAssigneeId(val.map(v => v.id))}
+                            getOptionLabel={(sys_resources) => sys_resources.fullnames}
+                            getOptionValue={(sys_resources) => sys_resources.id}
+                        />
+                        )}
+                    />
 
                     <Grid container spacing={2}>
                         <Grid item xs={6} lg={6} xl={6} sm={12}>
@@ -1405,42 +1380,28 @@ export default function StrategicObjectives() {
                     />
 
                     <label style={{ fontWeight: 'bold', color: 'black'}}> KPI : </label>
-                        <FormControl
-                            fullWidth
-                            className={classes.selectFormControl}
-                        >
-                            <InputLabel
-                            htmlFor="multiple-select"
-                            className={classes.selectLabel}
-                            >
-                            Select KPI
-                            </InputLabel>
-                            <Select
-                            multiple
-                            variant="outlined"
-                            value={kpi_id}
-                            onChange={(event) => {
-                                const value = event.target.value;
-                                setKpiId(value)
-                            }}
-                            MenuProps={{ className: classes.selectMenu }}
-                            classes={{ select: classes.select }}
-                            inputProps={{
-                                name: "multipleSelect",
-                                id: "multiple-select",
-                            }}
-                            >
-                                {kpis && kpis.map((option) => (
-                                <MenuItem key={option.id} value={option.id}
-                                    classes={{
-                                    root: classes.selectMenuItem,
-                                    selected: classes.selectMenuItemSelectedMultiple,
-                                    }}>
-                                    {option.title}
-                                </MenuItem>
-                            ))}
-                            </Select>
-                        </FormControl>
+                    <Controller
+                        control={methods.control}
+                        className="basic-single"
+                        classNamePrefix="select"
+                        styles={{ marginTop: "10px", marginBottom: "10px" }}
+                        name="kpi_id"
+                        render={({ value, ref }) => (
+                        <Select
+                            inputRef={ref}
+                            options={kpis}
+                            isMulti
+                            className="basic-multi-select"
+                            menuPortalTarget={document.body}
+                            styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
+                            defaultValue={ myKpis }
+                            value={kpis.find((c) => c.id === value)}
+                            onChange={(val) => setKpiId(val.map(v => v.id))}
+                            getOptionLabel={(kpis) => kpis.title}
+                            getOptionValue={(kpis) => kpis.id}
+                        />
+                        )}
+                    /> 
 
                     <label> Pillar : </label>
                     <TextField
@@ -1593,42 +1554,29 @@ export default function StrategicObjectives() {
                     />
 
                     <label style={{ fontWeight: 'bold', color: 'black' }}> Add A Resource: </label>
-                    <FormControl
-                        fullWidth
-                        className={classes.selectFormControl}
-                    >
-                        <InputLabel
-                        htmlFor="multiple-select"
-                        className={classes.selectLabel}
-                        >
-                        Select Resource
-                        </InputLabel>
+                    <Controller
+                        control={methods.control}
+                        className="basic-single"
+                        classNamePrefix="select"
+                        styles={{ marginTop: "10px", marginBottom: "10px" }}
+                        name="assignee_id"
+                        render={({ value, ref }) => (
                         <Select
-                        multiple
-                        value={assignee_id}
-                        variant="outlined"
-                        onChange={(event) => {
-                            const value = event.target.value;
-                            setAssigneeId(value)
-                        }}
-                        MenuProps={{ className: classes.selectMenu }}
-                        classes={{ select: classes.select }}
-                        inputProps={{
-                            name: "multipleSelect",
-                            id: "multiple-select",
-                        }}
-                        >
-                            {sys_resources && sys_resources.map((option) => (
-                            <MenuItem key={option.id} value={option.id}
-                                classes={{
-                                root: classes.selectMenuItem,
-                                selected: classes.selectMenuItemSelectedMultiple,
-                                }}>
-                                {option.fullnames}
-                            </MenuItem>
-                        ))}
-                        </Select>
-                    </FormControl>
+                            inputRef={ref}
+                            options={sys_resources}
+                            isMulti
+                            className="basic-multi-select"
+                            menuPortalTarget={document.body}
+                            styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
+                            defaultValue={myResources}
+                            value={sys_resources.find((c) => c.id === value)}
+                            onChange={(val) => setAssigneeId(val.map(v => v.id))}
+                            getOptionLabel={(sys_resources) => sys_resources.fullnames}
+                            getOptionValue={(sys_resources) => sys_resources.id}
+                        />
+                        )}
+                    />
+                    
 
                     <Grid container spacing={2}>
                         <Grid item xs={6} lg={6} xl={6} sm={12}>

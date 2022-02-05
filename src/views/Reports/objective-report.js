@@ -34,6 +34,7 @@ import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
 import MaterialTable from 'material-table';
 import { CardContent } from "@material-ui/core";
+// import { CsvBuilder } from "filefy"
 
 import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
 
@@ -99,11 +100,30 @@ export default function ObjectiveReport() {
     const [support_required, setSupportRequired] = useState("");
     const [risk_and_opportunity, setRiskAndOpportunity] = useState(""); 
     const [pillar_id, setPillarId] = useState("")
-
+    const [priorities_for_quarter, setPrioritiesForQuarter] = useState("");
 
     const handleEditClickOpen = () => {
         setEditOpen(true);
     };
+
+    // const defaultExportCsv = () => {
+    //     const [columns, data] = this.getTableData();
+     
+    //     let fileName = this.props.title || "data";
+    //     if (this.props.exportFileName) {
+    //       fileName =
+    //       typeof this.props.exportFileName === "function"
+    //         ? this.props.exportFileName()
+    //         : this.props.exportFileName;
+    //     }
+     
+    //     const builder = new CsvBuilder(fileName + ".csv");
+    //     builder
+    //         .setDelimeter(this.props.exportDelimiter)
+    //         .setColumns(columns.map((columnDef) => columnDef.title))
+    //         .addRows(data)
+    //         .exportFile();
+    // };
 
     const setEditing = (list) => {
 
@@ -133,6 +153,7 @@ export default function ObjectiveReport() {
         setAction(list.action);
         setRootCause(list.rootCause)
         setRiskAndOpportunity(list.riskOrOpportunity)
+        setPrioritiesForQuarter(list.prioritiesForQuarter)
         setUpdatedBy(list.user.id)
     }
 
@@ -140,7 +161,7 @@ export default function ObjectiveReport() {
         e.preventDefault();
         setshowloader(true);
 
-        console.log("edit values", id, description, kpi_id, user_id, pillar_id, target, target_achieved, root_cause, risk_and_opportunity, action, support_required, created_by, updated_by, target_achieved_on_review, setUpdatedBy(), setUserId, setPillarId)
+        console.log("edit values", id, description, kpi_id, user_id, pillar_id, target, target_achieved, root_cause, risk_and_opportunity, action, support_required, created_by, updated_by, target_achieved_on_review, priorities_for_quarter,setUpdatedBy(), setUserId, setPillarId)
 
         const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
         const body = JSON.stringify({
@@ -154,6 +175,7 @@ export default function ObjectiveReport() {
             target_achieved : target_achieved,
             root_cause : root_cause,
             risk_and_opportunity : risk_and_opportunity,
+            priorities_for_quarter : priorities_for_quarter,
             action : action,
             support_required : support_required,
             created_by : created_by,
@@ -180,6 +202,7 @@ export default function ObjectiveReport() {
                             setTargetAchieved("")
                             setRootCause("")
                             setRiskAndOpportunity("")
+                            setPrioritiesForQuarter("")
                             setAction("")
                             setSupportRequired("")
                             dispatch(getUserObjectives(currentUser.id))
@@ -211,7 +234,6 @@ export default function ObjectiveReport() {
     
     }
 
-
     const handleEditClose = () => {
         setEditOpen(false);
     };
@@ -222,23 +244,29 @@ export default function ObjectiveReport() {
           title: 'Strategic Objective'
         },
         {
-          field: '',
-          title: 'Variance',
+          field: 'rag',
+          title: 'Status',
           render: (list) => {
             if(list.objectives.overallStatus === 'COMPLETE' || list.objectives.overallStatus === 'Complete') {
                 return (<FiberManualRecord style={{color : '#29A15B'}} />)
             }  else if(list.objectives.overallStatus === 'INCOMPLETE' || list.objectives.overallStatus === 'Incomplete' || list.objectives.overallStatus === null ) {
                 return (<FiberManualRecord style={{color : '#F44336'}}/>) 
             }
-          }
+          },
+          export: false
         },
         {
-            field: 'var',
-            title: 'Variance',
-            export: true,
-            hidden: true
-            
-          },
+          field: 'variance',
+          title: 'Status',
+          export: true,
+          hidden: true  
+        }, 
+        {
+          field: 'variance',
+          title: 'Rag Status',
+          export: true,
+          hidden: true  
+        }, 
         {
           field: 'objectives.rootCause',
           title: 'Root Cause and Insight'
@@ -407,7 +435,8 @@ export default function ObjectiveReport() {
                         sorting: true,
                         pageSize: 10,
                         pageSizeOptions: [10,50,100 ],
-                        exportButton: true
+                        exportButton: true,
+                        // defaultExportCsv
                     }}
                     />
                 }
@@ -686,6 +715,23 @@ export default function ObjectiveReport() {
                             onChange={(event) => {
                                 const value = event.target.value;
                                 setRiskAndOpportunity(value)
+                            }}
+                        />
+
+                        <TextField
+                            fullWidth
+                            label="Priorities For Quarter"
+                            id="priorities_for_quarter"
+                            multiline
+                            rows={2}
+                            required
+                            variant="outlined"
+                            className={classes.textInput}
+                            type="text"
+                            value={priorities_for_quarter}
+                            onChange={(event) => {
+                                const value = event.target.value;
+                                setPrioritiesForQuarter(value)
                             }}
                         />
 

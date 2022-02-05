@@ -294,15 +294,25 @@ export default function UsersPage() {
 
         if (response.data.success === false) {
           setShowSearchLoading(false);
+          setSearchUser("");
+          setSearchEmail("");
+          setName("");
           setEmail("");
-          setShowUserError("User not found!")
+          setTeam("");
+          setRole("");
+          setEmail("");
+          setLineManager("")
+          setShowUserError("User not found!");
+          
         } else {
 
           setShowSearchLoading(false);
 
-          if(response.data.accountname === null || response.data.accountname == undefined) {
+          if(response.data.accountname === null || response.data.accountname === undefined) {
 
-            setSearchUser(false)
+            setSearchUser("");
+            setSearchEmail("");
+            setName("");
             setEmail("");
             setTeam("");
             setRole("");
@@ -318,7 +328,16 @@ export default function UsersPage() {
         }
       } catch (error) {
         setShowSearchLoading(false);
+        setSearchUser("");
+        setSearchEmail("");
         setName("");
+        setEmail("");
+        setTeam("");
+        setRole("");
+        setEmail("");
+        setLineManager("")
+        setShowUserError("User not found!");
+
           swal.fire({
               title: "Error",
               text: "User not found!",

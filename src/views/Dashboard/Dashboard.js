@@ -1631,7 +1631,7 @@ function Dashboard() {
                   objectives ? ( objectives.map((list, index) => (
                     <GridItem container justify="flex-end" key={index}  >
 
-                      <Card style={{borderLeft : list.objectives.overallStatus === 'Incomplete' ? 'solid 5px red' : (list.objectives.overallStatus === 'COMPLETE' || list.objectives.overallStatus === 'Complete') ? 'solid 5px green' : (list.objectives.overallStatus === 'INCOMPLETE' || list.objectives.overallStatus === 'Incomplete' || list.objectives.overallStatus === '' || list.objectives.overallStatus === null ) ? 'solid 5px red'  :'solid 5px black' , marginBottom: '0'}} key={index} >
+                      <Card style={{borderLeft : list.objectives.overallStatus === 'Incomplete' ? 'solid 5px red' : (list.objectives.overallStatus === 'ONGOING' || list.objectives.overallStatus === 'Ongoing') ? 'solid 5px #ff9800' : (list.objectives.overallStatus === 'COMPLETE' || list.objectives.overallStatus === 'Complete') ? 'solid 5px green' : (list.objectives.overallStatus === 'INCOMPLETE' || list.objectives.overallStatus === 'Incomplete' || list.objectives.overallStatus === '' || list.objectives.overallStatus === null ) ? 'solid 5px red'  :'solid 5px black' , marginBottom: '0'}} key={index} >
                         <GridItem xs={12} sm={12} md={12}>
                           <h4 className={classes.textBold}> {list.objectives.description} </h4>
                           <h6 className={classes.textGreen}> {list.totalTasks} Management actions</h6>

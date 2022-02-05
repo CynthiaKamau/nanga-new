@@ -315,7 +315,6 @@ export default function KPIReport() {
           field: 'var',
           title: 'Variance',
           render: (list) => {
-            console.log("editing table", list)  
             if(list.variance === 'amber') {
                 return (<FiberManualRecord style={{color : '#FFC107'}}/>)
             } else if(list.variance === 'green') {
@@ -329,12 +328,31 @@ export default function KPIReport() {
             } 
           },
           export: false
-        }, 
+        },
         {
-          field: 'var',
-          title: 'Variance',
-          hidden: true,
-          export: true
+          field: 'variance',
+          title: 'Rag Status',
+          export: true,
+          hidden: true
+        },
+        {
+         field: 'variance',
+         title: 'Rag Status',
+         export: true,
+         hidden: true,
+        //  render: (list) => {
+        //     if(list.variance === 'amber') {
+        //         return 'Amber';
+        //     } else if(list.variance === 'green') {
+        //         return 'Green';
+        //     } else if(list.variance === 'blue') {
+        //         return 'Blue';
+        //     } else if(list.variance === 'red') {
+        //         return 'Red';
+        //     } else if(list.variance === null || list.variance === undefined) {
+        //         return 'Red';
+        //     } 
+        //   },
         }, 
         {
           field: 'rootCause',

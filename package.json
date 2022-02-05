@@ -16,6 +16,7 @@
     "classnames": "2.3.1",
     "date-fns": "^2.8.1",
     "date-fns-timezone": "^0.1.4",
+    "filefy": "^0.1.11",
     "highcharts": "^9.3.2",
     "highcharts-react-official": "^3.1.0",
     "history": "5.0.0",
