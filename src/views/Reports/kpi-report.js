@@ -330,30 +330,17 @@ export default function KPIReport() {
           export: false
         },
         {
+          field: 'varianceValue',
+          title: 'Variance',
+          export: true,
+          hidden: true  
+          }, 
+        {
           field: 'variance',
           title: 'Rag Status',
           export: true,
           hidden: true
         },
-        {
-         field: 'variance',
-         title: 'Rag Status',
-         export: true,
-         hidden: true,
-        //  render: (list) => {
-        //     if(list.variance === 'amber') {
-        //         return 'Amber';
-        //     } else if(list.variance === 'green') {
-        //         return 'Green';
-        //     } else if(list.variance === 'blue') {
-        //         return 'Blue';
-        //     } else if(list.variance === 'red') {
-        //         return 'Red';
-        //     } else if(list.variance === null || list.variance === undefined) {
-        //         return 'Red';
-        //     } 
-        //   },
-        }, 
         {
           field: 'rootCause',
           title: 'Root Cause'

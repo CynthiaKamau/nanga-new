@@ -87,6 +87,10 @@ export default function StrategicObjectives() {
             label: 'COMPLETE'
         },
         {
+            value: 'ONGOING',
+            label: 'ONGOING'
+        },
+        {
             value: 'INCOMPLETE',
             label: 'INCOMPLETE'
         }
@@ -107,7 +111,7 @@ export default function StrategicObjectives() {
     const [target_achieved_on_review, setTargetAtReview] = useState("");
     // const [target_achieved, setTargetAchieved] = useState("");
     const [user_id, setUserId] = useState(currentUser.id);
-    const [year, setYear] = useState("");
+    const [year, setYear] = useState(new Date());
     const [task_description, setTaskDescription] = useState("");
     const [task_start_date, setTaskStartDate] = useState(new Date());
     const [task_end_date, setTaskEndDate] = useState(new Date());
@@ -1041,7 +1045,6 @@ export default function StrategicObjectives() {
                                 control={methods.control}
                                 className="basic-single"
                                 classNamePrefix="select"
-                                styles={{ marginTop: "10px", marginBottom: "10px" }}
                                 name="kpi_id"
                                 render={({ value, ref }) => (
                                 <Select
@@ -1050,7 +1053,7 @@ export default function StrategicObjectives() {
                                     isMulti
                                     className="basic-multi-select"
                                     menuPortalTarget={document.body}
-                                    styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
+                                    styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999}) }}
                                     value={kpis.find((c) => c.id === value)}
                                     onChange={(val) => setKpiId(val.map(v => v.id))}
                                     getOptionLabel={(kpis) => kpis.title}
@@ -1105,19 +1108,17 @@ export default function StrategicObjectives() {
                         ))}
                     </TextField>
 
-                    <TextField
-                        label="Year"
-                        fullWidth
-                        id="year"
-                        variant="outlined"
-                        className={classes.textInput}
-                        type="text"
-                        value={year}
-                        onChange={(event) => {
-                            const value = event.target.value;
-                            setYear(value)
-                        }}
-                    />
+                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                        <KeyboardDatePicker
+                          value={year}
+                          inputVariant="outlined"
+                          onChange={setYear}
+                          label="Year"
+                          fullWidth
+                          id="year"
+                          views={['year']}/>
+                    </MuiPickersUtilsProvider>
+
 
                 </DialogContent>
                 <DialogActions>
@@ -1510,19 +1511,16 @@ export default function StrategicObjectives() {
                         ))}
                     </TextField>
 
-                    <TextField
-                        label="Year"
-                        fullWidth
-                        id="year"
-                        variant="outlined"
-                        className={classes.textInput}
-                        type="text"
-                        value={year}
-                        onChange={(event) => {
-                            const value = event.target.value;
-                            setYear(value)
-                        }}
-                    />
+                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                        <KeyboardDatePicker
+                          value={year}
+                          inputVariant="outlined"
+                          onChange={setYear}
+                          label="Year"
+                          fullWidth
+                          id="year"
+                          views={['year']}/>
+                    </MuiPickersUtilsProvider>
 
                 </DialogContent>
                 <DialogActions>
