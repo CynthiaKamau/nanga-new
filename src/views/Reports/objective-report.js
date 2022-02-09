@@ -175,7 +175,7 @@ export default function ObjectiveReport() {
             target_achieved : target_achieved,
             root_cause : root_cause,
             risk_and_opportunity : risk_and_opportunity,
-            prioritiesForQuarter : priorities_for_quarter,
+            priorities_for_quarter : priorities_for_quarter,
             action : action,
             support_required : support_required,
             created_by : created_by,
