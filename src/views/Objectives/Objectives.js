@@ -140,6 +140,15 @@ export default function StrategicObjectives() {
     const [myKpis, setMyKpis] = useState("");
     const [myResources, setMyResources] = useState("");
 
+    const customStyles = {
+        control: base => ({
+          ...base,
+          height: 55,
+          minHeight: 55
+        }),
+        menuPortal: (base) => ({ ...base, zIndex: 9999})
+    };
+
     const handleAddClickOpen = () => {
         setAddOpen(true);
     };
@@ -148,16 +157,23 @@ export default function StrategicObjectives() {
         // e.preventDefault();
         setAddOpen(false);
 
-        let year = year.getFullYear();
-        
         console.log("year", year);
-        console.log("save objective", description, kpi_id, target, obj_status, user_id, created_by, pillar_id, kpi_unit_of_measure);
+
+        let new_year = "";
+
+        if(year == null || year == undefined) {
+            new_year = new Date().getFullYear();
+        } else {
+            new_year = "2022";
+        }
+        
+        console.log("save objective", new_year, description, kpi_id, target, obj_status, user_id, created_by, pillar_id, kpi_unit_of_measure);
     
         const config = { headers: { 'Content-Type': 'application/json' } }
     
         let body = ({
             description : description,
-            year: year,
+            year: new_year,
             status: obj_status,
             kpi_ids : kpi_id,
             target :  0,
@@ -165,6 +181,8 @@ export default function StrategicObjectives() {
             created_by : created_by,
             pillar_id : pillar_id
         });
+
+        console.log("save objective body", body)
     
         try {
           let response = await axios.post('/objectives/create', body, config);
@@ -363,9 +381,18 @@ export default function StrategicObjectives() {
         setshowloader(true)
         setUserId(currentUser.id);
         setId();
+         
+        console.log("year", year);
 
-        let year = year.getFullYear();
-        console.log("save objective", year, id, description, kpi_id, user_id, obj_status, target_achieved_on_review, pillar_id, root_cause, action, support_required, risk_and_opportunity, setUpdatedBy())
+        let new_year = "";
+
+        if(year == null || year == undefined) {
+            new_year = new Date().slice(0,4);
+        } else {
+            new_year = year.slice(0,4);
+        }
+
+        console.log("edit objective", new_year, id, description, kpi_id, user_id, obj_status, target_achieved_on_review, pillar_id, root_cause, action, support_required, risk_and_opportunity, setUpdatedBy())
 
         const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
         const body = JSON.stringify({ 
@@ -373,7 +400,7 @@ export default function StrategicObjectives() {
             description : description,
             kpi_ids : kpi_id,
             user_id : user_id,
-            year : year,
+            year : new_year,
             // target : target,
             // target_achieved : target_achieved,
             pillar_id : pillar_id,
@@ -385,6 +412,8 @@ export default function StrategicObjectives() {
             created_by : created_by,
             updated_by :updated_by
         });
+
+        console.log("edit objective", body)
 
         try {
 
@@ -884,7 +913,7 @@ export default function StrategicObjectives() {
                                 <Card className={classes.cardBodyRed}>
                                     <CardBody>
                                         <h4 className={classes.cardTitle}>
-                                        {list.offtrack} <small>Off Ttack</small>
+                                        {list.offtrack} <small>Off Track</small>
                                         </h4>
                                     </CardBody>
                                 </Card>
@@ -1055,7 +1084,7 @@ export default function StrategicObjectives() {
                                     isMulti
                                     className="basic-multi-select"
                                     menuPortalTarget={document.body}
-                                    styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999}) }}
+                                    styles={customStyles}
                                     value={kpis.find((c) => c.id === value)}
                                     onChange={(val) => setKpiId(val.map(v => v.id))}
                                     getOptionLabel={(kpis) => kpis.title}
@@ -1396,7 +1425,7 @@ export default function StrategicObjectives() {
                             isMulti
                             className="basic-multi-select"
                             menuPortalTarget={document.body}
-                            styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
+                            styles={customStyles}
                             defaultValue={ myKpis }
                             value={kpis.find((c) => c.id === value)}
                             onChange={(val) => setKpiId(val.map(v => v.id))}

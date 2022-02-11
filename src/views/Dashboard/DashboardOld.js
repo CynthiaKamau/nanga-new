@@ -1588,7 +1588,7 @@ export default function Dashboard() {
                       <GridItem xs={12} sm={6} md={2}>
                           <Card className={classes.cardBodyRed}>
                               <CardBody>
-                                  <h3 className={classes.cardTitle}>{list.offtrack} <small>Off Ttack</small></h3>
+                                  <h3 className={classes.cardTitle}>{list.offtrack} <small>Off Track</small></h3>
                               </CardBody>
                           </Card>
                       </GridItem>

@@ -1660,7 +1660,7 @@ function Dashboard() {
                                 <Card className={classes.cardBodyRed}>
                                     <CardBody>
                                         <h4 className={classes.cardTitle}>
-                                        {list.offtrack} <small>Off Ttack</small>
+                                        {list.offtrack} <small>Off Track</small>
                                         </h4>
                                     </CardBody>
                                 </Card>
