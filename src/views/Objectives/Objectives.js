@@ -31,7 +31,7 @@ import TableRow from '@material-ui/core/TableRow';
 import { Grid } from "@material-ui/core";
 import Button from "components/CustomButtons/Button.js";
 import DateFnsUtils from '@date-io/date-fns'
-import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
+import { MuiPickersUtilsProvider, KeyboardDatePicker, DatePicker } from '@material-ui/pickers';
 import { DeleteForever } from "@material-ui/icons";
 import EditIcon from '@material-ui/icons/Edit';
 import moment from "moment";
@@ -147,9 +147,10 @@ export default function StrategicObjectives() {
     const saveObjective = async () => {
         // e.preventDefault();
         setAddOpen(false);
+
+        let year = year.getFullYear();
         
-        console.log("kpi", kpi_id)
-    
+        console.log("year", year);
         console.log("save objective", description, kpi_id, target, obj_status, user_id, created_by, pillar_id, kpi_unit_of_measure);
     
         const config = { headers: { 'Content-Type': 'application/json' } }
@@ -363,7 +364,8 @@ export default function StrategicObjectives() {
         setUserId(currentUser.id);
         setId();
 
-        console.log("save objective", id, description, kpi_id, user_id, obj_status, target_achieved_on_review, pillar_id, root_cause, action, support_required, risk_and_opportunity, setUpdatedBy())
+        let year = year.getFullYear();
+        console.log("save objective", year, id, description, kpi_id, user_id, obj_status, target_achieved_on_review, pillar_id, root_cause, action, support_required, risk_and_opportunity, setUpdatedBy())
 
         const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
         const body = JSON.stringify({ 
@@ -1109,7 +1111,7 @@ export default function StrategicObjectives() {
                     </TextField>
 
                     <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                        <KeyboardDatePicker
+                        <DatePicker
                           value={year}
                           inputVariant="outlined"
                           onChange={setYear}
@@ -1512,7 +1514,7 @@ export default function StrategicObjectives() {
                     </TextField>
 
                     <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                        <KeyboardDatePicker
+                        <DatePicker
                           value={year}
                           inputVariant="outlined"
                           onChange={setYear}
