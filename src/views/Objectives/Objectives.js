@@ -31,7 +31,7 @@ import TableRow from '@material-ui/core/TableRow';
 import { Grid } from "@material-ui/core";
 import Button from "components/CustomButtons/Button.js";
 import DateFnsUtils from '@date-io/date-fns'
-import { MuiPickersUtilsProvider, KeyboardDatePicker, DatePicker } from '@material-ui/pickers';
+import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import { DeleteForever } from "@material-ui/icons";
 import EditIcon from '@material-ui/icons/Edit';
 import moment from "moment";
@@ -111,7 +111,8 @@ export default function StrategicObjectives() {
     const [target_achieved_on_review, setTargetAtReview] = useState("");
     // const [target_achieved, setTargetAchieved] = useState("");
     const [user_id, setUserId] = useState(currentUser.id);
-    const [year, setYear] = useState(new Date());
+    const [year, setYear] = useState("");
+    // const [year, setYear] = useState(new Date());
     const [task_description, setTaskDescription] = useState("");
     const [task_start_date, setTaskStartDate] = useState(new Date());
     const [task_end_date, setTaskEndDate] = useState(new Date());
@@ -156,24 +157,14 @@ export default function StrategicObjectives() {
     const saveObjective = async () => {
         // e.preventDefault();
         setAddOpen(false);
-
-        console.log("year", year);
-
-        let new_year = "";
-
-        if(year == null || year == undefined) {
-            new_year = new Date().getFullYear();
-        } else {
-            new_year = "2022";
-        }
         
-        console.log("save objective", new_year, description, kpi_id, target, obj_status, user_id, created_by, pillar_id, kpi_unit_of_measure);
+        console.log("save objective", year, description, kpi_id, target, obj_status, user_id, created_by, pillar_id, kpi_unit_of_measure);
     
         const config = { headers: { 'Content-Type': 'application/json' } }
     
         let body = ({
             description : description,
-            year: new_year,
+            year: year,
             status: obj_status,
             kpi_ids : kpi_id,
             target :  0,
@@ -381,18 +372,8 @@ export default function StrategicObjectives() {
         setshowloader(true)
         setUserId(currentUser.id);
         setId();
-         
-        console.log("year", year);
 
-        let new_year = "";
-
-        if(year == null || year == undefined) {
-            new_year = new Date().slice(0,4);
-        } else {
-            new_year = year.slice(0,4);
-        }
-
-        console.log("edit objective", new_year, id, description, kpi_id, user_id, obj_status, target_achieved_on_review, pillar_id, root_cause, action, support_required, risk_and_opportunity, setUpdatedBy())
+        console.log("edit objective", year, id, description, kpi_id, user_id, obj_status, target_achieved_on_review, pillar_id, root_cause, action, support_required, risk_and_opportunity, setUpdatedBy())
 
         const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
         const body = JSON.stringify({ 
@@ -400,7 +381,7 @@ export default function StrategicObjectives() {
             description : description,
             kpi_ids : kpi_id,
             user_id : user_id,
-            year : new_year,
+            year : year,
             // target : target,
             // target_achieved : target_achieved,
             pillar_id : pillar_id,
@@ -1139,17 +1120,19 @@ export default function StrategicObjectives() {
                         ))}
                     </TextField>
 
-                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                        <DatePicker
-                          value={year}
-                          inputVariant="outlined"
-                          onChange={setYear}
-                          label="Year"
-                          fullWidth
-                          id="year"
-                          views={['year']}/>
-                    </MuiPickersUtilsProvider>
-
+                    <TextField
+                        fullWidth
+                        label="Year"
+                        id="year"
+                        variant="outlined"
+                        className={classes.textInput}
+                        type="text"
+                        value={year}
+                        onChange={(event) => {
+                            const value = event.target.value;
+                            setYear(value)
+                        }}
+                    />
 
                 </DialogContent>
                 <DialogActions>
@@ -1542,16 +1525,19 @@ export default function StrategicObjectives() {
                         ))}
                     </TextField>
 
-                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                        <DatePicker
-                          value={year}
-                          inputVariant="outlined"
-                          onChange={setYear}
-                          label="Year"
-                          fullWidth
-                          id="year"
-                          views={['year']}/>
-                    </MuiPickersUtilsProvider>
+                    <TextField
+                        fullWidth
+                        label="Year"
+                        id="year"
+                        variant="outlined"
+                        className={classes.textInput}
+                        type="text"
+                        value={year}
+                        onChange={(event) => {
+                            const value = event.target.value;
+                            setYear(value)
+                        }}
+                    />
 
                 </DialogContent>
                 <DialogActions>
