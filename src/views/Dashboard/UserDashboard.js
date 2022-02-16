@@ -66,9 +66,9 @@ export default function UserDashboard() {
   const dispatch = useDispatch();
 
   const { items : objectives } = useSelector(state => state.objective);
-  const { spec_user, task_count, objective_count, kpi_count } = useSelector(state => state.data);
+  const { spec_user, task_count, objective_count, kpi_count, strategic_intent1 } = useSelector(state => state.data);
   const { items, error, isLoading } = useSelector(state => state.kpi);
-  const { behaviours, behaviours_error, freedoms, freedoms_error, constraints, constrains_error, strategic_intent1} = useSelector(state => state.bfc);
+  const { behaviours, behaviours_error, freedoms, freedoms_error, constraints, constrains_error } = useSelector(state => state.bfc);
 
   // const {  categories } = useSelector(state => state.data);
 
