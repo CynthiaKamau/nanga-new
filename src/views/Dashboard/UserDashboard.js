@@ -12,16 +12,14 @@ import Card from "components/Card/Card.js";
 import CardBody from "components/Card/CardBody.js";
 import IconButton from '@material-ui/core/Button';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { ExpandLess } from "@material-ui/icons";
-import { Grid } from "@material-ui/core";
-import { Backup } from "@material-ui/icons";
+import { ExpandLess, Backup } from "@material-ui/icons";
+import { Grid, CardContent, LinearProgress, Icon, Button } from "@material-ui/core";
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import Button from "components/CustomButtons/Button.js";
 import { getUserObjectives } from "actions/objectives";
 import { getKpis } from "actions/kpis";
 import { getCategories } from "actions/data";
@@ -38,7 +36,6 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import { getMission, getVision, getTaskCount, getObjectivesCount, getUserById, getStrategicIntent1, getKpiCount } from "actions/data";
 import CardHeader from "components/Card/CardHeader";
-import { CardContent } from "@material-ui/core";
 import Box from '@material-ui/core/Box';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
@@ -47,8 +44,6 @@ import AppBar from '@material-ui/core/AppBar';
 import { useTheme } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import PropTypes from 'prop-types';
-import { LinearProgress } from "@material-ui/core";
-import FiberManualRecord from "@material-ui/icons/FiberManualRecord";
 import { getBehaviours, getFreedoms, getConstraints } from "actions/bfc";
 import Highcharts from "highcharts";
 import HighchartsReact from 'highcharts-react-official';
@@ -110,11 +105,6 @@ export default function UserDashboard() {
 
   console.log("here", items)
 
-
-  // const [newuser, setNewUser] = useState(true);
-
-  // const categories = JsonData.Categories;
-  // const kpis = JsonData.KPIS;
   const kpi_options = {
     chart: {
       plotBackgroundColor: null,
@@ -257,6 +247,10 @@ export default function UserDashboard() {
       {spec_user === undefined || spec_user === null || spec_user.length === 0 ? ( <h4> </h4>) : spec_user ? (
         <div> <h4 className={classes.textBold} style={{display : 'inline-block'}}> {spec_user.fullnames} | </h4>  <h6 style={{display : 'inline-block'}}> {spec_user.roles.role_name}</h6> </div> ) : null}
 
+      <Grid container spacing={1} justify="flex-end">
+        <Button style={{backgroundColor : '#29A15B'}} endIcon={<Icon>send</Icon>} variant="contained"> User Reports</Button>
+      </Grid>      
+
       <Grid container spacing={2} style={{marginRight : '10px', marginLeft : '10px'}}>
         <h3 className={classes.textBold}> MISSION: ONE LEVEL UP</h3>
 
@@ -382,12 +376,11 @@ export default function UserDashboard() {
                                           <TableCell>{list.target} </TableCell>
                                           <TableCell>{list.plannedYTD}</TableCell>
                                           <TableCell>{list.actualYTD}</TableCell>
-                                          { list.variance === 'amber' ? (
-                                              <TableCell> <FiberManualRecord style={{color : '#FFC107'}}/> </TableCell>)
-                                          : list.variance === 'green' ? (<TableCell> <FiberManualRecord style={{color : '#29A15B'}}/> </TableCell>)
-                                          : list.variance === 'blue' ? (<TableCell> <FiberManualRecord style={{color : '#03A9F4'}}/> </TableCell>)
-                                          : list.variance === 'red' ? (<TableCell> <FiberManualRecord style={{color : '#F44336'}}/> </TableCell>)
-                                          : list.variance === null || list.variance === undefined  ? (<TableCell> <FiberManualRecord style={{color : '#F44336'}}/> </TableCell>)
+                                          { list.variance === 'amber' ? ( <TableCell><div style={{backgroundColor : '#FFC107',height: '50px', width: '50px', display: 'flex',borderRadius: '50%'}}><p style={{margin: 'auto'}}>{list.varianceValue}</p></div> </TableCell>)
+                                          : list.variance === 'green' ? (<TableCell> <div style={{backgroundColor : '#29A15B',height: '50px', width: '50px', display: 'flex',borderRadius: '50%'}}><p style={{margin: 'auto'}}>{list.varianceValue}</p></div> </TableCell>)
+                                          : list.variance === 'blue' ? (<TableCell> <div style={{backgroundColor : '#03A9F4',height: '50px', width: '50px', display: 'flex',borderRadius: '50%'}}><p style={{margin: 'auto'}}>{list.varianceValue}</p></div> </TableCell>)
+                                          : list.variance === 'red' ? (<TableCell> <div style={{backgroundColor : '#F44336',height: '50px', width: '50px', display: 'flex',borderRadius: '50%'}}><p style={{margin: 'auto'}}>{list.varianceValue}</p></div> </TableCell>)
+                                          : list.variance === null || list.variance === undefined  ? (<TableCell> <div style={{backgroundColor : '#F44336',height: '50px', width: '50px', display: 'flex',borderRadius: '50%'}}><p style={{margin: 'auto'}}>0</p></div> </TableCell>)
                                           : null }
               
                                       </TableRow>

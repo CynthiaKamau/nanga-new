@@ -24,7 +24,7 @@ import Card from "components/Card/Card.js";
 import CardHeader from "components/Card/CardHeader.js";
 import CardBody from "components/Card/CardBody.js";
 import MaterialTable from 'material-table';
-import { DeleteForever, FiberManualRecord, CompareArrows } from "@material-ui/icons";
+import { DeleteForever, CompareArrows } from "@material-ui/icons";
 
 const useStyles = makeStyles(styles);
 
@@ -397,17 +397,17 @@ export default function DataTable() {
           field: '',
           title: 'VAR',
             render: (list) => {
-              if(list.variance === 'amber') {
-                  return (<FiberManualRecord style={{color : '#FFC107'}}/>)
-              } else if(list.variance === 'green') {
-                  return (<FiberManualRecord style={{color : '#29A15B'}}/>)
-              } else if(list.variance === 'blue') {
-                  return (<FiberManualRecord style={{color : '#03A9F4'}}/>)
-              } else if(list.variance === 'red') {
-                  return (<FiberManualRecord style={{color : '#F44336'}}/>)
-              } else if(list.variance === null || list.variance === undefined) {
-                  return (<FiberManualRecord style={{color : '#F44336'}}/>)
-              } 
+                if(list.variance === 'amber') {
+                    return(<div style={{backgroundColor : '#FFC107',height: '50px', width: '50px', display: 'flex',borderRadius: '50%'}}><p style={{margin: 'auto'}}>{list.varianceValue}</p></div>)
+                } else if(list.variance === 'green') {
+                    return (<div style={{backgroundColor : '#29A15B',height: '50px', width: '50px', display: 'flex', borderRadius: '50%'}}><p style={{margin: 'auto'}}>{list.varianceValue}</p></div>)
+                } else if(list.variance === 'blue') {
+                    return (<div style={{backgroundColor : '#03A9F4',height: '50px', width: '50px', display: 'flex', borderRadius: '50%'}}><p style={{margin: 'auto'}}>{list.varianceValue}</p></div>)
+                } else if(list.variance === 'red') {
+                    return (<div style={{backgroundColor : '#F44336',height: '50px', width: '50px', display: 'flex', borderRadius: '50%'}}><p style={{margin: 'auto'}}>{list.varianceValue}</p></div>)
+                } else if(list.variance === null || list.variance === undefined) {
+                    return (<div style={{backgroundColor : '#F44336',height: '50px', width: '50px', display: 'flex', borderRadius: '50%'}}><p style={{margin: 'auto'}}>0</p></div>)
+                } 
             }
         }, 
         {

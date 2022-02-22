@@ -27,7 +27,6 @@ import Loader from "react-loader-spinner";
 import axios from "axios";
 import { getCategories } from "actions/data";
 import { Grid } from "@material-ui/core";
-import FiberManualRecord from "@material-ui/icons/FiberManualRecord";
 import MaterialTable from 'material-table';
 import { CardContent } from "@material-ui/core";
 
@@ -72,7 +71,6 @@ export default function KPIReport() {
         }
     }, []);
 
-    const [addopen, setAddOpen] = useState(false);
     const [editopen, setEditOpen] = useState(false);
     // const [deleteopen, setDeleteOpen] = useState(false);
     const [kpi, setKPI] = useState("");
@@ -88,65 +86,8 @@ export default function KPIReport() {
     const [ytd_actual, setYTDActual] = useState("");    const [action, setAction] = useState("");
     const [support_required, setSupportRequired] = useState("");
     const [root_cause, setRootCause] = useState("");
-
-    const handleAddClickOpen = () => {
-        setAddOpen(true);
-    };
-
-    const saveKpi = async (e) => {
-        e.preventDefault();
-        setshowloader(true);
-        console.log(setCreatedBy())
-
-        console.log("save values", kpi, uom, category, created_by)
-
-        const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
-        
-        const body = JSON.stringify({ 
-            title : kpi,
-            kpiUnitofMeasure : uom,
-            categoryId : category,
-            createdBy : created_by,
-            account : account,
-            target : target,
-            userId : created_by
-        });
-
-        try {
-
-            let response = await axios.post('/kpi/create', body, config)
-                if (response.status == 201) {
-                    getKpis();
-                    setshowloader(false);
-                    let item = response.data.message
-                    swal.fire({
-                        title: "Success",
-                        text: item,
-                        icon: "success",
-                    }).then(() => dispatch(getKpis(currentUser.id)));
-
-                } else {
-                    let error = response.data.message
-                    setshowloader(false);
-                    swal.fire({
-                        title: "Error",
-                        text: error,
-                        icon: "error",
-                        dangerMode: true
-                    });
-                }
-        } catch (error) {
-            let err = error.response.data.message
-            setshowloader(false);
-            swal.fire({
-                title: "Error",
-                text: err,
-                icon: "error",
-                dangerMode: true
-            });
-        }
-    
-    }
+    const [month, setMonth] = useState("");
+    const [year, setYear] = useState("");
 
     const handleEditClickOpen = () => {
         setEditOpen(true);
@@ -174,7 +115,7 @@ export default function KPIReport() {
 
         console.log(setUpdatedBy());
 
-        console.log("edit values", id, kpi, uom, category, created_by, updated_by)
+        console.log("edit values", id, kpi, uom, category, created_by, updated_by,setCreatedBy)
 
         const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
         const body = JSON.stringify({ 
@@ -228,25 +169,9 @@ export default function KPIReport() {
     
     }
 
-    // const handleDeleteClickOpen = () => {
-    //     setDeleteOpen(true);
-    // };
-
-    // const setDelete = (list) => {
-    //     console.log(list)
-    // }
-
-    const handleAddClose = () => {
-        setAddOpen(false);
-    };
-
     const handleEditClose = () => {
         setEditOpen(false);
     };
-
-    // const handleDeleteClose = () => {
-    //     setDeleteOpen(false);
-    // };
 
     const uoms = [
         {
@@ -303,6 +228,10 @@ export default function KPIReport() {
           field: 'title',
           title: 'Measure'
         }, 
+        { 
+          field: 'target',
+          title: 'Target' 
+        },
         {
           field: 'plannedYTD',
           title: 'Planned YTD'
@@ -316,15 +245,15 @@ export default function KPIReport() {
           title: 'Variance',
           render: (list) => {
             if(list.variance === 'amber') {
-                return (<FiberManualRecord style={{color : '#FFC107'}}/>)
+                return(<div style={{backgroundColor : '#FFC107',height: '50px', width: '50px', display: 'flex',borderRadius: '50%'}}><p style={{margin: 'auto'}}>{list.varianceValue}</p></div>)
             } else if(list.variance === 'green') {
-                return (<FiberManualRecord style={{color : '#29A15B'}}/>)
+                return (<div style={{backgroundColor : '#29A15B',height: '50px', width: '50px', display: 'flex', borderRadius: '50%'}}><p style={{margin: 'auto'}}>{list.varianceValue}</p></div>)
             } else if(list.variance === 'blue') {
-                return (<FiberManualRecord style={{color : '#03A9F4'}}/>)
+                return (<div style={{backgroundColor : '#03A9F4',height: '50px', width: '50px', display: 'flex', borderRadius: '50%'}}><p style={{margin: 'auto'}}>{list.varianceValue}</p></div>)
             } else if(list.variance === 'red') {
-                return (<FiberManualRecord style={{color : '#F44336'}}/>)
+                return (<div style={{backgroundColor : '#F44336',height: '50px', width: '50px', display: 'flex', borderRadius: '50%'}}><p style={{margin: 'auto'}}>{list.varianceValue}</p></div>)
             } else if(list.variance === null || list.variance === undefined) {
-                return (<FiberManualRecord style={{color : '#F44336'}}/>)
+                return (<div style={{backgroundColor : '#F44336',height: '50px', width: '50px', display: 'flex', borderRadius: '50%'}}><p style={{margin: 'auto'}}>0</p></div>)
             } 
           },
           export: false
@@ -343,19 +272,27 @@ export default function KPIReport() {
         },
         {
           field: 'rootCause',
-          title: 'Root Cause'
+          title: 'Comments On Progress Made'
         },
         {
           field: 'action',
-          title: 'Action'
+          title: 'Actions To Be Taken'
         }, 
         {
           field: 'supportRequired',
-          title: 'Support Required'
-          }, 
+          title: 'Support Required',
+          export: true,
+          hidden: true 
+        }, 
+        {
+          field: 'supportRequired',
+          title: 'Comments On Progress Made',
+          export: true,
+          hidden: true 
+        }, 
         {
           field: 'actions',
-          title: 'Actions',
+          title: 'Edit',
           render: (list) => {
             console.log("editing table", list)
               return ( <div> <IconButton aria-label="edit" className={classes.textGreen} onClick={() => { handleEditClickOpen(); setEditing(list) }} ><EditIcon/></IconButton>
@@ -466,16 +403,96 @@ export default function KPIReport() {
 
     }
 
+    const filterKpiData = async(e) => {
+      e.preventDefault();
+      setshowloader(true);
+
+      const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
+
+      const body = JSON.stringify({
+        year: year,
+        month: month,
+        userId: created_by
+      })
+
+      console.log("body here", body)
+
+      try {
+
+        let response = await axios.post('/kpiReports/snapshot', body, config)
+            if (response.status == 201) {
+                setshowloader(false);
+                let item = response.data.message
+                console.log("here", item)
+                swal.fire({
+                    title: "Success",
+                    text: item,
+                    icon: "success",
+                }).then(() => dispatch(getKpis(currentUser.id)));
+
+            } else {
+                let error = response.data.message
+                setshowloader(false);
+                swal.fire({
+                    title: "Error",
+                    text: error,
+                    icon: "error",
+                    dangerMode: true
+                }).then(() => dispatch(getKpis(currentUser.id)));
+            }
+    } catch (error) {
+        let err = error.response.data.message
+        setshowloader(false);
+        swal.fire({
+            title: "Error",
+            text: err,
+            icon: "error",
+            dangerMode: true
+        }).then(() => dispatch(getKpis(currentUser.id)));
+    } 
+    }
+
   return (
     <div>
       <GridContainer>
+        <Grid container spacing={1} justify="flex-end">
+          <TextField
+              label="Month"
+              id="month"
+              required
+              variant="outlined"
+              className={classes.textInput}
+              type="text"
+              value={month}
+              onChange={(event) => {
+                  const value = event.target.value;
+                  setMonth(value)
+              }}
+          /> 
+
+          <TextField
+              label="Year"
+              id="year"
+              required
+              variant="outlined"
+              className={classes.textInput}
+              type="text"
+              value={year}
+              onChange={(event) => {
+                  const value = event.target.value;
+                  setYear(value)
+              }}
+          />
+
+          <Button color="secondary" onClick={filterKpiData}>Filter</Button> 
+      </Grid>   
       <GridItem xs={12} sm={12} md={12}>
             <Card>
               <CardHeader color="primary">
                 <h4>KPIs</h4>
+            
               </CardHeader>
               <CardBody>
-              <div className={classes.btnRight}><Button color="primary" size="lg" onClick={handleAddClickOpen}> Add KPI </Button> </div> 
 
               {items !== null ? (
                 <MaterialTable
@@ -517,29 +534,6 @@ export default function KPIReport() {
                         <h4 style={{ textAlign: 'center', marginTop: '20px', fontWeight: 'bold'}}> Update Your Details</h4>
                     </Grid>
 
-                    <Grid item xs={12} md={4} sm={4}  key="1">
-                        <Card style={{ height: '70%'}}>
-                            <CardContent>
-                            <TextField
-                                fullWidth
-                                label="Action"
-                                id="action"
-                                multiline
-                                rows={5}
-                                required
-                                variant="outlined"
-                                className={classes.textInput}
-                                type="text"
-                                value={monthlyaction}
-                                onChange={(event) => {
-                                    const value = event.target.value;
-                                    setMonthlyAction(value)
-                                }}
-                            />    
-                            </CardContent>
-                        </Card>
-                    </Grid>
-
                     <Grid item xs={12} md={4} sm={4}  key="2">   
                         <Card style={{ height: '70%'}}>
                             
@@ -560,6 +554,29 @@ export default function KPIReport() {
                                     setMonthlyRisks(value)
                                 }}
                             />  
+                            </CardContent>
+                        </Card>
+                    </Grid>
+
+                    <Grid item xs={12} md={4} sm={4}  key="1">
+                        <Card style={{ height: '70%'}}>
+                            <CardContent>
+                            <TextField
+                                fullWidth
+                                label="Supprt Required"
+                                id="action"
+                                multiline
+                                rows={5}
+                                required
+                                variant="outlined"
+                                className={classes.textInput}
+                                type="text"
+                                value={monthlyaction}
+                                onChange={(event) => {
+                                    const value = event.target.value;
+                                    setMonthlyAction(value)
+                                }}
+                            />    
                             </CardContent>
                         </Card>
                     </Grid>
@@ -591,122 +608,6 @@ export default function KPIReport() {
                 <Grid container justify="flex-end">
                     <Button color="primary" size="lg" onClick={(e) => { saveMonthlyUpdate(e)}}> Save </Button> 
                 </Grid>
-
-
-                <Dialog open={addopen} onClose={handleAddClose}>
-                    <DialogTitle>KPI</DialogTitle>
-                    <DialogContent>
-                    <DialogContentText>
-                        Create New KPI 
-                    </DialogContentText>
-                        <TextField
-                            autoFocus
-                            margin="dense"
-                            id="kpi"
-                            label="Title"
-                            type="text"
-                            fullWidth
-                            style={{marginBottom : '15px'}}
-                            value={kpi}
-                            variant="outlined"
-                            onChange = {(event) => {
-                                setKPI(event.target.value);
-                            }}
-                        />
-
-                        <label style={{ fontWeight: 'bold', color: 'black'}}> Unit Of Measure : </label>
-                        <TextField
-                            id="outlined-select-uom"
-                            select
-                            fullWidth
-                            variant="outlined"
-                            label="Select"
-                            value={uom}
-                            onChange = {(event) => {
-                            setUnitOfMeasure(event.target.value);
-                            }}
-                            helperText="Please select your unit of measure"
-                        >
-                            {uoms.map((option) => (
-                            <MenuItem key={option.value} value={option.value}>
-                                {option.label}
-                            </MenuItem>
-                            ))}
-                        </TextField>
-
-                        <label style={{ fontWeight: 'bold', color: 'black'}}> Category : </label>
-                        <TextField
-                            id="outlined-select-category"
-                            select
-                            fullWidth
-                            variant="outlined"
-                            label="Select"
-                            value={category}
-                            onChange = {(event) => {
-                            setCategory(event.target.value);
-                            }}
-                            helperText="Please select your category"
-                        >
-                            {categories.map((option) => (
-                            <MenuItem key={option.id} value={option.id}>
-                                {option.description}
-                            </MenuItem>
-                            ))}
-                        </TextField>
-
-                        <TextField
-                            autoFocus
-                            margin="dense"
-                            id="target"
-                            label="Planned YTD "
-                            type="number"
-                            fullWidth
-                            style={{marginBottom : '15px'}}
-                            value={target}
-                            variant="outlined"
-                            onChange = {(event) => {
-                                setTarget(event.target.value);
-                            }}
-                        />
-
-                        <label style={{ fontWeight: 'bold', color: 'black'}}> Account : </label>
-                        <TextField
-                            id="outlined-select-account"
-                            select
-                            fullWidth
-                            variant="outlined"
-                            label="Select"
-                            value={account}
-                            onChange = {(event) => {
-                            setAccount(event.target.value);
-                            }}
-                            helperText="Please select your account"
-                        >
-                            {accounts.map((option) => (
-                            <MenuItem key={option.value} value={option.value}>
-                                {option.label}
-                            </MenuItem>
-                            ))}
-                        </TextField>
-
-                    </DialogContent>
-                    <DialogActions>
-                    <Button color="danger" onClick={handleAddClose}>Cancel</Button>
-                    { showloader === true ? (
-                      <div style={{ textAlign: "center", marginTop: 10 }}>
-                        <Loader
-                            type="Puff"
-                            color="#29A15B"
-                            height={150}
-                            width={150}
-                        />
-                      </div>
-                      ) :
-                      (
-                        <Button color="primary" onClick={(e) => { handleAddClose(); saveKpi(e)}}>Save</Button>
-                      )}                        
-                    </DialogActions>
-                </Dialog>
 
                 <Dialog open={editopen} onClose={handleEditClose}>
                     <DialogTitle>KPI</DialogTitle>
@@ -807,7 +708,7 @@ export default function KPIReport() {
 
                         <TextField
                             fullWidth
-                            label="Root Cause"
+                            label="Comments On Progress Made"
                             id="root_cause"
                             multiline
                             rows={2}
@@ -841,7 +742,7 @@ export default function KPIReport() {
 
                         <TextField
                             fullWidth
-                            label="Action"
+                            label="Actions To Be Taken"
                             id="action"
                             multiline
                             rows={2}

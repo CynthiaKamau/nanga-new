@@ -84,9 +84,6 @@ export default function LoginPage() {
         dispatch(login(azure_code, azure_session_state))
             .then(response => {
                 console.log("here res", response)
-                console.log("here res success ", response.success)
-                console.log("here res role", response.user.role_id)
-
                 if(response.success == true && response.message == "Login successful") {
                     setshowloader(false);
                     if(response.user.role_id === 0) {

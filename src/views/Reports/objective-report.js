@@ -34,15 +34,9 @@ import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
 import MaterialTable from 'material-table';
 import { CardContent } from "@material-ui/core";
-// import { CsvBuilder } from "filefy"
-
 import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
 
 const useStyles = makeStyles(styles);
-
-// import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
-
-// const useStyles = makeStyles(styles);
 
 export default function ObjectiveReport() {
     const classes = useStyles();
@@ -248,7 +242,7 @@ export default function ObjectiveReport() {
           title: 'Status',
           render: (list) => {
             if(list.objectives.overallStatus === 'COMPLETE' || list.objectives.overallStatus === 'Complete') {
-                return (<FiberManualRecord style={{color : '#29A15B'}} />)
+                return (<FiberManualRecord style={{color : '#29A15B'}}/>) 
             }  else if(list.objectives.overallStatus === 'INCOMPLETE' || list.objectives.overallStatus === 'Incomplete' || list.objectives.overallStatus === null ) {
                 return (<FiberManualRecord style={{color : '#F44336'}}/>) 
             }
@@ -269,19 +263,23 @@ export default function ObjectiveReport() {
         }, 
         {
           field: 'objectives.rootCause',
-          title: 'Root Cause and Insight'
+          title: 'Root Cause and Insight',
+          export: true,
+          hidden: true 
         },
         {
           field: 'objectives.action',
-          title: 'Action'
+          title: 'Actions To Be Taken'
         },
         {
           field: 'objectives.riskOrOpportunity',
-          title: 'Risk/Opportunities'
+          title: 'Comments On Progress Made' 
         },
         {
           field: 'objectives.supportRequired',
-          title: 'Support Required'
+          title: 'Support Required',
+          export: true,
+          hidden: true 
         },
         {
          field: 'objectives.prioritiesForQuarter',
@@ -289,7 +287,7 @@ export default function ObjectiveReport() {
         },
         {
           field: '',
-          title: 'Action',
+          title: 'Edit',
           render: (list) => {
             console.log("editing table", list)
             return (<IconButton aria-label="edit" className={classes.textGreen} onClick={() => { handleEditClickOpen(); setEditing(list.objectives) }} ><EditIcon/></IconButton>)
@@ -451,29 +449,6 @@ export default function ObjectiveReport() {
                         <h4 style={{ textAlign: 'center', marginTop: '20px', fontWeight: 'bold'}}> Update Your Details</h4>
                     </Grid>
 
-                    <Grid item xs={12} md={4} sm={4}  key="1">
-                        <Card style={{ height: '70%'}}>
-                            <CardContent>
-                            <TextField
-                                fullWidth
-                                label="Action"
-                                id="action"
-                                multiline
-                                rows={5}
-                                required
-                                variant="outlined"
-                                className={classes.textInput}
-                                type="text"
-                                value={monthlyaction}
-                                onChange={(event) => {
-                                    const value = event.target.value;
-                                    setMonthlyAction(value)
-                                }}
-                            />    
-                            </CardContent>
-                        </Card>
-                    </Grid>
-
                     <Grid item xs={12} md={4} sm={4}  key="2">   
                         <Card style={{ height: '70%'}}>
                             
@@ -494,6 +469,29 @@ export default function ObjectiveReport() {
                                     setMonthlyRisks(value)
                                 }}
                             />  
+                            </CardContent>
+                        </Card>
+                    </Grid>
+
+                    <Grid item xs={12} md={4} sm={4}  key="1">
+                        <Card style={{ height: '70%'}}>
+                            <CardContent>
+                            <TextField
+                                fullWidth
+                                label="Support Required"
+                                id="action"
+                                multiline
+                                rows={5}
+                                required
+                                variant="outlined"
+                                className={classes.textInput}
+                                type="text"
+                                value={monthlyaction}
+                                onChange={(event) => {
+                                    const value = event.target.value;
+                                    setMonthlyAction(value)
+                                }}
+                            />    
                             </CardContent>
                         </Card>
                     </Grid>
@@ -652,7 +650,7 @@ export default function ObjectiveReport() {
 
                         <TextField
                             fullWidth
-                            label="Root Cause"
+                            label="Comments On Progress Made"
                             id="root_cause"
                             multiline
                             rows={2}
@@ -686,7 +684,7 @@ export default function ObjectiveReport() {
 
                         <TextField
                             fullWidth
-                            label="Action"
+                            label="Actions To Be Taken"
                             id="action"
                             multiline
                             rows={2}

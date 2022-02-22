@@ -13,6 +13,7 @@ import UserProfile from "views/UserProfile/UserProfile";
 import UserDashboard from "views/Dashboard/UserDashboard";
 import ObjectiveReport from "views/Reports/objective-report";
 import KPIReport from "views/Reports/kpi-report";
+import WeeklyReport from "views/Reports/weekly-report";
 
 import BFC from "views/BFC/Bfc";
 
@@ -133,6 +134,15 @@ var dashRoutes = [
         mini: "SR",
         rtlMini: "ع",
         component: ObjectiveReport,
+        layout: "/admin",
+      },
+      {
+        path: "/weekly-report",
+        name: "Weekly Report",
+        rtlName: "عالتسعير",
+        mini: "WR",
+        rtlMini: "ع",
+        component: WeeklyReport,
         layout: "/admin",
       },
     ],
