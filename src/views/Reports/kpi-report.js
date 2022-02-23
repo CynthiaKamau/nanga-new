@@ -29,6 +29,7 @@ import { getCategories } from "actions/data";
 import { Grid } from "@material-ui/core";
 import MaterialTable from 'material-table';
 import { CardContent } from "@material-ui/core";
+import JsonData from "../../data/data.json";
 
 import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
 
@@ -41,6 +42,8 @@ export default function KPIReport() {
     const { items, monthly_data, monthly_data_error } = useSelector(state => state.kpi);
     const { user : currentUser } = useSelector(state => state.auth);
     const { categories }  = useSelector(state => state.data);
+    const months = JsonData.Months;
+    const years = JsonData.Years;
     // const { error : category_error, isLoading : category_loading}  = useSelector(state => state.data);
 
     console.log("categories", categories)
@@ -407,20 +410,10 @@ export default function KPIReport() {
       e.preventDefault();
       setshowloader(true);
 
-      const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
-
-      const body = JSON.stringify({
-        year: year,
-        month: month,
-        userId: created_by
-      })
-
-      console.log("body here", body)
-
       try {
 
-        let response = await axios.post('/kpiReports/snapshot', body, config)
-            if (response.status == 201) {
+        let response = await axios.get(`/kpiReports/filterKpiReport?user_id=${created_by}&month=${month}&year=${year}`)
+            if (response.status == 200) {
                 setshowloader(false);
                 let item = response.data.message
                 console.log("here", item)
@@ -428,7 +421,11 @@ export default function KPIReport() {
                     title: "Success",
                     text: item,
                     icon: "success",
-                }).then(() => dispatch(getKpis(currentUser.id)));
+                }).then(() => {
+                  setMonth("");
+                  setYear("");
+                  dispatch(getKpis(currentUser.id))
+                });
 
             } else {
                 let error = response.data.message
@@ -438,7 +435,11 @@ export default function KPIReport() {
                     text: error,
                     icon: "error",
                     dangerMode: true
-                }).then(() => dispatch(getKpis(currentUser.id)));
+                }).then(() => {
+                  setMonth("");
+                  setYear("");
+                  dispatch(getKpis(currentUser.id))
+                });
             }
     } catch (error) {
         let err = error.response.data.message
@@ -448,43 +449,108 @@ export default function KPIReport() {
             text: err,
             icon: "error",
             dangerMode: true
-        }).then(() => dispatch(getKpis(currentUser.id)));
+        }).then(() => {
+          setMonth("");
+          setYear("");
+          dispatch(getKpis(currentUser.id))
+        });
     } 
     }
+
+    // const kpiSnapshotData = async(e) => {
+    //   e.preventDefault();
+    //   setshowloader(true);
+
+    //   const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
+
+    //   const body = JSON.stringify({
+    //     year: year,
+    //     month: month,
+    //     user_id: created_by
+    //   })
+
+    //   console.log("body here", body)
+
+    //   try {
+
+    //     let response = await axios.post(`/kpiReports/snapshot`, body, config)
+    //         if (response.status == 201) {
+    //             setshowloader(false);
+    //             let item = response.data.message
+    //             console.log("here", item)
+    //             swal.fire({
+    //                 title: "Success",
+    //                 text: item,
+    //                 icon: "success",
+    //             }).then(() => dispatch(getKpis(currentUser.id)));
+
+    //         } else {
+    //             let error = response.data.message
+    //             setshowloader(false);
+    //             swal.fire({
+    //                 title: "Error",
+    //                 text: error,
+    //                 icon: "error",
+    //                 dangerMode: true
+    //             }).then(() => dispatch(getKpis(currentUser.id)));
+    //         }
+    // } catch (error) {
+    //     let err = error.response.data.message
+    //     setshowloader(false);
+    //     swal.fire({
+    //         title: "Error",
+    //         text: err,
+    //         icon: "error",
+    //         dangerMode: true
+    //     }).then(() => dispatch(getKpis(currentUser.id)));
+    // } 
+    // }
 
   return (
     <div>
       <GridContainer>
-        <Grid container spacing={1} justify="flex-end">
+        <Grid container spacing={1} justify="flex-end" style={{margin: '1rem'}}>
           <TextField
-              label="Month"
-              id="month"
+              id="outlined-select-month"
+              select
               required
+              style={{margin: "1rem", width: "200px"}}
               variant="outlined"
+              label="Month"
               className={classes.textInput}
-              type="text"
               value={month}
               onChange={(event) => {
-                  const value = event.target.value;
-                  setMonth(value)
+              setMonth(event.target.value);
               }}
-          /> 
-
+            >
+              {months && months.map((option) => (
+              <MenuItem key={option.abbreviation} value={option.abbreviation}>
+                  {option.name}
+              </MenuItem>
+              ))}
+          </TextField>
+  
           <TextField
-              label="Year"
-              id="year"
+              id="outlined-select-year"
+              select
               required
+              style={{margin: "1rem", width: "200px"}}
               variant="outlined"
+              label="Year"
               className={classes.textInput}
-              type="text"
               value={year}
               onChange={(event) => {
-                  const value = event.target.value;
-                  setYear(value)
+              setYear(event.target.value);
               }}
-          />
+            >
+              {years && years.map((option) => (
+              <MenuItem key={option.value} value={option.value}>
+                  {option.name}
+              </MenuItem>
+              ))}
+          </TextField>
 
-          <Button color="secondary" onClick={filterKpiData}>Filter</Button> 
+          <Button color="primary" onClick={filterKpiData}>Filter</Button> 
       </Grid>   
       <GridItem xs={12} sm={12} md={12}>
             <Card>

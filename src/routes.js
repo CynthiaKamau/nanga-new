@@ -14,6 +14,7 @@ import UserDashboard from "views/Dashboard/UserDashboard";
 import ObjectiveReport from "views/Reports/objective-report";
 import KPIReport from "views/Reports/kpi-report";
 import WeeklyReport from "views/Reports/weekly-report";
+import UserReportDashboard from "views/Reports/user-report"
 
 import BFC from "views/BFC/Bfc";
 
@@ -151,8 +152,16 @@ var dashRoutes = [
     path: "/user-dashboard/:id",
     name: "",
     rtlName: "التقويم",
-    mini: ".",
+    mini: "",
     component: UserDashboard,
+    layout: "/admin",
+  },
+  {
+    path: "/user-report/:id",
+    name: "",
+    rtlName: "التقويم",
+    mini: "",
+    component: UserReportDashboard,
     layout: "/admin",
   },
   

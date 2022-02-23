@@ -112,7 +112,6 @@ export default function StrategicObjectives() {
     // const [target_achieved, setTargetAchieved] = useState("");
     const [user_id, setUserId] = useState(currentUser.id);
     const [year, setYear] = useState("");
-    // const [year, setYear] = useState(new Date());
     const [task_description, setTaskDescription] = useState("");
     const [task_start_date, setTaskStartDate] = useState(new Date());
     const [task_end_date, setTaskEndDate] = useState(new Date());

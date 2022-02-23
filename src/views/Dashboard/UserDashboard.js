@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
+import { useHistory } from "react-router";
 // @material-ui/core
 import { makeStyles } from "@material-ui/core/styles";
 // core components
@@ -55,8 +56,7 @@ const useStyles = makeStyles(styles);
 export default function UserDashboard() {
   const classes = useStyles();
   const theme = useTheme();
-
-  // const history = useHistory();
+  const history = useHistory();
 
   const dispatch = useDispatch();
 
@@ -64,8 +64,7 @@ export default function UserDashboard() {
   const { spec_user, task_count, objective_count, kpi_count, strategic_intent1 } = useSelector(state => state.data);
   const { items, error, isLoading } = useSelector(state => state.kpi);
   const { behaviours, behaviours_error, freedoms, freedoms_error, constraints, constrains_error } = useSelector(state => state.bfc);
-
-  // const {  categories } = useSelector(state => state.data);
+  const { user: currentUser } = useSelector(state => state.auth);
 
   const str = window.location.pathname;
   const chars = str.slice(25, 1000);
@@ -210,20 +209,11 @@ export default function UserDashboard() {
     setEditingMission
   };
 
-  // const handleRedirect = () => {
-  //   history.push('/admin/tasks');
-  // }
-
-  // const handleEditMissionClickOpen = () => {
-  //   setEditMissionOpen(true);
-  // };
-
   const setEditingMission = () => {
     setUserMission();
   }
 
   const editMission = () => {
-
     setshowloader();
   }
 
@@ -239,6 +229,14 @@ export default function UserDashboard() {
 
   }
 
+  const handleUserReports = () => {
+    if(currentUser.role_id === 0) {
+      history.push(`/admin/user-report/id=${chars}`)
+    } else {
+      history.push(`/user/user-report/id=${chars}`)
+    }
+  }
+
   return (
     <div>
 
@@ -248,7 +246,7 @@ export default function UserDashboard() {
         <div> <h4 className={classes.textBold} style={{display : 'inline-block'}}> {spec_user.fullnames} | </h4>  <h6 style={{display : 'inline-block'}}> {spec_user.roles.role_name}</h6> </div> ) : null}
 
       <Grid container spacing={1} justify="flex-end">
-        <Button style={{backgroundColor : '#29A15B'}} endIcon={<Icon>send</Icon>} variant="contained"> User Reports</Button>
+        <Button style={{backgroundColor : '#29A15B'}} endIcon={<Icon>send</Icon>} variant="contained" onClick={handleUserReports}> User Reports</Button>
       </Grid>      
 
       <Grid container spacing={2} style={{marginRight : '10px', marginLeft : '10px'}}>

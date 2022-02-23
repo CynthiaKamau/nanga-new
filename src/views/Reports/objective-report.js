@@ -35,6 +35,7 @@ import Select from "@material-ui/core/Select";
 import MaterialTable from 'material-table';
 import { CardContent } from "@material-ui/core";
 import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
+import JsonData from "../../data/data.json";
 
 const useStyles = makeStyles(styles);
 
@@ -46,6 +47,8 @@ export default function ObjectiveReport() {
     const { pillars } = useSelector(state => state.data);
     const { user: currentUser } = useSelector(state => state.auth);
     const {  items : kpis } = useSelector(state => state.kpi);
+		const months = JsonData.Months;
+    const years = JsonData.Years;
 
     console.log("objective",item, setCreatedBy)
     console.log("monthly obj", monthly_data, monthly_data_error)
@@ -95,6 +98,8 @@ export default function ObjectiveReport() {
     const [risk_and_opportunity, setRiskAndOpportunity] = useState(""); 
     const [pillar_id, setPillarId] = useState("")
     const [priorities_for_quarter, setPrioritiesForQuarter] = useState("");
+		const [month, setMonth] = useState("");
+    const [filteryear, setFilterYear] = useState("");
 
     const handleEditClickOpen = () => {
         setEditOpen(true);
@@ -397,385 +402,480 @@ export default function ObjectiveReport() {
 
     }
 
+		const filterKpiData = async(e) => {
+      e.preventDefault();
+      setshowloader(true);
+
+      try {
+
+        let response = await axios.get(`/objectivesReports/filterObjectivesReport?user_id=${created_by}&month=${month}&year=${year}`)
+            if (response.status == 200) {
+                setshowloader(false);
+                let item = response.data.message
+                console.log("here", item)
+                swal.fire({
+                    title: "Success",
+                    text: item,
+                    icon: "success",
+                }).then(() => {
+									setMonth("");
+                  setFilterYear("");
+									dispatch(getKpis(currentUser.id))
+								});
+
+            } else {
+                let error = response.data.message
+                setshowloader(false);
+                swal.fire({
+                    title: "Error",
+                    text: error,
+                    icon: "error",
+                    dangerMode: true
+                }).then(() => {
+										setMonth("");
+										setFilterYear("");
+										dispatch(getKpis(currentUser.id))
+								});
+            }
+			} catch (error) {
+					let err = error.response.data.message
+					setshowloader(false);
+					swal.fire({
+							title: "Error",
+							text: err,
+							icon: "error",
+							dangerMode: true
+					}).then(() => {
+							setMonth("");
+							setFilterYear("");
+							dispatch(getKpis(currentUser.id))
+					});
+			} 
+    }
+
 
   return (
     <div>
       <GridContainer>
-      <GridItem xs={12} sm={12} md={12}>
-            <Card>
-              <CardHeader color="primary">
-                <h4>Strategic Objectives</h4>
-              </CardHeader>
-              <CardBody>
-              {/* <div className={classes.btnRight}><Button color="primary" size="lg" onClick={handleAddClickOpen}> Add KPI </Button> </div> */}
+				<Grid container spacing={1} justify="flex-end" style={{margin: '1rem'}}>
+          <TextField
+              id="outlined-select-month"
+              select
+              required
+              style={{margin: "1rem", width: "200px"}}
+              variant="outlined"
+              label="Month"
+              className={classes.textInput}
+              value={month}
+              onChange={(event) => {
+              setMonth(event.target.value);
+              }}
+            >
+              {months && months.map((option) => (
+              <MenuItem key={option.abbreviation} value={option.abbreviation}>
+                  {option.name}
+              </MenuItem>
+              ))}
+          </TextField>
+  
+          <TextField
+              id="outlined-select-year"
+              select
+              required
+              style={{margin: "1rem", width: "200px"}}
+              variant="outlined"
+              label="Year"
+              className={classes.textInput}
+              value={filteryear}
+              onChange={(event) => {
+              setFilterYear(event.target.value);
+              }}
+            >
+              {years && years.map((option) => (
+              <MenuItem key={option.value} value={option.value}>
+                  {option.name}
+              </MenuItem>
+              ))}
+          </TextField>
 
-                {items !== null ? (
-                    <MaterialTable
-                    title="Strategic Objective Reports."
-                    data={items}
-                    columns={columns}
-                    options={{
-                        search: true,
-                        sorting: true,
-                        pageSize: 10,
-                        pageSizeOptions: [10,50,100 ],
-                        exportButton: true
-                    }}
-                    />
-                ) : 
+          <Button color="primary" onClick={filterKpiData}>Filter</Button> 
+      	</Grid> 
 
-                    <MaterialTable
-                    title="Strategic Objective Reports."
-                    data={[]}
-                    columns={columns}
-                    options={{
-                        search: true,
-                        sorting: true,
-                        pageSize: 10,
-                        pageSizeOptions: [10,50,100 ],
-                        exportButton: true,
-                        // defaultExportCsv
-                    }}
-                    />
-                }
+      	<GridItem xs={12} sm={12} md={12}>
+					<Card>
+						<CardHeader color="primary">
+							<h4>Strategic Objectives</h4>
+						</CardHeader>
+						<CardBody>
+						{/* <div className={classes.btnRight}><Button color="primary" size="lg" onClick={handleAddClickOpen}> Add KPI </Button> </div> */}
 
-                <Grid
-                    container
-                    spacing={2}
-                    direction="row"
-                    >
+							{items !== null ? (
+									<MaterialTable
+									title="Strategic Objective Reports."
+									data={items}
+									columns={columns}
+									options={{
+											search: true,
+											sorting: true,
+											pageSize: 10,
+											pageSizeOptions: [10,50,100 ],
+											exportButton: true
+									}}
+									/>
+							) : 
 
-                    <Grid item xs={12} md={12} sm={12}>
-                        <h4 style={{ textAlign: 'center', marginTop: '20px', fontWeight: 'bold'}}> Update Your Details</h4>
-                    </Grid>
+									<MaterialTable
+									title="Strategic Objective Reports."
+									data={[]}
+									columns={columns}
+									options={{
+											search: true,
+											sorting: true,
+											pageSize: 10,
+											pageSizeOptions: [10,50,100 ],
+											exportButton: true,
+											// defaultExportCsv
+									}}
+									/>
+							}
 
-                    <Grid item xs={12} md={4} sm={4}  key="2">   
-                        <Card style={{ height: '70%'}}>
-                            
-                            <CardContent>
-                            <TextField
-                                fullWidth
-                                label="Risk/Opportunities"
-                                id="monthly_risks"
-                                multiline
-                                rows={5}
-                                required
-                                variant="outlined"
-                                className={classes.textInput}
-                                type="text"
-                                value={monthly_risks}
-                                onChange={(event) => {
-                                    const value = event.target.value;
-                                    setMonthlyRisks(value)
-                                }}
-                            />  
-                            </CardContent>
-                        </Card>
-                    </Grid>
+							<Grid
+									container
+									spacing={2}
+									direction="row"
+									>
 
-                    <Grid item xs={12} md={4} sm={4}  key="1">
-                        <Card style={{ height: '70%'}}>
-                            <CardContent>
-                            <TextField
-                                fullWidth
-                                label="Support Required"
-                                id="action"
-                                multiline
-                                rows={5}
-                                required
-                                variant="outlined"
-                                className={classes.textInput}
-                                type="text"
-                                value={monthlyaction}
-                                onChange={(event) => {
-                                    const value = event.target.value;
-                                    setMonthlyAction(value)
-                                }}
-                            />    
-                            </CardContent>
-                        </Card>
-                    </Grid>
+									<Grid item xs={12} md={12} sm={12}>
+											<h4 style={{ textAlign: 'center', marginTop: '20px', fontWeight: 'bold'}}> Update Your Details</h4>
+									</Grid>
 
-                    <Grid item xs={12} md={4} sm={4} key="3"> 
-                    <Card style={{ height: '70%'}}>
-                        <CardContent>
-                        <TextField
-                                fullWidth
-                                label="Next Periods Actions"
-                                id="monthly_next_actions"
-                                multiline
-                                rows={5}
-                                required
-                                variant="outlined"
-                                className={classes.textInput}
-                                type="text"
-                                value={monthly_next_actions}
-                                onChange={(event) => {
-                                    const value = event.target.value;
-                                    setMonthlyNextActions(value)
-                                }}
-                            />       
-                        </CardContent>
-                    </Card>
-                    </Grid>
-                </Grid>
-                
-                <Grid container justify="flex-end">
-                    <Button color="primary" size="lg" onClick={(e) => { saveMonthlyUpdate(e)}}> Save </Button> 
-                </Grid>
+									<Grid item xs={12} md={4} sm={4}  key="2">   
+											<Card style={{ height: '70%'}}>
+													
+													<CardContent>
+													<TextField
+															fullWidth
+															label="Risk/Opportunities"
+															id="monthly_risks"
+															multiline
+															rows={5}
+															required
+															variant="outlined"
+															className={classes.textInput}
+															type="text"
+															value={monthly_risks}
+															onChange={(event) => {
+																	const value = event.target.value;
+																	setMonthlyRisks(value)
+															}}
+													/>  
+													</CardContent>
+											</Card>
+									</Grid>
 
-                <Dialog open={editopen} onClose={handleEditClose}>
-                    <DialogTitle>Strategic Objective</DialogTitle>
-                    <DialogContent>
-                    <DialogContentText>
-                        Edit Strategic Objective 
-                    </DialogContentText>
-                        <TextField
-                            autoFocus
-                            margin="dense"
-                            id="objective"
-                            label="Objective"
-                            type="text"
-                            fullWidth
-                            style={{marginBottom : '15px'}}
-                            value={description}
-                            variant="outlined"
-                            onChange = {(event) => {
-                                setDescription(event.target.value);
-                            }}
-                        />
+									<Grid item xs={12} md={4} sm={4}  key="1">
+											<Card style={{ height: '70%'}}>
+													<CardContent>
+													<TextField
+															fullWidth
+															label="Support Required"
+															id="action"
+															multiline
+															rows={5}
+															required
+															variant="outlined"
+															className={classes.textInput}
+															type="text"
+															value={monthlyaction}
+															onChange={(event) => {
+																	const value = event.target.value;
+																	setMonthlyAction(value)
+															}}
+													/>    
+													</CardContent>
+											</Card>
+									</Grid>
 
-                        <Grid container spacing={2}>
-                            <Grid item xs={6} lg={6} xl={6} sm={12}>                            
-                            <label style={{ fontWeight: 'bold', color: 'black'}}> KPI : </label>
-                            <FormControl
-                                fullWidth
-                                className={classes.selectFormControl}
-                            >
-                                <InputLabel
-                                htmlFor="multiple-select"
-                                className={classes.selectLabel}
-                                >
-                                Select KPI
-                                </InputLabel>
-                                <Select
-                                multiple
-                                variant="outlined"
-                                value={kpi_id}
-                                onChange={(event) => {
-                                    const value = event.target.value;
-                                    setKpiId(value)
-                                }}
-                                MenuProps={{ className: classes.selectMenu }}
-                                classes={{ select: classes.select }}
-                                inputProps={{
-                                    name: "multipleSelect",
-                                    id: "multiple-select",
-                                }}
-                                >
-                                    {kpis && kpis.map((option) => (
-                                    <MenuItem key={option.id} value={option.id}
-                                        classes={{
-                                        root: classes.selectMenuItem,
-                                        selected: classes.selectMenuItemSelectedMultiple,
-                                        }}>
-                                        {option.title}
-                                    </MenuItem>
-                                ))}
-                                </Select>
-                            </FormControl>
-                            </Grid>
+									<Grid item xs={12} md={4} sm={4} key="3"> 
+									<Card style={{ height: '70%'}}>
+											<CardContent>
+											<TextField
+															fullWidth
+															label="Next Periods Actions"
+															id="monthly_next_actions"
+															multiline
+															rows={5}
+															required
+															variant="outlined"
+															className={classes.textInput}
+															type="text"
+															value={monthly_next_actions}
+															onChange={(event) => {
+																	const value = event.target.value;
+																	setMonthlyNextActions(value)
+															}}
+													/>       
+											</CardContent>
+									</Card>
+									</Grid>
+							</Grid>
+							
+							<Grid container justify="flex-end">
+									<Button color="primary" size="lg" onClick={(e) => { saveMonthlyUpdate(e)}}> Save </Button> 
+							</Grid>
 
-                            <Grid item xs={6} lg={6} xl={6} sm={12}>
-                                <label> Pillar : </label>
-                                <TextField
-                                    id="outlined-select-pillar"
-                                    select
-                                    required
-                                    fullWidth
-                                    variant="outlined"
-                                    label="Select"
-                                    className={classes.textInput}
-                                    value={pillar_id}
-                                    onChange={(event) => {
-                                    setPillarId(event.target.value);
-                                    // setUomValue()
-                                    }}
-                                    helperText="Please select your pillar"
-                                >
-                                    {pillars && pillars.map((option) => (
-                                    <MenuItem key={option.id} value={option.id}>
-                                        {option.description}
-                                    </MenuItem>
-                                    ))}
-                                </TextField>
-                            </Grid>
-                        </Grid>
+							<Dialog open={editopen} onClose={handleEditClose}>
+									<DialogTitle>Strategic Objective</DialogTitle>
+									<DialogContent>
+									<DialogContentText>
+											Edit Strategic Objective 
+									</DialogContentText>
+											<TextField
+													autoFocus
+													margin="dense"
+													id="objective"
+													label="Objective"
+													type="text"
+													fullWidth
+													style={{marginBottom : '15px'}}
+													value={description}
+													variant="outlined"
+													onChange = {(event) => {
+															setDescription(event.target.value);
+													}}
+											/>
 
-                        <Grid container spacing={2}>
-                            <Grid item xs={6} lg={6} xl={6} sm={12}>
-                                <TextField
-                                autoFocus
-                                margin="dense"
-                                id="target"
-                                label="Target"
-                                type="number"
-                                fullWidth
-                                style={{marginBottom : '15px'}}
-                                value={target}
-                                variant="outlined"
-                                onChange = {(event) => {
-                                    setTarget(event.target.value);
-                                }}
-                                />
-                            </Grid>
+											<Grid container spacing={2}>
+													<Grid item xs={6} lg={6} xl={6} sm={12}>                            
+													<label style={{ fontWeight: 'bold', color: 'black'}}> KPI : </label>
+													<FormControl
+															fullWidth
+															className={classes.selectFormControl}
+													>
+															<InputLabel
+															htmlFor="multiple-select"
+															className={classes.selectLabel}
+															>
+															Select KPI
+															</InputLabel>
+															<Select
+															multiple
+															variant="outlined"
+															value={kpi_id}
+															onChange={(event) => {
+																	const value = event.target.value;
+																	setKpiId(value)
+															}}
+															MenuProps={{ className: classes.selectMenu }}
+															classes={{ select: classes.select }}
+															inputProps={{
+																	name: "multipleSelect",
+																	id: "multiple-select",
+															}}
+															>
+																	{kpis && kpis.map((option) => (
+																	<MenuItem key={option.id} value={option.id}
+																			classes={{
+																			root: classes.selectMenuItem,
+																			selected: classes.selectMenuItemSelectedMultiple,
+																			}}>
+																			{option.title}
+																	</MenuItem>
+															))}
+															</Select>
+													</FormControl>
+													</Grid>
 
-                            <Grid item xs={6} lg={6} xl={6} sm={12}>
-                                <TextField
-                                autoFocus
-                                margin="dense"
-                                id="target_achieved"
-                                label="Target Achieved"
-                                type="text"
-                                fullWidth
-                                style={{marginBottom : '15px'}}
-                                value={target_achieved}
-                                variant="outlined"
-                                onChange = {(event) => {
-                                    setTargetAchieved(event.target.value);
-                                }}
-                                />
-                            </Grid>
-                        </Grid>
+													<Grid item xs={6} lg={6} xl={6} sm={12}>
+															<label> Pillar : </label>
+															<TextField
+																	id="outlined-select-pillar"
+																	select
+																	required
+																	fullWidth
+																	variant="outlined"
+																	label="Select"
+																	className={classes.textInput}
+																	value={pillar_id}
+																	onChange={(event) => {
+																	setPillarId(event.target.value);
+																	// setUomValue()
+																	}}
+																	helperText="Please select your pillar"
+															>
+																	{pillars && pillars.map((option) => (
+																	<MenuItem key={option.id} value={option.id}>
+																			{option.description}
+																	</MenuItem>
+																	))}
+															</TextField>
+													</Grid>
+											</Grid>
 
-                        <TextField
-                            fullWidth
-                            label="Comments On Progress Made"
-                            id="root_cause"
-                            multiline
-                            rows={2}
-                            required
-                            variant="outlined"
-                            className={classes.textInput}
-                            type="text"
-                            value={root_cause}
-                            onChange={(event) => {
-                                const value = event.target.value;
-                                setRootCause(value)
-                            }}
-                        />
+											<Grid container spacing={2}>
+													<Grid item xs={6} lg={6} xl={6} sm={12}>
+															<TextField
+															autoFocus
+															margin="dense"
+															id="target"
+															label="Target"
+															type="number"
+															fullWidth
+															style={{marginBottom : '15px'}}
+															value={target}
+															variant="outlined"
+															onChange = {(event) => {
+																	setTarget(event.target.value);
+															}}
+															/>
+													</Grid>
 
-                        <TextField
-                            fullWidth
-                            label="Support Required"
-                            id="support_required"
-                            multiline
-                            rows={2}
-                            required
-                            variant="outlined"
-                            className={classes.textInput}
-                            type="text"
-                            value={support_required}
-                            onChange={(event) => {
-                                const value = event.target.value;
-                                setSupportRequired(value)
-                            }}
-                        />
+													<Grid item xs={6} lg={6} xl={6} sm={12}>
+															<TextField
+															autoFocus
+															margin="dense"
+															id="target_achieved"
+															label="Target Achieved"
+															type="text"
+															fullWidth
+															style={{marginBottom : '15px'}}
+															value={target_achieved}
+															variant="outlined"
+															onChange = {(event) => {
+																	setTargetAchieved(event.target.value);
+															}}
+															/>
+													</Grid>
+											</Grid>
 
-                        <TextField
-                            fullWidth
-                            label="Actions To Be Taken"
-                            id="action"
-                            multiline
-                            rows={2}
-                            required
-                            variant="outlined"
-                            className={classes.textInput}
-                            type="text"
-                            value={action}
-                            onChange={(event) => {
-                                const value = event.target.value;
-                                setAction(value)
-                            }}
-                        />
+											<TextField
+													fullWidth
+													label="Comments On Progress Made"
+													id="root_cause"
+													multiline
+													rows={2}
+													required
+													variant="outlined"
+													className={classes.textInput}
+													type="text"
+													value={root_cause}
+													onChange={(event) => {
+															const value = event.target.value;
+															setRootCause(value)
+													}}
+											/>
 
-                        <TextField
-                            fullWidth
-                            label="Risk And Opportunity"
-                            id="risk_and_opportunity"
-                            multiline
-                            rows={2}
-                            required
-                            variant="outlined"
-                            className={classes.textInput}
-                            type="text"
-                            value={risk_and_opportunity}
-                            onChange={(event) => {
-                                const value = event.target.value;
-                                setRiskAndOpportunity(value)
-                            }}
-                        />
+											<TextField
+													fullWidth
+													label="Support Required"
+													id="support_required"
+													multiline
+													rows={2}
+													required
+													variant="outlined"
+													className={classes.textInput}
+													type="text"
+													value={support_required}
+													onChange={(event) => {
+															const value = event.target.value;
+															setSupportRequired(value)
+													}}
+											/>
 
-                        <TextField
-                            fullWidth
-                            label="Priorities For Quarter"
-                            id="priorities_for_quarter"
-                            multiline
-                            rows={2}
-                            required
-                            variant="outlined"
-                            className={classes.textInput}
-                            type="text"
-                            value={priorities_for_quarter}
-                            onChange={(event) => {
-                                const value = event.target.value;
-                                setPrioritiesForQuarter(value)
-                            }}
-                        />
+											<TextField
+													fullWidth
+													label="Actions To Be Taken"
+													id="action"
+													multiline
+													rows={2}
+													required
+													variant="outlined"
+													className={classes.textInput}
+													type="text"
+													value={action}
+													onChange={(event) => {
+															const value = event.target.value;
+															setAction(value)
+													}}
+											/>
 
-                    </DialogContent>
-                    <DialogActions>
-                    <Button color="danger" onClick={handleEditClose}>Cancel</Button>
-                    { showloader === true ? (
-                      <div style={{ textAlign: "center", marginTop: 10 }}>
-                        <Loader
-                            type="Puff"
-                            color="#29A15B"
-                            height={150}
-                            width={150}
-                        />
-                      </div>
-                      ) : (
-                        <Button color="primary" onClick={(e) => { saveEdited(e) }}>Save</Button>
-                      )}
-                    </DialogActions>
-                </Dialog>
+											<TextField
+													fullWidth
+													label="Risk And Opportunity"
+													id="risk_and_opportunity"
+													multiline
+													rows={2}
+													required
+													variant="outlined"
+													className={classes.textInput}
+													type="text"
+													value={risk_and_opportunity}
+													onChange={(event) => {
+															const value = event.target.value;
+															setRiskAndOpportunity(value)
+													}}
+											/>
 
-                {/* <Dialog
-                    open={deleteopen}
-                    onClose={handleDeleteClose}
-                    aria-labelledby="alert-dialog-title"
-                    aria-describedby="alert-dialog-description"
-                >
-                    <DialogTitle id="alert-dialog-title">
-                    {"Are you sure you want to delete the team?"}
-                    </DialogTitle>
-                    <DialogContent>
-                    <DialogContentText id="alert-dialog-description">
-                        Please confirm that you want to delete this KPI.
-                    </DialogContentText>
-                    </DialogContent>
-                    <DialogActions>
-                    <Button color="danger" onClick={handleDeleteClose}>Disagree</Button>
-                    <Button color="primary" onClick={handleDeleteClose} autoFocus>
-                        Agree
-                    </Button>
-                    </DialogActions>
-                </Dialog> */}
+											<TextField
+													fullWidth
+													label="Priorities For Quarter"
+													id="priorities_for_quarter"
+													multiline
+													rows={2}
+													required
+													variant="outlined"
+													className={classes.textInput}
+													type="text"
+													value={priorities_for_quarter}
+													onChange={(event) => {
+															const value = event.target.value;
+															setPrioritiesForQuarter(value)
+													}}
+											/>
 
-              </CardBody>
-            </Card>
-          </GridItem>
+									</DialogContent>
+									<DialogActions>
+									<Button color="danger" onClick={handleEditClose}>Cancel</Button>
+									{ showloader === true ? (
+										<div style={{ textAlign: "center", marginTop: 10 }}>
+											<Loader
+													type="Puff"
+													color="#29A15B"
+													height={150}
+													width={150}
+											/>
+										</div>
+										) : (
+											<Button color="primary" onClick={(e) => { saveEdited(e) }}>Save</Button>
+										)}
+									</DialogActions>
+							</Dialog>
+
+							{/* <Dialog
+									open={deleteopen}
+									onClose={handleDeleteClose}
+									aria-labelledby="alert-dialog-title"
+									aria-describedby="alert-dialog-description"
+							>
+									<DialogTitle id="alert-dialog-title">
+									{"Are you sure you want to delete the team?"}
+									</DialogTitle>
+									<DialogContent>
+									<DialogContentText id="alert-dialog-description">
+											Please confirm that you want to delete this KPI.
+									</DialogContentText>
+									</DialogContent>
+									<DialogActions>
+									<Button color="danger" onClick={handleDeleteClose}>Disagree</Button>
+									<Button color="primary" onClick={handleDeleteClose} autoFocus>
+											Agree
+									</Button>
+									</DialogActions>
+							</Dialog> */}
+
+						</CardBody>
+					</Card>
+				</GridItem>
       </GridContainer>
     </div>
   );
