@@ -105,14 +105,6 @@ var dashRoutes = [
     layout: "/admin",
   },
   {
-    path: "/user-profile",
-    name: "User Profile",
-    rtlName: "التقويم",
-    icon: PersonOutline,
-    component: UserProfile,
-    layout: "/admin",
-  },
-  {
     collapse: true,
     name: "Reports",
     rtlName: "صفحات",
@@ -147,6 +139,14 @@ var dashRoutes = [
         layout: "/admin",
       },
     ],
+  },
+  {
+    path: "/user-profile",
+    name: "User Profile",
+    rtlName: "التقويم",
+    icon: PersonOutline,
+    component: UserProfile,
+    layout: "/admin",
   },
   {
     path: "/user-dashboard/:id",

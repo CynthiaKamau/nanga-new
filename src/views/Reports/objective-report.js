@@ -58,19 +58,27 @@ export default function ObjectiveReport() {
     const [monthly_next_actions, setMonthlyNextActions ] = useState("");
     const [idm, setIdM] = useState("");
 
+    var m_names = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+
+    var d = new Date();
+    var m = m_names[d.getMonth()]; 
+    var y = d.getFullYear();
+
+    console.log("year month", m,y)
+
     useEffect(() => {
         dispatch(getUserObjectives(currentUser.id));
         dispatch(getCategories());
         dispatch(getKpis(currentUser.id));
         dispatch(getPillars());
-        dispatch(getOMonthlyActions(currentUser.id))
+        dispatch(getOMonthlyActions(currentUser.id, m,y))
     }, [])
 
     useEffect(() => {
-        if(monthly_data.length >= 1) {
-            setMonthlyAction(monthly_data[0].action)
-            setMonthlyRisks(monthly_data[0].risk_opportunity)
-            setMonthlyNextActions(monthly_data[0].nextPeriodAction)
+        if(monthly_data && monthly_data.length >= 1) {
+            setMonthlyAction(monthly_data[0].kpiActionsReports[0].action)
+            setMonthlyRisks(monthly_data[0].kpiActionsReports[0].risk_opportunity)
+            setMonthlyNextActions(monthly_data[0].kpiActionsReports[0].nextPeriodAction)
             setIdM(monthly_data[0].id)
         } else {
             setMonthlyAction('Not available')
@@ -402,7 +410,7 @@ export default function ObjectiveReport() {
 
     }
 
-		const filterKpiData = async(e) => {
+	const filterKpiData = async(e) => {
       e.preventDefault();
       setshowloader(true);
 

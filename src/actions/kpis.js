@@ -164,15 +164,14 @@ export const deleteKpi = (id) => {
 }
 
 //get monthly actions
-export const getKMonthlyActions = (id) => {
+export const getKMonthlyActions = (id, month, year) => {
 
     return async function (dispatch) {
 
         dispatch({ type: KPI_MONTH_ACTION_FETCH_REQUEST });
 
         try {
-
-            let response = await axios.get(`/kpiactions/fetchActionsbyUserId?user_id=${id}`)
+            let response = await axios.get(`/kpiActionsReports/filterKpiReport?user_id=${id}&month=${month}&year=${year}`)
             if (response.status == 200) {
                 dispatch({ type: KPI_MONTH_ACTION_SUCCESS, payload: response.data })
             } else {

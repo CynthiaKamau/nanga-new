@@ -47,7 +47,15 @@ export default function KPIReport() {
     // const { error : category_error, isLoading : category_loading}  = useSelector(state => state.data);
 
     console.log("categories", categories)
-    console.log("monthly kpi", monthly_data, monthly_data_error)
+    console.log("monthly kpi", monthly_data, monthly_data_error);
+
+    var m_names = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+
+    var d = new Date();
+    var m = m_names[d.getMonth()]; 
+    var y = d.getFullYear();
+
+    console.log("year month", m,y)
 
     const [monthlyaction, setMonthlyAction ] = useState("");
     const [monthly_risks, setMonthlyRisks ] = useState("");
@@ -57,14 +65,14 @@ export default function KPIReport() {
     useEffect(() => {
         dispatch(getKpis(currentUser.id));
         dispatch(getCategories());
-        dispatch(getKMonthlyActions(currentUser.id))
+        dispatch(getKMonthlyActions(currentUser.id,m,y))
       }, []);
 
     useEffect(() => {
-        if(monthly_data.length >= 1) {
-            setMonthlyAction(monthly_data[0].action)
-            setMonthlyRisks(monthly_data[0].risk_opportunity)
-            setMonthlyNextActions(monthly_data[0].nextPeriodAction)
+        if(monthly_data && monthly_data.length >= 1) {
+            setMonthlyAction(monthly_data[0].kpiActionsReports[0].action)
+            setMonthlyRisks(monthly_data[0].kpiActionsReports[0].risk_opportunity)
+            setMonthlyNextActions(monthly_data[0].kpiActionsReports[0].nextPeriodAction)
             setIdM(monthly_data[0].id)
         } else {
             setMonthlyAction('Not available')
@@ -72,7 +80,7 @@ export default function KPIReport() {
             setMonthlyNextActions('Not available')
             setIdM(null)
         }
-    }, []);
+    }, [monthly_data]);
 
     const [editopen, setEditOpen] = useState(false);
     // const [deleteopen, setDeleteOpen] = useState(false);
@@ -407,55 +415,66 @@ export default function KPIReport() {
     }
 
     const filterKpiData = async(e) => {
-      e.preventDefault();
-      setshowloader(true);
+        e.preventDefault();
+        setshowloader(true);
+  
+        try {
+  
+          let response = await axios.get(`/kpiReports/filterKpiReport?user_id=${created_by}&month=${month}&year=${year}`)
+              if (response.status == 200) {
+                  setshowloader(false);
+                  let response1 = await axios.get(`/kpiActionsReports/filterKpiReport?user_id=${created_by}&month=${month}&year=${year}`)
+                  let item = response1.data.message;
 
-      try {
+                  let risk = response1.data[0].kpiActionsReports[0].risk_opportunity;
+                  let action = response1.data[0].kpiActionsReports[0].action;
+                  let nextAction = response1.data[0].kpiActionsReports[0].nextPeriodAction;
 
-        let response = await axios.get(`/kpiReports/filterKpiReport?user_id=${created_by}&month=${month}&year=${year}`)
-            if (response.status == 200) {
-                setshowloader(false);
-                let item = response.data.message
-                console.log("here", item)
-                swal.fire({
-                    title: "Success",
-                    text: item,
-                    icon: "success",
-                }).then(() => {
-                  setMonth("");
-                  setYear("");
-                  dispatch(getKpis(currentUser.id))
-                });
+                  console.log("here h", risk, action, nextAction)
 
-            } else {
-                let error = response.data.message
-                setshowloader(false);
-                swal.fire({
-                    title: "Error",
-                    text: error,
-                    icon: "error",
-                    dangerMode: true
-                }).then(() => {
-                  setMonth("");
-                  setYear("");
-                  dispatch(getKpis(currentUser.id))
-                });
-            }
-    } catch (error) {
-        let err = error.response.data.message
-        setshowloader(false);
-        swal.fire({
-            title: "Error",
-            text: err,
-            icon: "error",
-            dangerMode: true
-        }).then(() => {
-          setMonth("");
-          setYear("");
-          dispatch(getKpis(currentUser.id))
-        });
-    } 
-    }
+                  console.log("here", item)
+                  swal.fire({
+                      title: "Success",
+                      text: item,
+                      icon: "success",
+                  }).then(() => {
+                    setMonth("");
+                    setYear("");
+                    setMonthlyRisks(risk);
+                    setMonthlyAction(action);
+                    setMonthlyNextActions(nextAction);
+                    dispatch(getKpis(currentUser.id))
+                  });
+  
+              } else {
+                  let error = response.data.message
+                  setshowloader(false);
+                  swal.fire({
+                      title: "Error",
+                      text: error,
+                      icon: "error",
+                      dangerMode: true
+                  }).then(() => {
+                    setMonth("");
+                    setYear("");
+                    dispatch(getKpis(currentUser.id))
+                  });
+              }
+      } catch (error) {
+          let err = error.response.data.message
+          setshowloader(false);
+          swal.fire({
+              title: "Error",
+              text: err,
+              icon: "error",
+              dangerMode: true
+          }).then(() => {
+            setMonth("");
+            setYear("");
+            dispatch(getKpis(currentUser.id))
+          });
+      } 
+      }
 
     // const kpiSnapshotData = async(e) => {
     //   e.preventDefault();
