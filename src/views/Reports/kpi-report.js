@@ -60,7 +60,6 @@ export default function KPIReport() {
     const [monthlyaction, setMonthlyAction ] = useState("");
     const [monthly_risks, setMonthlyRisks ] = useState("");
     const [monthly_next_actions, setMonthlyNextActions ] = useState("");
-    const [idm, setIdM] = useState("");
 
     useEffect(() => {
         dispatch(getKpis(currentUser.id));
@@ -73,12 +72,10 @@ export default function KPIReport() {
             setMonthlyAction(monthly_data[0].kpiActionsReports[0].action)
             setMonthlyRisks(monthly_data[0].kpiActionsReports[0].risk_opportunity)
             setMonthlyNextActions(monthly_data[0].kpiActionsReports[0].nextPeriodAction)
-            setIdM(monthly_data[0].id)
         } else {
             setMonthlyAction('Not available')
             setMonthlyRisks('Not available')
             setMonthlyNextActions('Not available')
-            setIdM(null)
         }
     }, [monthly_data]);
 
@@ -319,98 +316,47 @@ export default function KPIReport() {
 
         const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
 
-        if(idm === null || idm == undefined) {
+        const body = JSON.stringify({
+            supportRequired : monthlyaction,
+            nextPeriodActions : monthly_next_actions,
+            riskOpportunity : monthly_risks,
+            userId: created_by
+        })
 
-            const body = JSON.stringify({
-                actions : monthlyaction,
-                nextPeriodActions : monthly_next_actions,
-                riskOrOpportunity: monthly_risks,
-                createdBy: created_by,
-                userId: created_by
-            })
+        try {
 
-            try {
+            let response = await axios.post('/kpiactions/createUpdate', body, config)
+                if (response.status == 200) {
+                    setshowloader(false);
+                    let item = response.data.message
+                    console.log("here", item)
+                    swal.fire({
+                        title: "Success",
+                        text: item,
+                        icon: "success",
+                    }).then(() => dispatch(getKMonthlyActions(currentUser.id, m, y)));
 
-                let response = await axios.post('/kpiactions/create', body, config)
-                    if (response.status == 201) {
-                        setshowloader(false);
-                        let item = response.data.message
-                        console.log("here", item)
-                        swal.fire({
-                            title: "Success",
-                            text: item,
-                            icon: "success",
-                        }).then(() => dispatch(getKMonthlyActions(currentUser.id)));
-    
-                    } else {
-                        let error = response.data.message
-                        setshowloader(false);
-                        swal.fire({
-                            title: "Error",
-                            text: error,
-                            icon: "error",
-                            dangerMode: true
-                        }).then(() => dispatch(getKMonthlyActions(currentUser.id)));
-                    }
-            } catch (error) {
-                let err = error.response.data.message
-                setshowloader(false);
-                swal.fire({
-                    title: "Error",
-                    text: err,
-                    icon: "error",
-                    dangerMode: true
-                }).then(() => dispatch(getKMonthlyActions(currentUser.id)));
-            } 
-
-        } else {
-
-            const body = JSON.stringify({
-                action : monthlyaction,
-                nextAction : monthly_next_actions,
-                riskOpportunity: monthly_risks,
-                updatedBy: created_by,
-                userId: created_by,
-                id: idm
-            })
-
-            console.log("m body", body)
-
-            try {
-
-                let response = await axios.post('/kpiactions/update', body, config)
-                    if (response.status == 201) {
-                        setshowloader(false);
-                        let item = response.data.message
-                        console.log("here", item)
-                        swal.fire({
-                            title: "Success",
-                            text: item,
-                            icon: "success",
-                        }).then(() => dispatch(getKMonthlyActions(currentUser.id)));
-    
-                    } else {
-                        let error = response.data.message
-                        setshowloader(false);
-                        swal.fire({
-                            title: "Error",
-                            text: error,
-                            icon: "error",
-                            dangerMode: true
-                        }).then(() => dispatch(getKMonthlyActions(currentUser.id)));
-                    }
-            } catch (error) {
-                let err = error.response.data.message
-                setshowloader(false);
-                swal.fire({
-                    title: "Error",
-                    text: err,
-                    icon: "error",
-                    dangerMode: true
-                }).then(() => dispatch(getKMonthlyActions(currentUser.id)));
-            } 
-
+                } else {
+                    let error = response.data.message
+                    setshowloader(false);
+                    swal.fire({
+                        title: "Error",
+                        text: error,
+                        icon: "error",
+                        dangerMode: true
+                    }).then(() => dispatch(getKMonthlyActions(currentUser.id, m,y)));
+                }
+        } catch (error) {
+            let err = error.response.data.message
+            setshowloader(false);
+            swal.fire({
+                title: "Error",
+                text: err,
+                icon: "error",
+                dangerMode: true
+            }).then(() => dispatch(getKMonthlyActions(currentUser.id, m,y)));
         } 
+
 
     }
 
@@ -423,26 +369,14 @@ export default function KPIReport() {
           let response = await axios.get(`/kpiReports/filterKpiReport?user_id=${created_by}&month=${month}&year=${year}`)
               if (response.status == 200) {
                   setshowloader(false);
-                  let response1 = await axios.get(`/kpiActionsReports/filterKpiReport?user_id=${created_by}&month=${month}&year=${year}`)
-                  let item = response1.data.message;
-
-                  let risk = response1.data[0].kpiActionsReports[0].risk_opportunity;
-                  let action = response1.data[0].kpiActionsReports[0].action;
-                  let nextAction = response1.data[0].kpiActionsReports[0].nextPeriodAction;
-
-                  console.log("here h", risk, action, nextAction)
-
-                  console.log("here", item)
-                  swal.fire({
+                  let item = response.data.message;
+                      swal.fire({
                       title: "Success",
                       text: item,
                       icon: "success",
                   }).then(() => {
                     setMonth("");
                     setYear("");
-                    setMonthlyRisks(risk);
-                    setMonthlyAction(action);
-                    setMonthlyNextActions(nextAction);
                     dispatch(getKpis(currentUser.id))
                   });
   
