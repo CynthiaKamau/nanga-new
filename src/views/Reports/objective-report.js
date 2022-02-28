@@ -59,42 +59,40 @@ export default function ObjectiveReport() {
   const [monthly_risks, setMonthlyRisks] = useState("");
   const [monthly_next_actions, setMonthlyNextActions] = useState("");
 
-  var m_names = [
-    "JAN",
-    "FEB",
-    "MAR",
-    "APR",
-    "MAY",
-    "JUN",
-    "JUL",
-    "AUG",
-    "SEP",
-    "OCT",
-    "NOV",
-    "DEC",
-  ];
+  // var m_names = [
+  //   "JAN",
+  //   "FEB",
+  //   "MAR",
+  //   "APR",
+  //   "MAY",
+  //   "JUN",
+  //   "JUL",
+  //   "AUG",
+  //   "SEP",
+  //   "OCT",
+  //   "NOV",
+  //   "DEC",
+  // ];
 
-  var d = new Date();
-  var m = m_names[d.getMonth()];
-  var y = d.getFullYear();
+  // var d = new Date();
+  // var m = m_names[d.getMonth()];
+  // var y = d.getFullYear();
 
-  console.log("year month", m, y);
+  // console.log("year month", m, y);
 
   useEffect(() => {
     dispatch(getUserObjectives(currentUser.id));
     dispatch(getCategories());
     dispatch(getKpis(currentUser.id));
     dispatch(getPillars());
-    dispatch(getOMonthlyActions(currentUser.id, m, y));
+    dispatch(getOMonthlyActions(currentUser.id));
   }, []);
 
   useEffect(() => {
     if (monthly_data && monthly_data.length >= 1) {
-      setMonthlyAction(monthly_data[0].kpiActionsReports[0].action);
-      setMonthlyRisks(monthly_data[0].kpiActionsReports[0].risk_opportunity);
-      setMonthlyNextActions(
-        monthly_data[0].kpiActionsReports[0].nextPeriodAction
-      );
+      setMonthlyAction(monthly_data[0].supportRequired);
+      setMonthlyRisks(monthly_data[0].risk_opportunity);
+      setMonthlyNextActions(monthly_data[0].nextPeriodAction);
     } else {
       setMonthlyAction("Not available");
       setMonthlyRisks("Not available");
@@ -126,25 +124,6 @@ export default function ObjectiveReport() {
   const handleEditClickOpen = () => {
     setEditOpen(true);
   };
-
-  // const defaultExportCsv = () => {
-  //     const [columns, data] = this.getTableData();
-
-  //     let fileName = this.props.title || "data";
-  //     if (this.props.exportFileName) {
-  //       fileName =
-  //       typeof this.props.exportFileName === "function"
-  //         ? this.props.exportFileName()
-  //         : this.props.exportFileName;
-  //     }
-
-  //     const builder = new CsvBuilder(fileName + ".csv");
-  //     builder
-  //         .setDelimeter(this.props.exportDelimiter)
-  //         .setColumns(columns.map((columnDef) => columnDef.title))
-  //         .addRows(data)
-  //         .exportFile();
-  // };
 
   const setEditing = (list) => {
     console.log("h", list);

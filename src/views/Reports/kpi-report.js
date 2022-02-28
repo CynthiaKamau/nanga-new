@@ -49,13 +49,13 @@ export default function KPIReport() {
     console.log("categories", categories)
     console.log("monthly kpi", monthly_data, monthly_data_error);
 
-    var m_names = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+    // var m_names = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
 
-    var d = new Date();
-    var m = m_names[d.getMonth()]; 
-    var y = d.getFullYear();
+    // var d = new Date();
+    // var m = m_names[d.getMonth()]; 
+    // var y = d.getFullYear();
 
-    console.log("year month", m,y)
+    // console.log("year month", m,y)
 
     const [monthlyaction, setMonthlyAction ] = useState("");
     const [monthly_risks, setMonthlyRisks ] = useState("");
@@ -64,14 +64,14 @@ export default function KPIReport() {
     useEffect(() => {
         dispatch(getKpis(currentUser.id));
         dispatch(getCategories());
-        dispatch(getKMonthlyActions(currentUser.id,m,y))
+        dispatch(getKMonthlyActions(currentUser.id))
       }, []);
 
     useEffect(() => {
         if(monthly_data && monthly_data.length >= 1) {
-            setMonthlyAction(monthly_data[0].kpiActionsReports[0].action)
-            setMonthlyRisks(monthly_data[0].kpiActionsReports[0].risk_opportunity)
-            setMonthlyNextActions(monthly_data[0].kpiActionsReports[0].nextPeriodAction)
+            setMonthlyAction(monthly_data[0].supportRequired)
+            setMonthlyRisks(monthly_data[0].risk_opportunity)
+            setMonthlyNextActions(monthly_data[0].nextPeriodAction)
         } else {
             setMonthlyAction('Not available')
             setMonthlyRisks('Not available')
@@ -334,7 +334,7 @@ export default function KPIReport() {
                         title: "Success",
                         text: item,
                         icon: "success",
-                    }).then(() => dispatch(getKMonthlyActions(currentUser.id, m, y)));
+                    }).then(() => dispatch(getKMonthlyActions(currentUser.id)));
 
                 } else {
                     let error = response.data.message
@@ -344,7 +344,7 @@ export default function KPIReport() {
                         text: error,
                         icon: "error",
                         dangerMode: true
-                    }).then(() => dispatch(getKMonthlyActions(currentUser.id, m,y)));
+                    }).then(() => dispatch(getKMonthlyActions(currentUser.id)));
                 }
         } catch (error) {
             let err = error.response.data.message
@@ -354,7 +354,7 @@ export default function KPIReport() {
                 text: err,
                 icon: "error",
                 dangerMode: true
-            }).then(() => dispatch(getKMonthlyActions(currentUser.id, m,y)));
+            }).then(() => dispatch(getKMonthlyActions(currentUser.id)));
         } 
 
 
