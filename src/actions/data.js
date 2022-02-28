@@ -56,6 +56,10 @@ import {
     STRATEGIC_INTENT2_FETCH_REQUEST,
     STRATEGIC_INTENT2_FAIL,
 
+    WEEKLY_REPORT_SUCCESS,
+    WEEKLY_REPORT_FETCH_REQUEST,
+    WEEKLY_REPORT_FAIL
+
 } from './types';
 
 //all categories
@@ -386,6 +390,28 @@ export const getStrategicIntent2 = (id) => {
         }
     }
 
+}
+
+//weekly report
+export const getWeeklyReport = (id) => {
+
+    return async function (dispatch) {
+
+        dispatch({ type: WEEKLY_REPORT_FETCH_REQUEST });
+
+        try {
+
+            let response = await axios.get(`/weeklyReport/fetchweeklyReportbyUserId?user_id=${id}`)
+            if (response.status == 200) {
+                dispatch({ type: WEEKLY_REPORT_SUCCESS, payload: response.data })
+            } else {
+                dispatch({ type: WEEKLY_REPORT_FAIL, payload: response.data })
+            }
+
+        } catch (error) {
+            dispatch({ type: WEEKLY_REPORT_FAIL, payload: error.response })
+        }
+    }
 }
 
 

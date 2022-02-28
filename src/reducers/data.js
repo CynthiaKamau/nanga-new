@@ -53,7 +53,11 @@ import {
 
     STRATEGIC_INTENT2_SUCCESS,
     STRATEGIC_INTENT2_FETCH_REQUEST,
-    STRATEGIC_INTENT2_FAIL
+    STRATEGIC_INTENT2_FAIL,
+
+    WEEKLY_REPORT_SUCCESS,
+    WEEKLY_REPORT_FETCH_REQUEST,
+    WEEKLY_REPORT_FAIL
 
 } from '../actions/types';
 
@@ -76,6 +80,8 @@ const initialState = {
     strategic_intent2_error : null,
     objective_count : [],
     kpi_count : [],
+    weekly_report : [],
+    weekly_report_error: [],
     isLoading : false
 }
 
@@ -95,6 +101,7 @@ export default function(state = initialState, action) {
         case STRATEGIC_INTENT1_FETCH_REQUEST :
         case STRATEGIC_INTENT2_FETCH_REQUEST :
         case KPI_COUNT_FETCH_REQUEST :
+        case WEEKLY_REPORT_FETCH_REQUEST :
             return {
                 ...state,
                 isLoading: true
@@ -176,6 +183,14 @@ export default function(state = initialState, action) {
                 spec_user : action.payload,
                 error : null
             }
+
+        case WEEKLY_REPORT_SUCCESS:
+            return {
+                ...state,
+                weekly_report : action.payload,
+                error : null
+            }
+
         case VISION_SUCCESS :
             return {
                 ...state,
@@ -196,6 +211,13 @@ export default function(state = initialState, action) {
                 isLoading: false,
                 roles: null,
                 error: action.payload.message
+            }
+
+        case WEEKLY_REPORT_FAIL:
+            return {
+                ...state,
+                weekly_report_error : action.payload.message,
+                error : null
             }
         
         case ALL_STATUS_FAIL :
