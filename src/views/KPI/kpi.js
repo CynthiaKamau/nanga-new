@@ -412,7 +412,7 @@ export default function DataTable() {
         }, 
         {
           field: 'actions',
-          title: 'Actions',
+          title: 'Edit',
           render: (list) => {
             return ( <div><IconButton aria-label="edit" className={classes.textGreen} onClick={() => { handleEditClickOpen(); setEditing(list)}}><EditIcon /></IconButton>
             <IconButton aria-label="invert" color="primary" onClick={() => { handleInvert(list) }} ><CompareArrows /></IconButton>

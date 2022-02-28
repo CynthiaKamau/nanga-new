@@ -10,9 +10,9 @@ import KPIsPage from "views/KPI/kpi";
 
 // import MyKpis from "views/KPI/mykpi"; 
 import UserProfile from "views/UserProfile/UserProfile";
-// import UserDashboard from "views/Dashboard/UserDashboard";
-// import ObjectiveReport from "views/Reports/objective-report";
-// import KPIReport from "views/Reports/kpi-report";
+import UserDashboard from "views/Dashboard/UserDashboard";
+import ObjectiveReport from "views/Reports/objective-report";
+import KPIReport from "views/Reports/kpi-report";
 
 import BFC from "views/BFC/Bfc";
 
@@ -23,7 +23,7 @@ import DateRange from "@material-ui/icons/DateRange";
 // import PersonAdd from "@material-ui/icons/PersonAdd";
 import { PersonOutline} from "@material-ui/icons";
 import VerticalAlignCenterIcon from '@material-ui/icons/VerticalAlignCenter';
-// import { Poll } from "@material-ui/icons";
+import { Poll } from "@material-ui/icons";
 
 
 var dashRoutes = [
@@ -110,41 +110,41 @@ var dashRoutes = [
   //     },
   //   ],
   // },
-  // {
-  //   collapse: true,
-  //   name: "Reports",
-  //   rtlName: "صفحات",
-  //   icon: Poll,
-  //   state: "tablesCollapse",
-  //   views: [
-  //     {
-  //       path: "/kpis-report",
-  //       name: "KPI Report",
-  //       rtlName: "عالتسعير",
-  //       mini: "KR",
-  //       rtlMini: "ع",
-  //       component: KPIReport,
-  //       layout: "/user",
-  //     },
-  //     {
-  //       path: "/strategic-objectives-report",
-  //       name: "Objective Report",
-  //       rtlName: "عالتسعير",
-  //       mini: "SR",
-  //       rtlMini: "ع",
-  //       component: ObjectiveReport,
-  //       layout: "/user",
-  //     },
-  //   ],
-  // },
-  // {
-  //   path: "/user-dashboard/:id",
-  //   name: "",
-  //   rtlName: "التقويم",
-  //   mini: ".",
-  //   component: UserDashboard,
-  //   layout: "/user",
-  // },
+  {
+    collapse: true,
+    name: "Reports",
+    rtlName: "صفحات",
+    icon: Poll,
+    state: "tablesCollapse",
+    views: [
+      {
+        path: "/kpis-report",
+        name: "KPI Report",
+        rtlName: "عالتسعير",
+        mini: "KR",
+        rtlMini: "ع",
+        component: KPIReport,
+        layout: "/user",
+      },
+      {
+        path: "/strategic-objectives-report",
+        name: "Objective Report",
+        rtlName: "عالتسعير",
+        mini: "SR",
+        rtlMini: "ع",
+        component: ObjectiveReport,
+        layout: "/user",
+      },
+    ],
+  },
+  {
+    path: "/user-dashboard/:id",
+    name: "",
+    rtlName: "التقويم",
+    mini: ".",
+    component: UserDashboard,
+    layout: "/user",
+  },
 ];
 export default dashRoutes;
 
