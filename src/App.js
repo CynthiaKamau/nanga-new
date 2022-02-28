@@ -25,7 +25,7 @@ const App = () => {
 
   // const { REACT_APP_SERVER_URL } = process.env;
 
-  axios.defaults.baseURL = `https://stratextestapi.uapoldmutual.com:8443/strategy/api/`;
+  axios.defaults.baseURL = `https://stratexapi.uapoldmutual.com:8443/strategy/api/`;
 
   return (
     <BrowserRouter history={hist}>
