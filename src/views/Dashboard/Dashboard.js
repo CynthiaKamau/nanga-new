@@ -85,6 +85,13 @@ function Dashboard() {
 
   console.log("kpi count", kpi_count)
 
+  let new_obj = [];
+  objective_count.forEach(function(i) {
+    new_obj.push(i.y)
+  })
+
+  console.log("my", new_obj[0]);
+
   useEffect(() => {
     dispatch(getUserObjectives(currentUser.id));
     dispatch(getMission(currentUser.id));
@@ -199,33 +206,38 @@ function Dashboard() {
 
   const obj_options = {
     chart: {
-      plotBackgroundColor: null,
-      plotBorderWidth: null,
-      plotShadow: false,
-      type: 'pie'
+      type: 'bar'
+    },
+    credits: {
+        enabled: false
     },
     title: {
       text: 'Objectives Breakdown'
     },
-    series: [{
-      data: objective_count
+    xAxis: {
+      categories: ['Objectives'],
+    },
+    yAxis: [{
+      min: 0
     }],
-    tooltip: {
-      pointFormat: '{name}: <br>{point.percentage:.1f} %, Total: {point.y}'
-
+    legend: {
+      reversed: true
     },
     plotOptions: {
-      pie: {
-          allowPointSelect: true,
-          cursor: 'pointer',
-          dataLabels: {
-              enabled: true,
-              format: '<b>{point.name}</b>:<br>{point.percentage:.1f} %, Total: {point.y}',
-              style: {
-                  color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
-              }
-          }
+      series: {
+        stacking: 'normal'
       }
+    },
+    series: [{
+      name: 'Complete',
+      data: [new_obj[0]]
+    }, {
+      name: 'Incomplete',
+      data: [new_obj[1]]
+    }],
+    tooltip: {
+      pointFormat: '{name}: <br> Total: {point.y}'
+
     },
   }
 
@@ -234,13 +246,14 @@ function Dashboard() {
       plotBackgroundColor: null,
       plotBorderWidth: null,
       plotShadow: false,
-      type: 'pie'
+      type: 'bar'
     },
     title: {
       text: 'MAS Breakdown'
     },
     series: [{
       colorByPoint: true,
+      name: 'Status',
       data: task_count
     }],
     tooltip: {
@@ -248,12 +261,12 @@ function Dashboard() {
 
     },
     plotOptions: {
-      pie: {
+      bar : {
           allowPointSelect: true,
           cursor: 'pointer',
           dataLabels: {
               enabled: true,
-              format: '<b>{point.name}</b>:<br>{point.percentage:.1f} %, Total: {point.y}',
+              format: '<b>{point.name}</b>:<br> Total: {point.y}',
               style: {
                   color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
               }

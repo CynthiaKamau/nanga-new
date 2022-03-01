@@ -21,6 +21,8 @@ import { Grid } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import axios from "axios";
 import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
+import { IconButton } from "@material-ui/core";
+import EditIcon from '@material-ui/icons/Edit';
 
 const useStyles = makeStyles(styles);
 
@@ -33,27 +35,30 @@ export default function WeeklyReport() {
     console.log("error", weekly_report_error)
     console.log("data", weekly_report)
 
-    const [open, setOpen] = useState(false);
-    const { items } = useSelector(state => state.task);
     const [hotspot, setHotspot] = useState("");
     const [prioritiesForTheQuarter, setPrioritiesForQuarter] = useState("");
     const [progressUpdates, setProgressUpdates] = useState("");
-    const [progressMade, setProgressMade] = useState("");
     const [weeklyKpis, setWeeklyKpis] = useState("");
     const [strategicObjecives, setStrategicObjectives] = useState("");
     const [created_by, setCreatedBy] = useState(currentUser.id);
     const [showloader, setshowloader] = useState(false);
+    const [editopen, setEditOpen] = useState(false);
+    const [open, setOpen] = useState(false);
 
     useEffect(() => {
       dispatch(getWeeklyReport(currentUser.id));
     }, [])
 
     const handleClickOpen = () => {
-      setOpen(true);
+      setEditOpen(true);
     };
 
     const handleClickClose = () => {
       setOpen(false);
+    };
+
+    const handleEditClose = () => {
+      setEditOpen(false);
     };
 
     const saveWeeklyReport = async (e) => {
@@ -66,10 +71,9 @@ export default function WeeklyReport() {
       const body = JSON.stringify({
         hotspots: hotspot,
         prioritiesForTheQuarter: prioritiesForTheQuarter,
-        progressMade: progressMade,
         weeklyKpis: weeklyKpis,
         strategicObjecives: strategicObjecives,
-        progressUpdates: progressUpdates,
+        progressMade: progressUpdates,
         userId: created_by
       });
 
@@ -88,7 +92,6 @@ export default function WeeklyReport() {
             .then(() => {
               setHotspot("");
               setPrioritiesForQuarter("")
-              setProgressMade("")
               setWeeklyKpis("")
               setStrategicObjectives("");
               setProgressUpdates("");
@@ -120,6 +123,20 @@ export default function WeeklyReport() {
 
     }
 
+    const handleEditClickOpen = () => {
+      setEditOpen(true);
+    };
+
+    const setEditing = (list) => {
+      console.log("here", list)
+      setHotspot(list.hotspots);
+      setPrioritiesForQuarter(list.prioritiesForQuarter)
+      setProgressUpdates(list.progressUpdates)
+      setWeeklyKpis(list.weeklyKpis)
+      setStrategicObjectives(list.strategicObjecive);
+      setCreatedBy(currentUser.id)
+    }
+
     const columns = [
       {
         field: 'strategicObjective',
@@ -133,6 +150,17 @@ export default function WeeklyReport() {
         field: 'progressUpdates',
         title: 'Progress Updates' 
       },
+      {
+        field: 'actions',
+        title: 'Edit',
+        export: false,
+        render: (list) => {
+          return ( <div>
+            <IconButton aria-label="edit" className={classes.textGreen} onClick={() => { handleEditClickOpen(); setEditing(list)}}><EditIcon /></IconButton>
+          </div>)
+        }
+  
+      }
       
     ]
 
@@ -161,17 +189,16 @@ export default function WeeklyReport() {
             </CardHeader>
             <CardBody>
 
-            {items !== null ? (
+            {weekly_report !== null ? (
               <div>
                 <MaterialTable
                 title="Weekly Report"
                 data={weekly_report}
                 columns={columns}
                 options={{
+                    paging: false,
                     search: true,
                     sorting: true,
-                    pageSize: 10,
-                    pageSizeOptions: [10,50,100 ],
                     exportButton: true
                 }}
                 />
@@ -180,10 +207,9 @@ export default function WeeklyReport() {
                 data={weekly_report}
                 columns={columns_bottom}
                 options={{
+                    paging: false,
                     search: true,
                     sorting: true,
-                    pageSize: 10,
-                    pageSizeOptions: [10,50,100 ],
                     exportButton: true
                 }}
                 />
@@ -197,10 +223,9 @@ export default function WeeklyReport() {
                 data={[]}
                 columns={columns}
                 options={{
+                    paging: false,
                     search: true,
                     sorting: true,
-                    pageSize: 10,
-                    pageSizeOptions: [10,50,100 ],
                     exportButton: true
                 }}
             />
@@ -210,10 +235,9 @@ export default function WeeklyReport() {
                 data={[]}
                 columns={columns_bottom}
                 options={{
+                    paging: false,
                     search: true,
                     sorting: true,
-                    pageSize: 10,
-                    pageSizeOptions: [10,50,100 ],
                     exportButton: true
                 }}
             />
@@ -224,6 +248,7 @@ export default function WeeklyReport() {
           </Card>
         </GridItem>
 
+        {/* Create weekly report */}
         <Dialog open={open} onClose={handleClickClose}>
           <DialogTitle>Weekly Report</DialogTitle>
           <DialogContent>
@@ -264,18 +289,116 @@ export default function WeeklyReport() {
 
             <TextField
               fullWidth
-              label="progressMade"
-              id="progressMade"
+              label="Progress Updates"
+              id="progressUpdates"
               multiline
               rows={2}
               required
               variant="outlined"
               className={classes.textInput}
               type="text"
-              value={progressMade}
+              value={progressUpdates}
               onChange={(event) => {
                 const value = event.target.value;
-                setProgressMade(value);
+                setProgressUpdates(value);
+              }}
+            />
+
+            <TextField
+              fullWidth
+              label="Weekly Kpis"
+              id="weeklyKpis"
+              multiline
+              rows={2}
+              required
+              variant="outlined"
+              className={classes.textInput}
+              type="text"
+              value={weeklyKpis}
+              onChange={(event) => {
+                const value = event.target.value;
+                setWeeklyKpis(value);
+              }}
+            />
+
+            <TextField
+              autoFocus
+              margin="dense"
+              id="strategicObjecives"
+              label="Strategic Objecives"
+              type="text"
+              fullWidth
+              style={{ marginBottom: "15px" }}
+              value={strategicObjecives}
+              variant="outlined"
+              onChange={(event) => {
+                setStrategicObjectives(event.target.value);
+              }}
+            />  
+
+          </DialogContent>
+          <DialogActions>
+            <Button color="danger" onClick={handleClickClose}>
+              Cancel
+            </Button>
+            {showloader === true ? (
+              <div style={{ textAlign: "center", marginTop: 10 }}>
+                <Loader
+                  type="Puff"
+                  color="#29A15B"
+                  height={150}
+                  width={150}
+                />
+              </div>
+            ) : (
+              <Button
+                color="primary"
+                onClick={(e) => {
+                  saveWeeklyReport(e);
+                }}
+              >
+                Save
+              </Button>
+            )}
+          </DialogActions>
+        </Dialog>
+
+        {/* Edit weekly report */}
+        <Dialog open={editopen} onClose={handleEditClose}>
+          <DialogTitle>Weekly Report</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Edit Weekly Report
+            </DialogContentText>
+            <TextField
+              autoFocus
+              margin="dense"
+              id="hotspot"
+              label="Hotspot"
+              type="text"
+              fullWidth
+              style={{ marginBottom: "15px" }}
+              value={hotspot}
+              variant="outlined"
+              onChange={(event) => {
+                setHotspot(event.target.value);
+              }}
+            />
+
+            <TextField
+              fullWidth
+              label="Priorities For Quarter"
+              id="prioritiesForTheQuarter"
+              multiline
+              rows={2}
+              required
+              variant="outlined"
+              className={classes.textInput}
+              type="text"
+              value={prioritiesForTheQuarter}
+              onChange={(event) => {
+                const value = event.target.value;
+                setPrioritiesForQuarter(value);
               }}
             />
 
@@ -330,7 +453,7 @@ export default function WeeklyReport() {
 
           </DialogContent>
           <DialogActions>
-            <Button color="danger" onClick={handleClickClose}>
+            <Button color="danger" onClick={handleEditClose}>
               Cancel
             </Button>
             {showloader === true ? (

@@ -145,14 +145,28 @@ export default function KPIReport() {
         try {
 
             let response = await axios.post('/kpi/update', body, config)
-            if (response.status == 201) {
+            if (response.status == 200) {
                 setshowloader(false);
                     let item = response.data.message
                     swal.fire({
                         title: "Success",
                         text: item,
                         icon: "success",
-                    }).then(() => dispatch(getKpis(currentUser.id)));
+                    }).then(() => {
+                        setKPI("");
+                        setUnitOfMeasure("");
+                        setCategory("");
+                        setId("");
+                        setAccount("");
+                        setTarget("");
+                        setYTDPlanned("");
+                        setYTDActual("")
+                        setSupportRequired("");
+                        setAction("");
+                        setRootCause("")
+                        setUpdatedBy(currentUser.id);
+                        dispatch(getKpis(currentUser.id))
+                    });
                     
             } else {
                 let error = response.data.message

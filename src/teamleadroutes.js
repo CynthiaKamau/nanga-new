@@ -1,6 +1,6 @@
-// import UsersPage from "views/Users/Users";
-// import TeamsPage from "views/Teams/Teams.js";
-// import MyTeamPage from "views/Teams/MyTeam";
+import UsersPage from "views/Users/Users";
+import TeamsPage from "views/Teams/Teams.js";
+import MyTeamPage from "views/Teams/MyTeam";
 import Objectives from "@material-ui/icons/DoneAll";
 import DashboardPage from "views/Dashboard/Dashboard.js";
 import AssignedTasksPage from "views/Tasks/AssignedTasksPage";
@@ -14,14 +14,15 @@ import UserDashboard from "views/Dashboard/UserDashboard";
 import ObjectiveReport from "views/Reports/objective-report";
 import KPIReport from "views/Reports/kpi-report";
 import WeeklyReport from "views/Reports/weekly-report";
+import UserReportDashboard from "views/Reports/user-report"
 
 import BFC from "views/BFC/Bfc";
 
 // @material-ui/icons
 import DashboardIcon from "@material-ui/icons/Dashboard";
 import DateRange from "@material-ui/icons/DateRange";
-// import MyTeamIcon from "@material-ui/icons/PeopleAltRounded";
-// import PersonAdd from "@material-ui/icons/PersonAdd";
+import MyTeamIcon from "@material-ui/icons/PeopleAltRounded";
+import PersonAdd from "@material-ui/icons/PersonAdd";
 import { PersonOutline} from "@material-ui/icons";
 import VerticalAlignCenterIcon from '@material-ui/icons/VerticalAlignCenter';
 import { Poll } from "@material-ui/icons";
@@ -34,7 +35,42 @@ var dashRoutes = [
     rtlName: "لوحة القيادة",
     icon: DashboardIcon,
     component: DashboardPage,
-    layout: "/user",
+    layout: "/manager",
+  },
+  {
+    path: "/users",
+    name: "Users",
+    rtlName: "لوحة القيادة",
+    icon: PersonAdd,
+    component: UsersPage,
+    layout: "/manager",
+  },
+  {
+    collapse: true,
+    name: "Teams",
+    rtlName: "صفحات",
+    icon: MyTeamIcon,
+    state: "pageCollapse",
+    views: [
+      {
+        path: "/teams",
+        name: "All Teams",
+        rtlName: "عالتسعير",
+        mini: "T",
+        rtlMini: "ع",
+        component: TeamsPage,
+        layout: "/manager",
+      },
+      {
+        path: "/manager-team",
+        name: "My Team",
+        rtlName: "عالتسعير",
+        mini: "TM",
+        rtlMini: "ع",
+        component: MyTeamPage,
+        layout: "/manager",
+      },
+    ],
   },
   {
     path: "/bfc",
@@ -42,7 +78,7 @@ var dashRoutes = [
     rtlName: "صفحات",
     icon: "content_paste",
     component: BFC,
-    layout: "/user",
+    layout: "/manager",
   },
   {
     path: "/kpis",
@@ -50,7 +86,7 @@ var dashRoutes = [
     rtlName: "الحاجيات",
     icon: VerticalAlignCenterIcon,
     component: KPIsPage,
-    layout: "/user",
+    layout: "/manager",
   },
   {
     path: "/strategic-objectives",
@@ -58,7 +94,7 @@ var dashRoutes = [
     rtlName: "الحاجيات",
     icon: Objectives,
     component: StrategicObjectives,
-    layout: "/user",
+    layout: "/manager",
   },
   {
     path: "/shared-tasks",
@@ -66,51 +102,8 @@ var dashRoutes = [
     rtlName: "صفحات",
     icon: DateRange,
     component: AssignedTasksPage,
-    layout: "/user",
+    layout: "/manager",
   },
-  // {
-  //   path: "/users",
-  //   name: "Users",
-  //   rtlName: "لوحة القيادة",
-  //   icon: PersonAdd,
-  //   component: UsersPage,
-  //   layout: "/user",
-  // },
-  {
-    path: "/user-profile",
-    name: "User Profile",
-    rtlName: "التقويم",
-    icon: PersonOutline,
-    component: UserProfile,
-    layout: "/user",
-  },
-  // {
-  //   collapse: true,
-  //   name: "Teams",
-  //   rtlName: "صفحات",
-  //   icon: MyTeamIcon,
-  //   state: "pageCollapse",
-  //   views: [
-  //     {
-  //       path: "/teams",
-  //       name: "All Teams",
-  //       rtlName: "عالتسعير",
-  //       mini: "T",
-  //       rtlMini: "ع",
-  //       component: TeamsPage,
-  //       layout: "/user",
-  //     },
-  //     {
-  //       path: "/user-team",
-  //       name: "My Team",
-  //       rtlName: "عالتسعير",
-  //       mini: "TM",
-  //       rtlMini: "ع",
-  //       component: MyTeamPage,
-  //       layout: "/user",
-  //     },
-  //   ],
-  // },
   {
     collapse: true,
     name: "Reports",
@@ -125,7 +118,7 @@ var dashRoutes = [
         mini: "KR",
         rtlMini: "ع",
         component: KPIReport,
-        layout: "/user",
+        layout: "/manager",
       },
       {
         path: "/strategic-objectives-report",
@@ -134,8 +127,8 @@ var dashRoutes = [
         mini: "SR",
         rtlMini: "ع",
         component: ObjectiveReport,
-        layout: "/user",
-      }, 
+        layout: "/manager",
+      },
       {
         path: "/weekly-report",
         name: "Weekly Report",
@@ -143,18 +136,34 @@ var dashRoutes = [
         mini: "WR",
         rtlMini: "ع",
         component: WeeklyReport,
-        layout: "/admin",
+        layout: "/manager",
       },
     ],
+  },
+  {
+    path: "/user-profile",
+    name: "User Profile",
+    rtlName: "التقويم",
+    icon: PersonOutline,
+    component: UserProfile,
+    layout: "/manager",
   },
   {
     path: "/user-dashboard/:id",
     name: "",
     rtlName: "التقويم",
-    mini: ".",
+    mini: "",
     component: UserDashboard,
-    layout: "/user",
+    layout: "/manager",
   },
+  {
+    path: "/user-report/:id",
+    name: "",
+    rtlName: "التقويم",
+    mini: "",
+    component: UserReportDashboard,
+    layout: "/manager",
+  },
+  
 ];
 export default dashRoutes;
-

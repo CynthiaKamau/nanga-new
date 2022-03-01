@@ -180,6 +180,7 @@ export default function DataTable() {
                         setTarget("");
                         setYTDPlanned("");
                         setYTDActual("");
+                        setUpdatedBy(created_by);
                         dispatch(getKpis(currentUser.id))
                     });
                     
