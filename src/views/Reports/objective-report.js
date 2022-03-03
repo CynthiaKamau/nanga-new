@@ -140,7 +140,7 @@ export default function ObjectiveReport() {
       setKpiId(x);
       console.log("hapo", x);
     } else {
-      setKpiId("");
+      setKpiId([]);
     }
     setPillarId(list.pillar_id);
     setId(list.id);
@@ -149,13 +149,13 @@ export default function ObjectiveReport() {
     setTargetAtReview(list.target_achieved_on_review);
     setYear(list.year);
     setTargetAchieved(list.target_achieved);
-    setSupportRequired(list.supportRequired);
-    setAction(list.action);
-    setRootCause(list.rootCause);
+    if (list.supportRequired == null || list.supportRequired == undefined) {setSupportRequired("") } else {setSupportRequired(list.supportRequired)}
+    if(list.action) {setAction("")} else {setAction(list.action)}
+    if(list.rootCause) {setRootCause("")} else{setRootCause(list.rootCause)}
     setRiskAndOpportunity(list.riskOrOpportunity);
-    setPrioritiesForQuarter(list.prioritiesForQuarter);
+    if(list.prioritiesForQuarter == null || list.prioritiesForQuarter == undefined) {setPrioritiesForQuarter("")} else {setPrioritiesForQuarter(list.prioritiesForQuarter)}
     setUpdatedBy(list.user.id);
-    setIsPrimary(list.isPrimary);
+    if(list.isPrimary == null || list.is_primary == undefined) {setIsPrimary("1")} else { setIsPrimary(list.isPrimary)}
   };
 
   const saveEdited = async (e) => {
@@ -179,8 +179,8 @@ export default function ObjectiveReport() {
       kpi_ids: kpi_id,
       user_id: user_id,
       pillar_id: pillar_id,
-      year: year,
       isPrimary: new_primary,
+      year: year,
       target: target,
       target_achieved: target_achieved,
       root_cause: root_cause,

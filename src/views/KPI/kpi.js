@@ -192,6 +192,7 @@ export default function DataTable() {
             let response = await axios.post('/kpi/update', body, config)
             if (response.status == 200) {
                 setshowloader(false);
+                handleEditClose(true);
                     let item = response.data.message
                     swal.fire({
                         title: "Success",
@@ -213,6 +214,7 @@ export default function DataTable() {
             } else {
                 let error = response.data.message
                     setshowloader(false);
+                    handleEditClose(true);
                     swal.fire({
                         title: "Error",
                         text: error,
@@ -223,6 +225,7 @@ export default function DataTable() {
         } catch (error) {
             let err = error.response.data.message
             setshowloader(false);
+            handleEditClose(true);
             swal.fire({
                 title: "Error",
                 text: err,
@@ -838,7 +841,7 @@ export default function DataTable() {
                     </div>
                     ) :
                     (
-                    <Button color="primary" onClick={(e) => { handleEditClose(); saveEdited(e) }}>Save</Button>
+                    <Button color="primary" onClick={(e) => { saveEdited(e) }}>Save</Button>
                     )}
                 </DialogActions>
             </Dialog>
