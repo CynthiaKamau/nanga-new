@@ -77,7 +77,8 @@ export default function UsersPage() {
   const [showSearchLoading, setShowSearchLoading] = useState("");
   const [setUserError, setShowUserError] = useState("");
   const [line_manager, setLineManager] = useState("");  
-  const [myuser, setMyUser] = useState("")
+  const [myuser, setMyUser] = useState("");
+  const [access_level, setAccessLevel] = useState("");
   // const [selectedUser, setSelectedUser] = useState("");
 
   // const statuses = JsonData.Status;
@@ -111,7 +112,8 @@ export default function UsersPage() {
         extension : 0,
         view : true,
         lineManager : line_manager,
-        created_by : created_by
+        created_by : created_by,
+        accessLevel : access_level
     });
 
     console.log("save user", search_user,status, created_by, team, role, search_email, setCreatedBy )
@@ -177,7 +179,8 @@ export default function UsersPage() {
     setExtension(list.extension);
     setView(list.view)
     setLineManager(list.lineManager);
-    setMyUser(list.lineManagerUser)
+    setMyUser(list.lineManagerUser);
+    setAccessLevel(list.accessLevel);
 
   }
 
@@ -200,6 +203,7 @@ export default function UsersPage() {
         extension: extension,
         // disabled : disabled,
         team_id : team, 
+        accessLevel : access_level,
         role_id : role,
         updated_by_id : updated_by,
         lineManager : line_manager,
@@ -300,6 +304,7 @@ export default function UsersPage() {
           setEmail("");
           setTeam("");
           setRole("");
+          setAccessLevel("");
           setEmail("");
           setLineManager("")
           setShowUserError("User not found!");
@@ -316,6 +321,7 @@ export default function UsersPage() {
             setEmail("");
             setTeam("");
             setRole("");
+            setAccessLevel("");
             setEmail("");
             setLineManager("")
             setShowUserError("User not found!");
@@ -334,6 +340,7 @@ export default function UsersPage() {
         setEmail("");
         setTeam("");
         setRole("");
+        setAccessLevel("");
         setEmail("");
         setLineManager("")
         setShowUserError("User not found!");
@@ -371,6 +378,10 @@ export default function UsersPage() {
       title: 'Role'
     },
     {
+      field: 'roles.accessLevel',
+      title: 'Access Level'
+    },
+    {
       field: 'lineManagerUser.fullnames',
       title: 'Line Manager'
     },
@@ -386,6 +397,20 @@ export default function UsersPage() {
     }
   ]
 
+  const levels = [
+    {
+      value: 'Level1',
+      title: 'Level 1'
+    },
+    {
+      value: 'Level2',
+      title: 'Level 2'
+    },
+    {
+      value: 'Level3',
+      title: 'Level 3'
+    },
+  ]
 
   // const handleDeleteClose = () => {
   //   setDeleteOpen(false);
@@ -575,6 +600,26 @@ export default function UsersPage() {
                       ))}
                     </TextField>
 
+                    <label style={{ fontWeight: 'bold', color: 'black' }}> Access Level : </label>
+                      <TextField
+                        id="outlined-select-level"
+                        select
+                        fullWidth
+                        variant="outlined"
+                        label="Select"
+                        value={access_level}
+                        onChange={(event) => {
+                          setAccessLevel(event.target.value);
+                        }}
+                        helperText="Please select your access level"
+                      >
+                      {levels.map((option) => (
+                        <MenuItem key={option.value} value={option.value}>
+                          {option.title}
+                        </MenuItem>
+                      ))}
+                      </TextField>
+
                     <label style={{ fontWeight: 'bold', color: 'black' }}> Status : </label>
                     <TextField
                       id="outlined-select-status"
@@ -708,6 +753,26 @@ export default function UsersPage() {
                       </MenuItem>
                     ))}
                   </TextField>
+
+                  <label style={{ fontWeight: 'bold', color: 'black' }}> Access Level : </label>
+                    <TextField
+                      id="outlined-select-level"
+                      select
+                      fullWidth
+                      variant="outlined"
+                      label="Select"
+                      value={access_level}
+                      onChange={(event) => {
+                        setAccessLevel(event.target.value);
+                      }}
+                      helperText="Please select your access level"
+                    >
+                    {levels.map((option) => (
+                      <MenuItem key={option.value} value={option.value}>
+                        {option.title}
+                      </MenuItem>
+                    ))}
+                    </TextField>
 
                   <label style={{ fontWeight: 'bold', color: 'black' }}> Status : </label>
                   <TextField

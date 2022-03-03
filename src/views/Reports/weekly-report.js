@@ -50,7 +50,7 @@ export default function WeeklyReport() {
     }, [])
 
     const handleClickOpen = () => {
-      setEditOpen(true);
+      setOpen(true);
     };
 
     const handleClickClose = () => {
@@ -59,6 +59,10 @@ export default function WeeklyReport() {
 
     const handleEditClose = () => {
       setEditOpen(false);
+    };
+
+    const handleEditClickOpen = () => {
+      setEditOpen(true);
     };
 
     const saveWeeklyReport = async (e) => {
@@ -77,11 +81,12 @@ export default function WeeklyReport() {
         userId: created_by
       });
 
+      console.log("body weekly", body)
       try {
         let response = await axios.post("/weeklyReport/createUpdate", body, config);
         if (response.status == 200) {
           setshowloader(false);
-          handleClickOpen(false);
+          handleClickClose(true);
           let item = response.data.message;
           swal
             .fire({
@@ -101,7 +106,7 @@ export default function WeeklyReport() {
           } else {
             let error = response.data.message;
             setshowloader(false);
-            handleClickOpen(false);
+            handleClickClose(true);
             swal.fire({
               title: "Error",
               text: error,
@@ -112,7 +117,7 @@ export default function WeeklyReport() {
         } catch (error) {
           let err = error.response.data.message;
           setshowloader(false);
-          handleClickOpen(false);
+          handleClickClose(true);
           swal.fire({
             title: "Error",
             text: err,
@@ -123,9 +128,68 @@ export default function WeeklyReport() {
 
     }
 
-    const handleEditClickOpen = () => {
-      setEditOpen(true);
-    };
+    const editWeeklyReport = async (e) => {
+      e.preventDefault();
+      setshowloader(true);
+
+      const config = {
+        headers: { "Content-Type": "application/json", Accept: "*/*" },
+      };
+      const body = JSON.stringify({
+        hotspots: hotspot,
+        prioritiesForTheQuarter: prioritiesForTheQuarter,
+        weeklyKpis: weeklyKpis,
+        strategicObjecives: strategicObjecives,
+        progressMade: progressUpdates,
+        userId: created_by
+      });
+
+      console.log("body weekly", body)
+      try {
+        let response = await axios.post("/weeklyReport/createUpdate", body, config);
+        if (response.status == 200) {
+          setshowloader(false);
+          handleEditClose(true)
+          let item = response.data.message;
+          swal
+            .fire({
+              title: "Success",
+              text: item,
+              icon: "success",
+            })
+            .then(() => {
+              setHotspot("");
+              setPrioritiesForQuarter("")
+              setWeeklyKpis("")
+              setStrategicObjectives("");
+              setProgressUpdates("");
+              setCreatedBy(currentUser.id)
+              dispatch(getWeeklyReport(currentUser.id));
+            })
+          } else {
+            let error = response.data.message;
+            setshowloader(false);
+            handleEditClose(true)
+            swal.fire({
+              title: "Error",
+              text: error,
+              icon: "error",
+              dangerMode: true,
+            });
+          }
+        } catch (error) {
+          let err = error.response.data.message;
+          setshowloader(false);
+          handleEditClose(true)
+          swal.fire({
+            title: "Error",
+            text: err,
+            icon: "error",
+            dangerMode: true,
+          });
+        }
+
+    }
 
     const setEditing = (list) => {
       console.log("here", list)
@@ -133,7 +197,7 @@ export default function WeeklyReport() {
       setPrioritiesForQuarter(list.prioritiesForQuarter)
       setProgressUpdates(list.progressUpdates)
       setWeeklyKpis(list.weeklyKpis)
-      setStrategicObjectives(list.strategicObjecive);
+      setStrategicObjectives(list.strategicObjective);
       setCreatedBy(currentUser.id)
     }
 
@@ -258,17 +322,17 @@ export default function WeeklyReport() {
             <TextField
               autoFocus
               margin="dense"
-              id="hotspot"
-              label="Hotspot"
+              id="strategicObjecives"
+              label="Strategic Objecives"
               type="text"
               fullWidth
               style={{ marginBottom: "15px" }}
-              value={hotspot}
+              value={strategicObjecives}
               variant="outlined"
               onChange={(event) => {
-                setHotspot(event.target.value);
+                setStrategicObjectives(event.target.value);
               }}
-            />
+            /> 
 
             <TextField
               fullWidth
@@ -324,17 +388,17 @@ export default function WeeklyReport() {
             <TextField
               autoFocus
               margin="dense"
-              id="strategicObjecives"
-              label="Strategic Objecives"
+              id="hotspot"
+              label="Hotspots/Key Issues"
               type="text"
               fullWidth
               style={{ marginBottom: "15px" }}
-              value={strategicObjecives}
+              value={hotspot}
               variant="outlined"
               onChange={(event) => {
-                setStrategicObjectives(event.target.value);
+                setHotspot(event.target.value);
               }}
-            />  
+            />
 
           </DialogContent>
           <DialogActions>
@@ -370,21 +434,21 @@ export default function WeeklyReport() {
             <DialogContentText>
               Edit Weekly Report
             </DialogContentText>
+            
             <TextField
               autoFocus
               margin="dense"
-              id="hotspot"
-              label="Hotspot"
+              id="strategicObjecives"
+              label="Strategic Objecives"
               type="text"
               fullWidth
               style={{ marginBottom: "15px" }}
-              value={hotspot}
+              value={strategicObjecives}
               variant="outlined"
               onChange={(event) => {
-                setHotspot(event.target.value);
+                setStrategicObjectives(event.target.value);
               }}
             />
-
             <TextField
               fullWidth
               label="Priorities For Quarter"
@@ -439,15 +503,15 @@ export default function WeeklyReport() {
             <TextField
               autoFocus
               margin="dense"
-              id="strategicObjecives"
-              label="Strategic Objecives"
+              id="hotspot"
+              label="Hotspots/Key Issues"
               type="text"
               fullWidth
               style={{ marginBottom: "15px" }}
-              value={strategicObjecives}
+              value={hotspot}
               variant="outlined"
               onChange={(event) => {
-                setStrategicObjectives(event.target.value);
+                setHotspot(event.target.value);
               }}
             />  
 
@@ -469,7 +533,7 @@ export default function WeeklyReport() {
               <Button
                 color="primary"
                 onClick={(e) => {
-                  saveWeeklyReport(e);
+                  editWeeklyReport(e);
                 }}
               >
                 Save

@@ -61,6 +61,7 @@ export default function DataTable() {
     const [ytd_planned, setYTDPlanned] = useState("");
     const [ytd_actual, setYTDActual] = useState("");
     const [deleteId, setDeleteId] = useState("");
+    const [is_primary, setIsPrimary] = useState("");
     // const [action, setAction] = useState("");
     // const [support_required, setSupportRequired] = useState("");
     // const [root_cause, setRootCause] = useState("");
@@ -80,6 +81,14 @@ export default function DataTable() {
         setshowloader(true);
         console.log(setCreatedBy())
 
+        let new_primary;
+
+        if(is_primary === null || is_primary == "") {
+            new_primary = "1";
+        } else {
+            new_primary == is_primary;
+        }
+
         const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
         
         const body = JSON.stringify({ 
@@ -87,6 +96,7 @@ export default function DataTable() {
             kpiUnitofMeasure : uom,
             categoryId : category,
             createdBy : created_by,
+            isPrimary: new_primary,
             account : account,
             target : target,
             userId : created_by
@@ -98,7 +108,6 @@ export default function DataTable() {
 
             let response = await axios.post('/kpi/create', body, config)
                 if (response.status == 201) {
-                    getKpis();
                     setshowloader(false);
                     let item = response.data.message
                     console.log("here", item)
@@ -124,7 +133,14 @@ export default function DataTable() {
                         text: error,
                         icon: "error",
                         dangerMode: true
-                    });
+                    }).then(() => {
+                        setKPI("")
+                        setUnitOfMeasure("")
+                        setCategory("")
+                        setAccount("")
+                        setTarget("")
+                        setCreatedBy(currentUser.id);
+                    })
                 }
         } catch (error) {
             let err = error.response.data.message
@@ -134,6 +150,13 @@ export default function DataTable() {
                 text: err,
                 icon: "error",
                 dangerMode: true
+            }).then(() => {
+                setKPI("")
+                setUnitOfMeasure("")
+                setCategory("")
+                setAccount("")
+                setTarget("")
+                setCreatedBy(currentUser.id);
             });
         }
     
@@ -143,6 +166,8 @@ export default function DataTable() {
         e.preventDefault();
         setshowloader(true);
 
+        console.log("primary", is_primary)
+
         console.log("edit values", id, kpi, uom, category, created_by, updated_by)
 
         const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
@@ -150,8 +175,9 @@ export default function DataTable() {
             title : kpi,
             kpiUnitOfMeasure : uom,
             categoryId : category,
-            createdBy : created_by,
+            progressMade: "",
             updatedBy : updated_by,
+            isPrimary: 1,
             id: id, 
             userId: created_by,
             account: account,
@@ -221,6 +247,7 @@ export default function DataTable() {
         setYTDActual(list.actualYTD);
         setUpdatedBy(list.user_id);
         setCreatedBy(list.user_id);
+        setIsPrimary(list.isPrimary)
         // setSupportRequired(list.supportRequired);
         // setAction(list.action);
         // setRootCause(list.rootCause)
@@ -314,6 +341,17 @@ export default function DataTable() {
             dispatch(getKpis(currentUser.id))
         } 
     }
+
+    // const primary = [
+    //     {
+    //       value: 1,
+    //       label: 'Not Primary',
+    //     },
+    //     {
+    //       value: 0,
+    //       label: 'Primary',
+    //     }
+    // ]
 
     const uoms = [
         {
@@ -563,6 +601,26 @@ export default function DataTable() {
                         </MenuItem>
                         ))}
                     </TextField>
+
+                    {/* <label style={{ fontWeight: 'bold', color: 'black'}}> Primary KPI : </label>
+                    <TextField
+                        id="outlined-select-primary"
+                        select
+                        fullWidth
+                        variant="outlined"
+                        label="Select"
+                        value={is_primary}
+                        onChange = {(event) => {
+                        setIsPrimary(event.target.value);
+                        }}
+                        helperText="Is this your primary KPI"
+                    >
+                        {primary.map((option) => (
+                        <MenuItem key={option.value} value={option.value}>
+                            {option.label}
+                        </MenuItem>
+                        ))}
+                    </TextField> */}
 
                 </DialogContent>
                 <DialogActions>

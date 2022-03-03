@@ -96,6 +96,7 @@ export default function KPIReport() {
     const [root_cause, setRootCause] = useState("");
     const [month, setMonth] = useState("");
     const [year, setYear] = useState("");
+    const [is_primary, setIsPrimary] = useState("");
 
     const handleEditClickOpen = () => {
         setEditOpen(true);
@@ -115,15 +116,22 @@ export default function KPIReport() {
         setSupportRequired(list.supportRequired);
         setAction(list.action);
         setRootCause(list.rootCause)
+        setIsPrimary(list.isPrimary)
     }
 
     const saveEdited = async(e) => {
         e.preventDefault();
         setshowloader(true);
 
-        console.log(setUpdatedBy());
+        let new_primary;
 
-        console.log("edit values", id, kpi, uom, category, created_by, updated_by,setCreatedBy)
+        if(is_primary === null || is_primary == "") {
+            new_primary = "1";
+        } else {
+            new_primary == is_primary;
+        }
+
+        console.log("edit values", id, kpi, uom, category, created_by, updated_by,setCreatedBy, setUpdatedBy())
 
         const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
         const body = JSON.stringify({ 
@@ -137,6 +145,7 @@ export default function KPIReport() {
             target: target,
             plannedYTD: ytd_planned,
             actualYTD: ytd_actual,
+            isPrimary: new_primary,
             action: action,
             rootCause: root_cause,
             supportRequired: support_required
@@ -299,13 +308,7 @@ export default function KPIReport() {
         {
           field: 'action',
           title: 'Actions To Be Taken'
-        }, 
-        {
-          field: 'supportRequired',
-          title: 'Support Required',
-          export: true,
-          hidden: true 
-        }, 
+        },
         {
           field: 'supportRequired',
           title: 'Comments On Progress Made',
@@ -702,42 +705,6 @@ export default function KPIReport() {
                             </MenuItem>
                             ))}
                         </TextField>
-
-                        <Grid container spacing={2}>
-                            <Grid item xs={6} lg={6} xl={6} sm={12}>
-                                <TextField
-                                    autoFocus
-                                    margin="dense"
-                                    id="ytd_planned"
-                                    label="Planned YTD"
-                                    type="number"
-                                    fullWidth
-                                    style={{marginBottom : '15px'}}
-                                    value={ytd_planned}
-                                    variant="outlined"
-                                    onChange = {(event) => {
-                                        setYTDPlanned(event.target.value);
-                                    }}
-                                />
-                            </Grid>
-
-                            <Grid item xs={6} lg={6} xl={6} sm={12}>
-                                <TextField
-                                    autoFocus
-                                    margin="dense"
-                                    id="ytd_actual"
-                                    label="Actual YTD "
-                                    type="number"
-                                    fullWidth
-                                    style={{marginBottom : '15px'}}
-                                    value={ytd_actual}
-                                    variant="outlined"
-                                    onChange = {(event) => {
-                                        setYTDActual(event.target.value);
-                                    }}
-                                />
-                            </Grid>
-                        </Grid>
 
                         <TextField
                             fullWidth

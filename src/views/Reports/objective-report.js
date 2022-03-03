@@ -120,6 +120,7 @@ export default function ObjectiveReport() {
   const [priorities_for_quarter, setPrioritiesForQuarter] = useState("");
   const [month, setMonth] = useState("");
   const [filteryear, setFilterYear] = useState("");
+  const [is_primary, setIsPrimary] = useState("");
 
   const handleEditClickOpen = () => {
     setEditOpen(true);
@@ -154,33 +155,20 @@ export default function ObjectiveReport() {
     setRiskAndOpportunity(list.riskOrOpportunity);
     setPrioritiesForQuarter(list.prioritiesForQuarter);
     setUpdatedBy(list.user.id);
+    setIsPrimary(list.isPrimary);
   };
 
   const saveEdited = async (e) => {
     e.preventDefault();
     setshowloader(true);
 
-    console.log(
-      "edit values",
-      id,
-      description,
-      kpi_id,
-      user_id,
-      pillar_id,
-      target,
-      target_achieved,
-      root_cause,
-      risk_and_opportunity,
-      action,
-      support_required,
-      created_by,
-      updated_by,
-      target_achieved_on_review,
-      priorities_for_quarter,
-      setUpdatedBy(),
-      setUserId,
-      setPillarId
-    );
+    let new_primary;
+
+    if(is_primary === null || is_primary == "") {
+      new_primary = "1";
+    } else {
+      new_primary == is_primary;
+    }
 
     const config = {
       headers: { "Content-Type": "application/json", Accept: "*/*" },
@@ -192,6 +180,7 @@ export default function ObjectiveReport() {
       user_id: user_id,
       pillar_id: pillar_id,
       year: year,
+      isPrimary: new_primary,
       target: target,
       target_achieved: target_achieved,
       root_cause: root_cause,
@@ -202,6 +191,8 @@ export default function ObjectiveReport() {
       created_by: created_by,
       updated_by: updated_by,
     });
+
+    console.log("test", body, is_primary, setUserId, target_achieved_on_review);
 
     try {
       let response = await axios.post("/objectives/update", body, config);
@@ -295,34 +286,21 @@ export default function ObjectiveReport() {
       hidden: true,
     },
     {
-      field: "objectives.rootCause",
-      title: "Root Cause and Insight",
-      export: true,
-      hidden: true,
-    },
-    {
-      field: "objectives.action",
-      title: "Actions To Be Taken",
+      field: "objectives.prioritiesForQuarter",
+      title: "Priorities for the quarter",
     },
     {
       field: "objectives.riskOrOpportunity",
       title: "Comments On Progress Made",
     },
     {
-      field: "objectives.supportRequired",
-      title: "Support Required",
-      export: true,
-      hidden: true,
-    },
-    {
-      field: "objectives.prioritiesForQuarter",
-      title: "Priorities for the quarter",
+      field: "objectives.action",
+      title: "Actions To Be Taken",
     },
     {
       field: "",
       title: "Edit",
       render: (list) => {
-        console.log("editing table", list);
         return (
           <IconButton
             aria-label="edit"
@@ -349,11 +327,13 @@ export default function ObjectiveReport() {
     };
 
     const body = JSON.stringify({
-      supportRequire: monthlyaction,
+      supportRequired: monthlyaction,
       nextPeriodActions: monthly_next_actions,
       riskOpportunity: monthly_risks,
       userId: created_by,
     });
+
+    console.log("body", body)
 
     try {
       let response = await axios.post(
@@ -742,42 +722,6 @@ export default function ObjectiveReport() {
                     </Grid>
                   </Grid>
 
-                  <Grid container spacing={2}>
-                    <Grid item xs={6} lg={6} xl={6} sm={12}>
-                      <TextField
-                        autoFocus
-                        margin="dense"
-                        id="target"
-                        label="Target"
-                        type="number"
-                        fullWidth
-                        style={{ marginBottom: "15px" }}
-                        value={target}
-                        variant="outlined"
-                        onChange={(event) => {
-                          setTarget(event.target.value);
-                        }}
-                      />
-                    </Grid>
-
-                    <Grid item xs={6} lg={6} xl={6} sm={12}>
-                      <TextField
-                        autoFocus
-                        margin="dense"
-                        id="target_achieved"
-                        label="Target Achieved"
-                        type="text"
-                        fullWidth
-                        style={{ marginBottom: "15px" }}
-                        value={target_achieved}
-                        variant="outlined"
-                        onChange={(event) => {
-                          setTargetAchieved(event.target.value);
-                        }}
-                      />
-                    </Grid>
-                  </Grid>
-
                   <TextField
                     fullWidth
                     label="Comments On Progress Made"
@@ -797,23 +741,6 @@ export default function ObjectiveReport() {
 
                   <TextField
                     fullWidth
-                    label="Support Required"
-                    id="support_required"
-                    multiline
-                    rows={2}
-                    required
-                    variant="outlined"
-                    className={classes.textInput}
-                    type="text"
-                    value={support_required}
-                    onChange={(event) => {
-                      const value = event.target.value;
-                      setSupportRequired(value);
-                    }}
-                  />
-
-                  <TextField
-                    fullWidth
                     label="Actions To Be Taken"
                     id="action"
                     multiline
@@ -826,23 +753,6 @@ export default function ObjectiveReport() {
                     onChange={(event) => {
                       const value = event.target.value;
                       setAction(value);
-                    }}
-                  />
-
-                  <TextField
-                    fullWidth
-                    label="Risk And Opportunity"
-                    id="risk_and_opportunity"
-                    multiline
-                    rows={2}
-                    required
-                    variant="outlined"
-                    className={classes.textInput}
-                    type="text"
-                    value={risk_and_opportunity}
-                    onChange={(event) => {
-                      const value = event.target.value;
-                      setRiskAndOpportunity(value);
                     }}
                   />
 
