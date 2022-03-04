@@ -229,10 +229,10 @@ function Dashboard() {
       }
     },
     series: [{
-      name: 'Complete',
+      name: 'ON TRACK',
       data: [new_obj[0]]
     }, {
-      name: 'Incomplete',
+      name: 'SIGNIFICANTLY OFF TRACK',
       data: [new_obj[1]]
     }],
     tooltip: {
