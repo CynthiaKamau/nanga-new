@@ -243,16 +243,16 @@ export default function KPIReport() {
         }
     ]
 
-    const accounts = [
-        {
-            value: 'Revenue',
-            label: 'Revenue',
-        },
-        {
-            value: 'Expense',
-            label: 'Expense',
-        }
-    ]
+    // const accounts = [
+    //     {
+    //         value: 'Revenue',
+    //         label: 'Revenue',
+    //     },
+    //     {
+    //         value: 'Expense',
+    //         label: 'Expense',
+    //     }
+    // ]
 
     const columns = [
         {
@@ -276,15 +276,15 @@ export default function KPIReport() {
           title: 'Variance',
           render: (list) => {
             if(list.variance === 'amber') {
-                return(<div style={{backgroundColor : '#FFC107',height: '50px', width: '50px', display: 'flex',borderRadius: '50%'}}><p style={{margin: 'auto'}}>{list.varianceValue}</p></div>)
+                return(<div style={{backgroundColor : '#FFC107',height: '50px', width: '50px', display: 'flex',borderRadius: '50%'}}><p style={{margin: 'auto'}}>{list.varianceValue} %</p></div>)
             } else if(list.variance === 'green') {
-                return (<div style={{backgroundColor : '#29A15B',height: '50px', width: '50px', display: 'flex', borderRadius: '50%'}}><p style={{margin: 'auto'}}>{list.varianceValue}</p></div>)
+                return (<div style={{backgroundColor : '#29A15B',height: '50px', width: '50px', display: 'flex', borderRadius: '50%'}}><p style={{margin: 'auto'}}>{list.varianceValue} %</p></div>)
             } else if(list.variance === 'blue') {
-                return (<div style={{backgroundColor : '#03A9F4',height: '50px', width: '50px', display: 'flex', borderRadius: '50%'}}><p style={{margin: 'auto'}}>{list.varianceValue}</p></div>)
+                return (<div style={{backgroundColor : '#03A9F4',height: '50px', width: '50px', display: 'flex', borderRadius: '50%'}}><p style={{margin: 'auto'}}>{list.varianceValue} %</p></div>)
             } else if(list.variance === 'red') {
-                return (<div style={{backgroundColor : '#F44336',height: '50px', width: '50px', display: 'flex', borderRadius: '50%'}}><p style={{margin: 'auto'}}>{list.varianceValue}</p></div>)
+                return (<div style={{backgroundColor : '#F44336',height: '50px', width: '50px', display: 'flex', borderRadius: '50%'}}><p style={{margin: 'auto'}}>{list.varianceValue} %</p></div>)
             } else if(list.variance === null || list.variance === undefined) {
-                return (<div style={{backgroundColor : '#F44336',height: '50px', width: '50px', display: 'flex', borderRadius: '50%'}}><p style={{margin: 'auto'}}>0</p></div>)
+                return (<div style={{backgroundColor : '#F44336',height: '50px', width: '50px', display: 'flex', borderRadius: '50%'}}><p style={{margin: 'auto'}}>0 %</p></div>)
             } 
           },
           export: false
@@ -723,22 +723,6 @@ export default function KPIReport() {
                             }}
                         />
 
-                        <TextField
-                            fullWidth
-                            label="Support Required"
-                            id="support_required"
-                            multiline
-                            rows={2}
-                            required
-                            variant="outlined"
-                            className={classes.textInput}
-                            type="text"
-                            value={support_required}
-                            onChange={(event) => {
-                                const value = event.target.value;
-                                setSupportRequired(value)
-                            }}
-                        />
 
                         <TextField
                             fullWidth
@@ -756,26 +740,6 @@ export default function KPIReport() {
                                 setAction(value)
                             }}
                         />
-
-                        <label style={{ fontWeight: 'bold', color: 'black'}}> Account : </label>
-                        <TextField
-                            id="outlined-select-account"
-                            select
-                            fullWidth
-                            variant="outlined"
-                            label="Select"
-                            value={account}
-                            onChange = {(event) => {
-                            setAccount(event.target.value);
-                            }}
-                            helperText="Please select your account"
-                        >
-                            {accounts.map((option) => (
-                            <MenuItem key={option.value} value={option.value}>
-                                {option.label}
-                            </MenuItem>
-                            ))}
-                        </TextField>
 
                     </DialogContent>
                     <DialogActions>

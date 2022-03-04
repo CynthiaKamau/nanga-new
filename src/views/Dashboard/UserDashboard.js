@@ -399,11 +399,11 @@ export default function UserDashboard() {
                                           <TableCell>{list.target} </TableCell>
                                           <TableCell>{list.plannedYTD}</TableCell>
                                           <TableCell>{list.actualYTD}</TableCell>
-                                          { list.variance === 'amber' ? ( <TableCell><div style={{backgroundColor : '#FFC107',height: '50px', width: '50px', display: 'flex',borderRadius: '50%'}}><p style={{margin: 'auto'}}>{list.varianceValue}</p></div> </TableCell>)
-                                          : list.variance === 'green' ? (<TableCell> <div style={{backgroundColor : '#29A15B',height: '50px', width: '50px', display: 'flex',borderRadius: '50%'}}><p style={{margin: 'auto'}}>{list.varianceValue}</p></div> </TableCell>)
-                                          : list.variance === 'blue' ? (<TableCell> <div style={{backgroundColor : '#03A9F4',height: '50px', width: '50px', display: 'flex',borderRadius: '50%'}}><p style={{margin: 'auto'}}>{list.varianceValue}</p></div> </TableCell>)
-                                          : list.variance === 'red' ? (<TableCell> <div style={{backgroundColor : '#F44336',height: '50px', width: '50px', display: 'flex',borderRadius: '50%'}}><p style={{margin: 'auto'}}>{list.varianceValue}</p></div> </TableCell>)
-                                          : list.variance === null || list.variance === undefined  ? (<TableCell> <div style={{backgroundColor : '#F44336',height: '50px', width: '50px', display: 'flex',borderRadius: '50%'}}><p style={{margin: 'auto'}}>0</p></div> </TableCell>)
+                                          { list.variance === 'amber' ? ( <TableCell><div style={{backgroundColor : '#FFC107',height: '50px', width: '50px', display: 'flex',borderRadius: '50%'}}><p style={{margin: 'auto'}}>{list.varianceValue} %</p></div> </TableCell>)
+                                          : list.variance === 'green' ? (<TableCell> <div style={{backgroundColor : '#29A15B',height: '50px', width: '50px', display: 'flex',borderRadius: '50%'}}><p style={{margin: 'auto'}}>{list.varianceValue} %</p></div> </TableCell>)
+                                          : list.variance === 'blue' ? (<TableCell> <div style={{backgroundColor : '#03A9F4',height: '50px', width: '50px', display: 'flex',borderRadius: '50%'}}><p style={{margin: 'auto'}}>{list.varianceValue} %</p></div> </TableCell>)
+                                          : list.variance === 'red' ? (<TableCell> <div style={{backgroundColor : '#F44336',height: '50px', width: '50px', display: 'flex',borderRadius: '50%'}}><p style={{margin: 'auto'}}>{list.varianceValue} %</p></div> </TableCell>)
+                                          : list.variance === null || list.variance === undefined  ? (<TableCell> <div style={{backgroundColor : '#F44336',height: '50px', width: '50px', display: 'flex',borderRadius: '50%'}}><p style={{margin: 'auto'}}>0 %</p></div> </TableCell>)
                                           : null }
               
                                       </TableRow>

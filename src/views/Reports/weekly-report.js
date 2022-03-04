@@ -44,6 +44,7 @@ export default function WeeklyReport() {
     const [showloader, setshowloader] = useState(false);
     const [editopen, setEditOpen] = useState(false);
     const [open, setOpen] = useState(false);
+    const [kpiProgressUpdates, setKpiProgressUpdates] = useState("");
 
     useEffect(() => {
       dispatch(getWeeklyReport(currentUser.id));
@@ -199,6 +200,7 @@ export default function WeeklyReport() {
       setWeeklyKpis(list.weeklyKpis)
       setStrategicObjectives(list.strategicObjective);
       setCreatedBy(currentUser.id)
+      setKpiProgressUpdates("");
     }
 
     const columns = [
@@ -399,6 +401,22 @@ export default function WeeklyReport() {
                 setHotspot(event.target.value);
               }}
             />
+            <TextField
+              fullWidth
+              label="KPI Progress Updates"
+              id="kpiProgressUpdates"
+              multiline
+              rows={2}
+              required
+              variant="outlined"
+              className={classes.textInput}
+              type="text"
+              value={kpiProgressUpdates}
+              onChange={(event) => {
+                const value = event.target.value;
+                setKpiProgressUpdates(value);
+              }}
+            />
 
           </DialogContent>
           <DialogActions>
@@ -513,7 +531,24 @@ export default function WeeklyReport() {
               onChange={(event) => {
                 setHotspot(event.target.value);
               }}
-            />  
+            /> 
+
+            <TextField
+              fullWidth
+              label="KPI Progress Updates"
+              id="kpiProgressUpdates"
+              multiline
+              rows={2}
+              required
+              variant="outlined"
+              className={classes.textInput}
+              type="text"
+              value={kpiProgressUpdates}
+              onChange={(event) => {
+                const value = event.target.value;
+                setKpiProgressUpdates(value);
+              }}
+            /> 
 
           </DialogContent>
           <DialogActions>

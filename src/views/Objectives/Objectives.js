@@ -84,15 +84,15 @@ export default function StrategicObjectives() {
     const obj_statuses = [
         {
             value: 'COMPLETE',
-            label: 'COMPLETE'
+            label: 'ON TRACK'
         },
         {
             value: 'ONGOING',
-            label: 'ONGOING'
+            label: 'MODERATELY OFF TRACK'
         },
         {
             value: 'INCOMPLETE',
-            label: 'INCOMPLETE'
+            label: 'SIGNIFICANTLY OFF TRACK'
         }
     ]
 
@@ -139,6 +139,7 @@ export default function StrategicObjectives() {
     const [deleteTaskId, setDeleteTaskId] = useState("");
     const [myKpis, setMyKpis] = useState("");
     const [myResources, setMyResources] = useState("");
+    const [is_primary, setIsPrimary] = useState("");
 
     const customStyles = {
         control: base => ({
@@ -354,6 +355,7 @@ export default function StrategicObjectives() {
         setPillar(list.pillar_id)
         setSupportRequired(list.supportRequired);
         setAction(list.action);
+        setIsPrimary(list.isPrimary)
         setRootCause(list.rootCause)
         setRiskAndOpportunity(list.riskOrOpportunity)
         setUpdatedBy(list.user.id)
@@ -374,6 +376,14 @@ export default function StrategicObjectives() {
 
         console.log("edit objective", year, id, description, kpi_id, user_id, obj_status, target_achieved_on_review, pillar_id, root_cause, action, support_required, risk_and_opportunity, setUpdatedBy())
 
+        let new_primary;
+
+        if(is_primary === null || is_primary == "") {
+          new_primary = "1";
+        } else {
+          new_primary == is_primary;
+        }
+
         const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
         const body = JSON.stringify({ 
             id : id,
@@ -381,6 +391,7 @@ export default function StrategicObjectives() {
             kpi_ids : kpi_id,
             user_id : user_id,
             year : year,
+            isPrimary: new_primary,
             // target : target,
             // target_achieved : target_achieved,
             pillar_id : pillar_id,

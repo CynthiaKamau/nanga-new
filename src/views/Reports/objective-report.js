@@ -29,9 +29,6 @@ import { getKpis } from "actions/kpis";
 import { Grid } from "@material-ui/core";
 import axios from "axios";
 import FiberManualRecord from "@material-ui/icons/FiberManualRecord";
-import FormControl from "@material-ui/core/FormControl";
-import InputLabel from "@material-ui/core/InputLabel";
-import Select from "@material-ui/core/Select";
 import MaterialTable from "material-table";
 import { CardContent } from "@material-ui/core";
 import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
@@ -46,9 +43,7 @@ export default function ObjectiveReport() {
   const { items, item, monthly_data, monthly_data_error } = useSelector(
     (state) => state.objective
   );
-  const { pillars } = useSelector((state) => state.data);
   const { user: currentUser } = useSelector((state) => state.auth);
-  const { items: kpis } = useSelector((state) => state.kpi);
   const months = JsonData.Months;
   const years = JsonData.Years;
 
@@ -155,7 +150,7 @@ export default function ObjectiveReport() {
     setRiskAndOpportunity(list.riskOrOpportunity);
     if(list.prioritiesForQuarter == null || list.prioritiesForQuarter == undefined) {setPrioritiesForQuarter("")} else {setPrioritiesForQuarter(list.prioritiesForQuarter)}
     setUpdatedBy(list.user.id);
-    if(list.isPrimary == null || list.is_primary == undefined) {setIsPrimary("1")} else { setIsPrimary(list.isPrimary)}
+    setIsPrimary(list.isPrimary)
   };
 
   const saveEdited = async (e) => {
@@ -645,82 +640,6 @@ export default function ObjectiveReport() {
                       setDescription(event.target.value);
                     }}
                   />
-
-                  <Grid container spacing={2}>
-                    <Grid item xs={6} lg={6} xl={6} sm={12}>
-                      <label style={{ fontWeight: "bold", color: "black" }}>
-                        {" "}
-                        KPI :{" "}
-                      </label>
-                      <FormControl
-                        fullWidth
-                        className={classes.selectFormControl}
-                      >
-                        <InputLabel
-                          htmlFor="multiple-select"
-                          className={classes.selectLabel}
-                        >
-                          Select KPI
-                        </InputLabel>
-                        <Select
-                          multiple
-                          variant="outlined"
-                          value={kpi_id}
-                          onChange={(event) => {
-                            const value = event.target.value;
-                            setKpiId(value);
-                          }}
-                          MenuProps={{ className: classes.selectMenu }}
-                          classes={{ select: classes.select }}
-                          inputProps={{
-                            name: "multipleSelect",
-                            id: "multiple-select",
-                          }}
-                        >
-                          {kpis &&
-                            kpis.map((option) => (
-                              <MenuItem
-                                key={option.id}
-                                value={option.id}
-                                classes={{
-                                  root: classes.selectMenuItem,
-                                  selected:
-                                    classes.selectMenuItemSelectedMultiple,
-                                }}
-                              >
-                                {option.title}
-                              </MenuItem>
-                            ))}
-                        </Select>
-                      </FormControl>
-                    </Grid>
-
-                    <Grid item xs={6} lg={6} xl={6} sm={12}>
-                      <label> Pillar : </label>
-                      <TextField
-                        id="outlined-select-pillar"
-                        select
-                        required
-                        fullWidth
-                        variant="outlined"
-                        label="Select"
-                        className={classes.textInput}
-                        value={pillar_id}
-                        onChange={(event) => {
-                          setPillarId(event.target.value);
-                          // setUomValue()
-                        }}
-                        helperText="Please select your pillar"
-                      >
-                        {pillars &&
-                          pillars.map((option) => (
-                            <MenuItem key={option.id} value={option.id}>
-                              {option.description}
-                            </MenuItem>
-                          ))}
-                      </TextField>
-                    </Grid>
-                  </Grid>
 
                   <TextField
                     fullWidth
