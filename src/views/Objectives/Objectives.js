@@ -167,6 +167,7 @@ export default function StrategicObjectives() {
             year: year,
             status: obj_status,
             kpi_ids : kpi_id,
+            isPrimary: 1,
             target :  0,
             user_id : user_id,
             created_by : created_by,
@@ -374,14 +375,16 @@ export default function StrategicObjectives() {
         setUserId(currentUser.id);
         setId();
 
-        console.log("edit objective", year, id, description, kpi_id, user_id, obj_status, target_achieved_on_review, pillar_id, root_cause, action, support_required, risk_and_opportunity, setUpdatedBy())
+        console.log(year, id, description, kpi_id, user_id, obj_status, target_achieved_on_review, pillar_id, root_cause, action, support_required, risk_and_opportunity, setUpdatedBy())
+
+        console.log("primary", is_primary)
 
         let new_primary;
 
-        if(is_primary === null || is_primary == "") {
-          new_primary = "1";
+        if(is_primary === null || is_primary == "" || is_primary == undefined || is_primary == 1) {
+            new_primary = "1";
         } else {
-          new_primary == is_primary;
+            new_primary == "0";
         }
 
         const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }

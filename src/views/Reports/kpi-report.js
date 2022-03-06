@@ -103,8 +103,6 @@ export default function KPIReport() {
     };
 
     const setEditing = (list) => {
-        console.log("edit", list);
-
         setKPI(list.title);
         setUnitOfMeasure(list.kpi_unit_of_measure);
         setCategory(list.categories.id);
@@ -123,15 +121,17 @@ export default function KPIReport() {
         e.preventDefault();
         setshowloader(true);
 
+        console.log("primary", is_primary)
+
         let new_primary;
 
-        if(is_primary === null || is_primary == "") {
+        if(is_primary === null || is_primary == "" || is_primary == undefined || is_primary == 1) {
             new_primary = "1";
         } else {
-            new_primary == is_primary;
+            new_primary === is_primary;
         }
 
-        console.log("edit values", id, kpi, uom, category, created_by, updated_by,setCreatedBy, setUpdatedBy())
+        console.log("edit values",new_primary, id, kpi, uom, category, created_by, updated_by,setCreatedBy, setUpdatedBy())
 
         const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
         const body = JSON.stringify({ 
@@ -185,6 +185,20 @@ export default function KPIReport() {
                         text: error,
                         icon: "error",
                         dangerMode: true
+                    }).then(() => {
+                        setKPI("");
+                        setUnitOfMeasure("");
+                        setCategory("");
+                        setId("");
+                        setAccount("");
+                        setTarget("");
+                        setYTDPlanned("");
+                        setYTDActual("")
+                        setSupportRequired("");
+                        setAction("");
+                        setRootCause("")
+                        setUpdatedBy(currentUser.id);
+                        dispatch(getKpis(currentUser.id))
                     });
             }
         } catch (error) {
@@ -195,6 +209,20 @@ export default function KPIReport() {
                 text: err,
                 icon: "error",
                 dangerMode: true
+            }).then(() => {
+                setKPI("");
+                    setUnitOfMeasure("");
+                    setCategory("");
+                    setId("");
+                    setAccount("");
+                    setTarget("");
+                    setYTDPlanned("");
+                    setYTDActual("")
+                    setSupportRequired("");
+                    setAction("");
+                    setRootCause("")
+                    setUpdatedBy(currentUser.id);
+                    dispatch(getKpis(currentUser.id))
             });
         }
     
@@ -319,7 +347,6 @@ export default function KPIReport() {
           field: 'actions',
           title: 'Edit',
           render: (list) => {
-            console.log("editing table", list)
               return ( <div> <IconButton aria-label="edit" className={classes.textGreen} onClick={() => { handleEditClickOpen(); setEditing(list) }} ><EditIcon/></IconButton>
                 </div>)
           },
@@ -642,7 +669,19 @@ export default function KPIReport() {
                 </Grid>
                 
                 <Grid container justify="flex-end">
-                    <Button color="primary" size="lg" onClick={(e) => { saveMonthlyUpdate(e)}}> Save </Button> 
+                { showloader === true ? (
+                    <div style={{ textAlign: "center", marginTop: 10 }}>
+                    <Loader
+                        type="Puff"
+                        color="#29A15B"
+                        height={100}
+                        width={100}
+                    />
+                    </div>
+                    ) :
+                    (
+                        <Button color="primary" size="lg" onClick={(e) => { saveMonthlyUpdate(e)}}> Save </Button> 
+                    )}
                 </Grid>
 
                 <Dialog open={editopen} onClose={handleEditClose}>

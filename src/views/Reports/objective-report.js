@@ -159,7 +159,7 @@ export default function ObjectiveReport() {
 
     let new_primary;
 
-    if(is_primary === null || is_primary == "") {
+    if(is_primary === null || is_primary == "" || is_primary == undefined || is_primary == 1) {
       new_primary = "1";
     } else {
       new_primary == is_primary;
@@ -379,7 +379,7 @@ export default function ObjectiveReport() {
 
     try {
       let response = await axios.get(
-        `/objectivesReports/filterObjectivesReport?user_id=${created_by}&month=${month}&year=${year}`
+        `/objectivesReports/filterObjectivesReport?user_id=${created_by}&month=${month}&year=${filteryear}`
       );
       if (response.status == 200) {
         setshowloader(false);
@@ -608,16 +608,19 @@ export default function ObjectiveReport() {
               </Grid>
 
               <Grid container justify="flex-end">
-                <Button
-                  color="primary"
-                  size="lg"
-                  onClick={(e) => {
-                    saveMonthlyUpdate(e);
-                  }}
-                >
-                  {" "}
-                  Save{" "}
-                </Button>
+                {showloader === true ? (
+                  <div style={{ textAlign: "center", marginTop: 10 }}>
+                  <Loader
+                      type="Puff"
+                      color="#29A15B"
+                      height={100}
+                      width={100}
+                  />
+                  </div>
+                  ) :
+                  (
+                    <Button color="primary" size="lg" onClick={(e) => {saveMonthlyUpdate(e);}} > Save </Button>
+                  )}
               </Grid>
 
               <Dialog open={editopen} onClose={handleEditClose}>

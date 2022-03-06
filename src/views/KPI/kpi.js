@@ -81,14 +81,6 @@ export default function DataTable() {
         setshowloader(true);
         console.log(setCreatedBy())
 
-        let new_primary;
-
-        if(is_primary === null || is_primary == "") {
-            new_primary = "1";
-        } else {
-            new_primary == is_primary;
-        }
-
         const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
         
         const body = JSON.stringify({ 
@@ -96,7 +88,7 @@ export default function DataTable() {
             kpiUnitofMeasure : uom,
             categoryId : category,
             createdBy : created_by,
-            isPrimary: new_primary,
+            isPrimary: 1,
             account : account,
             target : target,
             userId : created_by
@@ -168,7 +160,15 @@ export default function DataTable() {
 
         console.log("primary", is_primary)
 
-        console.log("edit values", id, kpi, uom, category, created_by, updated_by)
+        let new_primary;
+
+        if(is_primary === null || is_primary == "" || is_primary == undefined || is_primary == 1) {
+            new_primary = "1";
+        } else {
+            new_primary == is_primary;
+        }
+
+        console.log("edit values", new_primary, id, kpi, uom, category, created_by, updated_by)
 
         const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
         const body = JSON.stringify({ 
@@ -177,7 +177,7 @@ export default function DataTable() {
             categoryId : category,
             progressMade: "",
             updatedBy : updated_by,
-            isPrimary: 1,
+            isPrimary: new_primary,
             id: id, 
             userId: created_by,
             account: account,

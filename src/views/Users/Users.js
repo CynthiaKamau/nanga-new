@@ -134,6 +134,7 @@ export default function UsersPage() {
           setRole("")
           setEmail("")
           setLineManager("")
+          setAccessLevel("")
           setCreatedBy(currentUser.id)
           dispatch(getUsers())
         });
@@ -147,6 +148,15 @@ export default function UsersPage() {
               text: error,
               icon: "error",
               dangerMode: true
+          }).then(() => {
+            setName("")
+            setTeam("")
+            setRole("")
+            setEmail("")
+            setLineManager("")
+            setAccessLevel("")
+            setCreatedBy(currentUser.id)
+            dispatch(getUsers())
           });
       }
     } catch (error) {
@@ -158,6 +168,15 @@ export default function UsersPage() {
               text: err,
               icon: "error",
               dangerMode: true
+          }).then(() => {
+            setName("")
+            setTeam("")
+            setRole("")
+            setEmail("")
+            setLineManager("")
+            setAccessLevel("")
+            setCreatedBy(currentUser.id)
+            dispatch(getUsers())
           });
     }
 
@@ -232,6 +251,7 @@ export default function UsersPage() {
                   setRole("")
                   setEmail("")
                   setLineManager("")
+                  setAccessLevel("")
                   setCreatedBy(currentUser.id)
                   dispatch(getUsers())
                 });
