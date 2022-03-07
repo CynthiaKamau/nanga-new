@@ -145,7 +145,7 @@ export default function ObjectiveReport() {
     setYear(list.year);
     setTargetAchieved(list.target_achieved);
     if (list.supportRequired == null || list.supportRequired == undefined) {setSupportRequired("") } else {setSupportRequired(list.supportRequired)}
-    if(list.action) {setAction("")} else {setAction(list.action)}
+    if(list.action == null || list.action == undefined) {setAction("")} else {setAction(list.action)}
     if(list.rootCause == null || list.rootCause == undefined ) {setRootCause("")} else{setRootCause(list.rootCause)}
     setRiskAndOpportunity(list.riskOrOpportunity);
     if(list.prioritiesForQuarter == null || list.prioritiesForQuarter == undefined) {setPrioritiesForQuarter("")} else {setPrioritiesForQuarter(list.prioritiesForQuarter)}
