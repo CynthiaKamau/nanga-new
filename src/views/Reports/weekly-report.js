@@ -79,7 +79,8 @@ export default function WeeklyReport() {
         weeklyKpis: weeklyKpis,
         strategicObjecives: strategicObjecives,
         progressMade: progressUpdates,
-        userId: created_by
+        userId: created_by,
+        kpiProgressUpdates: kpiProgressUpdates
       });
 
       console.log("body weekly", body)
@@ -101,6 +102,7 @@ export default function WeeklyReport() {
               setWeeklyKpis("")
               setStrategicObjectives("");
               setProgressUpdates("");
+              setKpiProgressUpdates("");
               setCreatedBy(currentUser.id)
               dispatch(getWeeklyReport(currentUser.id));
             })
@@ -142,7 +144,8 @@ export default function WeeklyReport() {
         weeklyKpis: weeklyKpis,
         strategicObjecives: strategicObjecives,
         progressMade: progressUpdates,
-        userId: created_by
+        userId: created_by,
+        kpiProgressUpdates: kpiProgressUpdates
       });
 
       console.log("body weekly", body)
@@ -164,6 +167,8 @@ export default function WeeklyReport() {
               setWeeklyKpis("")
               setStrategicObjectives("");
               setProgressUpdates("");
+              setWeeklyKpis("");
+              setKpiProgressUpdates("");
               setCreatedBy(currentUser.id)
               dispatch(getWeeklyReport(currentUser.id));
             })
@@ -236,8 +241,8 @@ export default function WeeklyReport() {
         title: 'KPI'
       }, 
       { 
-        field: 'progressUpdates',
-        title: 'Progress Updates' 
+        field: 'hotspots',
+        title: 'Hotspots/Key Issues' 
       }
     ]
 

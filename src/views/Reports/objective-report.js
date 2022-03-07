@@ -146,7 +146,7 @@ export default function ObjectiveReport() {
     setTargetAchieved(list.target_achieved);
     if (list.supportRequired == null || list.supportRequired == undefined) {setSupportRequired("") } else {setSupportRequired(list.supportRequired)}
     if(list.action) {setAction("")} else {setAction(list.action)}
-    if(list.rootCause) {setRootCause("")} else{setRootCause(list.rootCause)}
+    if(list.rootCause == null || list.rootCause == undefined ) {setRootCause("")} else{setRootCause(list.rootCause)}
     setRiskAndOpportunity(list.riskOrOpportunity);
     if(list.prioritiesForQuarter == null || list.prioritiesForQuarter == undefined) {setPrioritiesForQuarter("")} else {setPrioritiesForQuarter(list.prioritiesForQuarter)}
     setUpdatedBy(list.user.id);
@@ -253,17 +253,27 @@ export default function ObjectiveReport() {
       field: "rag",
       title: "Status",
       render: (list) => {
+        console.log("editing", list)
         if (
           list.objectives.overallStatus === "COMPLETE" ||
+          list.objectives.overallStatus === "ON TRACK" ||
           list.objectives.overallStatus === "Complete"
         ) {
           return <FiberManualRecord style={{ color: "#29A15B" }} />;
         } else if (
           list.objectives.overallStatus === "INCOMPLETE" ||
+          list.objectives.overallStatus === "SIGNIFICANTLY OFF TRACK" ||
           list.objectives.overallStatus === "Incomplete" ||
           list.objectives.overallStatus === null
         ) {
           return <FiberManualRecord style={{ color: "#F44336" }} />;
+        } else if (
+          list.objectives.overallStatus === "ONGOING" ||
+          list.objectives.overallStatus === "MODERATELY OFF TRACK" ||
+          list.objectives.overallStatus === "Ongoing" ||
+          list.objectives.overallStatus === null
+        ) {
+          return <FiberManualRecord style={{ color: "#FFC107" }} />;
         }
       },
       export: false,
@@ -285,7 +295,7 @@ export default function ObjectiveReport() {
       title: "Priorities for the quarter",
     },
     {
-      field: "objectives.riskOrOpportunity",
+      field: "objectives.rootCause",
       title: "Comments On Progress Made",
     },
     {

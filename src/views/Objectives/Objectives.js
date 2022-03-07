@@ -83,15 +83,15 @@ export default function StrategicObjectives() {
 
     const obj_statuses = [
         {
-            value: 'COMPLETE',
+            value: 'ON TRACK',
             label: 'ON TRACK'
         },
         {
-            value: 'ONGOING',
+            value: 'MODERATELY OFF TRACK',
             label: 'MODERATELY OFF TRACK'
         },
         {
-            value: 'INCOMPLETE',
+            value: 'SIGNIFICANTLY OFF TRACK',
             label: 'SIGNIFICANTLY OFF TRACK'
         }
     ]
