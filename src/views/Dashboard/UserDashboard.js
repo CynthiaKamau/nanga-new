@@ -175,11 +175,14 @@ export default function UserDashboard() {
       }
     },
     series: [{
-      name: 'ON TRACK',
+      name: 'SIGNIFICANTLY OFF TRACK',
       data: [new_obj[0]]
     }, {
-      name: 'SIGNIFICANTLY OFF TRACK',
+      name: 'MODERATELY OFF TRACK',
       data: [new_obj[1]]
+    }, {
+      name: 'ON TRACK',
+      data: [new_obj[2]]
     }],
     tooltip: {
       pointFormat: '{name}: <br> Total: {point.y}'

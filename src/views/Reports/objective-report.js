@@ -26,11 +26,10 @@ import Loader from "react-loader-spinner";
 import { getUserObjectives, getOMonthlyActions } from "actions/objectives";
 import { getCategories, getPillars } from "actions/data";
 import { getKpis } from "actions/kpis";
-import { Grid } from "@material-ui/core";
+import { Grid, CardContent } from "@material-ui/core";
 import axios from "axios";
 import FiberManualRecord from "@material-ui/icons/FiberManualRecord";
 import MaterialTable from "material-table";
-import { CardContent } from "@material-ui/core";
 import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
 import JsonData from "../../data/data.json";
 
