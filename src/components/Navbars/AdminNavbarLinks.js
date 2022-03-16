@@ -105,7 +105,7 @@ export default function HeaderLinks(props) {
 
           {currentUser ? (
               <div style={{ display: 'inline' }}>
-                  { avatar === null || avatar === undefined ? (
+                  { avatar === null || avatar === undefined || avatar == "null" ? (
                       <img src={Avatar} alt={name}  style={{ maxWidth: '100px', maxHeight: '100px', borderRadius: '50%', marginRight: '250px', marginTop: '35px'}} />
 
                   ) : avatar != null ? (

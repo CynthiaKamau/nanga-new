@@ -58,6 +58,8 @@ export default function UserProfile() {
 
   // var imageUrl = urlCreator.createObjectURL(avatar);
 
+  console.log("my pic", avatar);
+
   useEffect(() => {
     dispatch(getUser(currentUser.id));
   }, []);
@@ -129,8 +131,6 @@ export default function UserProfile() {
     setshowloader(true);
 
     console.log("save values", id, name, email, department, team, role, updated_by, setUpdatedBy, setAvatar);
-
-    console.log("save image", image)
 
     const config = { headers: { 'Content-Type': 'application/json' } };
 
@@ -314,9 +314,9 @@ export default function UserProfile() {
         <GridItem xs={12} sm={12} md={4}>
           <Card profile>
             <CardAvatar profile>
-                { avatar ? ( <img src={avatar} alt="..." /> )
-                : avatar === null || avatar === undefined || avatar === '' ? ( <img src={Avatar} alt="..." />
-                ) : (<img src={Avatar} alt="..." /> )}
+                { avatar == null || avatar == undefined || avatar === '' || avatar == "null" ? ( <img src={Avatar} alt="..." /> )
+                : avatar ? ( <img src={avatar} alt="..." /> )
+                : (<img src={Avatar} alt="..." /> )}
 
             </CardAvatar>
             <CardBody profile>

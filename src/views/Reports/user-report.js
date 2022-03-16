@@ -15,8 +15,14 @@ import MaterialTable from 'material-table';
 import FiberManualRecord from "@material-ui/icons/FiberManualRecord";
 import { makeStyles } from "@material-ui/core/styles";
 import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
-import { Grid, CardContent } from "@material-ui/core";
+import { Grid, CardContent, Button } from "@material-ui/core";
 import TextField from "@material-ui/core/TextField";
+import swal from "sweetalert2";
+import axios from "axios";
+import MenuItem from '@material-ui/core/MenuItem';
+import JsonData from "../../data/data.json";
+import Loader from "react-loader-spinner";
+
 
 const useStyles = makeStyles(styles);
 
@@ -40,6 +46,18 @@ export default function UserReport() {
     const [kpi_monthlyaction, setKpiMonthlyAction] = useState("");
     const [kpi_monthly_risks, setKpiMonthlyRisks] = useState("");
     const [kpi_monthly_next_actions, setKpiMonthlyNextActions] = useState("");
+
+    const [kpi_month, setKpiMonth] = useState("");
+    const [kpi_year, setKpiYear] = useState("");
+
+    const [obj_month, setObjMonth] = useState("");
+    const [obj_year, setObjYear] = useState("");
+
+    const [showloader, setshowloader] = useState(false);
+
+    const months = JsonData.Months;
+    const years = JsonData.Years;
+
 
     useEffect(() => {
         dispatch(getKpis(chars));
@@ -72,9 +90,6 @@ export default function UserReport() {
           setKpiMonthlyNextActions("Not available");
         }
       }, [kpi_monthly_data]);
-
-      console.log("kpi_monthly_data", kpi_monthly_data[0]);
-      console.log("objectives_monthly_data", objectives_monthly_data[0]);
 
     const kpi_columns = [
         {
@@ -200,6 +215,112 @@ export default function UserReport() {
         },
     ]
 
+    const filterKpiData = async(e) => {
+      e.preventDefault();
+      setshowloader(true);
+
+      try {
+
+        let response = await axios.get(`/kpiReports/filterKpiReport?user_id=${chars}&month=${kpi_month}&year=${kpi_year}`)
+            if (response.status == 200) {
+                setshowloader(false);
+                let item = response.data.message;
+                    swal.fire({
+                    title: "Success",
+                    text: item,
+                    icon: "success",
+                }).then(() => {
+                  setKpiMonth("");
+                  setKpiYear("");
+                  dispatch(getKpis(chars))
+                });
+
+            } else {
+                let error = response.data.message
+                setshowloader(false);
+                swal.fire({
+                    title: "Error",
+                    text: error,
+                    icon: "error",
+                    dangerMode: true
+                }).then(() => {
+                  setKpiMonth("");
+                  setKpiYear("");
+                  dispatch(getKpis(chars))
+                });
+            }
+      } catch (error) {
+        let err = error.response.data.message
+        setshowloader(false);
+        swal.fire({
+            title: "Error",
+            text: err,
+            icon: "error",
+            dangerMode: true
+        }).then(() => {
+          setKpiMonth("");
+          setKpiYear("");
+          dispatch(getKpis(chars))
+        });
+      } 
+    }
+
+    const filterObjData = async (e) => {
+      e.preventDefault();
+      setshowloader(true);
+  
+      try {
+        let response = await axios.get(
+          `/objectivesReports/filterObjectivesReport?user_id=${chars}&month=${obj_month}&year=${obj_year}`
+        );
+        if (response.status == 200) {
+          setshowloader(false);
+          let item = response.data.message;
+          console.log("here", item);
+          swal
+            .fire({
+              title: "Success",
+              text: item,
+              icon: "success",
+            })
+            .then(() => {
+              setObjMonth("");
+              setObjYear("");
+              dispatch(getKpis(chars));
+            });
+        } else {
+          let error = response.data.message;
+          setshowloader(false);
+          swal
+            .fire({
+              title: "Error",
+              text: error,
+              icon: "error",
+              dangerMode: true,
+            })
+            .then(() => {
+              setObjMonth("");
+              setObjYear("");
+              dispatch(getKpis(chars));
+            });
+        }
+      } catch (error) {
+        let err = error.response.data.message;
+        setshowloader(false);
+        swal
+          .fire({
+            title: "Error",
+            text: err,
+            icon: "error",
+            dangerMode: true,
+          })
+          .then(() => {
+            setObjMonth("");
+            setObjYear("");
+            dispatch(getKpis(chars));
+          });
+      }
+    };
 
   return (
     <div>
@@ -214,6 +335,62 @@ export default function UserReport() {
             
               </CardHeader>
               <CardBody>
+
+              <Grid container spacing={1} justify="flex-end" style={{margin: '1rem'}}>
+                <TextField
+                    id="outlined-select-month"
+                    select
+                    required
+                    style={{margin: "1rem", width: "200px"}}
+                    variant="outlined"
+                    label="Month"
+                    className={classes.textInput}
+                    value={kpi_month}
+                    onChange={(event) => {
+                    setKpiMonth(event.target.value);
+                    }}
+                  >
+                    {months && months.map((option) => (
+                    <MenuItem key={option.abbreviation} value={option.abbreviation}>
+                        {option.name}
+                    </MenuItem>
+                    ))}
+                </TextField>
+        
+                <TextField
+                    id="outlined-select-year"
+                    select
+                    required
+                    style={{margin: "1rem", width: "200px"}}
+                    variant="outlined"
+                    label="Year"
+                    className={classes.textInput}
+                    value={kpi_year}
+                    onChange={(event) => {
+                    setKpiYear(event.target.value);
+                    }}
+                  >
+                    {years && years.map((option) => (
+                    <MenuItem key={option.value} value={option.value}>
+                        {option.name}
+                    </MenuItem>
+                    ))}
+                </TextField>
+
+                { showloader === true ? (
+                    <div style={{ textAlign: "center", marginTop: 10 }}>
+                    <Loader
+                        type="Puff"
+                        color="#29A15B"
+                        height={100}
+                        width={100}
+                    />
+                    </div>
+                    ) :
+                    ( <Button color="primary" onClick={filterKpiData}>Filter</Button>
+                    )
+                } 
+              </Grid>   
 
                 {kpis !== null ? (
                   <MaterialTable
@@ -327,6 +504,62 @@ export default function UserReport() {
             
               </CardHeader>
               <CardBody>
+
+                <Grid container spacing={1} justify="flex-end" style={{margin: '1rem'}}>
+                  <TextField
+                      id="outlined-select-month"
+                      select
+                      required
+                      style={{margin: "1rem", width: "200px"}}
+                      variant="outlined"
+                      label="Month"
+                      className={classes.textInput}
+                      value={obj_month}
+                      onChange={(event) => {
+                      setObjMonth(event.target.value);
+                      }}
+                    >
+                      {months && months.map((option) => (
+                      <MenuItem key={option.abbreviation} value={option.abbreviation}>
+                          {option.name}
+                      </MenuItem>
+                      ))}
+                  </TextField>
+          
+                  <TextField
+                      id="outlined-select-year"
+                      select
+                      required
+                      style={{margin: "1rem", width: "200px"}}
+                      variant="outlined"
+                      label="Year"
+                      className={classes.textInput}
+                      value={obj_year}
+                      onChange={(event) => {
+                      setObjYear(event.target.value);
+                      }}
+                    >
+                      {years && years.map((option) => (
+                      <MenuItem key={option.value} value={option.value}>
+                          {option.name}
+                      </MenuItem>
+                      ))}
+                  </TextField>
+
+                  { showloader === true ? (
+                      <div style={{ textAlign: "center", marginTop: 10 }}>
+                      <Loader
+                          type="Puff"
+                          color="#29A15B"
+                          height={100}
+                          width={100}
+                      />
+                      </div>
+                      ) :
+                      ( <Button color="primary" onClick={filterObjData}>Filter</Button>
+                      )
+                  } 
+                </Grid> 
 
                 {objectives !== null ? (
                   <MaterialTable

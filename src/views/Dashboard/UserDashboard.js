@@ -86,8 +86,6 @@ export default function UserDashboard() {
     new_obj.push(i.y)
   })
 
-  console.log("my", new_obj[0]);
-
   useEffect(() => {
 
     if(chars) {
@@ -107,8 +105,6 @@ export default function UserDashboard() {
     }
     
   }, [chars])
-
-  console.log("here", items)
 
   const kpi_options = {
     chart: {

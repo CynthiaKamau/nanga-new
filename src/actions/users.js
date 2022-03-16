@@ -6,6 +6,10 @@ import {
     ALL_USERS_FETCH_REQUEST,
     ALL_USERS_FAIL,
 
+    USER_TEAM_SUCCESS,
+    USER_TEAM_FETCH_REQUEST,
+    USER_TEAM_FAIL,
+
     ALL_RESOURCE_USERS_SUCCESS,
     ALL_RESOURCE_USERS_FETCH_REQUEST,
     ALL_RESOURCE_USERS_FAIL,
@@ -169,6 +173,29 @@ export const editUser = (user_id, name, status, team, role, updated_by, view, ex
             dispatch({ type: EDIT_USER_FAIL, payload: error.response.data })
         }
 
+    }
+
+}
+
+//get specific user team members
+export const getUserTeamates = (id) => {
+
+    return async function (dispatch) {
+
+        dispatch({ type: USER_TEAM_FETCH_REQUEST });
+
+        try {
+
+            let response = await axios.get(`users/all_per_team?user_id=${id}`)
+            if (response.status == 200) {
+                dispatch({ type: USER_TEAM_SUCCESS, payload: response.data })
+            } else {
+                dispatch({ type: USER_TEAM_FAIL, payload: response.data })
+            }
+
+        } catch (error) {
+            dispatch({ type: USER_TEAM_FAIL, payload: error.response })
+        }
     }
 
 }

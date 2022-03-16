@@ -398,7 +398,7 @@ export default function UsersPage() {
       title: 'Role'
     },
     {
-      field: 'roles.accessLevel',
+      field: 'accessLevel',
       title: 'Access Level'
     },
     {

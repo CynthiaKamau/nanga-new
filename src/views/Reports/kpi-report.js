@@ -151,6 +151,8 @@ export default function KPIReport() {
             supportRequired: support_required
         });
 
+        console.log("kpi update body", body);
+
         try {
 
             let response = await axios.post('/kpi/update', body, config)
@@ -438,7 +440,7 @@ export default function KPIReport() {
                     dispatch(getKpis(currentUser.id))
                   });
               }
-      } catch (error) {
+        } catch (error) {
           let err = error.response.data.message
           setshowloader(false);
           swal.fire({
@@ -451,8 +453,8 @@ export default function KPIReport() {
             setYear("");
             dispatch(getKpis(currentUser.id))
           });
-      } 
-      }
+        } 
+    }
 
     // const kpiSnapshotData = async(e) => {
     //   e.preventDefault();
@@ -548,7 +550,7 @@ export default function KPIReport() {
           </TextField>
 
           <Button color="primary" onClick={filterKpiData}>Filter</Button> 
-      </Grid>   
+        </Grid>   
       <GridItem xs={12} sm={12} md={12}>
             <Card>
               <CardHeader color="primary">

@@ -11,6 +11,10 @@ import {
     USER_FETCH_REQUEST,
     USER_FAIL,
 
+    USER_TEAM_SUCCESS,
+    USER_TEAM_FETCH_REQUEST,
+    USER_TEAM_FAIL,
+
     ADD_USER_SUCCESS,
     ADD_USER_FETCH_REQUEST,
     ADD_USER_FAIL,
@@ -27,6 +31,8 @@ import {
 const initialState = {
     items: [],
     sys_resources: [],
+    user_teamates: [],
+    user_teamates_error: [],
     item: [],
     error: [],
     isLoading: false
@@ -40,6 +46,7 @@ export default function (state = initialState, action) {
         case ADD_USER_FETCH_REQUEST:
         case EDIT_USER_FETCH_REQUEST:
         case DELETE_USER_FETCH_REQUEST:
+        case USER_TEAM_FETCH_REQUEST:
             return {
                 ...state,
                 isLoading: true
@@ -51,6 +58,14 @@ export default function (state = initialState, action) {
                 items: action.payload,
                 isLoading: false,
                 error: null
+            }
+
+        case USER_TEAM_SUCCESS:
+            return {
+                ...state,
+                user_teamates: action.payload,
+                isLoading: false,
+                user_teamates_error: null
             }
 
         case ALL_RESOURCE_USERS_SUCCESS:
@@ -78,6 +93,14 @@ export default function (state = initialState, action) {
                 isLoading: false,
                 items: null,
                 error: action.payload.message
+            }
+
+        case USER_TEAM_FAIL:
+            return {
+                ...state,
+                isLoading: false,
+                user_teamates: null,
+                user_teamates_error: action.payload.message
             }
 
         case ALL_RESOURCE_USERS_FAIL:

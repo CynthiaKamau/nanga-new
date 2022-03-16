@@ -12,7 +12,7 @@ import CardBody from "components/Card/CardBody.js";
 import { ArrowForward } from "@material-ui/icons";
 import IconButton from '@material-ui/core/Button';
 import { useHistory } from "react-router";
-import { getUsers } from "actions/users";
+import { getUserTeamates } from "actions/users";
 import MaterialTable from 'material-table';
 
 import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
@@ -24,11 +24,11 @@ export default function MyTeamPage() {
     const history = useHistory();
     const dispatch = useDispatch();
 
-    const { items } = useSelector(state => state.user)
+    const { user_teamates : items } = useSelector(state => state.user)
     const { user : currentUser } = useSelector(state => state.auth);
     
     useEffect(() => {
-        dispatch(getUsers())
+        dispatch(getUserTeamates(currentUser.id))
     }, []);
 
     console.log("team members", items)
