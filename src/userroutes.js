@@ -1,6 +1,6 @@
 // import UsersPage from "views/Users/Users";
 // import TeamsPage from "views/Teams/Teams.js";
-// import MyTeamPage from "views/Teams/MyTeam";
+import MyTeamPage from "views/Teams/MyTeam";
 import Objectives from "@material-ui/icons/DoneAll";
 import DashboardPage from "views/Dashboard/Dashboard.js";
 import AssignedTasksPage from "views/Tasks/AssignedTasksPage";
@@ -20,7 +20,7 @@ import BFC from "views/BFC/Bfc";
 // @material-ui/icons
 import DashboardIcon from "@material-ui/icons/Dashboard";
 import DateRange from "@material-ui/icons/DateRange";
-// import MyTeamIcon from "@material-ui/icons/PeopleAltRounded";
+import MyTeamIcon from "@material-ui/icons/PeopleAltRounded";
 // import PersonAdd from "@material-ui/icons/PersonAdd";
 import { PersonOutline} from "@material-ui/icons";
 import VerticalAlignCenterIcon from '@material-ui/icons/VerticalAlignCenter';
@@ -76,6 +76,24 @@ var dashRoutes = [
   //   component: UsersPage,
   //   layout: "/user",
   // },
+  {
+    collapse: true,
+    name: "Teams",
+    rtlName: "صفحات",
+    icon: MyTeamIcon,
+    state: "pageCollapse",
+    views: [
+      {
+        path: "/admin-team",
+        name: "My Team",
+        rtlName: "عالتسعير",
+        mini: "TM",
+        rtlMini: "ع",
+        component: MyTeamPage,
+        layout: "/admin",
+      },
+    ],
+  },
   {
     path: "/user-profile",
     name: "User Profile",
