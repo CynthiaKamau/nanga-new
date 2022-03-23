@@ -114,7 +114,7 @@ export default function AllAssignedTasksPage() {
                 setAddOpen(false)
                 swal.fire({
                     title: "Success",
-                    text: "Task added successfully!",
+                    text: "MAS updated successfully!",
                     icon: "success",
                 }).then(() => {
                     setReason("")
