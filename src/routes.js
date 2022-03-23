@@ -15,6 +15,7 @@ import ObjectiveReport from "views/Reports/objective-report";
 import KPIReport from "views/Reports/kpi-report";
 import WeeklyReport from "views/Reports/weekly-report";
 import UserReportDashboard from "views/Reports/user-report"
+import AllAssignedTasksPage from "views/Tasks/AllAssignedTasksPage";
 
 import BFC from "views/BFC/Bfc";
 
@@ -25,6 +26,8 @@ import MyTeamIcon from "@material-ui/icons/PeopleAltRounded";
 import PersonAdd from "@material-ui/icons/PersonAdd";
 import { PersonOutline} from "@material-ui/icons";
 import VerticalAlignCenterIcon from '@material-ui/icons/VerticalAlignCenter';
+import PlaylistAddCheckCircleIcon from '@material-ui/icons/PlaylistAddCheckOutlined';
+import Sync from '@material-ui/icons/Sync';
 import { Poll } from "@material-ui/icons";
 
 
@@ -97,13 +100,30 @@ var dashRoutes = [
     layout: "/admin",
   },
   {
-    path: "/shared-tasks",
-    name: "Assigned MAS",
+    collapse: true,
+    name: "MAS",
     rtlName: "صفحات",
-    icon: DateRange,
-    component: AssignedTasksPage,
-    layout: "/admin",
-  },
+    icon: PlaylistAddCheckCircleIcon,
+    state: "tablesCollapse",
+    views: [
+      {
+        path: "/shared-tasks",
+        name: "Assigned MAS",
+        rtlName: "صفحات",
+        icon: DateRange,
+        component: AssignedTasksPage,
+        layout: "/admin",
+      },
+      {
+        path: "/all-assigned-tasks",
+        name: "All Assigned MAS",
+        rtlName: "صفحات",
+        icon: Sync,
+        component: AllAssignedTasksPage,
+        layout: "/admin",
+      },
+    ]
+  }, 
   {
     collapse: true,
     name: "Reports",

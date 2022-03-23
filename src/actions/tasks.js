@@ -10,6 +10,10 @@ import {
     ALL_ASSIGNED_TASKS_FAIL,
     ALL_ASSIGNED_TASKS_FETCH_REQUEST,
 
+    ALL_UNASSIGNED_TASKS_SUCCESS,
+    ALL_UNASSIGNED_TASKS_FAIL,
+    ALL_UNASSIGNED_TASKS_FETCH_REQUEST,
+
     TASK_SUCCESS,
     TASK_FAIL,
     TASK_FETCH_REQUEST,
@@ -48,6 +52,28 @@ export const getTasks = (id) => {
             console.log("error2",error.response.data)
 
             dispatch({ type: ALL_TASKS_FAIL, payload: error.response.data })
+        }
+    }
+}
+
+export const getUnassignedTasks = (id) => {
+
+    return async function (dispatch) {
+
+        dispatch({ type: ALL_UNASSIGNED_TASKS_FETCH_REQUEST });
+
+        try {
+
+            let response = await axios.get(`/assignedtasks/fetchTasksToAcceptReject?user_id=${id}`)
+            if (response.status == 200) {
+                dispatch({ type: ALL_UNASSIGNED_TASKS_SUCCESS, payload: response.data})
+            } else {
+                console.log("error1",response.data)
+                dispatch({ type: ALL_UNASSIGNED_TASKS_FAIL, payload: response.data })
+            }
+
+        } catch (error) {
+            dispatch({ type: ALL_UNASSIGNED_TASKS_FAIL, payload: error.response.data })
         }
     }
 }
