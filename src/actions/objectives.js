@@ -28,7 +28,11 @@ import {
 
     OBJECTIVES_MONTH_ACTION_SUCCESS,
     OBJECTIVES_MONTH_ACTION_FETCH_REQUEST,
-    OBJECTIVES_MONTH_ACTION_FAIL
+    OBJECTIVES_MONTH_ACTION_FAIL,
+
+    OBJECTIVES_MONTH_REPORT_SUCCESS,
+    OBJECTIVES_MONTH_REPORT_FETCH_REQUEST,
+    OBJECTIVES_MONTH_REPORT_FAIL
 
 } from '../actions/types';
 
@@ -198,6 +202,30 @@ export const getOMonthlyActions = (id) => {
 
         } catch (error) {
             dispatch({ type: OBJECTIVES_MONTH_ACTION_FAIL, payload: error.response })
+        }
+    }
+
+}
+
+//get monthly report
+export const getOMonthlyReport = (user_id, month, year) => {
+
+    let report_name = `${month + year + 'Report'}`;
+
+    return async function (dispatch) {
+
+        dispatch({ type: OBJECTIVES_MONTH_REPORT_FETCH_REQUEST });
+
+        try {
+            let response = await axios.get(`/objectivesReports/filterObjectivesReport?user_id=${user_id}&reportName=${report_name}`)
+            if (response.status == 200) {
+                dispatch({ type: OBJECTIVES_MONTH_REPORT_SUCCESS, payload: response.dataresponse.data.data[0].objectivesReports })
+            } else {
+                dispatch({ type: OBJECTIVES_MONTH_REPORT_FAIL, payload: response.data })
+            }
+
+        } catch (error) {
+            dispatch({ type: OBJECTIVES_MONTH_REPORT_FAIL, payload: error.response })
         }
     }
 

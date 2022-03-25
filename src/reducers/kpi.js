@@ -21,7 +21,11 @@ import {
 
     KPI_MONTH_ACTION_SUCCESS,
     KPI_MONTH_ACTION_FETCH_REQUEST,
-    KPI_MONTH_ACTION_FAIL
+    KPI_MONTH_ACTION_FAIL,
+
+    KPI_MONTH_REPORT_SUCCESS,
+    KPI_MONTH_REPORT_FETCH_REQUEST,
+    KPI_MONTH_REPORT_FAIL
 
 } from '../actions/types';
 
@@ -31,6 +35,8 @@ const initialState = {
     error : [],
     monthly_data : [],
     monthly_data_error : [],
+    monthly_report : [],
+    monthly_report_error : [],
     isLoading : false
 }
 
@@ -42,6 +48,7 @@ export default function(state = initialState, action) {
         case EDIT_KPI_FETCH_REQUEST :
         case DELETE_KPI_FETCH_REQUEST :
         case KPI_MONTH_ACTION_FETCH_REQUEST :
+        case KPI_MONTH_REPORT_FETCH_REQUEST :
             return {
                 ...state,
                 isLoading: true
@@ -63,6 +70,14 @@ export default function(state = initialState, action) {
                 monthly_data_error : null
             }
 
+        case KPI_MONTH_REPORT_SUCCESS :
+            return {
+                ...state,
+                monthly_report : action.payload,
+                isLoading : false,
+                monthly_report_error : null
+            }
+
         case KPI_SUCCESS :
         case ADD_KPI_SUCCESS :
         case EDIT_KPI_SUCCESS :
@@ -80,6 +95,14 @@ export default function(state = initialState, action) {
                 isLoading: false,
                 monthly_data : null,
                 monthly_data_error: action.payload.message
+            }
+
+        case KPI_MONTH_REPORT_FAIL :
+            return {
+                ...state,
+                isLoading: false,
+                monthly_report : null,
+                monthly_report_error: action.payload.message
             }
 
         case ALL_KPIS_FAIL :

@@ -1,6 +1,4 @@
 import axios from 'axios';
-// import { setError } from './error';
-// import { tokenConfig } from './auth';
 import {
     ALL_KPIS_SUCCESS,
     ALL_KPIS_FETCH_REQUEST,
@@ -24,7 +22,11 @@ import {
 
     KPI_MONTH_ACTION_SUCCESS,
     KPI_MONTH_ACTION_FETCH_REQUEST,
-    KPI_MONTH_ACTION_FAIL
+    KPI_MONTH_ACTION_FAIL,
+
+    KPI_MONTH_REPORT_SUCCESS,
+    KPI_MONTH_REPORT_FETCH_REQUEST,
+    KPI_MONTH_REPORT_FAIL
 
 } from '../actions/types';
 
@@ -185,5 +187,28 @@ export const getKMonthlyActions = (id) => {
 
 }
 
+//get monthly report
+export const getKMonthlyReport = (user_id, month, year) => {
+
+    let report_name = `${month + year + 'Report'}`;
+
+    return async function (dispatch) {
+
+        dispatch({ type: KPI_MONTH_REPORT_FETCH_REQUEST });
+
+        try {
+            let response = await axios.get(`/kpiReports/filterKpiReport?user_id=${user_id}&reportName=${report_name}`)
+            if (response.status == 200) {
+                dispatch({ type: KPI_MONTH_REPORT_SUCCESS, payload: response.data.data[0].kpiReports })
+            } else {
+                dispatch({ type: KPI_MONTH_REPORT_FAIL, payload: response.data })
+            }
+
+        } catch (error) {
+            dispatch({ type: KPI_MONTH_REPORT_FAIL, payload: error.response })
+        }
+    }
+
+}
 
 

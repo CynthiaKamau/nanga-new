@@ -25,7 +25,11 @@ import {
 
     OBJECTIVES_MONTH_ACTION_SUCCESS,
     OBJECTIVES_MONTH_ACTION_FETCH_REQUEST,
-    OBJECTIVES_MONTH_ACTION_FAIL
+    OBJECTIVES_MONTH_ACTION_FAIL,
+
+    OBJECTIVES_MONTH_REPORT_SUCCESS,
+    OBJECTIVES_MONTH_REPORT_FETCH_REQUEST,
+    OBJECTIVES_MONTH_REPORT_FAIL
 
 } from '../actions/types';
 
@@ -36,6 +40,8 @@ const initialState = {
     error : [],
     monthly_data : [],
     monthly_data_error : [],
+    monthly_report : [],
+    monthly_report_error : [],
     isLoading : false
 }
 
@@ -48,6 +54,7 @@ export default function(state = initialState, action) {
         case DELETE_OBJECTIVE_FETCH_REQUEST :
         case OBJECTIVE_TASKS_FETCH_REQUEST :
         case OBJECTIVES_MONTH_ACTION_FETCH_REQUEST :
+        case OBJECTIVES_MONTH_REPORT_FETCH_REQUEST :
             return {
                 ...state,
                 isLoading: true
@@ -78,6 +85,14 @@ export default function(state = initialState, action) {
                 isLoading : false,
                 monthly_data_error : null
             }
+
+        case OBJECTIVES_MONTH_REPORT_SUCCESS :
+            return {
+                ...state,
+                monthly_data : action.payload,
+                isLoading : false,
+                monthly_data_error : null
+            }
         
         case ADD_OBJECTIVE_SUCCESS :
         case EDIT_OBJECTIVE_SUCCESS :
@@ -97,6 +112,14 @@ export default function(state = initialState, action) {
             }
 
         case OBJECTIVES_MONTH_ACTION_FAIL :
+            return {
+                ...state,
+                isLoading: false,
+                monthly_data : null,
+                monthly_data_error: action.payload.message
+            }
+
+        case OBJECTIVES_MONTH_REPORT_FAIL :
             return {
                 ...state,
                 isLoading: false,

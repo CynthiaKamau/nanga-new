@@ -23,9 +23,8 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import TextField from "@material-ui/core/TextField";
 import swal from "sweetalert2";
 import Loader from "react-loader-spinner";
-import { getUserObjectives, getOMonthlyActions } from "actions/objectives";
+import { getOMonthlyReport, getOMonthlyActions } from "actions/objectives";
 import { getCategories, getPillars } from "actions/data";
-import { getKpis } from "actions/kpis";
 import { Grid, CardContent } from "@material-ui/core";
 import axios from "axios";
 import FiberManualRecord from "@material-ui/icons/FiberManualRecord";
@@ -39,45 +38,46 @@ export default function ObjectiveReport() {
   const classes = useStyles();
   const dispatch = useDispatch();
 
-  const { items, item, monthly_data, monthly_data_error } = useSelector(
+  const { monthly_report, monthly_report_error, monthly_data, monthly_data_error } = useSelector(
     (state) => state.objective
   );
   const { user: currentUser } = useSelector((state) => state.auth);
   const months = JsonData.Months;
   const years = JsonData.Years;
 
-  console.log("objective", item, setCreatedBy);
   console.log("monthly obj", monthly_data, monthly_data_error);
+  console.log("monthly kpi report", monthly_report, monthly_report_error);
 
   const [monthlyaction, setMonthlyAction] = useState("");
   const [monthly_risks, setMonthlyRisks] = useState("");
   const [monthly_next_actions, setMonthlyNextActions] = useState("");
 
-  // var m_names = [
-  //   "JAN",
-  //   "FEB",
-  //   "MAR",
-  //   "APR",
-  //   "MAY",
-  //   "JUN",
-  //   "JUL",
-  //   "AUG",
-  //   "SEP",
-  //   "OCT",
-  //   "NOV",
-  //   "DEC",
-  // ];
+  var m_names = [
+    "JAN",
+    "FEB",
+    "MAR",
+    "APR",
+    "MAY",
+    "JUN",
+    "JUL",
+    "AUG",
+    "SEP",
+    "OCT",
+    "NOV",
+    "DEC",
+  ];
 
-  // var d = new Date();
-  // var m = m_names[d.getMonth()];
-  // var y = d.getFullYear();
+  var d = new Date();
+  var m = m_names[d.getMonth()];
+  var y = d.getFullYear();
 
-  // console.log("year month", m, y);
+  console.log("year month", m, y);
+  console.log("monthly obj report", monthly_report, monthly_report_error);
 
   useEffect(() => {
-    dispatch(getUserObjectives(currentUser.id));
+    dispatch(getOMonthlyReport(created_by, m, y));
     dispatch(getCategories());
-    dispatch(getKpis(currentUser.id));
+    dispatch(getOMonthlyReport(currentUser.id));
     dispatch(getPillars());
     dispatch(getOMonthlyActions(currentUser.id));
   }, []);
@@ -99,6 +99,7 @@ export default function ObjectiveReport() {
   const [target, setTarget] = useState("");
   const [target_achieved_on_review, setTargetAtReview] = useState("");
   const [showloader, setshowloader] = useState(false);
+  const [showSnapshotLoader, setShowSnapshotLoader] = useState(false);  
   const [id, setId] = useState("");
   const [created_by, setCreatedBy] = useState(currentUser.id);
   const [updated_by, setUpdatedBy] = useState(currentUser.id);
@@ -115,6 +116,8 @@ export default function ObjectiveReport() {
   const [month, setMonth] = useState("");
   const [filteryear, setFilterYear] = useState("");
   const [is_primary, setIsPrimary] = useState("");
+  const [snapshot_month, setSnapshotMonth] = useState("");
+  const [snapshot_year, setSnapshotYear] = useState("");
 
   const handleEditClickOpen = () => {
     setEditOpen(true);
@@ -213,7 +216,7 @@ export default function ObjectiveReport() {
             setPrioritiesForQuarter("");
             setAction("");
             setSupportRequired("");
-            dispatch(getUserObjectives(currentUser.id));
+            dispatch(getOMonthlyReport(currentUser.id));
           });
       } else {
         let error = response.data.message;
@@ -337,7 +340,7 @@ export default function ObjectiveReport() {
       userId: created_by,
     });
 
-    console.log("body", body)
+    console.log("body", body, setCreatedBy)
 
     try {
       let response = await axios.post(
@@ -386,10 +389,10 @@ export default function ObjectiveReport() {
     e.preventDefault();
     setshowloader(true);
 
+    let report_name = `${month + year + 'Report'}`;
+
     try {
-      let response = await axios.get(
-        `/objectivesReports/filterObjectivesReport?user_id=${created_by}&month=${month}&year=${filteryear}`
-      );
+      let response = await axios.get(`/objectivesReports/filterObjectivesReport?user_id=${user_id}&reportName=${report_name}`)
       if (response.status == 200) {
         setshowloader(false);
         let item = response.data.message;
@@ -403,7 +406,7 @@ export default function ObjectiveReport() {
           .then(() => {
             setMonth("");
             setFilterYear("");
-            dispatch(getKpis(currentUser.id));
+            dispatch(getOMonthlyReport(created_by, month, filteryear));
           });
       } else {
         let error = response.data.message;
@@ -418,7 +421,7 @@ export default function ObjectiveReport() {
           .then(() => {
             setMonth("");
             setFilterYear("");
-            dispatch(getKpis(currentUser.id));
+            dispatch(getOMonthlyReport(created_by, month, filteryear));
           });
       }
     } catch (error) {
@@ -434,14 +437,140 @@ export default function ObjectiveReport() {
         .then(() => {
           setMonth("");
           setFilterYear("");
-          dispatch(getKpis(currentUser.id));
+          dispatch(getOMonthlyReport(created_by, month, filteryear));
         });
     }
   };
 
+  const objSnapshotSave = async(e) => {
+    e.preventDefault();
+    setShowSnapshotLoader(true);
+
+    const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
+
+    const body = JSON.stringify({
+      year: snapshot_year,
+      month: snapshot_month,
+      userId: created_by
+    })
+
+    console.log("body here", body)
+
+    try {
+
+      let response = await axios.post(`/objectivesReports/snapshot`, body, config)
+          if (response.status == 201) {
+              setShowSnapshotLoader(false);
+              let item = response.data.message
+              console.log("here", item)
+              swal.fire({
+                  title: "Success",
+                  text: item,
+                  icon: "success",
+              }).then(() => {
+                setSnapshotMonth("")
+                setSnapshotYear("")
+              });
+
+          } else {
+              let error = response.data.message
+              setShowSnapshotLoader(false);
+              swal.fire({
+                  title: "Error",
+                  text: error,
+                  icon: "error",
+                  dangerMode: true
+              }).then(() => {
+                setSnapshotMonth("")
+                setSnapshotYear("")
+              });
+
+          }
+    } catch (error) {
+        let err = error.response.data.message
+        setShowSnapshotLoader(false);
+        swal.fire({
+            title: "Error",
+            text: err,
+            icon: "error",
+            dangerMode: true
+        }).then(() => {
+          setSnapshotMonth("")
+          setSnapshotYear("")
+        });
+
+    } 
+  }
+
+
   return (
     <div>
       <GridContainer>
+        <h4> Create Report Snapshot</h4>
+        <Grid container spacing={1} style={{backgroundColor : 'white', padding: '1rem', margin: '1rem', borderRadius: '20px'}}>
+          <Grid  item xs={4} lg={4} xl={4} sm={12} >
+            <TextField
+                id="outlined-select-month"
+                select
+                required
+                fullWidth
+                variant="outlined"
+                label="Snapshot Month"
+                className={classes.textInput}
+                value={snapshot_month}
+                onChange={(event) => {
+                setSnapshotMonth(event.target.value);
+                }}
+              >
+              {months &&
+              months.map((option) => (
+                  <MenuItem key={option.abbreviation} value={option.abbreviation}>
+                  {option.name}
+                  </MenuItem>
+              ))}
+            </TextField>
+          </Grid>
+
+          <Grid item xs={4} lg={4} xl={4} sm={12} >  
+            <TextField
+              id="outlined-select-year"
+              select
+              required
+              fullWidth
+              variant="outlined"
+              label="Snapshot Year"
+              className={classes.textInput}
+              value={snapshot_year}
+              onChange={(event) => {
+                setSnapshotYear(event.target.value);
+              }}
+            >
+              {years &&
+                years.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.name}
+                  </MenuItem>
+                ))}
+            </TextField>
+          </Grid> 
+
+          <Grid item xs={4} lg={4} xl={4} sm={12} > 
+            { showSnapshotLoader === true ? (
+              <div style={{ textAlign: "center", marginTop: 10 }}>
+              <Loader
+                  type="Puff"
+                  color="#29A15B"
+                  height={100}
+                  width={100}
+              />
+              </div>
+              ) :
+              (  
+                <Button color="primary" size="lg" onClick={objSnapshotSave}>SAVE</Button>
+              )}  
+          </Grid>        
+        </Grid>
+        
         <Grid
           container
           spacing={1}
@@ -503,10 +632,10 @@ export default function ObjectiveReport() {
             <CardBody>
               {/* <div className={classes.btnRight}><Button color="primary" size="lg" onClick={handleAddClickOpen}> Add KPI </Button> </div> */}
 
-              {items !== null ? (
+              {monthly_report !== null ? (
                 <MaterialTable
                   title="Strategic Objective Reports."
-                  data={items}
+                  data={monthly_report}
                   columns={columns}
                   options={{
                     search: true,
