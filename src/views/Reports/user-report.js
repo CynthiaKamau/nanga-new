@@ -8,9 +8,9 @@ import GridContainer from "components/Grid/GridContainer.js";
 import Card from "components/Card/Card.js";
 import CardHeader from "components/Card/CardHeader.js";
 import CardBody from "components/Card/CardBody.js";
-import { getUserObjectives, getOMonthlyActions } from "actions/objectives";
+import { getOMonthlyReport, getOMonthlyActions } from "actions/objectives";
 import {  getUserById } from "actions/data";
-import { getKpis, getKMonthlyActions } from "actions/kpis";
+import { getKMonthlyReport, getKMonthlyActions } from "actions/kpis";
 import MaterialTable from 'material-table';
 import FiberManualRecord from "@material-ui/icons/FiberManualRecord";
 import { makeStyles } from "@material-ui/core/styles";
@@ -30,8 +30,8 @@ export default function UserReport() {
     const dispatch = useDispatch();
     const classes = useStyles();
 
-    const { items : kpis, monthly_data : kpi_monthly_data } = useSelector(state => state.kpi);
-    const { items: objectives, monthly_data : objectives_monthly_data } = useSelector(state => state.objective);
+    const { monthly_report : kpis, monthly_data : kpi_monthly_data } = useSelector(state => state.kpi);
+    const { monthly_report : objectives, monthly_data : objectives_monthly_data } = useSelector(state => state.objective);
     const { spec_user } = useSelector(state => state.data);
 
     const str = window.location.pathname;
@@ -54,42 +54,61 @@ export default function UserReport() {
     const [obj_year, setObjYear] = useState("");
 
     const [showloader, setshowloader] = useState(false);
+    const [showObjLoader, setShowObjLoader] = useState(false);
 
     const months = JsonData.Months;
     const years = JsonData.Years;
 
+    var m_names = [
+      "JAN",
+      "FEB",
+      "MAR",
+      "APR",
+      "MAY",
+      "JUN",
+      "JUL",
+      "AUG",
+      "SEP",
+      "OCT",
+      "NOV",
+      "DEC",
+    ];
+  
+    var d = new Date();
+    var m = m_names[d.getMonth()];
+    var y = d.getFullYear();
 
     useEffect(() => {
-        dispatch(getKpis(chars));
-        dispatch(getUserObjectives(chars));
+        dispatch(getKMonthlyReport(chars, m, y));
+        dispatch(getOMonthlyReport(chars, m, y));
         dispatch(getUserById(chars));
         dispatch(getOMonthlyActions(chars));
         dispatch(getKMonthlyActions(chars));
       }, [chars]);
 
-      useEffect(() => {
-        if (objectives_monthly_data && objectives_monthly_data.length >= 1) {
-          setObjMonthlyAction(objectives_monthly_data[0].supportRequired);
-          setObjMonthlyRisks(objectives_monthly_data[0].risk_opportunity);
-          setObjMonthlyNextActions(objectives_monthly_data[0].nextPeriodAction);
-        } else {
-          setObjMonthlyAction("Not available");
-          setObjMonthlyRisks("Not available");
-          setObjMonthlyNextActions("Not available");
-        }
-      }, [objectives_monthly_data]);
+    useEffect(() => {
+      if (objectives_monthly_data && objectives_monthly_data.length >= 1) {
+        setObjMonthlyAction(objectives_monthly_data[0].supportRequired);
+        setObjMonthlyRisks(objectives_monthly_data[0].risk_opportunity);
+        setObjMonthlyNextActions(objectives_monthly_data[0].nextPeriodAction);
+      } else {
+        setObjMonthlyAction("Not available");
+        setObjMonthlyRisks("Not available");
+        setObjMonthlyNextActions("Not available");
+      }
+    }, [objectives_monthly_data]);
 
-      useEffect(() => {
-        if (kpi_monthly_data && kpi_monthly_data.length >= 1) {
-          setKpiMonthlyAction(kpi_monthly_data[0].supportRequired);
-          setKpiMonthlyRisks(kpi_monthly_data[0].risk_opportunity);
-          setKpiMonthlyNextActions(kpi_monthly_data[0].nextPeriodAction);
-        } else {
-          setKpiMonthlyAction("Not available");
-          setKpiMonthlyRisks("Not available");
-          setKpiMonthlyNextActions("Not available");
-        }
-      }, [kpi_monthly_data]);
+    useEffect(() => {
+      if (kpi_monthly_data && kpi_monthly_data.length >= 1) {
+        setKpiMonthlyAction(kpi_monthly_data[0].supportRequired);
+        setKpiMonthlyRisks(kpi_monthly_data[0].risk_opportunity);
+        setKpiMonthlyNextActions(kpi_monthly_data[0].nextPeriodAction);
+      } else {
+        setKpiMonthlyAction("Not available");
+        setKpiMonthlyRisks("Not available");
+        setKpiMonthlyNextActions("Not available");
+      }
+    }, [kpi_monthly_data]);
 
     const kpi_columns = [
         {
@@ -219,9 +238,11 @@ export default function UserReport() {
       e.preventDefault();
       setshowloader(true);
 
+      let report_name = `${kpi_month + kpi_year + 'Report'}`;
+
       try {
 
-        let response = await axios.get(`/kpiReports/filterKpiReport?user_id=${chars}&month=${kpi_month}&year=${kpi_year}`)
+        let response = await axios.get(`/kpiReports/filterKpiReport?user_id=${chars}&reportName=${report_name}`)
             if (response.status == 200) {
                 setshowloader(false);
                 let item = response.data.message;
@@ -232,7 +253,7 @@ export default function UserReport() {
                 }).then(() => {
                   setKpiMonth("");
                   setKpiYear("");
-                  dispatch(getKpis(chars))
+                  dispatch(getKMonthlyReport(chars, kpi_month, kpi_year))
                 });
 
             } else {
@@ -246,7 +267,7 @@ export default function UserReport() {
                 }).then(() => {
                   setKpiMonth("");
                   setKpiYear("");
-                  dispatch(getKpis(chars))
+                  dispatch(getKMonthlyReport(chars, kpi_month, kpi_year))
                 });
             }
       } catch (error) {
@@ -260,21 +281,23 @@ export default function UserReport() {
         }).then(() => {
           setKpiMonth("");
           setKpiYear("");
-          dispatch(getKpis(chars))
+          dispatch(getKMonthlyReport(chars, kpi_month, kpi_year))
         });
       } 
     }
 
     const filterObjData = async (e) => {
       e.preventDefault();
-      setshowloader(true);
+      setShowObjLoader(true);
+
+      let report_name = `${obj_month + obj_year + 'Report'}`;
   
       try {
         let response = await axios.get(
-          `/objectivesReports/filterObjectivesReport?user_id=${chars}&month=${obj_month}&year=${obj_year}`
+          `/objectivesReports/filterObjectivesReport?user_id=${chars}&reportName=${report_name}`
         );
         if (response.status == 200) {
-          setshowloader(false);
+          setShowObjLoader(false);
           let item = response.data.message;
           console.log("here", item);
           swal
@@ -286,11 +309,11 @@ export default function UserReport() {
             .then(() => {
               setObjMonth("");
               setObjYear("");
-              dispatch(getKpis(chars));
+              dispatch(getOMonthlyReport(chars));
             });
         } else {
           let error = response.data.message;
-          setshowloader(false);
+          setShowObjLoader(false);
           swal
             .fire({
               title: "Error",
@@ -301,12 +324,12 @@ export default function UserReport() {
             .then(() => {
               setObjMonth("");
               setObjYear("");
-              dispatch(getKpis(chars));
+              dispatch(getOMonthlyReport(chars));
             });
         }
       } catch (error) {
         let err = error.response.data.message;
-        setshowloader(false);
+        setShowObjLoader(false);
         swal
           .fire({
             title: "Error",
@@ -317,7 +340,7 @@ export default function UserReport() {
           .then(() => {
             setObjMonth("");
             setObjYear("");
-            dispatch(getKpis(chars));
+            dispatch(getOMonthlyReport(chars));
           });
       }
     };
@@ -546,7 +569,7 @@ export default function UserReport() {
                       ))}
                   </TextField>
 
-                  { showloader === true ? (
+                  { showObjLoader === true ? (
                       <div style={{ textAlign: "center", marginTop: 10 }}>
                       <Loader
                           type="Puff"
