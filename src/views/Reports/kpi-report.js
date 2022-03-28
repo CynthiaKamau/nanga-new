@@ -112,6 +112,8 @@ export default function KPIReport() {
     const [filteryear, setFilterYear] = useState("");
     const [snapshot_month, setSnapshotMonth] = useState("");
     const [snapshot_year, setSnapshotYear] = useState("");
+    const [current_month, setCurrentMonth] = useState("");
+    const [current_year, setCurrentYear] = useState("");
 
     const handleEditClickOpen = () => {
         setEditOpen(true);
@@ -136,7 +138,7 @@ export default function KPIReport() {
         e.preventDefault();
         setshowloader(true);
 
-        console.log("primary", is_primary)
+        console.log("primary", is_primary, current_month, current_year)
 
         let new_primary;
 
@@ -191,7 +193,7 @@ export default function KPIReport() {
                         setAction("");
                         setRootCause("")
                         setUpdatedBy(currentUser.id);
-                        dispatch(getKMonthlyReport(currentUser.id))
+                        dispatch(getKMonthlyReport(currentUser.id, month, filteryear))
                     });
                     
             } else {
@@ -215,7 +217,7 @@ export default function KPIReport() {
                         setAction("");
                         setRootCause("")
                         setUpdatedBy(currentUser.id);
-                        dispatch(getKMonthlyReport(currentUser.id))
+                        dispatch(getKMonthlyReport(currentUser.id, month, filteryear))
                     });
             }
         } catch (error) {
@@ -239,7 +241,7 @@ export default function KPIReport() {
                     setAction("");
                     setRootCause("")
                     setUpdatedBy(currentUser.id);
-                    dispatch(getKMonthlyReport(currentUser.id))
+                    dispatch(getKMonthlyReport(currentUser.id, month, filteryear))
             });
         }
     
@@ -429,6 +431,8 @@ export default function KPIReport() {
                   }).then(() => {
                     setMonth("");
                     setFilterYear("");
+                    setCurrentMonth(month);
+                    setCurrentYear(filteryear);
                     dispatch(getKMonthlyReport(created_by, month, filteryear))
                   });
   
@@ -443,6 +447,8 @@ export default function KPIReport() {
                   }).then(() => {
                     setMonth("");
                     setFilterYear("");
+                    setCurrentMonth(month);
+                    setCurrentYear(filteryear);
                     dispatch(getKMonthlyReport(created_by, month, filteryear))
                   });
               }
@@ -457,6 +463,8 @@ export default function KPIReport() {
           }).then(() => {
             setMonth("");
             setFilterYear("");
+            setCurrentMonth(month);
+            setCurrentYear(filteryear);
             dispatch(getKMonthlyReport(created_by, month, filteryear))
           });
         } 

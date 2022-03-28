@@ -49,9 +49,13 @@ export default function UserReport() {
 
     const [kpi_month, setKpiMonth] = useState("");
     const [kpi_year, setKpiYear] = useState("");
+    const [current_kpi_month, setCurrentKpiMonth] = useState("");
+    const [current_kpi_year, setCurrentKpiYear] = useState("");
 
     const [obj_month, setObjMonth] = useState("");
     const [obj_year, setObjYear] = useState("");
+    const [current_obj_month, setCurrentObjMonth] = useState("");
+    const [current_obj_year, setCurrentObjYear] = useState("");
 
     const [showloader, setshowloader] = useState(false);
     const [showObjLoader, setShowObjLoader] = useState(false);
@@ -238,6 +242,8 @@ export default function UserReport() {
       e.preventDefault();
       setshowloader(true);
 
+      console.log("kk", current_kpi_month, current_kpi_year)
+
       let report_name = `${kpi_month + kpi_year + 'Report'}`;
 
       try {
@@ -253,6 +259,8 @@ export default function UserReport() {
                 }).then(() => {
                   setKpiMonth("");
                   setKpiYear("");
+                  setCurrentKpiMonth(kpi_month);
+                  setCurrentKpiYear(kpi_year)
                   dispatch(getKMonthlyReport(chars, kpi_month, kpi_year))
                 });
 
@@ -267,6 +275,8 @@ export default function UserReport() {
                 }).then(() => {
                   setKpiMonth("");
                   setKpiYear("");
+                  setCurrentKpiMonth(kpi_month);
+                  setCurrentKpiYear(kpi_year)
                   dispatch(getKMonthlyReport(chars, kpi_month, kpi_year))
                 });
             }
@@ -281,6 +291,8 @@ export default function UserReport() {
         }).then(() => {
           setKpiMonth("");
           setKpiYear("");
+          setCurrentKpiMonth(kpi_month);
+          setCurrentKpiYear(kpi_year)
           dispatch(getKMonthlyReport(chars, kpi_month, kpi_year))
         });
       } 
@@ -289,6 +301,8 @@ export default function UserReport() {
     const filterObjData = async (e) => {
       e.preventDefault();
       setShowObjLoader(true);
+
+      console.log("dd", current_obj_month, current_obj_year);
 
       let report_name = `${obj_month + obj_year + 'Report'}`;
   
@@ -309,7 +323,9 @@ export default function UserReport() {
             .then(() => {
               setObjMonth("");
               setObjYear("");
-              dispatch(getOMonthlyReport(chars));
+              setCurrentObjMonth(obj_month);
+              setCurrentObjYear(obj_year);
+              dispatch(getOMonthlyReport(chars, obj_month, obj_year));
             });
         } else {
           let error = response.data.message;
@@ -324,7 +340,9 @@ export default function UserReport() {
             .then(() => {
               setObjMonth("");
               setObjYear("");
-              dispatch(getOMonthlyReport(chars));
+              setCurrentObjMonth(obj_month);
+              setCurrentObjYear(obj_year);
+              dispatch(getOMonthlyReport(chars, obj_month, obj_year));
             });
         }
       } catch (error) {
@@ -340,7 +358,9 @@ export default function UserReport() {
           .then(() => {
             setObjMonth("");
             setObjYear("");
-            dispatch(getOMonthlyReport(chars));
+            setCurrentObjMonth(obj_month);
+            setCurrentObjYear(obj_year);
+            dispatch(getOMonthlyReport(chars, obj_month, obj_year));
           });
       }
     };

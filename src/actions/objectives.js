@@ -219,7 +219,7 @@ export const getOMonthlyReport = (user_id, month, year) => {
         try {
             let response = await axios.get(`/objectivesReports/filterObjectivesReport?user_id=${user_id}&reportName=${report_name}`)
             if (response.status == 200) {
-                dispatch({ type: OBJECTIVES_MONTH_REPORT_SUCCESS, payload: response.dataresponse.data.data[0].objectivesReports })
+                dispatch({ type: OBJECTIVES_MONTH_REPORT_SUCCESS, payload: response.data.data.objectivesReports })
             } else {
                 dispatch({ type: OBJECTIVES_MONTH_REPORT_FAIL, payload: response.data })
             }

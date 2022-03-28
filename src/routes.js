@@ -104,7 +104,7 @@ var dashRoutes = [
     name: "MAS",
     rtlName: "صفحات",
     icon: PlaylistAddCheckCircleIcon,
-    state: "tablesCollapse",
+    state: "pageCollapse",
     views: [
       {
         path: "/shared-tasks",
@@ -129,7 +129,7 @@ var dashRoutes = [
     name: "Reports",
     rtlName: "صفحات",
     icon: Poll,
-    state: "tablesCollapse",
+    state: "pageCollapse",
     views: [
       {
         path: "/kpis-report",

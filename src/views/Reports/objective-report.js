@@ -77,7 +77,6 @@ export default function ObjectiveReport() {
   useEffect(() => {
     dispatch(getOMonthlyReport(created_by, m, y));
     dispatch(getCategories());
-    dispatch(getOMonthlyReport(currentUser.id));
     dispatch(getPillars());
     dispatch(getOMonthlyActions(currentUser.id));
   }, []);
@@ -118,6 +117,8 @@ export default function ObjectiveReport() {
   const [is_primary, setIsPrimary] = useState("");
   const [snapshot_month, setSnapshotMonth] = useState("");
   const [snapshot_year, setSnapshotYear] = useState("");
+  const [current_month, setCurrentMonth] = useState("");
+  const [current_year, setCurrentYear] = useState("");
 
   const handleEditClickOpen = () => {
     setEditOpen(true);
@@ -216,7 +217,7 @@ export default function ObjectiveReport() {
             setPrioritiesForQuarter("");
             setAction("");
             setSupportRequired("");
-            dispatch(getOMonthlyReport(currentUser.id));
+            dispatch(getOMonthlyReport(currentUser.id, current_month, current_year));
           });
       } else {
         let error = response.data.message;
@@ -227,6 +228,20 @@ export default function ObjectiveReport() {
           text: error,
           icon: "error",
           dangerMode: true,
+        }).then(() => {
+          setDescription("");
+          setKpiId([]);
+          setId("");
+          setPillarId("");
+          setYear("");
+          setTarget("");
+          setTargetAchieved("");
+          setRootCause("");
+          setRiskAndOpportunity("");
+          setPrioritiesForQuarter("");
+          setAction("");
+          setSupportRequired("");
+          dispatch(getOMonthlyReport(currentUser.id, current_month, current_year));
         });
       }
     } catch (error) {
@@ -238,6 +253,20 @@ export default function ObjectiveReport() {
         text: err,
         icon: "error",
         dangerMode: true,
+      }).then(() => {
+        setDescription("");
+        setKpiId([]);
+        setId("");
+        setPillarId("");
+        setYear("");
+        setTarget("");
+        setTargetAchieved("");
+        setRootCause("");
+        setRiskAndOpportunity("");
+        setPrioritiesForQuarter("");
+        setAction("");
+        setSupportRequired("");
+        dispatch(getOMonthlyReport(currentUser.id, current_month, current_year));
       });
     }
   };
@@ -255,7 +284,6 @@ export default function ObjectiveReport() {
       field: "rag",
       title: "Status",
       render: (list) => {
-        console.log("editing", list)
         if (
           list.objectives.overallStatus === "COMPLETE" ||
           list.objectives.overallStatus === "ON TRACK" ||
@@ -303,6 +331,9 @@ export default function ObjectiveReport() {
     {
       field: "objectives.action",
       title: "Actions To Be Taken",
+      cellStyle: {
+        cellWidth: '15%'
+      }
     },
     {
       field: "",
@@ -389,7 +420,9 @@ export default function ObjectiveReport() {
     e.preventDefault();
     setshowloader(true);
 
-    let report_name = `${month + year + 'Report'}`;
+    console.log(current_month, current_year)
+
+    let report_name = `${month + filteryear + 'Report'}`;
 
     try {
       let response = await axios.get(`/objectivesReports/filterObjectivesReport?user_id=${user_id}&reportName=${report_name}`)
@@ -406,6 +439,8 @@ export default function ObjectiveReport() {
           .then(() => {
             setMonth("");
             setFilterYear("");
+            setCurrentMonth(month);
+            setCurrentYear(filteryear);
             dispatch(getOMonthlyReport(created_by, month, filteryear));
           });
       } else {
@@ -421,6 +456,8 @@ export default function ObjectiveReport() {
           .then(() => {
             setMonth("");
             setFilterYear("");
+            setCurrentMonth(month);
+            setCurrentYear(filteryear);
             dispatch(getOMonthlyReport(created_by, month, filteryear));
           });
       }
@@ -437,6 +474,8 @@ export default function ObjectiveReport() {
         .then(() => {
           setMonth("");
           setFilterYear("");
+          setCurrentMonth(month);
+          setCurrentYear(filteryear);
           dispatch(getOMonthlyReport(created_by, month, filteryear));
         });
     }

@@ -89,9 +89,9 @@ export default function(state = initialState, action) {
         case OBJECTIVES_MONTH_REPORT_SUCCESS :
             return {
                 ...state,
-                monthly_data : action.payload,
+                monthly_report : action.payload,
                 isLoading : false,
-                monthly_data_error : null
+                monthly_report_error: null
             }
         
         case ADD_OBJECTIVE_SUCCESS :
@@ -123,8 +123,8 @@ export default function(state = initialState, action) {
             return {
                 ...state,
                 isLoading: false,
-                monthly_data : null,
-                monthly_data_error: action.payload.message
+                monthly_report : null,
+                monthly_report_error: action.payload.data.message
             }
 
         case OBJECTIVE_TASKS_FAIL :

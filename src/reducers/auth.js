@@ -40,7 +40,6 @@ switch(action.type) {
         }
     case LOGIN_FAIL :
     case AUTH_ERROR :
-        localStorage.removeItem('token');
         return  {
             ...state,
             isAuthenticated: false,
@@ -51,7 +50,6 @@ switch(action.type) {
         }
 
     case LOGOUT :
-        localStorage.removeItem('token');
         return  {
             ...state,
             isAuthenticated: null,
