@@ -38,7 +38,7 @@ export default function ObjectiveReport() {
   const classes = useStyles();
   const dispatch = useDispatch();
 
-  const { monthly_report, monthly_report_error, monthly_data, monthly_data_error } = useSelector(
+  const { monthly_report, monthly_report_name ,monthly_report_error, monthly_data, monthly_data_error } = useSelector(
     (state) => state.objective
   );
   const { user: currentUser } = useSelector((state) => state.auth);
@@ -46,7 +46,7 @@ export default function ObjectiveReport() {
   const years = JsonData.Years;
 
   console.log("monthly obj", monthly_data, monthly_data_error);
-  console.log("monthly kpi report", monthly_report, monthly_report_error);
+  console.log("monthly kpi report", monthly_report, monthly_report_error, monthly_report_name);
 
   const [monthlyaction, setMonthlyAction] = useState("");
   const [monthly_risks, setMonthlyRisks] = useState("");
@@ -192,6 +192,12 @@ export default function ObjectiveReport() {
 
     console.log("test", body, is_primary, setUserId, target_achieved_on_review);
 
+    if (current_month == '' || current_month == undefined || current_month == null) {
+      setCurrentMonth(m);
+    } else if (current_year == ''|| current_year == undefined || current_year == null){
+      setCurrentYear(y)
+    } 
+
     try {
       let response = await axios.post("/objectives/update", body, config);
       if (response.status == 201) {
@@ -217,7 +223,13 @@ export default function ObjectiveReport() {
             setPrioritiesForQuarter("");
             setAction("");
             setSupportRequired("");
-            dispatch(getOMonthlyReport(currentUser.id, current_month, current_year));
+            console.log("current values", current_month, current_year)
+            console.log("true values", m, y )
+            if (current_month == '' || current_month == undefined || current_month == null) {
+              dispatch(getOMonthlyReport(currentUser.id, m, y))
+            } else {
+              dispatch(getOMonthlyReport(currentUser.id, current_month, current_year))
+            } 
           });
       } else {
         let error = response.data.message;
@@ -241,7 +253,11 @@ export default function ObjectiveReport() {
           setPrioritiesForQuarter("");
           setAction("");
           setSupportRequired("");
-          dispatch(getOMonthlyReport(currentUser.id, current_month, current_year));
+          if (current_month == '' || current_month == undefined || current_month == null) {
+            dispatch(getOMonthlyReport(currentUser.id, m, y))
+          } else {
+            dispatch(getOMonthlyReport(currentUser.id, current_month, current_year))
+          } 
         });
       }
     } catch (error) {
@@ -266,7 +282,11 @@ export default function ObjectiveReport() {
         setPrioritiesForQuarter("");
         setAction("");
         setSupportRequired("");
-        dispatch(getOMonthlyReport(currentUser.id, current_month, current_year));
+        if (current_month == '' || current_month == undefined || current_month == null) {
+          dispatch(getOMonthlyReport(currentUser.id, m, y))
+        } else {
+          dispatch(getOMonthlyReport(currentUser.id, current_month, current_year))
+        }
       });
     }
   };
@@ -673,7 +693,7 @@ export default function ObjectiveReport() {
 
               {monthly_report !== null ? (
                 <MaterialTable
-                  title="Strategic Objective Reports."
+                  title={`${"Period : " + monthly_report_name}`}
                   data={monthly_report}
                   columns={columns}
                   options={{
@@ -686,7 +706,7 @@ export default function ObjectiveReport() {
                 />
               ) : (
                 <MaterialTable
-                  title="Strategic Objective Reports."
+                  title={monthly_report_name}
                   data={[]}
                   columns={columns}
                   options={{

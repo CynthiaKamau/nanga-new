@@ -30,8 +30,8 @@ export default function UserReport() {
     const dispatch = useDispatch();
     const classes = useStyles();
 
-    const { monthly_report : kpis, monthly_data : kpi_monthly_data } = useSelector(state => state.kpi);
-    const { monthly_report : objectives, monthly_data : objectives_monthly_data } = useSelector(state => state.objective);
+    const { monthly_report : kpis, monthly_data : kpi_monthly_data, monthly_report_name : kpi_monthly_report_name } = useSelector(state => state.kpi);
+    const { monthly_report : objectives, monthly_data : objectives_monthly_data , monthly_report_name : objectives_monthly_report_name } = useSelector(state => state.objective);
     const { spec_user } = useSelector(state => state.data);
 
     const str = window.location.pathname;
@@ -437,7 +437,7 @@ export default function UserReport() {
 
                 {kpis !== null ? (
                   <MaterialTable
-                  title="KPIs"
+                  title={`${"Period : " + kpi_monthly_report_name}`}
                   data={kpis}
                   columns={kpi_columns}
                   options={{
@@ -606,7 +606,7 @@ export default function UserReport() {
 
                 {objectives !== null ? (
                   <MaterialTable
-                  title="Objectives"
+                  title={`${"Period : " + objectives_monthly_report_name}`}
                   data={objectives}
                   columns={obj_columns}
                   options={{

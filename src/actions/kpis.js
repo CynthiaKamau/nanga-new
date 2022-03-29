@@ -199,7 +199,7 @@ export const getKMonthlyReport = (user_id, month, year) => {
         try {
             let response = await axios.get(`/kpiReports/filterKpiReport?user_id=${user_id}&reportName=${report_name}`)
             if (response.status == 200) {
-                dispatch({ type: KPI_MONTH_REPORT_SUCCESS, payload: response.data.data[0].kpiReports })
+                dispatch({ type: KPI_MONTH_REPORT_SUCCESS, payload: response.data.data[0] })
             } else {
                 dispatch({ type: KPI_MONTH_REPORT_FAIL, payload: response.data })
             }

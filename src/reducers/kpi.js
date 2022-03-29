@@ -37,6 +37,7 @@ const initialState = {
     monthly_data_error : [],
     monthly_report : [],
     monthly_report_error : [],
+    monthly_report_name : [],
     isLoading : false
 }
 
@@ -73,9 +74,10 @@ export default function(state = initialState, action) {
         case KPI_MONTH_REPORT_SUCCESS :
             return {
                 ...state,
-                monthly_report : action.payload,
+                monthly_report : action.payload.kpiReports,
                 isLoading : false,
-                monthly_report_error : null
+                monthly_report_error : null,
+                monthly_report_name : action.payload.reportName
             }
 
         case KPI_SUCCESS :
@@ -102,7 +104,8 @@ export default function(state = initialState, action) {
                 ...state,
                 isLoading: false,
                 monthly_report : null,
-                monthly_report_error: action.payload.message
+                monthly_report_error: action.payload.message,
+                monthly_report_name : null
             }
 
         case ALL_KPIS_FAIL :

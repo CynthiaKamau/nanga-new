@@ -42,7 +42,8 @@ const initialState = {
     monthly_data_error : [],
     monthly_report : [],
     monthly_report_error : [],
-    isLoading : false
+    isLoading : false,
+    monthly_report_name: []
 }
 
 export default function(state = initialState, action) {
@@ -89,9 +90,10 @@ export default function(state = initialState, action) {
         case OBJECTIVES_MONTH_REPORT_SUCCESS :
             return {
                 ...state,
-                monthly_report : action.payload,
+                monthly_report : action.payload.objectivesReports,
                 isLoading : false,
-                monthly_report_error: null
+                monthly_report_error: null,
+                monthly_report_name : action.payload.reportName
             }
         
         case ADD_OBJECTIVE_SUCCESS :
@@ -124,7 +126,8 @@ export default function(state = initialState, action) {
                 ...state,
                 isLoading: false,
                 monthly_report : null,
-                monthly_report_error: action.payload.data.message
+                monthly_report_error: action.payload.data.message,
+                monthly_report_name : null
             }
 
         case OBJECTIVE_TASKS_FAIL :
