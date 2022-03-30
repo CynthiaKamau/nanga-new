@@ -13,6 +13,7 @@ import CardBody from "components/Card/CardBody.js";
 import { makeStyles } from "@material-ui/core/styles";
 // import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from "@material-ui/icons/Edit";
+import MenuItem from "@material-ui/core/MenuItem";
 import IconButton from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
@@ -29,6 +30,7 @@ import axios from "axios";
 import FiberManualRecord from "@material-ui/icons/FiberManualRecord";
 import MaterialTable from "material-table";
 import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
+import JsonData from "../../data/data.json";
 
 const useStyles = makeStyles(styles);
 
@@ -41,8 +43,10 @@ export default function ObjectiveReport() {
     (state) => state.objective
   );
   const { user: currentUser } = useSelector((state) => state.auth);
+  const months = JsonData.Months;
+  const years = JsonData.Years;
 
-  console.log("monthly obj", monthly_data, monthly_data_error);
+  console.log("monthly obj actions", monthly_data, monthly_data_error);
   console.log("monthly kpi report", items, error, );
 
   const [monthlyaction, setMonthlyAction] = useState("");
@@ -68,9 +72,6 @@ export default function ObjectiveReport() {
   var m = m_names[d.getMonth()];
   var y = d.getFullYear();
 
-  console.log("year month", m, y);
-  console.log("monthly obj report", items, error);
-
   useEffect(() => {
     dispatch(getUserObjectives(created_by, m, y));
     dispatch(getCategories());
@@ -88,7 +89,7 @@ export default function ObjectiveReport() {
       setMonthlyRisks("Not available");
       setMonthlyNextActions("Not available");
     }
-  }, []);
+  }, [monthly_data]);
 
   const [editopen, setEditOpen] = useState(false);
   const [description, setDescription] = useState("");
@@ -109,6 +110,11 @@ export default function ObjectiveReport() {
   const [pillar_id, setPillarId] = useState("");
   const [priorities_for_quarter, setPrioritiesForQuarter] = useState("");
   const [is_primary, setIsPrimary] = useState("");
+  const [snapshot_month, setSnapshotMonth] = useState("");
+  const [snapshot_year, setSnapshotYear] = useState("");
+  const [showSnapshotLoader, setShowSnapshotLoader] = useState(false);  
+
+
   const handleEditClickOpen = () => {
     setEditOpen(true);
   };
@@ -405,6 +411,66 @@ export default function ObjectiveReport() {
     }
   };
 
+  const objSnapshotSave = async(e) => {
+    e.preventDefault();
+    setShowSnapshotLoader(true);
+
+    const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
+
+    const body = JSON.stringify({
+      year: snapshot_year,
+      month: snapshot_month,
+      userId: created_by
+    })
+
+    console.log("body here", body)
+
+    try {
+
+      let response = await axios.post(`/objectivesReports/snapshot`, body, config)
+          if (response.status == 201) {
+              setShowSnapshotLoader(false);
+              let item = response.data.message
+              console.log("here", item)
+              swal.fire({
+                  title: "Success",
+                  text: item,
+                  icon: "success",
+              }).then(() => {
+                setSnapshotMonth("")
+                setSnapshotYear("")
+              });
+
+          } else {
+              let error = response.data.message
+              setShowSnapshotLoader(false);
+              swal.fire({
+                  title: "Error",
+                  text: error,
+                  icon: "error",
+                  dangerMode: true
+              }).then(() => {
+                setSnapshotMonth("")
+                setSnapshotYear("")
+              });
+
+          }
+    } catch (error) {
+        let err = error.response.data.message
+        setShowSnapshotLoader(false);
+        swal.fire({
+            title: "Error",
+            text: err,
+            icon: "error",
+            dangerMode: true
+        }).then(() => {
+          setSnapshotMonth("")
+          setSnapshotYear("")
+        });
+
+    } 
+  }
+
   const handleObjSnapshot = () => {
     if(currentUser.role_id === 0) {
       history.push(`/admin/objectives-report/id=${currentUser.id}`)
@@ -416,6 +482,72 @@ export default function ObjectiveReport() {
   return (
     <div>
       <GridContainer>
+
+      <h4> Create Report Snapshot</h4>
+        <Grid container spacing={1} style={{backgroundColor : 'white', padding: '1rem', margin: '1rem', borderRadius: '20px'}}>
+          <Grid  item xs={4} lg={4} xl={4} sm={12} >
+            <TextField
+                id="outlined-select-month"
+                select
+                required
+                fullWidth
+                variant="outlined"
+                label="Snapshot Month"
+                className={classes.textInput}
+                value={snapshot_month}
+                onChange={(event) => {
+                setSnapshotMonth(event.target.value);
+                }}
+              >
+              {months &&
+              months.map((option) => (
+                  <MenuItem key={option.abbreviation} value={option.abbreviation}>
+                  {option.name}
+                  </MenuItem>
+              ))}
+            </TextField>
+          </Grid>
+
+          <Grid item xs={4} lg={4} xl={4} sm={12} >  
+            <TextField
+              id="outlined-select-year"
+              select
+              required
+              fullWidth
+              variant="outlined"
+              label="Snapshot Year"
+              className={classes.textInput}
+              value={snapshot_year}
+              onChange={(event) => {
+                setSnapshotYear(event.target.value);
+              }}
+            >
+              {years &&
+                years.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.name}
+                  </MenuItem>
+                ))}
+            </TextField>
+          </Grid> 
+
+          <Grid item xs={4} lg={4} xl={4} sm={12} > 
+            { showSnapshotLoader === true ? (
+              <div style={{ textAlign: "center", marginTop: 10 }}>
+              <Loader
+                  type="Puff"
+                  color="#29A15B"
+                  height={100}
+                  width={100}
+              />
+              </div>
+              ) :
+              (  
+                <Button variant="contained" size="large" style={{backgroundColor : '#29A15B'}} onClick={objSnapshotSave}>SAVE</Button>
+              )}  
+          </Grid>        
+        </Grid>
+
         <Grid
           container
           spacing={1}

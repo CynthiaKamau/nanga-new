@@ -191,7 +191,7 @@ var dashRoutes = [
     path: "/user-dashboard/:id",
     name: "",
     rtlName: "التقويم",
-    mini: ".",
+    mini: "",
     component: UserDashboard,
     layout: "/user",
   },

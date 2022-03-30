@@ -90,12 +90,11 @@ export default function KPISnapshotReport() {
   }, [monthly_data]);
 
   const [showloader, setshowloader] = useState(false);
-  const [showSnapshotLoader, setShowSnapshotLoader] = useState(false);
   const [month, setMonth] = useState("");
   const [filteryear, setFilterYear] = useState("");
-  const [snapshot_month, setSnapshotMonth] = useState("");
-  const [snapshot_year, setSnapshotYear] = useState("");
   const [created_by, setCreatedBy] = useState(currentUser.id);
+
+  console.log(setCreatedBy);
 
   const columns = [
     {
@@ -282,145 +281,9 @@ export default function KPISnapshotReport() {
     }
   };
 
-  const kpiSnapshotSave = async (e) => {
-    e.preventDefault();
-    setShowSnapshotLoader(true);
-
-    const config = {
-      headers: { "Content-Type": "application/json", Accept: "*/*" },
-    };
-
-    const body = JSON.stringify({
-      year: snapshot_year,
-      month: snapshot_month,
-      userId: created_by,
-    });
-
-    console.log("body here", body, setCreatedBy);
-
-    try {
-      let response = await axios.post(`/kpiReports/snapshot`, body, config);
-      if (response.status == 201) {
-        setShowSnapshotLoader(false);
-        let item = response.data.message;
-        console.log("here", item);
-        swal
-          .fire({
-            title: "Success",
-            text: item,
-            icon: "success",
-          })
-          .then(() => {
-            setSnapshotMonth("");
-            setSnapshotYear("");
-          });
-      } else {
-        let error = response.data.message;
-        setShowSnapshotLoader(false);
-        swal
-          .fire({
-            title: "Error",
-            text: error,
-            icon: "error",
-            dangerMode: true,
-          })
-          .then(() => {
-            setSnapshotMonth("");
-            setSnapshotYear("");
-          });
-      }
-    } catch (error) {
-      let err = error.response.data.message;
-      setShowSnapshotLoader(false);
-      swal
-        .fire({
-          title: "Error",
-          text: err,
-          icon: "error",
-          dangerMode: true,
-        })
-        .then(() => {
-          setSnapshotMonth("");
-          setSnapshotYear("");
-        });
-    }
-  };
-
   return (
     <div>
       <GridContainer>
-        <h4> Create Report Snapshot</h4>
-        <Grid
-          container
-          spacing={1}
-          style={{
-            backgroundColor: "white",
-            padding: "1rem",
-            margin: "1rem",
-            borderRadius: "20px",
-          }}
-        >
-          <Grid item xs={4} lg={4} xl={4} sm={12}>
-            <TextField
-              id="outlined-select-month"
-              select
-              required
-              fullWidth
-              variant="outlined"
-              label="Snapshot Month"
-              className={classes.textInput}
-              value={snapshot_month}
-              onChange={(event) => {
-                setSnapshotMonth(event.target.value);
-              }}
-            >
-              {months &&
-                months.map((option) => (
-                  <MenuItem
-                    key={option.abbreviation}
-                    value={option.abbreviation}
-                  >
-                    {option.name}
-                  </MenuItem>
-                ))}
-            </TextField>
-          </Grid>
-
-          <Grid item xs={4} lg={4} xl={4} sm={12}>
-            <TextField
-              id="outlined-select-year"
-              select
-              required
-              fullWidth
-              variant="outlined"
-              label="Snapshot Year"
-              className={classes.textInput}
-              value={snapshot_year}
-              onChange={(event) => {
-                setSnapshotYear(event.target.value);
-              }}
-            >
-              {years &&
-                years.map((option) => (
-                  <MenuItem key={option.value} value={option.value}>
-                    {option.name}
-                  </MenuItem>
-                ))}
-            </TextField>
-          </Grid>
-
-          <Grid item xs={4} lg={4} xl={4} sm={12}>
-            {showSnapshotLoader === true ? (
-              <div style={{ textAlign: "center", marginTop: 10 }}>
-                <Loader type="Puff" color="#29A15B" height={100} width={100} />
-              </div>
-            ) : (
-              <Button color="primary" size="lg" onClick={kpiSnapshotSave}>
-                SAVE
-              </Button>
-            )}
-          </Grid>
-        </Grid>
 
         <Grid
           container
