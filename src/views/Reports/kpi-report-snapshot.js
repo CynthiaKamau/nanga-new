@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useHistory } from "react-router";
 
 // @material-ui/core
 import { makeStyles } from "@material-ui/core/styles";
 // core components
 import GridItem from "components/Grid/GridItem.js";
 import GridContainer from "components/Grid/GridContainer.js";
+import Button from "components/CustomButtons/Button.js";
 
 import Card from "components/Card/Card.js";
 import CardHeader from "components/Card/CardHeader.js";
@@ -21,43 +21,66 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import TextField from "@material-ui/core/TextField";
-import { getUserKpis, getKMonthlyActions } from "actions/kpis";
+import { getKMonthlyReport, getKMonthlyActions } from "actions/kpis";
 import swal from "sweetalert2";
 import Loader from "react-loader-spinner";
 import axios from "axios";
 import { getCategories } from "actions/data";
 import { Grid } from "@material-ui/core";
 import MaterialTable from "material-table";
-import { CardContent, Icon, Button } from "@material-ui/core";
+import { CardContent } from "@material-ui/core";
+import JsonData from "../../data/data.json";
 
 import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
 
 const useStyles = makeStyles(styles);
 
-export default function KPIReport() {
+export default function KPISnapshotReport() {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const history = useHistory();
 
   const {
-    items,
-    error,
+    monthly_report,
+    monthly_report_error,
+    monthly_report_name,
     monthly_data,
     monthly_data_error,
   } = useSelector((state) => state.kpi);
   const { user: currentUser } = useSelector((state) => state.auth);
   const { categories } = useSelector((state) => state.data);
+  const months = JsonData.Months;
+  const years = JsonData.Years;
+  // const { error : category_error, isLoading : category_loading}  = useSelector(state => state.data);
 
   console.log("categories", categories);
   console.log("monthly kpi actions", monthly_data, monthly_data_error);
-  console.log("kpi data", items, error);
+  console.log("monthly kpi report", monthly_report, monthly_report_name, monthly_report_error);
+
+  var m_names = [
+    "JAN",
+    "FEB",
+    "MAR",
+    "APR",
+    "MAY",
+    "JUN",
+    "JUL",
+    "AUG",
+    "SEP",
+    "OCT",
+    "NOV",
+    "DEC",
+  ];
+
+  var d = new Date();
+  var m = m_names[d.getMonth()];
+  var y = d.getFullYear();
 
   const [monthlyaction, setMonthlyAction] = useState("");
   const [monthly_risks, setMonthlyRisks] = useState("");
   const [monthly_next_actions, setMonthlyNextActions] = useState("");
 
   useEffect(() => {
-    dispatch(getUserKpis(created_by));
+    dispatch(getKMonthlyReport(created_by, m, y));
     dispatch(getCategories());
     dispatch(getKMonthlyActions(currentUser.id));
   }, []);
@@ -80,6 +103,7 @@ export default function KPIReport() {
   const [uom, setUnitOfMeasure] = useState("");
   const [category, setCategory] = useState("");
   const [showloader, setshowloader] = useState(false);
+  const [showSnapshotLoader, setShowSnapshotLoader] = useState(false);
   const [id, setId] = useState("");
   const [created_by, setCreatedBy] = useState(currentUser.id);
   const [updated_by, setUpdatedBy] = useState(currentUser.id);
@@ -91,6 +115,12 @@ export default function KPIReport() {
   const [support_required, setSupportRequired] = useState("");
   const [root_cause, setRootCause] = useState("");
   const [is_primary, setIsPrimary] = useState("");
+  const [month, setMonth] = useState("");
+  const [filteryear, setFilterYear] = useState("");
+  const [snapshot_month, setSnapshotMonth] = useState("");
+  const [snapshot_year, setSnapshotYear] = useState("");
+  const [current_month, setCurrentMonth] = useState("");
+  const [current_year, setCurrentYear] = useState("");
 
   const handleEditClickOpen = () => {
     setEditOpen(true);
@@ -115,7 +145,7 @@ export default function KPIReport() {
     e.preventDefault();
     setshowloader(true);
 
-    console.log("primary", is_primary);
+    console.log("primary", is_primary, current_month, current_year);
 
     let new_primary;
 
@@ -163,6 +193,22 @@ export default function KPIReport() {
       supportRequired: support_required,
     });
 
+    console.log("kpi update body", body);
+
+    if (
+      current_month == "" ||
+      current_month == undefined ||
+      current_month == null
+    ) {
+      setCurrentMonth(m);
+    } else if (
+      current_year == "" ||
+      current_year == undefined ||
+      current_year == null
+    ) {
+      setCurrentYear(y);
+    }
+
     try {
       let response = await axios.post("/kpi/update", body, config);
       if (response.status == 200) {
@@ -187,7 +233,19 @@ export default function KPIReport() {
             setAction("");
             setRootCause("");
             setUpdatedBy(currentUser.id);
-            dispatch(getUserKpis(currentUser.id));
+
+            console.log("current values", current_month, current_year);
+            console.log("true values", m, y);
+            if (
+              current_month == "" ||
+              current_month == undefined ||
+              current_month == null ||
+              current_year == '' || current_year == undefined || current_year == null
+            ) {
+              dispatch(getKMonthlyReport(currentUser.id, m, y));
+            } else {
+              dispatch(getKMonthlyReport(currentUser.id, current_month, current_year));
+            }
           });
       } else {
         let error = response.data.message;
@@ -212,7 +270,16 @@ export default function KPIReport() {
             setAction("");
             setRootCause("");
             setUpdatedBy(currentUser.id);
-            dispatch(getUserKpis(currentUser.id));
+            if (
+              current_month == "" ||
+              current_month == undefined ||
+              current_month == null ||
+              current_year == '' || current_year == undefined || current_year == null
+            ) { 
+              dispatch(getKMonthlyReport(currentUser.id, m, y));
+            } else {
+              dispatch(getKMonthlyReport(currentUser.id, current_month, current_year));
+            }
           });
       }
     } catch (error) {
@@ -238,7 +305,16 @@ export default function KPIReport() {
           setAction("");
           setRootCause("");
           setUpdatedBy(currentUser.id);
-          dispatch(getUserKpis(currentUser.id));
+          if (
+            current_month == "" ||
+            current_month == undefined ||
+            current_month == null ||
+            current_year == '' || current_year == undefined || current_year == null
+          ) {
+            dispatch(getKMonthlyReport(currentUser.id, m, y));
+            } else {
+              dispatch(getKMonthlyReport(currentUser.id, current_month, current_year));
+            }
         });
     }
   };
@@ -485,26 +561,277 @@ export default function KPIReport() {
     }
   };
 
-  const handleKpiSnapshot = () => {
-    if(currentUser.role_id === 0) {
-      history.push(`/admin/kpi-report/id=${currentUser.id}`)
-    } else {
-      history.push(`/user/kpi-report/id=${currentUser.id}`)
+  const filterKpiData = async (e) => {
+    e.preventDefault();
+    setshowloader(true);
+
+    let report_name = `${month + filteryear + "Report"}`;
+
+    try {
+      let response = await axios.get(
+        `/kpiReports/filterKpiReport?user_id=${created_by}&reportName=${report_name}`
+      );
+      if (response.status == 200) {
+        setshowloader(false);
+        let item = response.data.message;
+        swal
+          .fire({
+            title: "Success",
+            text: item,
+            icon: "success",
+          })
+          .then(() => {
+            setMonth("");
+            setFilterYear("");
+            setCurrentMonth(month);
+            setCurrentYear(filteryear);
+            dispatch(
+              getKMonthlyReport(created_by, month, filteryear)
+            );
+          });
+      } else {
+        let error = response.data.message;
+        setshowloader(false);
+        swal
+          .fire({
+            title: "Error",
+            text: error,
+            icon: "error",
+            dangerMode: true,
+          })
+          .then(() => {
+            setMonth("");
+            setFilterYear("");
+            setCurrentMonth(month);
+            setCurrentYear(filteryear);
+            dispatch(
+              getKMonthlyReport(created_by, month, filteryear)
+            );
+          });
+      }
+    } catch (error) {
+      let err = error.response.data.message;
+      setshowloader(false);
+      swal
+        .fire({
+          title: "Error",
+          text: err,
+          icon: "error",
+          dangerMode: true,
+        })
+        .then(() => {
+          setMonth("");
+          setFilterYear("");
+          setCurrentMonth(month);
+          setCurrentYear(filteryear);
+          dispatch(getKMonthlyReport(created_by, month, filteryear));
+        });
     }
-  }
- 
+  };
+
+  const kpiSnapshotSave = async (e) => {
+    e.preventDefault();
+    setShowSnapshotLoader(true);
+
+    const config = {
+      headers: { "Content-Type": "application/json", Accept: "*/*" },
+    };
+
+    const body = JSON.stringify({
+      year: snapshot_year,
+      month: snapshot_month,
+      userId: created_by,
+    });
+
+    console.log("body here", body);
+
+    try {
+      let response = await axios.post(`/kpiReports/snapshot`, body, config);
+      if (response.status == 201) {
+        setShowSnapshotLoader(false);
+        let item = response.data.message;
+        console.log("here", item);
+        swal
+          .fire({
+            title: "Success",
+            text: item,
+            icon: "success",
+          })
+          .then(() => {
+            setSnapshotMonth("");
+            setSnapshotYear("");
+          });
+      } else {
+        let error = response.data.message;
+        setShowSnapshotLoader(false);
+        swal
+          .fire({
+            title: "Error",
+            text: error,
+            icon: "error",
+            dangerMode: true,
+          })
+          .then(() => {
+            setSnapshotMonth("");
+            setSnapshotYear("");
+          });
+      }
+    } catch (error) {
+      let err = error.response.data.message;
+      setShowSnapshotLoader(false);
+      swal
+        .fire({
+          title: "Error",
+          text: err,
+          icon: "error",
+          dangerMode: true,
+        })
+        .then(() => {
+          setSnapshotMonth("");
+          setSnapshotYear("");
+        });
+    }
+  };
+
   return (
     <div>
       <GridContainer>
+        <h4> Create Report Snapshot</h4>
+        <Grid
+          container
+          spacing={1}
+          style={{
+            backgroundColor: "white",
+            padding: "1rem",
+            margin: "1rem",
+            borderRadius: "20px",
+          }}
+        >
+          <Grid item xs={4} lg={4} xl={4} sm={12}>
+            <TextField
+              id="outlined-select-month"
+              select
+              required
+              fullWidth
+              variant="outlined"
+              label="Snapshot Month"
+              className={classes.textInput}
+              value={snapshot_month}
+              onChange={(event) => {
+                setSnapshotMonth(event.target.value);
+              }}
+            >
+              {months &&
+                months.map((option) => (
+                  <MenuItem
+                    key={option.abbreviation}
+                    value={option.abbreviation}
+                  >
+                    {option.name}
+                  </MenuItem>
+                ))}
+            </TextField>
+          </Grid>
+
+          <Grid item xs={4} lg={4} xl={4} sm={12}>
+            <TextField
+              id="outlined-select-year"
+              select
+              required
+              fullWidth
+              variant="outlined"
+              label="Snapshot Year"
+              className={classes.textInput}
+              value={snapshot_year}
+              onChange={(event) => {
+                setSnapshotYear(event.target.value);
+              }}
+            >
+              {years &&
+                years.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.name}
+                  </MenuItem>
+                ))}
+            </TextField>
+          </Grid>
+
+          <Grid item xs={4} lg={4} xl={4} sm={12}>
+            {showSnapshotLoader === true ? (
+              <div style={{ textAlign: "center", marginTop: 10 }}>
+                <Loader type="Puff" color="#29A15B" height={100} width={100} />
+              </div>
+            ) : (
+              <Button color="primary" size="lg" onClick={kpiSnapshotSave}>
+                SAVE
+              </Button>
+            )}
+          </Grid>
+        </Grid>
+
         <Grid
           container
           spacing={1}
           justify="flex-end"
           style={{ margin: "1rem" }}
         >
-            <Button color="primary" style={{backgroundColor : '#29A15B'}} onClick={handleKpiSnapshot} endIcon={<Icon>send</Icon>} variant="contained" >
-                Report Snapshots
-            </Button>
+          <TextField
+            id="outlined-select-month"
+            select
+            required
+            style={{ margin: "1rem", width: "200px" }}
+            variant="outlined"
+            label="Month"
+            className={classes.textInput}
+            value={month}
+            onChange={(event) => {
+              setMonth(event.target.value);
+            }}
+          >
+            {months &&
+              months.map((option) => (
+                <MenuItem key={option.abbreviation} value={option.abbreviation}>
+                  {option.name}
+                </MenuItem>
+              ))}
+          </TextField>
+
+          <TextField
+            id="outlined-select-year"
+            select
+            required
+            style={{ margin: "1rem", width: "200px" }}
+            variant="outlined"
+            label="Year"
+            className={classes.textInput}
+            value={filteryear}
+            onChange={(event) => {
+              setFilterYear(event.target.value);
+            }}
+          >
+            {years &&
+              years.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.name}
+                </MenuItem>
+              ))}
+          </TextField>
+
+          <div style={{ textAlign: "center", marginTop: 10 }}>
+            { showloader === true ? (
+              <div style={{ textAlign: "center", marginTop: 10 }}>
+              <Loader
+                  type="Puff"
+                  color="#29A15B"
+                  height={100}
+                  width={100}
+              />
+              </div>
+              ) :
+              (  
+                <Button color="primary" onClick={filterKpiData}>Filter</Button>
+              )}    
+          </div>
         </Grid>
 
         <GridItem xs={12} sm={12} md={12}>
@@ -513,10 +840,10 @@ export default function KPIReport() {
               <h4>KPIs</h4>
             </CardHeader>
             <CardBody>
-              {items !== null ? (
+              {monthly_report !== null ? (
                 <MaterialTable
-                  title="KPI's"
-                  data={items}
+                  title={`${"Period : " + monthly_report_name}`}
+                  data={monthly_report}
                   columns={columns}
                   options={{
                     search: true,
@@ -528,7 +855,7 @@ export default function KPIReport() {
                 />
               ) : (
                 <MaterialTable
-                  title="KPI's"
+                  title={monthly_report_name}
                   data={[]}
                   columns={columns}
                   options={{
@@ -637,7 +964,8 @@ export default function KPIReport() {
                   </div>
                 ) : (
                   <Button
-                    variant="contained" size="large" style={{backgroundColor : '#29A15B'}}
+                    color="primary"
+                    size="lg"
                     onClick={(e) => {
                       saveMonthlyUpdate(e);
                     }}
@@ -748,7 +1076,7 @@ export default function KPIReport() {
                   />
                 </DialogContent>
                 <DialogActions>
-                  <Button variant="contained" size="large" style={{backgroundColor : '#F44336'}} onClick={handleEditClose}>
+                  <Button color="danger" onClick={handleEditClose}>
                     Cancel
                   </Button>
                   {showloader === true ? (
@@ -762,7 +1090,7 @@ export default function KPIReport() {
                     </div>
                   ) : (
                     <Button
-                      variant="contained" size="large" style={{backgroundColor : '#29A15B'}}
+                      color="primary"
                       onClick={(e) => {
                         handleEditClose();
                         saveEdited(e);
@@ -774,6 +1102,27 @@ export default function KPIReport() {
                 </DialogActions>
               </Dialog>
 
+              {/* <Dialog
+                  open={deleteopen}
+                  onClose={handleDeleteClose}
+                  aria-labelledby="alert-dialog-title"
+                  aria-describedby="alert-dialog-description"
+              >
+                  <DialogTitle id="alert-dialog-title">
+                  {"Are you sure you want to delete the team?"}
+                  </DialogTitle>
+                  <DialogContent>
+                  <DialogContentText id="alert-dialog-description">
+                      Please confirm that you want to delete this KPI.
+                  </DialogContentText>
+                  </DialogContent>
+                  <DialogActions>
+                  <Button color="danger" onClick={handleDeleteClose}>Disagree</Button>
+                  <Button color="primary" onClick={handleDeleteClose} autoFocus>
+                      Agree
+                  </Button>
+                  </DialogActions>
+              </Dialog> */}
             </CardBody>
           </Card>
         </GridItem>

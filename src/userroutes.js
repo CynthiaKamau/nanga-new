@@ -12,9 +12,11 @@ import KPIsPage from "views/KPI/kpi";
 // import MyKpis from "views/KPI/mykpi"; 
 import UserProfile from "views/UserProfile/UserProfile";
 import UserDashboard from "views/Dashboard/UserDashboard";
-import ObjectiveReport from "views/Reports/objective-report";
+import ObjectiveReport from "views/Reports/objectives-report";
 import KPIReport from "views/Reports/kpi-report";
 import WeeklyReport from "views/Reports/weekly-report";
+import KPISnapshotReport from "views/Reports/kpi-report-snapshot";
+import ObjectiveSnapshotReport from "views/Reports/objective-report-snapshot";
 
 import BFC from "views/BFC/Bfc";
 
@@ -114,14 +116,6 @@ var dashRoutes = [
       },
     ],
   },
-  {
-    path: "/user-profile",
-    name: "User Profile",
-    rtlName: "التقويم",
-    icon: PersonOutline,
-    component: UserProfile,
-    layout: "/user",
-  },
   // {
   //   collapse: true,
   //   name: "Teams",
@@ -186,6 +180,14 @@ var dashRoutes = [
     ],
   },
   {
+    path: "/user-profile",
+    name: "User Profile",
+    rtlName: "التقويم",
+    icon: PersonOutline,
+    component: UserProfile,
+    layout: "/user",
+  },
+  {
     path: "/user-dashboard/:id",
     name: "",
     rtlName: "التقويم",
@@ -193,6 +195,22 @@ var dashRoutes = [
     component: UserDashboard,
     layout: "/user",
   },
+  {
+    path: "/kpi-report/:id",
+    name: "",
+    rtlName: "التقويم",
+    mini: "",
+    component: KPISnapshotReport,
+    layout: "/user",
+  },
+  {
+    path: "/objectives-report/:id",
+    name: "",
+    rtlName: "التقويم",
+    mini: "",
+    component: ObjectiveSnapshotReport,
+    layout: "/user",
+  }
 ];
 export default dashRoutes;
 

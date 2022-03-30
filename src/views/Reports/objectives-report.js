@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { useHistory } from "react-router";
 
 // @material-ui/core
 // import { makeStyles } from "@material-ui/core/styles";
 // core components
 import GridItem from "components/Grid/GridItem.js";
 import GridContainer from "components/Grid/GridContainer.js";
-import Button from "components/CustomButtons/Button.js";
 import Card from "components/Card/Card.js";
 import CardHeader from "components/Card/CardHeader.js";
 import CardBody from "components/Card/CardBody.js";
@@ -14,7 +14,6 @@ import { makeStyles } from "@material-ui/core/styles";
 // import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from "@material-ui/icons/Edit";
 import IconButton from "@material-ui/core/Button";
-import MenuItem from "@material-ui/core/MenuItem";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
@@ -23,30 +22,28 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import TextField from "@material-ui/core/TextField";
 import swal from "sweetalert2";
 import Loader from "react-loader-spinner";
-import { getOMonthlyReport, getOMonthlyActions } from "actions/objectives";
+import { getUserObjectives, getOMonthlyActions } from "actions/objectives";
 import { getCategories, getPillars } from "actions/data";
-import { Grid, CardContent } from "@material-ui/core";
+import { Grid, CardContent, Icon, Button } from "@material-ui/core";
 import axios from "axios";
 import FiberManualRecord from "@material-ui/icons/FiberManualRecord";
 import MaterialTable from "material-table";
 import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
-import JsonData from "../../data/data.json";
 
 const useStyles = makeStyles(styles);
 
 export default function ObjectiveReport() {
   const classes = useStyles();
   const dispatch = useDispatch();
+  const history = useHistory();
 
-  const { monthly_report, monthly_report_name ,monthly_report_error, monthly_data, monthly_data_error } = useSelector(
+  const { items, error, monthly_data, monthly_data_error } = useSelector(
     (state) => state.objective
   );
   const { user: currentUser } = useSelector((state) => state.auth);
-  const months = JsonData.Months;
-  const years = JsonData.Years;
 
   console.log("monthly obj", monthly_data, monthly_data_error);
-  console.log("monthly kpi report", monthly_report, monthly_report_error, monthly_report_name);
+  console.log("monthly kpi report", items, error, );
 
   const [monthlyaction, setMonthlyAction] = useState("");
   const [monthly_risks, setMonthlyRisks] = useState("");
@@ -72,10 +69,10 @@ export default function ObjectiveReport() {
   var y = d.getFullYear();
 
   console.log("year month", m, y);
-  console.log("monthly obj report", monthly_report, monthly_report_error);
+  console.log("monthly obj report", items, error);
 
   useEffect(() => {
-    dispatch(getOMonthlyReport(created_by, m, y));
+    dispatch(getUserObjectives(created_by, m, y));
     dispatch(getCategories());
     dispatch(getPillars());
     dispatch(getOMonthlyActions(currentUser.id));
@@ -98,7 +95,6 @@ export default function ObjectiveReport() {
   const [target, setTarget] = useState("");
   const [target_achieved_on_review, setTargetAtReview] = useState("");
   const [showloader, setshowloader] = useState(false);
-  const [showSnapshotLoader, setShowSnapshotLoader] = useState(false);  
   const [id, setId] = useState("");
   const [created_by, setCreatedBy] = useState(currentUser.id);
   const [updated_by, setUpdatedBy] = useState(currentUser.id);
@@ -112,14 +108,7 @@ export default function ObjectiveReport() {
   const [risk_and_opportunity, setRiskAndOpportunity] = useState("");
   const [pillar_id, setPillarId] = useState("");
   const [priorities_for_quarter, setPrioritiesForQuarter] = useState("");
-  const [month, setMonth] = useState("");
-  const [filteryear, setFilterYear] = useState("");
   const [is_primary, setIsPrimary] = useState("");
-  const [snapshot_month, setSnapshotMonth] = useState("");
-  const [snapshot_year, setSnapshotYear] = useState("");
-  const [current_month, setCurrentMonth] = useState("");
-  const [current_year, setCurrentYear] = useState("");
-
   const handleEditClickOpen = () => {
     setEditOpen(true);
   };
@@ -192,12 +181,6 @@ export default function ObjectiveReport() {
 
     console.log("test", body, is_primary, setUserId, target_achieved_on_review);
 
-    if (current_month == '' || current_month == undefined || current_month == null) {
-      setCurrentMonth(m);
-    } else if (current_year == ''|| current_year == undefined || current_year == null){
-      setCurrentYear(y)
-    } 
-
     try {
       let response = await axios.post("/objectives/update", body, config);
       if (response.status == 201) {
@@ -223,13 +206,7 @@ export default function ObjectiveReport() {
             setPrioritiesForQuarter("");
             setAction("");
             setSupportRequired("");
-            console.log("current values", current_month, current_year)
-            console.log("true values", m, y )
-            if (current_month == '' || current_month == undefined || current_month == null || current_year == '' || current_year == undefined || current_year == null) {
-              dispatch(getOMonthlyReport(currentUser.id, m, y))
-            } else {
-              dispatch(getOMonthlyReport(currentUser.id, current_month, current_year))
-            } 
+            dispatch(getUserObjectives(currentUser.id)) 
           });
       } else {
         let error = response.data.message;
@@ -253,11 +230,7 @@ export default function ObjectiveReport() {
           setPrioritiesForQuarter("");
           setAction("");
           setSupportRequired("");
-          if (current_month == '' || current_month == undefined || current_month == null || current_year == '' || current_year == undefined || current_year == null) {
-            dispatch(getOMonthlyReport(currentUser.id, m, y))
-          } else {
-            dispatch(getOMonthlyReport(currentUser.id, current_month, current_year))
-          } 
+          dispatch(getUserObjectives(currentUser.id))
         });
       }
     } catch (error) {
@@ -282,11 +255,7 @@ export default function ObjectiveReport() {
         setPrioritiesForQuarter("");
         setAction("");
         setSupportRequired("");
-        if (current_month == '' || current_month == undefined || current_month == null || current_year == '' || current_year == undefined || current_year == null) {
-          dispatch(getOMonthlyReport(currentUser.id, m, y))
-        } else {
-          dispatch(getOMonthlyReport(currentUser.id, current_month, current_year))
-        }
+        dispatch(getUserObjectives(currentUser.id))
       });
     }
   };
@@ -436,250 +405,25 @@ export default function ObjectiveReport() {
     }
   };
 
-  const filterObjData = async (e) => {
-    e.preventDefault();
-    setshowloader(true);
-
-    console.log(current_month, current_year)
-
-    let report_name = `${month + filteryear + 'Report'}`;
-
-    try {
-      let response = await axios.get(`/objectivesReports/filterObjectivesReport?user_id=${user_id}&reportName=${report_name}`)
-      if (response.status == 200) {
-        setshowloader(false);
-        let item = response.data.message;
-        console.log("here", item);
-        swal
-          .fire({
-            title: "Success",
-            text: item,
-            icon: "success",
-          })
-          .then(() => {
-            setMonth("");
-            setFilterYear("");
-            setCurrentMonth(month);
-            setCurrentYear(filteryear);
-            dispatch(getOMonthlyReport(created_by, month, filteryear));
-          });
-      } else {
-        let error = response.data.message;
-        setshowloader(false);
-        swal
-          .fire({
-            title: "Error",
-            text: error,
-            icon: "error",
-            dangerMode: true,
-          })
-          .then(() => {
-            setMonth("");
-            setFilterYear("");
-            setCurrentMonth(month);
-            setCurrentYear(filteryear);
-            dispatch(getOMonthlyReport(created_by, month, filteryear));
-          });
-      }
-    } catch (error) {
-      let err = error.response.data.message;
-      setshowloader(false);
-      swal
-        .fire({
-          title: "Error",
-          text: err,
-          icon: "error",
-          dangerMode: true,
-        })
-        .then(() => {
-          setMonth("");
-          setFilterYear("");
-          setCurrentMonth(month);
-          setCurrentYear(filteryear);
-          dispatch(getOMonthlyReport(created_by, month, filteryear));
-        });
+  const handleObjSnapshot = () => {
+    if(currentUser.role_id === 0) {
+      history.push(`/admin/objectives-report/id=${currentUser.id}`)
+    } else {
+      history.push(`/user/objectives-report/id=${currentUser.id}`)
     }
-  };
-
-  const objSnapshotSave = async(e) => {
-    e.preventDefault();
-    setShowSnapshotLoader(true);
-
-    const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
-
-    const body = JSON.stringify({
-      year: snapshot_year,
-      month: snapshot_month,
-      userId: created_by
-    })
-
-    console.log("body here", body)
-
-    try {
-
-      let response = await axios.post(`/objectivesReports/snapshot`, body, config)
-          if (response.status == 201) {
-              setShowSnapshotLoader(false);
-              let item = response.data.message
-              console.log("here", item)
-              swal.fire({
-                  title: "Success",
-                  text: item,
-                  icon: "success",
-              }).then(() => {
-                setSnapshotMonth("")
-                setSnapshotYear("")
-              });
-
-          } else {
-              let error = response.data.message
-              setShowSnapshotLoader(false);
-              swal.fire({
-                  title: "Error",
-                  text: error,
-                  icon: "error",
-                  dangerMode: true
-              }).then(() => {
-                setSnapshotMonth("")
-                setSnapshotYear("")
-              });
-
-          }
-    } catch (error) {
-        let err = error.response.data.message
-        setShowSnapshotLoader(false);
-        swal.fire({
-            title: "Error",
-            text: err,
-            icon: "error",
-            dangerMode: true
-        }).then(() => {
-          setSnapshotMonth("")
-          setSnapshotYear("")
-        });
-
-    } 
   }
-
 
   return (
     <div>
       <GridContainer>
-        <h4> Create Report Snapshot</h4>
-        <Grid container spacing={1} style={{backgroundColor : 'white', padding: '1rem', margin: '1rem', borderRadius: '20px'}}>
-          <Grid  item xs={4} lg={4} xl={4} sm={12} >
-            <TextField
-                id="outlined-select-month"
-                select
-                required
-                fullWidth
-                variant="outlined"
-                label="Snapshot Month"
-                className={classes.textInput}
-                value={snapshot_month}
-                onChange={(event) => {
-                setSnapshotMonth(event.target.value);
-                }}
-              >
-              {months &&
-              months.map((option) => (
-                  <MenuItem key={option.abbreviation} value={option.abbreviation}>
-                  {option.name}
-                  </MenuItem>
-              ))}
-            </TextField>
-          </Grid>
-
-          <Grid item xs={4} lg={4} xl={4} sm={12} >  
-            <TextField
-              id="outlined-select-year"
-              select
-              required
-              fullWidth
-              variant="outlined"
-              label="Snapshot Year"
-              className={classes.textInput}
-              value={snapshot_year}
-              onChange={(event) => {
-                setSnapshotYear(event.target.value);
-              }}
-            >
-              {years &&
-                years.map((option) => (
-                  <MenuItem key={option.value} value={option.value}>
-                    {option.name}
-                  </MenuItem>
-                ))}
-            </TextField>
-          </Grid> 
-
-          <Grid item xs={4} lg={4} xl={4} sm={12} > 
-            { showSnapshotLoader === true ? (
-              <div style={{ textAlign: "center", marginTop: 10 }}>
-              <Loader
-                  type="Puff"
-                  color="#29A15B"
-                  height={100}
-                  width={100}
-              />
-              </div>
-              ) :
-              (  
-                <Button color="primary" size="lg" onClick={objSnapshotSave}>SAVE</Button>
-              )}  
-          </Grid>        
-        </Grid>
-        
         <Grid
           container
           spacing={1}
           justify="flex-end"
           style={{ margin: "1rem" }}
         >
-          <TextField
-            id="outlined-select-month"
-            select
-            required
-            style={{ margin: "1rem", width: "200px" }}
-            variant="outlined"
-            label="Month"
-            className={classes.textInput}
-            value={month}
-            onChange={(event) => {
-              setMonth(event.target.value);
-            }}
-          >
-            {months &&
-              months.map((option) => (
-                <MenuItem key={option.abbreviation} value={option.abbreviation}>
-                  {option.name}
-                </MenuItem>
-              ))}
-          </TextField>
-
-          <TextField
-            id="outlined-select-year"
-            select
-            required
-            style={{ margin: "1rem", width: "200px" }}
-            variant="outlined"
-            label="Year"
-            className={classes.textInput}
-            value={filteryear}
-            onChange={(event) => {
-              setFilterYear(event.target.value);
-            }}
-          >
-            {years &&
-              years.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.name}
-                </MenuItem>
-              ))}
-          </TextField>
-
-          <Button color="primary" onClick={filterObjData}>
-            Filter
+          <Button color="primary" style={{backgroundColor : '#29A15B'}} onClick={handleObjSnapshot} endIcon={<Icon>send</Icon>} variant="contained" >
+            Report Snapshots
           </Button>
         </Grid>
 
@@ -689,12 +433,11 @@ export default function ObjectiveReport() {
               <h4>Strategic Objectives</h4>
             </CardHeader>
             <CardBody>
-              {/* <div className={classes.btnRight}><Button color="primary" size="lg" onClick={handleAddClickOpen}> Add KPI </Button> </div> */}
 
-              {monthly_report !== null ? (
+              {items !== null ? (
                 <MaterialTable
-                  title={`${"Period : " + monthly_report_name}`}
-                  data={monthly_report}
+                  title="Objectives"
+                  data={items}
                   columns={columns}
                   options={{
                     search: true,
@@ -706,7 +449,7 @@ export default function ObjectiveReport() {
                 />
               ) : (
                 <MaterialTable
-                  title={monthly_report_name}
+                  title="Objectives"
                   data={[]}
                   columns={columns}
                   options={{
@@ -816,7 +559,7 @@ export default function ObjectiveReport() {
                   </div>
                   ) :
                   (
-                    <Button color="primary" size="lg" onClick={(e) => {saveMonthlyUpdate(e);}} > Save </Button>
+                    <Button variant="contained" size="large" style={{backgroundColor : '#29A15B'}} onClick={(e) => {saveMonthlyUpdate(e);}} > Save </Button>
                   )}
               </Grid>
 
@@ -893,9 +636,9 @@ export default function ObjectiveReport() {
                   />
                 </DialogContent>
                 <DialogActions>
-                  <Button color="danger" onClick={handleEditClose}>
+                  <Button variant="contained" size="large" style={{backgroundColor : '#F44336'}}  onClick={handleEditClose}>
                     Cancel
-                  </Button>
+                  </Button >
                   {showloader === true ? (
                     <div style={{ textAlign: "center", marginTop: 10 }}>
                       <Loader
@@ -907,7 +650,7 @@ export default function ObjectiveReport() {
                     </div>
                   ) : (
                     <Button
-                      color="primary"
+                      variant="contained" size="large" style={{backgroundColor : '#29A15B'}}
                       onClick={(e) => {
                         saveEdited(e);
                       }}
@@ -918,27 +661,6 @@ export default function ObjectiveReport() {
                 </DialogActions>
               </Dialog>
 
-              {/* <Dialog
-									open={deleteopen}
-									onClose={handleDeleteClose}
-									aria-labelledby="alert-dialog-title"
-									aria-describedby="alert-dialog-description"
-							>
-									<DialogTitle id="alert-dialog-title">
-									{"Are you sure you want to delete the team?"}
-									</DialogTitle>
-									<DialogContent>
-									<DialogContentText id="alert-dialog-description">
-											Please confirm that you want to delete this KPI.
-									</DialogContentText>
-									</DialogContent>
-									<DialogActions>
-									<Button color="danger" onClick={handleDeleteClose}>Disagree</Button>
-									<Button color="primary" onClick={handleDeleteClose} autoFocus>
-											Agree
-									</Button>
-									</DialogActions>
-							</Dialog> */}
             </CardBody>
           </Card>
         </GridItem>

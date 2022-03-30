@@ -11,9 +11,11 @@ import KPIsPage from "views/KPI/kpi";
 // import MyKpis from "views/KPI/mykpi"; 
 import UserProfile from "views/UserProfile/UserProfile";
 import UserDashboard from "views/Dashboard/UserDashboard";
-import ObjectiveReport from "views/Reports/objective-report";
+import ObjectiveReport from "views/Reports/objectives-report";
 import KPIReport from "views/Reports/kpi-report";
 import WeeklyReport from "views/Reports/weekly-report";
+import KPISnapshotReport from "views/Reports/kpi-report-snapshot";
+import ObjectiveSnapshotReport from "views/Reports/objective-report-snapshot";
 import UserReportDashboard from "views/Reports/user-report"
 import AllAssignedTasksPage from "views/Tasks/AllAssignedTasksPage";
 
@@ -184,6 +186,21 @@ var dashRoutes = [
     component: UserReportDashboard,
     layout: "/admin",
   },
-  
+  {
+    path: "/kpi-report/:id",
+    name: "",
+    rtlName: "التقويم",
+    mini: "",
+    component: KPISnapshotReport,
+    layout: "/admin",
+  },
+  {
+    path: "/objectives-report/:id",
+    name: "",
+    rtlName: "التقويم",
+    mini: "",
+    component: ObjectiveSnapshotReport,
+    layout: "/admin",
+  }
 ];
 export default dashRoutes;
