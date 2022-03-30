@@ -91,8 +91,6 @@ export default function ObjectiveSnapshotReport() {
   const [filteryear, setFilterYear] = useState("");
   const [snapshot_month, setSnapshotMonth] = useState("");
   const [snapshot_year, setSnapshotYear] = useState("");
-  const [current_month, setCurrentMonth] = useState("");
-  const [current_year, setCurrentYear] = useState("");
   const [showloader, setshowloader] = useState(false);
 
 
@@ -162,7 +160,7 @@ export default function ObjectiveSnapshotReport() {
     e.preventDefault();
     setshowloader(true);
 
-    console.log(current_month, current_year, setCreatedBy, setUserId)
+    console.log(setCreatedBy, setUserId)
 
     let report_name = `${month + filteryear + 'Report'}`;
 
@@ -181,8 +179,6 @@ export default function ObjectiveSnapshotReport() {
           .then(() => {
             setMonth("");
             setFilterYear("");
-            setCurrentMonth(month);
-            setCurrentYear(filteryear);
             dispatch(getOMonthlyReport(created_by, month, filteryear));
           });
       } else {
@@ -198,8 +194,6 @@ export default function ObjectiveSnapshotReport() {
           .then(() => {
             setMonth("");
             setFilterYear("");
-            setCurrentMonth(month);
-            setCurrentYear(filteryear);
             dispatch(getOMonthlyReport(created_by, month, filteryear));
           });
       }
@@ -216,8 +210,6 @@ export default function ObjectiveSnapshotReport() {
         .then(() => {
           setMonth("");
           setFilterYear("");
-          setCurrentMonth(month);
-          setCurrentYear(filteryear);
           dispatch(getOMonthlyReport(created_by, month, filteryear));
         });
     }
@@ -282,7 +274,6 @@ export default function ObjectiveSnapshotReport() {
 
     } 
   }
-
 
   return (
     <div>

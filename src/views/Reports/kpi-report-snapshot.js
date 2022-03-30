@@ -11,15 +11,7 @@ import Button from "components/CustomButtons/Button.js";
 import Card from "components/Card/Card.js";
 import CardHeader from "components/Card/CardHeader.js";
 import CardBody from "components/Card/CardBody.js";
-// import DeleteIcon from '@material-ui/icons/Delete';
-import EditIcon from "@material-ui/icons/Edit";
-import IconButton from "@material-ui/core/Button";
 import MenuItem from "@material-ui/core/MenuItem";
-import Dialog from "@material-ui/core/Dialog";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import DialogTitle from "@material-ui/core/DialogTitle";
 import TextField from "@material-ui/core/TextField";
 import { getKMonthlyReport, getKMonthlyActions } from "actions/kpis";
 import swal from "sweetalert2";
@@ -97,270 +89,13 @@ export default function KPISnapshotReport() {
     }
   }, [monthly_data]);
 
-  const [editopen, setEditOpen] = useState(false);
-  // const [deleteopen, setDeleteOpen] = useState(false);
-  const [kpi, setKPI] = useState("");
-  const [uom, setUnitOfMeasure] = useState("");
-  const [category, setCategory] = useState("");
   const [showloader, setshowloader] = useState(false);
   const [showSnapshotLoader, setShowSnapshotLoader] = useState(false);
-  const [id, setId] = useState("");
-  const [created_by, setCreatedBy] = useState(currentUser.id);
-  const [updated_by, setUpdatedBy] = useState(currentUser.id);
-  const [target, setTarget] = useState("");
-  const [account, setAccount] = useState("");
-  const [ytd_planned, setYTDPlanned] = useState("");
-  const [ytd_actual, setYTDActual] = useState("");
-  const [action, setAction] = useState("");
-  const [support_required, setSupportRequired] = useState("");
-  const [root_cause, setRootCause] = useState("");
-  const [is_primary, setIsPrimary] = useState("");
   const [month, setMonth] = useState("");
   const [filteryear, setFilterYear] = useState("");
   const [snapshot_month, setSnapshotMonth] = useState("");
   const [snapshot_year, setSnapshotYear] = useState("");
-  const [current_month, setCurrentMonth] = useState("");
-  const [current_year, setCurrentYear] = useState("");
-
-  const handleEditClickOpen = () => {
-    setEditOpen(true);
-  };
-
-  const setEditing = (list) => {
-    setKPI(list.title);
-    setUnitOfMeasure(list.kpi_unit_of_measure);
-    setCategory(list.categories.id);
-    setId(list.id);
-    setAccount(list.account);
-    setTarget(list.target);
-    setYTDPlanned(list.plannedYTD);
-    setYTDActual(list.actualYTD);
-    setSupportRequired(list.supportRequired);
-    setAction(list.action);
-    setRootCause(list.rootCause);
-    setIsPrimary(list.isPrimary);
-  };
-
-  const saveEdited = async (e) => {
-    e.preventDefault();
-    setshowloader(true);
-
-    console.log("primary", is_primary, current_month, current_year);
-
-    let new_primary;
-
-    if (
-      is_primary === null ||
-      is_primary == "" ||
-      is_primary == undefined ||
-      is_primary == 1
-    ) {
-      new_primary = "1";
-    } else {
-      new_primary === is_primary;
-    }
-
-    console.log(
-      "edit values",
-      new_primary,
-      id,
-      kpi,
-      uom,
-      category,
-      created_by,
-      updated_by,
-      setCreatedBy,
-      setUpdatedBy()
-    );
-
-    const config = {
-      headers: { "Content-Type": "application/json", Accept: "*/*" },
-    };
-    const body = JSON.stringify({
-      title: kpi,
-      kpiUnitOfMeasure: uom,
-      categoryId: category,
-      updatedBy: updated_by,
-      id: id,
-      userId: created_by,
-      account: account,
-      target: target,
-      plannedYTD: ytd_planned,
-      actualYTD: ytd_actual,
-      isPrimary: new_primary,
-      action: action,
-      rootCause: root_cause,
-      supportRequired: support_required,
-    });
-
-    console.log("kpi update body", body);
-
-    if (
-      current_month == "" ||
-      current_month == undefined ||
-      current_month == null
-    ) {
-      setCurrentMonth(m);
-    } else if (
-      current_year == "" ||
-      current_year == undefined ||
-      current_year == null
-    ) {
-      setCurrentYear(y);
-    }
-
-    try {
-      let response = await axios.post("/kpi/update", body, config);
-      if (response.status == 200) {
-        setshowloader(false);
-        let item = response.data.message;
-        swal
-          .fire({
-            title: "Success",
-            text: item,
-            icon: "success",
-          })
-          .then(() => {
-            setKPI("");
-            setUnitOfMeasure("");
-            setCategory("");
-            setId("");
-            setAccount("");
-            setTarget("");
-            setYTDPlanned("");
-            setYTDActual("");
-            setSupportRequired("");
-            setAction("");
-            setRootCause("");
-            setUpdatedBy(currentUser.id);
-
-            console.log("current values", current_month, current_year);
-            console.log("true values", m, y);
-            if (
-              current_month == "" ||
-              current_month == undefined ||
-              current_month == null ||
-              current_year == '' || current_year == undefined || current_year == null
-            ) {
-              dispatch(getKMonthlyReport(currentUser.id, m, y));
-            } else {
-              dispatch(getKMonthlyReport(currentUser.id, current_month, current_year));
-            }
-          });
-      } else {
-        let error = response.data.message;
-        setshowloader(false);
-        swal
-          .fire({
-            title: "Error",
-            text: error,
-            icon: "error",
-            dangerMode: true,
-          })
-          .then(() => {
-            setKPI("");
-            setUnitOfMeasure("");
-            setCategory("");
-            setId("");
-            setAccount("");
-            setTarget("");
-            setYTDPlanned("");
-            setYTDActual("");
-            setSupportRequired("");
-            setAction("");
-            setRootCause("");
-            setUpdatedBy(currentUser.id);
-            if (
-              current_month == "" ||
-              current_month == undefined ||
-              current_month == null ||
-              current_year == '' || current_year == undefined || current_year == null
-            ) { 
-              dispatch(getKMonthlyReport(currentUser.id, m, y));
-            } else {
-              dispatch(getKMonthlyReport(currentUser.id, current_month, current_year));
-            }
-          });
-      }
-    } catch (error) {
-      let err = error.response.data.message;
-      setshowloader(false);
-      swal
-        .fire({
-          title: "Error",
-          text: err,
-          icon: "error",
-          dangerMode: true,
-        })
-        .then(() => {
-          setKPI("");
-          setUnitOfMeasure("");
-          setCategory("");
-          setId("");
-          setAccount("");
-          setTarget("");
-          setYTDPlanned("");
-          setYTDActual("");
-          setSupportRequired("");
-          setAction("");
-          setRootCause("");
-          setUpdatedBy(currentUser.id);
-          if (
-            current_month == "" ||
-            current_month == undefined ||
-            current_month == null ||
-            current_year == '' || current_year == undefined || current_year == null
-          ) {
-            dispatch(getKMonthlyReport(currentUser.id, m, y));
-            } else {
-              dispatch(getKMonthlyReport(currentUser.id, current_month, current_year));
-            }
-        });
-    }
-  };
-
-  const handleEditClose = () => {
-    setEditOpen(false);
-  };
-
-  const uoms = [
-    {
-      value: "%",
-      label: "%",
-    },
-    {
-      value: "<%",
-      label: "<%",
-    },
-    {
-      value: "%>",
-      label: "%>",
-    },
-    {
-      value: "numeric",
-      label: "numeric",
-    },
-    {
-      value: "KES M",
-      label: "KES M",
-    },
-    {
-      value: "TSH M",
-      label: "TSH M",
-    },
-    {
-      value: "UGX M",
-      label: "UGX M",
-    },
-    {
-      value: "RWF M",
-      label: "RWF M",
-    },
-    {
-      value: "USD M",
-      label: "USD M",
-    },
-  ];
+  const [created_by, setCreatedBy] = useState(currentUser.id);
 
   const columns = [
     {
@@ -482,84 +217,8 @@ export default function KPISnapshotReport() {
       title: "Comments On Progress Made",
       export: true,
       hidden: true,
-    },
-    {
-      field: "actions",
-      title: "Edit",
-      render: (list) => {
-        return (
-          <div>
-            {" "}
-            <IconButton
-              aria-label="edit"
-              className={classes.textGreen}
-              onClick={() => {
-                handleEditClickOpen();
-                setEditing(list);
-              }}
-            >
-              <EditIcon />
-            </IconButton>
-          </div>
-        );
-      },
-      export: false,
-    },
-  ];
-
-  const saveMonthlyUpdate = async (e) => {
-    e.preventDefault();
-    setshowloader(true);
-
-    const config = {
-      headers: { "Content-Type": "application/json", Accept: "*/*" },
-    };
-
-    const body = JSON.stringify({
-      supportRequired: monthlyaction,
-      nextPeriodActions: monthly_next_actions,
-      riskOpportunity: monthly_risks,
-      userId: created_by,
-    });
-
-    try {
-      let response = await axios.post("/kpiactions/createUpdate", body, config);
-      if (response.status == 200) {
-        setshowloader(false);
-        let item = response.data.message;
-        console.log("here", item);
-        swal
-          .fire({
-            title: "Success",
-            text: item,
-            icon: "success",
-          })
-          .then(() => dispatch(getKMonthlyActions(currentUser.id)));
-      } else {
-        let error = response.data.message;
-        setshowloader(false);
-        swal
-          .fire({
-            title: "Error",
-            text: error,
-            icon: "error",
-            dangerMode: true,
-          })
-          .then(() => dispatch(getKMonthlyActions(currentUser.id)));
-      }
-    } catch (error) {
-      let err = error.response.data.message;
-      setshowloader(false);
-      swal
-        .fire({
-          title: "Error",
-          text: err,
-          icon: "error",
-          dangerMode: true,
-        })
-        .then(() => dispatch(getKMonthlyActions(currentUser.id)));
     }
-  };
+  ];
 
   const filterKpiData = async (e) => {
     e.preventDefault();
@@ -583,8 +242,6 @@ export default function KPISnapshotReport() {
           .then(() => {
             setMonth("");
             setFilterYear("");
-            setCurrentMonth(month);
-            setCurrentYear(filteryear);
             dispatch(
               getKMonthlyReport(created_by, month, filteryear)
             );
@@ -602,8 +259,6 @@ export default function KPISnapshotReport() {
           .then(() => {
             setMonth("");
             setFilterYear("");
-            setCurrentMonth(month);
-            setCurrentYear(filteryear);
             dispatch(
               getKMonthlyReport(created_by, month, filteryear)
             );
@@ -622,8 +277,6 @@ export default function KPISnapshotReport() {
         .then(() => {
           setMonth("");
           setFilterYear("");
-          setCurrentMonth(month);
-          setCurrentYear(filteryear);
           dispatch(getKMonthlyReport(created_by, month, filteryear));
         });
     }
@@ -643,7 +296,7 @@ export default function KPISnapshotReport() {
       userId: created_by,
     });
 
-    console.log("body here", body);
+    console.log("body here", body, setCreatedBy);
 
     try {
       let response = await axios.post(`/kpiReports/snapshot`, body, config);
@@ -878,7 +531,7 @@ export default function KPISnapshotReport() {
                     }}
                   >
                     {" "}
-                    Update Your Details
+                    KPI Actions
                   </h4>
                 </Grid>
 
@@ -952,177 +605,6 @@ export default function KPISnapshotReport() {
                 </Grid>
               </Grid>
 
-              <Grid container justify="flex-end">
-                {showloader === true ? (
-                  <div style={{ textAlign: "center", marginTop: 10 }}>
-                    <Loader
-                      type="Puff"
-                      color="#29A15B"
-                      height={100}
-                      width={100}
-                    />
-                  </div>
-                ) : (
-                  <Button
-                    color="primary"
-                    size="lg"
-                    onClick={(e) => {
-                      saveMonthlyUpdate(e);
-                    }}
-                  >
-                    {" "}
-                    Save{" "}
-                  </Button>
-                )}
-              </Grid>
-
-              <Dialog open={editopen} onClose={handleEditClose}>
-                <DialogTitle>KPI</DialogTitle>
-                <DialogContent>
-                  <DialogContentText>Edit KPI</DialogContentText>
-                  <TextField
-                    autoFocus
-                    margin="dense"
-                    id="kpi"
-                    label="KPI"
-                    type="text"
-                    fullWidth
-                    style={{ marginBottom: "15px" }}
-                    value={kpi}
-                    variant="outlined"
-                    onChange={(event) => {
-                      setKPI(event.target.value);
-                    }}
-                  />
-
-                  <label style={{ fontWeight: "bold", color: "black" }}>
-                    {" "}
-                    Unit Of Measure :{" "}
-                  </label>
-                  <TextField
-                    id="outlined-select-uom"
-                    select
-                    fullWidth
-                    variant="outlined"
-                    label="Select"
-                    value={uom}
-                    onChange={(event) => {
-                      setUnitOfMeasure(event.target.value);
-                    }}
-                    helperText="Please select your unit of measure"
-                  >
-                    {uoms.map((option) => (
-                      <MenuItem key={option.value} value={option.value}>
-                        {option.label}
-                      </MenuItem>
-                    ))}
-                  </TextField>
-
-                  <label style={{ fontWeight: "bold", color: "black" }}>
-                    {" "}
-                    Category :{" "}
-                  </label>
-                  <TextField
-                    id="outlined-select-category"
-                    select
-                    fullWidth
-                    variant="outlined"
-                    label="Select"
-                    value={category}
-                    onChange={(event) => {
-                      setCategory(event.target.value);
-                    }}
-                    helperText="Please select your category"
-                  >
-                    {categories.map((option) => (
-                      <MenuItem key={option.id} value={option.id}>
-                        {option.description}
-                      </MenuItem>
-                    ))}
-                  </TextField>
-
-                  <TextField
-                    fullWidth
-                    label="Comments On Progress Made"
-                    id="root_cause"
-                    multiline
-                    rows={2}
-                    required
-                    variant="outlined"
-                    className={classes.textInput}
-                    type="text"
-                    value={root_cause}
-                    onChange={(event) => {
-                      const value = event.target.value;
-                      setRootCause(value);
-                    }}
-                  />
-
-                  <TextField
-                    fullWidth
-                    label="Actions To Be Taken"
-                    id="action"
-                    multiline
-                    rows={2}
-                    required
-                    variant="outlined"
-                    className={classes.textInput}
-                    type="text"
-                    value={action}
-                    onChange={(event) => {
-                      const value = event.target.value;
-                      setAction(value);
-                    }}
-                  />
-                </DialogContent>
-                <DialogActions>
-                  <Button color="danger" onClick={handleEditClose}>
-                    Cancel
-                  </Button>
-                  {showloader === true ? (
-                    <div style={{ textAlign: "center", marginTop: 10 }}>
-                      <Loader
-                        type="Puff"
-                        color="#29A15B"
-                        height={150}
-                        width={150}
-                      />
-                    </div>
-                  ) : (
-                    <Button
-                      color="primary"
-                      onClick={(e) => {
-                        handleEditClose();
-                        saveEdited(e);
-                      }}
-                    >
-                      Save
-                    </Button>
-                  )}
-                </DialogActions>
-              </Dialog>
-
-              {/* <Dialog
-                  open={deleteopen}
-                  onClose={handleDeleteClose}
-                  aria-labelledby="alert-dialog-title"
-                  aria-describedby="alert-dialog-description"
-              >
-                  <DialogTitle id="alert-dialog-title">
-                  {"Are you sure you want to delete the team?"}
-                  </DialogTitle>
-                  <DialogContent>
-                  <DialogContentText id="alert-dialog-description">
-                      Please confirm that you want to delete this KPI.
-                  </DialogContentText>
-                  </DialogContent>
-                  <DialogActions>
-                  <Button color="danger" onClick={handleDeleteClose}>Disagree</Button>
-                  <Button color="primary" onClick={handleDeleteClose} autoFocus>
-                      Agree
-                  </Button>
-                  </DialogActions>
-              </Dialog> */}
             </CardBody>
           </Card>
         </GridItem>
