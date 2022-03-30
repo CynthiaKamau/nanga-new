@@ -225,7 +225,7 @@ export default function ObjectiveReport() {
             setSupportRequired("");
             console.log("current values", current_month, current_year)
             console.log("true values", m, y )
-            if (current_month == '' || current_month == undefined || current_month == null) {
+            if (current_month == '' || current_month == undefined || current_month == null || current_year == '' || current_year == undefined || current_year == null) {
               dispatch(getOMonthlyReport(currentUser.id, m, y))
             } else {
               dispatch(getOMonthlyReport(currentUser.id, current_month, current_year))
@@ -253,7 +253,7 @@ export default function ObjectiveReport() {
           setPrioritiesForQuarter("");
           setAction("");
           setSupportRequired("");
-          if (current_month == '' || current_month == undefined || current_month == null) {
+          if (current_month == '' || current_month == undefined || current_month == null || current_year == '' || current_year == undefined || current_year == null) {
             dispatch(getOMonthlyReport(currentUser.id, m, y))
           } else {
             dispatch(getOMonthlyReport(currentUser.id, current_month, current_year))
@@ -282,7 +282,7 @@ export default function ObjectiveReport() {
         setPrioritiesForQuarter("");
         setAction("");
         setSupportRequired("");
-        if (current_month == '' || current_month == undefined || current_month == null) {
+        if (current_month == '' || current_month == undefined || current_month == null || current_year == '' || current_year == undefined || current_year == null) {
           dispatch(getOMonthlyReport(currentUser.id, m, y))
         } else {
           dispatch(getOMonthlyReport(currentUser.id, current_month, current_year))

@@ -239,7 +239,8 @@ export default function KPIReport() {
             if (
               current_month == "" ||
               current_month == undefined ||
-              current_month == null
+              current_month == null ||
+              current_year == '' || current_year == undefined || current_year == null
             ) {
               dispatch(getKMonthlyReport(currentUser.id, m, y));
             } else {
@@ -272,7 +273,8 @@ export default function KPIReport() {
             if (
               current_month == "" ||
               current_month == undefined ||
-              current_month == null
+              current_month == null ||
+              current_year == '' || current_year == undefined || current_year == null
             ) { 
               dispatch(getKMonthlyReport(currentUser.id, m, y));
             } else {
@@ -306,7 +308,8 @@ export default function KPIReport() {
           if (
             current_month == "" ||
             current_month == undefined ||
-            current_month == null
+            current_month == null ||
+            current_year == '' || current_year == undefined || current_year == null
           ) {
             dispatch(getKMonthlyReport(currentUser.id, m, y));
             } else {
@@ -583,7 +586,7 @@ export default function KPIReport() {
             setCurrentMonth(month);
             setCurrentYear(filteryear);
             dispatch(
-              getKMonthlyReport(created_by, current_month, current_year)
+              getKMonthlyReport(created_by, month, filteryear)
             );
           });
       } else {
@@ -602,7 +605,7 @@ export default function KPIReport() {
             setCurrentMonth(month);
             setCurrentYear(filteryear);
             dispatch(
-              getKMonthlyReport(created_by, current_month, current_year)
+              getKMonthlyReport(created_by, month, filteryear)
             );
           });
       }
@@ -621,7 +624,7 @@ export default function KPIReport() {
           setFilterYear("");
           setCurrentMonth(month);
           setCurrentYear(filteryear);
-          dispatch(getKMonthlyReport(created_by, current_month, current_year));
+          dispatch(getKMonthlyReport(created_by, month, filteryear));
         });
     }
   };
