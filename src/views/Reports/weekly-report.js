@@ -47,7 +47,7 @@ export default function WeeklyReport() {
     const [kpiProgressUpdates, setKpiProgressUpdates] = useState("");
 
     useEffect(() => {
-      dispatch(getWeeklyReport(46));
+      dispatch(getWeeklyReport(currentUser.id));
     }, [])
 
     const handleClickOpen = () => {
