@@ -47,7 +47,7 @@ export default function WeeklyReport() {
     const [kpiProgressUpdates, setKpiProgressUpdates] = useState("");
 
     useEffect(() => {
-      dispatch(getWeeklyReport(currentUser.id));
+      dispatch(getWeeklyReport(46));
     }, [])
 
     const handleClickOpen = () => {
@@ -260,7 +260,7 @@ export default function WeeklyReport() {
             </CardHeader>
             <CardBody>
 
-            {weekly_report !== null ? (
+            {weekly_report !== null && weekly_report.length >= 1 ? (
               <div>
                 <MaterialTable
                 title="Weekly Report"
@@ -285,35 +285,35 @@ export default function WeeklyReport() {
                 }}
                 />
               </div>
-          ) :
+            ) :
 
-          <div>
-          
-            <MaterialTable
-                title="Weekly Report"
-                data={[]}
-                columns={columns}
-                options={{
-                    paging: false,
-                    search: true,
-                    sorting: true,
-                    exportButton: true
-                }}
-            />
-          
-            <MaterialTable
-                title=""
-                data={[]}
-                columns={columns_bottom}
-                options={{
-                    paging: false,
-                    search: true,
-                    sorting: true,
-                    exportButton: true
-                }}
-            />
-            </div>
-          }
+            <div>
+            
+              <MaterialTable
+                  title="Weekly Report"
+                  data={[]}
+                  columns={columns}
+                  options={{
+                      paging: false,
+                      search: true,
+                      sorting: true,
+                      exportButton: true
+                  }}
+              />
+            
+              <MaterialTable
+                  title=""
+                  data={[]}
+                  columns={columns_bottom}
+                  options={{
+                      paging: false,
+                      search: true,
+                      sorting: true,
+                      exportButton: true
+                  }}
+              />
+              </div>
+            }
 
             </CardBody>
           </Card>
