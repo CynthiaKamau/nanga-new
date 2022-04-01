@@ -187,7 +187,7 @@ export default function(state = initialState, action) {
         case WEEKLY_REPORT_SUCCESS:
             return {
                 ...state,
-                weekly_report : action.payload,
+                weekly_report : action.payload.data,
                 error : null
             }
 

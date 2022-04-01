@@ -82,7 +82,7 @@ export default function(state = initialState, action) {
         case OBJECTIVES_MONTH_ACTION_SUCCESS :
             return {
                 ...state,
-                monthly_data : action.payload,
+                monthly_data : action.payload.data,
                 isLoading : false,
                 monthly_data_error : null
             }
