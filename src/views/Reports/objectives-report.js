@@ -53,27 +53,8 @@ export default function ObjectiveReport() {
   const [monthly_risks, setMonthlyRisks] = useState("");
   const [monthly_next_actions, setMonthlyNextActions] = useState("");
 
-  var m_names = [
-    "JAN",
-    "FEB",
-    "MAR",
-    "APR",
-    "MAY",
-    "JUN",
-    "JUL",
-    "AUG",
-    "SEP",
-    "OCT",
-    "NOV",
-    "DEC",
-  ];
-
-  var d = new Date();
-  var m = m_names[d.getMonth()];
-  var y = d.getFullYear();
-
   useEffect(() => {
-    dispatch(getUserObjectives(created_by, m, y));
+    dispatch(getUserObjectives(created_by));
     dispatch(getCategories());
     dispatch(getPillars());
     dispatch(getOMonthlyActions(currentUser.id));

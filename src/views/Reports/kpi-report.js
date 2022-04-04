@@ -50,7 +50,7 @@ export default function KPIReport() {
   const { categories } = useSelector((state) => state.data);
 
   console.log("categories", categories);
-  console.log("monthly kpi actions", monthly_data.length, monthly_data, monthly_data_error);
+  console.log("monthly kpi actions", monthly_data, monthly_data_error);
   console.log("kpi data", items, error);
 
   const [monthlyaction, setMonthlyAction] = useState("");
