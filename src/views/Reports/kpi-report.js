@@ -28,7 +28,7 @@ import axios from "axios";
 import { getCategories } from "actions/data";
 import { Grid } from "@material-ui/core";
 import MaterialTable from "material-table";
-import { CardContent, Icon, Button } from "@material-ui/core";
+import { Icon, Button } from "@material-ui/core";
 import JsonData from "../../data/data.json";
 
 import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
@@ -65,19 +65,8 @@ export default function KPIReport() {
     dispatch(getKMonthlyActions(currentUser.id));
   }, []);
 
-  useEffect(() => {
-    if (monthly_data && monthly_data.length >= 1) {
-      setMonthlyAction(monthly_data[0].supportRequired);
-      setMonthlyRisks(monthly_data[0].risk_opportunity);
-      setMonthlyNextActions(monthly_data[0].nextPeriodAction);
-    } else {
-      setMonthlyAction("Not available");
-      setMonthlyRisks("Not available");
-      setMonthlyNextActions("Not available");
-    }
-  }, [monthly_data]);
-
   const [editopen, setEditOpen] = useState(false);
+  const [editOpenActions, setEditOpenActions] = useState(false);
   const [kpi, setKPI] = useState("");
   const [uom, setUnitOfMeasure] = useState("");
   const [category, setCategory] = useState("");
@@ -250,6 +239,14 @@ export default function KPIReport() {
 
   const handleEditClose = () => {
     setEditOpen(false);
+  };
+
+  const handleEditCloseAction = () => {
+    setEditOpenActions(false);
+  };
+
+  const handleEditClickOpenActions = () => {
+    setEditOpenActions(true);
   };
 
   const uoms = [
@@ -436,6 +433,48 @@ export default function KPIReport() {
     },
   ];
 
+  const action_columns = [
+    {
+      field: "supportRequired",
+      title: "Support Required",
+    },
+    {
+      field: "risk_opportunity",
+      title: "Risk Opportunity",
+    },
+    {
+      field: "nextPeriodAction",
+      title: "Next Period Action",
+    },
+    {
+      field: "",
+      title: "Edit",
+      render: (list) => {
+        return (
+          <IconButton
+            aria-label="edit"
+            className={classes.textGreen}
+            onClick={() => {
+              handleEditClickOpenActions();
+              setEditingActions(list);
+            }}
+          >
+            <EditIcon />
+          </IconButton>
+        );
+      },
+      export: false,
+    },
+  ]
+
+  const setEditingActions = (list) => {
+    console.log("actions here", list);
+
+    if (list.supportRequired == null || list.supportRequired == undefined) {setMonthlyAction("")} else {setMonthlyAction(list.supportRequired)}
+    if (list.risk_opportunity == null || list.risk_opportunity == undefined ) {setMonthlyRisks("")} else {setMonthlyRisks(list.risk_opportunity)}
+    if (list.nextPeriodAction == null || list.nextPeriodAction == undefined) {setMonthlyNextActions("")} else {setMonthlyNextActions(list.nextPeriodAction)}
+  }
+
   const saveMonthlyUpdate = async (e) => {
     e.preventDefault();
     setshowloader(true);
@@ -455,6 +494,7 @@ export default function KPIReport() {
       let response = await axios.post("/kpiactions/createUpdate", body, config);
       if (response.status == 200) {
         setshowloader(false);
+        setEditOpenActions(false);
         let item = response.data.message;
         console.log("here", item);
         swal
@@ -467,6 +507,7 @@ export default function KPIReport() {
       } else {
         let error = response.data.message;
         setshowloader(false);
+        setEditOpenActions(false);
         swal
           .fire({
             title: "Error",
@@ -479,6 +520,7 @@ export default function KPIReport() {
     } catch (error) {
       let err = error.response.data.message;
       setshowloader(false);
+      setEditOpenActions(false);
       swal
         .fire({
           title: "Error",
@@ -684,113 +726,6 @@ export default function KPIReport() {
                 />
               )}
 
-              <Grid container spacing={2} direction="row">
-                <Grid item xs={12} md={12} sm={12}>
-                  <h4
-                    style={{
-                      textAlign: "center",
-                      marginTop: "20px",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    {" "}
-                    Update Your Details
-                  </h4>
-                </Grid>
-
-                <Grid item xs={12} md={4} sm={4} key="2">
-                  <Card style={{ height: "70%" }}>
-                    <CardContent>
-                      <TextField
-                        fullWidth
-                        label="Risk/Opportunities"
-                        id="monthly_risks"
-                        multiline
-                        rows={5}
-                        required
-                        variant="outlined"
-                        className={classes.textInput}
-                        type="text"
-                        value={monthly_risks}
-                        onChange={(event) => {
-                          const value = event.target.value;
-                          setMonthlyRisks(value);
-                        }}
-                      />
-                    </CardContent>
-                  </Card>
-                </Grid>
-
-                <Grid item xs={12} md={4} sm={4} key="1">
-                  <Card style={{ height: "70%" }}>
-                    <CardContent>
-                      <TextField
-                        fullWidth
-                        label="Supprt Required"
-                        id="action"
-                        multiline
-                        rows={5}
-                        required
-                        variant="outlined"
-                        className={classes.textInput}
-                        type="text"
-                        value={monthlyaction}
-                        onChange={(event) => {
-                          const value = event.target.value;
-                          setMonthlyAction(value);
-                        }}
-                      />
-                    </CardContent>
-                  </Card>
-                </Grid>
-
-                <Grid item xs={12} md={4} sm={4} key="3">
-                  <Card style={{ height: "70%" }}>
-                    <CardContent>
-                      <TextField
-                        fullWidth
-                        label="Next Periods Actions"
-                        id="monthly_next_actions"
-                        multiline
-                        rows={5}
-                        required
-                        variant="outlined"
-                        className={classes.textInput}
-                        type="text"
-                        value={monthly_next_actions}
-                        onChange={(event) => {
-                          const value = event.target.value;
-                          setMonthlyNextActions(value);
-                        }}
-                      />
-                    </CardContent>
-                  </Card>
-                </Grid>
-              </Grid>
-
-              <Grid container justify="flex-end">
-                {showloader === true ? (
-                  <div style={{ textAlign: "center", marginTop: 10 }}>
-                    <Loader
-                      type="Puff"
-                      color="#29A15B"
-                      height={100}
-                      width={100}
-                    />
-                  </div>
-                ) : (
-                  <Button
-                    variant="contained" size="large" style={{backgroundColor : '#29A15B'}}
-                    onClick={(e) => {
-                      saveMonthlyUpdate(e);
-                    }}
-                  >
-                    {" "}
-                    Save{" "}
-                  </Button>
-                )}
-              </Grid>
-
               <Dialog open={editopen} onClose={handleEditClose}>
                 <DialogTitle>KPI</DialogTitle>
                 <DialogContent>
@@ -832,6 +767,42 @@ export default function KPIReport() {
                       </MenuItem>
                     ))}
                   </TextField>
+
+                  <Grid container spacing={2}>
+                        <Grid item xs={6} lg={6} xl={6} sm={12}>
+                            <TextField
+                                autoFocus
+                                margin="dense"
+                                id="ytd_planned"
+                                label="YTD Planned"
+                                type="number"
+                                fullWidth
+                                style={{marginBottom : '15px'}}
+                                value={ytd_planned}
+                                variant="outlined"
+                                onChange = {(event) => {
+                                    setYTDPlanned(event.target.value);
+                                }}
+                            />
+                        </Grid>
+
+                        <Grid item xs={6} lg={6} xl={6} sm={12}>
+                            <TextField
+                                autoFocus
+                                margin="dense"
+                                id="ytd_actual"
+                                label="YTD Actual"
+                                type="number"
+                                fullWidth
+                                style={{marginBottom : '15px'}}
+                                value={ytd_actual}
+                                variant="outlined"
+                                onChange = {(event) => {
+                                    setYTDActual(event.target.value);
+                                }}
+                            />
+                        </Grid>
+                    </Grid>
 
                   <label style={{ fontWeight: "bold", color: "black" }}>
                     {" "}
@@ -920,6 +891,117 @@ export default function KPIReport() {
             </CardBody>
           </Card>
         </GridItem>
+
+        <Grid item xs={12} md={12} sm={12}>
+          <Card>
+            <CardHeader color="primary">
+              <h4>KPI Actions</h4>
+            </CardHeader>
+            <CardBody>
+              {monthly_data !== null ? (
+                <MaterialTable
+                  title="KPI Actions"
+                  data={monthly_data}
+                  columns={action_columns}
+                  options={{
+                    sorting: true,
+                    pageSize: 1,
+                    exportButton: true,
+                  }}
+                />
+              ) : (
+                <MaterialTable
+                  title="KPI Actions"
+                  data={[]}
+                  columns={action_columns}
+                  options={{
+                    sorting: true,
+                    pageSize: 1,
+                    exportButton: true,
+                  }}
+                />
+              )}
+            </CardBody>
+          </Card>
+        </Grid>  
+
+        <Dialog open={editOpenActions} onClose={handleEditCloseAction}>
+          <DialogTitle>KPI Actions</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Edit KPI Actions
+            </DialogContentText>
+              <TextField
+                fullWidth
+                label="Risk/Opportunities"
+                id="monthly_risks"
+                multiline
+                rows={5}
+                required
+                variant="outlined"
+                className={classes.textInput}
+                type="text"
+                value={monthly_risks}
+                onChange={(event) => {
+                  const value = event.target.value;
+                  setMonthlyRisks(value);
+                }}
+              />
+      
+              <TextField
+                fullWidth
+                label="Support Required"
+                id="action"
+                multiline
+                rows={5}
+                required
+                variant="outlined"
+                className={classes.textInput}
+                type="text"
+                value={monthlyaction}
+                onChange={(event) => {
+                  const value = event.target.value;
+                  setMonthlyAction(value);
+                }}
+              />
+
+              <TextField
+                fullWidth
+                label="Next Periods Actions"
+                id="monthly_next_actions"
+                multiline
+                rows={5}
+                required
+                variant="outlined"
+                className={classes.textInput}
+                type="text"
+                value={monthly_next_actions}
+                onChange={(event) => {
+                  const value = event.target.value;
+                  setMonthlyNextActions(value);
+                }}
+              />
+          </DialogContent>
+          <DialogActions>
+            <Button variant="contained" size="large" style={{backgroundColor : '#F44336'}}  onClick={handleEditCloseAction}>
+              Cancel
+            </Button >
+            {showloader === true ? (
+              <div style={{ textAlign: "center", marginTop: 10 }}>
+              <Loader
+                  type="Puff"
+                  color="#29A15B"
+                  height={100}
+                  width={100}
+              />
+              </div>
+              ) :
+              (
+                <Button variant="contained" size="large" style={{backgroundColor : '#29A15B'}} onClick={(e) => {saveMonthlyUpdate(e);}} > Save </Button>
+              )}
+          </DialogActions>
+        </Dialog>  
+
       </GridContainer>
     </div>
   );

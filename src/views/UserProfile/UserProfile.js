@@ -1,4 +1,4 @@
-import React, { useState, useEffect, createRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 // import { useSelector } from "react-redux";
 
@@ -18,18 +18,18 @@ import CardBody from "components/Card/CardBody.js";
 import CardHeader from "components/Card/CardHeader.js";
 import CardIcon from "components/Card/CardIcon.js";
 import CardAvatar from "components/Card/CardAvatar.js";
-import swal from "sweetalert2";
-import axios from "axios";
-import Button from "components/CustomButtons/Button.js";
+// import swal from "sweetalert2";
+// import axios from "axios";
+// import Button from "components/CustomButtons/Button.js";
 import styles from "assets/jss/material-dashboard-pro-react/views/userProfileStyles.js";
 import Avatar from "../../assets/img/default-avatar.png";
 import { getUser } from "actions/auth";
 
-import {
-  CloudUpload as UploadIcon,
-  Delete as DeleteIcon,
-} from "@material-ui/icons";
-import Loader from "react-loader-spinner";
+// import {
+//   CloudUpload as UploadIcon,
+//   Delete as DeleteIcon,
+// } from "@material-ui/icons";
+// import Loader from "react-loader-spinner";
 
 const useStyles = makeStyles(styles);
 
@@ -48,17 +48,17 @@ export default function UserProfile() {
   const [role_id, setRoleId] = useState("");
   const [team_id, setTeamId] = useState("");
   const [id, setId] = useState("");
-  const [updated_by, setUpdatedBy] = useState(currentUser.id);
-  const [showloader, setshowloader] = useState(false);  
-  const [image, _setImage] = useState(null);
+  // const [updated_by, setUpdatedBy] = useState(currentUser.id);
+  // const [showloader, setshowloader] = useState(false);  
+  // const [image, _setImage] = useState(null);
   const [avatar, setAvatar] = useState("")
-  const inputFileRef = createRef(null);
+  // const inputFileRef = createRef(null);
 
   // var urlCreator = window.URL || window.webkitURL;
 
   // var imageUrl = urlCreator.createObjectURL(avatar);
 
-  console.log("my pic", avatar);
+  console.log("my pic", avatar, role_id, team_id, id);
 
   useEffect(() => {
     dispatch(getUser(currentUser.id));
@@ -80,92 +80,92 @@ export default function UserProfile() {
     
   }, [myuser]);
 
-  const cleanup = () => {
-    URL.revokeObjectURL(image);
-    inputFileRef.current.value = null;
-  };
+  // const cleanup = () => {
+  //   URL.revokeObjectURL(image);
+  //   inputFileRef.current.value = null;
+  // };
 
-  const setImage = (newImage) => {
-    if (image) {
-      cleanup();
-    }
-    _setImage(newImage);
-  };
+  // const setImage = (newImage) => {
+  //   if (image) {
+  //     cleanup();
+  //   }
+  //   _setImage(newImage);
+  // };
 
-  const handleOnChange = async (event) => {
-    const newImage = event.target?.files?.[0];
+  // const handleOnChange = async (event) => {
+  //   const newImage = event.target?.files?.[0];
 
-    if (newImage) {
-      const base64 = await convertBase64(newImage)
-      console.log(base64)
-      setImage(base64)
-    }
-  };
+  //   if (newImage) {
+  //     const base64 = await convertBase64(newImage)
+  //     console.log(base64)
+  //     setImage(base64)
+  //   }
+  // };
 
-  const convertBase64 = (file) => {
-    return new Promise((resolve, reject) => {
-      const fileReader = new FileReader();
-      fileReader.readAsDataURL(file)
-      fileReader.onload = () => {
-        resolve(fileReader.result);
-      }
-      fileReader.onerror = (error) => {
-        reject(error);
-      }
-    })
-  }
+  // const convertBase64 = (file) => {
+  //   return new Promise((resolve, reject) => {
+  //     const fileReader = new FileReader();
+  //     fileReader.readAsDataURL(file)
+  //     fileReader.onload = () => {
+  //       resolve(fileReader.result);
+  //     }
+  //     fileReader.onerror = (error) => {
+  //       reject(error);
+  //     }
+  //   })
+  // }
 
   /**
    *
    * @param {React.MouseEvent<HTMLButtonElement, MouseEvent>} event
    */
-  const handleClick = (event) => {
-    if (image) {
-      event.preventDefault();
-      setImage(null);
-    }
-  };
+  // const handleClick = (event) => {
+  //   if (image) {
+  //     event.preventDefault();
+  //     setImage(null);
+  //   }
+  // };
 
-  const handleSubmit = async(e) => {
-    e.preventDefault();
-    setshowloader(true);
+  // const handleSubmit = async(e) => {
+  //   e.preventDefault();
+  //   setshowloader(true);
 
-    console.log("save values", id, name, email, department, team, role, updated_by, setUpdatedBy, setAvatar);
+  //   console.log("save values", id, name, email, department, team, role, updated_by, setUpdatedBy, setAvatar);
 
-    const config = { headers: { 'Content-Type': 'application/json' } };
+  //   const config = { headers: { 'Content-Type': 'application/json' } };
 
-    const body = JSON.stringify({ 
-      updated_by_id: updated_by,
-      email: email,
-      extension: department,
-      full_names: name,
-      role_id: role_id,
-      team_id: team_id,
-      view: true,
-      user_picture: image,
-      id: id
-     });
+  //   const body = JSON.stringify({ 
+  //     updated_by_id: updated_by,
+  //     email: email,
+  //     extension: department,
+  //     full_names: name,
+  //     role_id: role_id,
+  //     team_id: team_id,
+  //     view: true,
+  //     user_picture: image,
+  //     id: id
+  //    });
 
-    let response = await axios.post('/users/update', body, config);
+  //   let response = await axios.post('/users/update', body, config);
 
-    if(response.data.success === false) {
-      setshowloader(false)
-      swal.fire({
-        title: "Error",
-        text: "An error occurred, please try again!",
-        icon: "error",
-        dangerMode: true
-      });
-    } else {
-      let msg = response.data.message;
-      setshowloader(false)
-      swal.fire({
-        title: "Success",
-        text: msg,
-        icon: "success",
-      }).then(() => dispatch(getUser(currentUser.id)));
-    }  
-  }
+  //   if(response.data.success === false) {
+  //     setshowloader(false)
+  //     swal.fire({
+  //       title: "Error",
+  //       text: "An error occurred, please try again!",
+  //       icon: "error",
+  //       dangerMode: true
+  //     });
+  //   } else {
+  //     let msg = response.data.message;
+  //     setshowloader(false)
+  //     swal.fire({
+  //       title: "Success",
+  //       text: msg,
+  //       icon: "success",
+  //     }).then(() => dispatch(getUser(currentUser.id)));
+  //   }  
+  // }
 
   return (
     <div>
@@ -268,7 +268,7 @@ export default function UserProfile() {
               </GridContainer>
 
               <GridContainer>
-                <GridItem xs={12} sm={12} md={4}>
+                {/* <GridItem xs={12} sm={12} md={4}>
                 <input
                   ref={inputFileRef}
                   accept="image/*"
@@ -289,8 +289,8 @@ export default function UserProfile() {
                     {image ? "Remove" : "Upload"}
                   </Button>
                 </label>
-                </GridItem>
-                <GridItem xs={12} sm={12} md={4}>
+                </GridItem> */}
+                {/* <GridItem xs={12} sm={12} md={4}>
                 { showloader === true ? (
                   <div style={{ textAlign: "center", marginTop: 10 }}>
                       <Loader
@@ -304,7 +304,7 @@ export default function UserProfile() {
                   (
                   <Button color="primary" onClick={(e) => handleSubmit(e)}> Save</Button>
                   )}
-                </GridItem>
+                </GridItem> */}
               </GridContainer>
             
               <Clearfix />
