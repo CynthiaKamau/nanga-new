@@ -445,26 +445,7 @@ export default function KPIReport() {
     {
       field: "nextPeriodAction",
       title: "Next Period Action",
-    },
-    {
-      field: "",
-      title: "Edit",
-      render: (list) => {
-        return (
-          <IconButton
-            aria-label="edit"
-            className={classes.textGreen}
-            onClick={() => {
-              handleEditClickOpenActions();
-              setEditingActions(list);
-            }}
-          >
-            <EditIcon />
-          </IconButton>
-        );
-      },
-      export: false,
-    },
+    }
   ]
 
   const setEditingActions = (list) => {
@@ -898,6 +879,16 @@ export default function KPIReport() {
               <h4>KPI Actions</h4>
             </CardHeader>
             <CardBody>
+
+              <Grid container spacing={1} justify="flex-end" style={{ margin: "1rem 0.5rem 1rem" }}>
+                <Button color="primary" style={{backgroundColor : '#29A15B'}}
+                  onClick={() => {
+                    handleEditClickOpenActions();
+                    setEditingActions(monthly_data[0]);
+                  }} variant="contained"
+                > Update Actions</Button> 
+              </Grid>  
+
               {monthly_data !== null ? (
                 <MaterialTable
                   title="KPI Actions"

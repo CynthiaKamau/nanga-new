@@ -349,26 +349,7 @@ export default function ObjectiveReport() {
     {
       field: "nextPeriodAction",
       title: "Next Period Action",
-    },
-    {
-      field: "",
-      title: "Edit",
-      render: (list) => {
-        return (
-          <IconButton
-            aria-label="edit"
-            className={classes.textGreen}
-            onClick={() => {
-              handleEditClickOpenActions();
-              setEditingActions(list);
-            }}
-          >
-            <EditIcon />
-          </IconButton>
-        );
-      },
-      export: false,
-    },
+    }
   ]
 
   const saveMonthlyUpdate = async (e) => {
@@ -617,220 +598,228 @@ export default function ObjectiveReport() {
                   }}
                 />
               )}
-
-              <Grid container spacing={2} direction="row">
-                <Grid item xs={12} md={12} sm={12}>
-                  <Card>
-                    <CardHeader color="primary">
-                      <h4>Strategic Objectives Actions</h4>
-                    </CardHeader>
-                    <CardBody>
-                      {monthly_data !== null ? (
-                        <MaterialTable
-                          title="Objective Actions"
-                          data={monthly_data}
-                          columns={action_columns}
-                          options={{
-                            sorting: true,
-                            pageSize: 1,
-                            exportButton: true,
-                          }}
-                        />
-                      ) : (
-                        <MaterialTable
-                          title="Objective Actions"
-                          data={[]}
-                          columns={action_columns}
-                          options={{
-                            sorting: true,
-                            pageSize: 1,
-                            exportButton: true,
-                          }}
-                        />
-                      )}
-                    </CardBody>
-                  </Card>
-                </Grid>  
-              </Grid>  
-
-              <Dialog open={editOpenActions} onClose={handleEditCloseAction}>
-                <DialogTitle>Strategic Objective Actions</DialogTitle>
-                <DialogContent>
-                  <DialogContentText>
-                    Edit Strategic Objective Actions
-                  </DialogContentText>
-                    <TextField
-                      fullWidth
-                      label="Risk/Opportunities"
-                      id="monthly_risks"
-                      multiline
-                      rows={5}
-                      required
-                      variant="outlined"
-                      className={classes.textInput}
-                      type="text"
-                      value={monthly_risks}
-                      onChange={(event) => {
-                        const value = event.target.value;
-                        setMonthlyRisks(value);
-                      }}
-                    />
-            
-                    <TextField
-                      fullWidth
-                      label="Support Required"
-                      id="action"
-                      multiline
-                      rows={5}
-                      required
-                      variant="outlined"
-                      className={classes.textInput}
-                      type="text"
-                      value={monthlyaction}
-                      onChange={(event) => {
-                        const value = event.target.value;
-                        setMonthlyAction(value);
-                      }}
-                    />
-
-                    <TextField
-                      fullWidth
-                      label="Next Periods Actions"
-                      id="monthly_next_actions"
-                      multiline
-                      rows={5}
-                      required
-                      variant="outlined"
-                      className={classes.textInput}
-                      type="text"
-                      value={monthly_next_actions}
-                      onChange={(event) => {
-                        const value = event.target.value;
-                        setMonthlyNextActions(value);
-                      }}
-                    />
-                </DialogContent>
-                <DialogActions>
-                  <Button variant="contained" size="large" style={{backgroundColor : '#F44336'}}  onClick={handleEditCloseAction}>
-                    Cancel
-                  </Button >
-                  {showloader === true ? (
-                    <div style={{ textAlign: "center", marginTop: 10 }}>
-                    <Loader
-                        type="Puff"
-                        color="#29A15B"
-                        height={100}
-                        width={100}
-                    />
-                    </div>
-                    ) :
-                    (
-                      <Button variant="contained" size="large" style={{backgroundColor : '#29A15B'}} onClick={(e) => {saveMonthlyUpdate(e);}} > Save </Button>
-                    )}
-                </DialogActions>
-              </Dialog>  
-
-              <Dialog open={editopen} onClose={handleEditClose}>
-                <DialogTitle>Strategic Objective</DialogTitle>
-                <DialogContent>
-                  <DialogContentText>
-                    Edit Strategic Objective
-                  </DialogContentText>
-                  <TextField
-                    autoFocus
-                    margin="dense"
-                    id="objective"
-                    label="Objective"
-                    type="text"
-                    fullWidth
-                    style={{ marginBottom: "15px" }}
-                    value={description}
-                    variant="outlined"
-                    onChange={(event) => {
-                      setDescription(event.target.value);
-                    }}
-                  />
-
-                  <TextField
-                    fullWidth
-                    label="Comments On Progress Made"
-                    id="root_cause"
-                    multiline
-                    rows={2}
-                    required
-                    variant="outlined"
-                    className={classes.textInput}
-                    type="text"
-                    value={root_cause}
-                    onChange={(event) => {
-                      const value = event.target.value;
-                      setRootCause(value);
-                    }}
-                  />
-
-                  <TextField
-                    fullWidth
-                    label="Actions To Be Taken"
-                    id="action"
-                    multiline
-                    rows={2}
-                    required
-                    variant="outlined"
-                    className={classes.textInput}
-                    type="text"
-                    value={action}
-                    onChange={(event) => {
-                      const value = event.target.value;
-                      setAction(value);
-                    }}
-                  />
-
-                  <TextField
-                    fullWidth
-                    label="Priorities For Quarter"
-                    id="priorities_for_quarter"
-                    multiline
-                    rows={2}
-                    required
-                    variant="outlined"
-                    className={classes.textInput}
-                    type="text"
-                    value={priorities_for_quarter}
-                    onChange={(event) => {
-                      const value = event.target.value;
-                      setPrioritiesForQuarter(value);
-                    }}
-                  />
-                </DialogContent>
-                <DialogActions>
-                  <Button variant="contained" size="large" style={{backgroundColor : '#F44336'}}  onClick={handleEditClose}>
-                    Cancel
-                  </Button >
-                  {showloader === true ? (
-                    <div style={{ textAlign: "center", marginTop: 10 }}>
-                      <Loader
-                        type="Puff"
-                        color="#29A15B"
-                        height={150}
-                        width={150}
-                      />
-                    </div>
-                  ) : (
-                    <Button
-                      variant="contained" size="large" style={{backgroundColor : '#29A15B'}}
-                      onClick={(e) => {
-                        saveEdited(e);
-                      }}
-                    >
-                      Save
-                    </Button>
-                  )}
-                </DialogActions>
-              </Dialog>
-
             </CardBody>
           </Card>
-        </GridItem>
+        </GridItem>      
+
+        <Grid item xs={12} md={12} sm={12}>
+          <Card>
+            <CardHeader color="primary">
+              <h4>Strategic Objectives Actions</h4>
+            </CardHeader>
+            <CardBody>
+
+            <Grid container spacing={1} justify="flex-end" style={{ margin: "1rem 0.5rem 1rem" }}>
+              <Button color="primary" style={{backgroundColor : '#29A15B'}}
+                onClick={() => {
+                  handleEditClickOpenActions();
+                  setEditingActions(monthly_data[0]);
+                }} variant="contained"
+              > Update Actions</Button> 
+            </Grid>  
+
+              {monthly_data !== null ? (
+                <MaterialTable
+                  title="Objective Actions"
+                  data={monthly_data}
+                  columns={action_columns}
+                  options={{
+                    sorting: true,
+                    pageSize: 1,
+                    exportButton: true,
+                  }}
+                />
+              ) : (
+                <MaterialTable
+                  title="Objective Actions"
+                  data={[]}
+                  columns={action_columns}
+                  options={{
+                    sorting: true,
+                    pageSize: 1,
+                    exportButton: true,
+                  }}
+                />
+              )}
+            </CardBody>
+          </Card>
+        </Grid>  
+
+        <Dialog open={editOpenActions} onClose={handleEditCloseAction}>
+          <DialogTitle>Strategic Objective Actions</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Edit Strategic Objective Actions
+            </DialogContentText>
+              <TextField
+                fullWidth
+                label="Risk/Opportunities"
+                id="monthly_risks"
+                multiline
+                rows={5}
+                required
+                variant="outlined"
+                className={classes.textInput}
+                type="text"
+                value={monthly_risks}
+                onChange={(event) => {
+                  const value = event.target.value;
+                  setMonthlyRisks(value);
+                }}
+              />
+      
+              <TextField
+                fullWidth
+                label="Support Required"
+                id="action"
+                multiline
+                rows={5}
+                required
+                variant="outlined"
+                className={classes.textInput}
+                type="text"
+                value={monthlyaction}
+                onChange={(event) => {
+                  const value = event.target.value;
+                  setMonthlyAction(value);
+                }}
+              />
+
+              <TextField
+                fullWidth
+                label="Next Periods Actions"
+                id="monthly_next_actions"
+                multiline
+                rows={5}
+                required
+                variant="outlined"
+                className={classes.textInput}
+                type="text"
+                value={monthly_next_actions}
+                onChange={(event) => {
+                  const value = event.target.value;
+                  setMonthlyNextActions(value);
+                }}
+              />
+          </DialogContent>
+          <DialogActions>
+            <Button variant="contained" size="large" style={{backgroundColor : '#F44336'}}  onClick={handleEditCloseAction}>
+              Cancel
+            </Button >
+            {showloader === true ? (
+              <div style={{ textAlign: "center", marginTop: 10 }}>
+              <Loader
+                  type="Puff"
+                  color="#29A15B"
+                  height={100}
+                  width={100}
+              />
+              </div>
+              ) :
+              (
+                <Button variant="contained" size="large" style={{backgroundColor : '#29A15B'}} onClick={(e) => {saveMonthlyUpdate(e);}} > Save </Button>
+              )}
+          </DialogActions>
+        </Dialog>  
+
+        <Dialog open={editopen} onClose={handleEditClose}>
+          <DialogTitle>Strategic Objective</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Edit Strategic Objective
+            </DialogContentText>
+            <TextField
+              autoFocus
+              margin="dense"
+              id="objective"
+              label="Objective"
+              type="text"
+              fullWidth
+              style={{ marginBottom: "15px" }}
+              value={description}
+              variant="outlined"
+              onChange={(event) => {
+                setDescription(event.target.value);
+              }}
+            />
+
+            <TextField
+              fullWidth
+              label="Comments On Progress Made"
+              id="root_cause"
+              multiline
+              rows={2}
+              required
+              variant="outlined"
+              className={classes.textInput}
+              type="text"
+              value={root_cause}
+              onChange={(event) => {
+                const value = event.target.value;
+                setRootCause(value);
+              }}
+            />
+
+            <TextField
+              fullWidth
+              label="Actions To Be Taken"
+              id="action"
+              multiline
+              rows={2}
+              required
+              variant="outlined"
+              className={classes.textInput}
+              type="text"
+              value={action}
+              onChange={(event) => {
+                const value = event.target.value;
+                setAction(value);
+              }}
+            />
+
+            <TextField
+              fullWidth
+              label="Priorities For Quarter"
+              id="priorities_for_quarter"
+              multiline
+              rows={2}
+              required
+              variant="outlined"
+              className={classes.textInput}
+              type="text"
+              value={priorities_for_quarter}
+              onChange={(event) => {
+                const value = event.target.value;
+                setPrioritiesForQuarter(value);
+              }}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button variant="contained" size="large" style={{backgroundColor : '#F44336'}}  onClick={handleEditClose}>
+              Cancel
+            </Button >
+            {showloader === true ? (
+              <div style={{ textAlign: "center", marginTop: 10 }}>
+                <Loader
+                  type="Puff"
+                  color="#29A15B"
+                  height={150}
+                  width={150}
+                />
+              </div>
+            ) : (
+              <Button
+                variant="contained" size="large" style={{backgroundColor : '#29A15B'}}
+                onClick={(e) => {
+                  saveEdited(e);
+                }}
+              >
+                Save
+              </Button>
+            )}
+          </DialogActions>
+        </Dialog>
+
       </GridContainer>
     </div>
   );
