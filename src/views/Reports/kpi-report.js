@@ -451,9 +451,16 @@ export default function KPIReport() {
   const setEditingActions = (list) => {
     console.log("actions here", list);
 
-    if (list.supportRequired == null || list.supportRequired == undefined) {setMonthlyAction("")} else {setMonthlyAction(list.supportRequired)}
-    if (list.risk_opportunity == null || list.risk_opportunity == undefined ) {setMonthlyRisks("")} else {setMonthlyRisks(list.risk_opportunity)}
-    if (list.nextPeriodAction == null || list.nextPeriodAction == undefined) {setMonthlyNextActions("")} else {setMonthlyNextActions(list.nextPeriodAction)}
+    if(list == undefined || list == null) {
+      setMonthlyAction("");
+      setMonthlyRisks("");
+      setMonthlyNextActions("")
+    } else {
+      if (list[0].supportRequired == null || list[0].supportRequired == undefined) {setMonthlyAction("")} else {setMonthlyAction(list[0].supportRequired)}
+      if (list[0].risk_opportunity == null || list[0].risk_opportunity == undefined ) {setMonthlyRisks("")} else {setMonthlyRisks(list[0].risk_opportunity)}
+      if (list[0].nextPeriodAction == null || list[0].nextPeriodAction == undefined) {setMonthlyNextActions("")} else {setMonthlyNextActions(list[0].nextPeriodAction)}
+    }
+
   }
 
   const saveMonthlyUpdate = async (e) => {
@@ -884,7 +891,7 @@ export default function KPIReport() {
                 <Button color="primary" style={{backgroundColor : '#29A15B'}}
                   onClick={() => {
                     handleEditClickOpenActions();
-                    setEditingActions(monthly_data[0]);
+                    setEditingActions(monthly_data);
                   }} variant="contained"
                 > Update Actions</Button> 
               </Grid>  
