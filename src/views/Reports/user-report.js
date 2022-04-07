@@ -189,16 +189,32 @@ export default function UserReport() {
           title: 'Strategic Objective'
         },
         {
-          field: 'rag',
-          title: 'Status',
+          field: "rag",
+          title: "Status",
           render: (list) => {
-            if(list.objectives.overallStatus === 'COMPLETE' || list.objectives.overallStatus === 'Complete') {
-                return (<FiberManualRecord style={{color : '#29A15B'}}/>) 
-            }  else if(list.objectives.overallStatus === 'INCOMPLETE' || list.objectives.overallStatus === 'Incomplete' || list.objectives.overallStatus === null ) {
-                return (<FiberManualRecord style={{color : '#F44336'}}/>) 
+            if (
+              list.objectives.overallStatus === "COMPLETE" ||
+              list.objectives.overallStatus === "ON TRACK" ||
+              list.objectives.overallStatus === "Complete"
+            ) {
+              return <FiberManualRecord style={{ color: "#29A15B" }} />;
+            } else if (
+              list.objectives.overallStatus === "INCOMPLETE" ||
+              list.objectives.overallStatus === "SIGNIFICANTLY OFF TRACK" ||
+              list.objectives.overallStatus === "Incomplete" ||
+              list.objectives.overallStatus === null
+            ) {
+              return <FiberManualRecord style={{ color: "#F44336" }} />;
+            } else if (
+              list.objectives.overallStatus === "ONGOING" ||
+              list.objectives.overallStatus === "MODERATELY OFF TRACK" ||
+              list.objectives.overallStatus === "Ongoing" ||
+              list.objectives.overallStatus === null
+            ) {
+              return <FiberManualRecord style={{ color: "#FFC107" }} />;
             }
           },
-          export: false
+          export: false,
         },
         {
           field: 'variance',
