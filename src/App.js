@@ -5,7 +5,6 @@ import axios from "axios";
 // import { useSelector } from "react-redux";
 
 // core components
-import AuthLayout from "layouts/Auth.js";
 import RtlLayout from "layouts/RTL.js";
 import AdminLayout from "layouts/Admin.js";
 import LoginPage from "views/Pages/LoginPage";
@@ -31,7 +30,6 @@ const App = () => {
     <BrowserRouter history={hist}>
     <Switch>
       <Route path="/rtl" component={RtlLayout} />
-      <Route path="/auth" component={AuthLayout} />
       <Route path="/admin" component={AdminLayout} />
       <Route path="/user" component={User} />
       <Route path="/" component={LoginPage} />      

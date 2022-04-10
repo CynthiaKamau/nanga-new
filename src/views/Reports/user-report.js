@@ -175,84 +175,69 @@ export default function UserReport() {
           export: true,
           hidden: true 
         }, 
-        {
-          field: 'supportRequired',
-          title: 'Comments On Progress Made',
-          export: true,
-          hidden: true 
-        },
     ]
 
     const obj_columns = [
-        {
-          field: 'objectives.description',
-          title: 'Strategic Objective'
+      {
+        field: "objectives.description",
+        title: "Strategic Objective",
+      },
+      {
+        field: "rag",
+        title: "Status",
+        render: (list) => {
+          if (
+            list.objectives.overallStatus === "COMPLETE" ||
+            list.objectives.overallStatus === "ON TRACK" ||
+            list.objectives.overallStatus === "Complete"
+          ) {
+            return <FiberManualRecord style={{ color: "#29A15B" }} />;
+          } else if (
+            list.objectives.overallStatus === "INCOMPLETE" ||
+            list.objectives.overallStatus === "SIGNIFICANTLY OFF TRACK" ||
+            list.objectives.overallStatus === "Incomplete" ||
+            list.objectives.overallStatus === null
+          ) {
+            return <FiberManualRecord style={{ color: "#F44336" }} />;
+          } else if (
+            list.objectives.overallStatus === "ONGOING" ||
+            list.objectives.overallStatus === "MODERATELY OFF TRACK" ||
+            list.objectives.overallStatus === "Ongoing" ||
+            list.objectives.overallStatus === null
+          ) {
+            return <FiberManualRecord style={{ color: "#FFC107" }} />;
+          }
         },
-        {
-          field: "rag",
-          title: "Status",
-          render: (list) => {
-            if (
-              list.objectives.overallStatus === "COMPLETE" ||
-              list.objectives.overallStatus === "ON TRACK" ||
-              list.objectives.overallStatus === "Complete"
-            ) {
-              return <FiberManualRecord style={{ color: "#29A15B" }} />;
-            } else if (
-              list.objectives.overallStatus === "INCOMPLETE" ||
-              list.objectives.overallStatus === "SIGNIFICANTLY OFF TRACK" ||
-              list.objectives.overallStatus === "Incomplete" ||
-              list.objectives.overallStatus === null
-            ) {
-              return <FiberManualRecord style={{ color: "#F44336" }} />;
-            } else if (
-              list.objectives.overallStatus === "ONGOING" ||
-              list.objectives.overallStatus === "MODERATELY OFF TRACK" ||
-              list.objectives.overallStatus === "Ongoing" ||
-              list.objectives.overallStatus === null
-            ) {
-              return <FiberManualRecord style={{ color: "#FFC107" }} />;
-            }
-          },
-          export: false,
-        },
-        {
-          field: 'variance',
-          title: 'Status',
-          export: true,
-          hidden: true  
-        }, 
-        {
-          field: 'variance',
-          title: 'Rag Status',
-          export: true,
-          hidden: true  
-        }, 
-        {
-          field: 'objectives.rootCause',
-          title: 'Root Cause and Insight',
-          export: true,
-          hidden: true 
-        },
-        {
-          field: 'objectives.action',
-          title: 'Actions To Be Taken'
-        },
-        {
-          field: 'objectives.riskOrOpportunity',
-          title: 'Comments On Progress Made' 
-        },
-        {
-          field: 'objectives.supportRequired',
-          title: 'Support Required',
-          export: true,
-          hidden: true 
-        },
-        {
-         field: 'objectives.prioritiesForQuarter',
-         title: 'Priorities for the quarter'
-        },
-    ]
+        export: false,
+      },
+      {
+        field: "variance",
+        title: "Status",
+        export: true,
+        hidden: true,
+      },
+      {
+        field: "variance",
+        title: "Rag Status",
+        export: true,
+        hidden: true,
+      },
+      {
+        field: "objectives.prioritiesForQuarter",
+        title: "Priorities for the quarter",
+      },
+      {
+        field: "objectives.rootCause",
+        title: "Comments On Progress Made",
+      },
+      {
+        field: "objectives.action",
+        title: "Actions To Be Taken",
+        cellStyle: {
+          cellWidth: '15%'
+        }
+      }
+    ];
 
     const filterKpiData = async(e) => {
       e.preventDefault();

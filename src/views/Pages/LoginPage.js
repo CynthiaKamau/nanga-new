@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 // @material-ui/core components
 import { makeStyles } from "@material-ui/core/styles";
 
-import Background from "assets/img/background.png";
+import Background from "assets/img/background.jpeg";
 import { useHistory } from "react-router-dom";
 import { useDispatch } from "react-redux";
 // core components

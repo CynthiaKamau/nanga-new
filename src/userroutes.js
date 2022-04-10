@@ -148,7 +148,7 @@ var dashRoutes = [
     name: "Reports",
     rtlName: "صفحات",
     icon: Poll,
-    state: "tablesCollapse",
+    state: "mapsCollapse",
     views: [
       {
         path: "/kpis-report",

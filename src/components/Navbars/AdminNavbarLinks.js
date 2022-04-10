@@ -17,7 +17,9 @@ import Popper from "@material-ui/core/Popper";
 import Divider from "@material-ui/core/Divider";
 import { logout } from "actions/auth";
 import Avatar from "../../assets/img/default-avatar.png";
+import Notifications from "@material-ui/icons/Notifications";
 import { getUser } from "actions/auth";
+import { getUnassignedTasks, getRejectedTasks } from "actions/tasks";
 
 // core components
 import Button from "components/CustomButtons/Button.js";
@@ -29,15 +31,47 @@ const useStyles = makeStyles(styles);
 export default function HeaderLinks(props) {
   const { user : currentUser } = useSelector(state => state.auth);
   const { myuser } = useSelector(state => state.auth);
+  const { unassigned_items, unassigned_items_error, rejected_items, rejected_items_error } = useSelector(state => state.task);
+
+  console.log("unassigned_items_error", unassigned_items_error)
+  console.log("unassigned_items", unassigned_items)
+  console.log("rejected_items_error", rejected_items_error)
+  console.log("rejected_items", rejected_items)
 
   const dispatch = useDispatch();
   const history = useHistory();
-
+  const [openProfile, setOpenProfile] = React.useState(null);
   const [avatar, setAvatar] = useState("")
   const [name, setName] = useState("");
+  const classes = useStyles();
+  const { rtlActive } = props;
+  const [openNotification, setOpenNotification] = React.useState(null);
+
+  const handleClickNotification = (event) => {
+    if (openNotification && openNotification.contains(event.target)) {
+      setOpenNotification(null);
+    } else {
+      setOpenNotification(event.currentTarget);
+    }
+  };
+  const handleCloseNotification = () => {
+    setOpenNotification(null);
+  };
+
+  const dropdownItem = classNames(classes.dropdownItem, classes.primaryHover, {
+    [classes.dropdownItemRTL]: rtlActive,
+  });
+  const wrapper = classNames({
+    [classes.wrapperRTL]: rtlActive,
+  });
+  const managerClasses = classNames({
+    [classes.managerClasses]: true,
+  });
 
   useEffect(() => {
     dispatch(getUser(currentUser.id));
+    dispatch(getUnassignedTasks(currentUser.id));
+    dispatch(getRejectedTasks(currentUser.id));
   }, []);
 
   useEffect(() => {
@@ -62,7 +96,6 @@ export default function HeaderLinks(props) {
     }
   }
 
-  const [openProfile, setOpenProfile] = React.useState(null);
   const handleClickProfile = (event) => {
     if (openProfile && openProfile.contains(event.target)) {
       setOpenProfile(null);
@@ -73,20 +106,101 @@ export default function HeaderLinks(props) {
   const handleCloseProfile = () => {
     setOpenProfile(null);
   };
-  const classes = useStyles();
-  const { rtlActive } = props;
-
-  const dropdownItem = classNames(classes.dropdownItem, classes.primaryHover, {
-    [classes.dropdownItemRTL]: rtlActive,
-  });
-  const wrapper = classNames({
-    [classes.wrapperRTL]: rtlActive,
-  });
-  const managerClasses = classNames({
-    [classes.managerClasses]: true,
-  });
+  
   return (
     <div className={wrapper}>
+
+      <div className={managerClasses} style={{ marginRight : '280px'}}>
+        <Button
+          color="transparent"
+          justIcon
+          aria-label="Notifications"
+          aria-owns={openNotification ? "notification-menu-list" : null}
+          aria-haspopup="true"
+          onClick={handleClickNotification}
+          className={rtlActive ? classes.buttonLinkRTL : classes.buttonLink}
+          muiClasses={{
+            label: rtlActive ? classes.labelRTL : "",
+          }}
+        >
+          <Notifications
+            className={
+              classes.headerLinksSvg +
+              " " +
+              (rtlActive
+                ? classes.links + " " + classes.linksRTL
+                : classes.links)
+            }
+          />
+          <span className={classes.notifications}>{unassigned_items && (unassigned_items.length)}</span>
+          <Hidden mdUp implementation="css">
+            <span
+              onClick={handleClickNotification}
+              className={classes.linkText}
+            >
+              {rtlActive ? "إعلام" : "Notification"}
+            </span>
+          </Hidden>
+        </Button>
+        <Popper
+          open={Boolean(openNotification)}
+          anchorEl={openNotification}
+          transition
+          disablePortal
+          placement="bottom"
+          className={classNames({
+            [classes.popperClose]: !openNotification,
+            [classes.popperResponsive]: true,
+            [classes.popperNav]: true,
+          })}
+        >
+          {({ TransitionProps }) => (
+            <Grow
+              {...TransitionProps}
+              id="notification-menu-list"
+              style={{ transformOrigin: "0 0 0" }}
+            >
+              <Paper className={classes.dropdown}>
+                <ClickAwayListener onClickAway={handleCloseNotification}>
+                  <MenuList role="menu">
+                    <h5 style={{ fontWeight : 'bold', marginLeft : '1rem'}}>New Assigned MAS</h5>
+
+                    {unassigned_items == null || unassigned_items == undefined ? (
+                      <p>You have no new assigned MAS.</p>
+                    ) : unassigned_items ? (unassigned_items.map((detail, index) => {
+                      <div>
+                      <p>{index} {detail[0]} </p>
+                      <MenuItem key={index}
+                      onClick={handleCloseNotification}
+                      className={dropdownItem}
+                      >
+                        {detail.description}
+                      </MenuItem>
+                      </div>
+
+                    })) : null}
+
+                    <h5 style={{ fontWeight : 'bold', marginLeft : '1rem'}}>Rejected MAS</h5>
+
+                    {rejected_items == null || rejected_items == undefined ? (
+                      <p>You have no rejected MAS.</p>
+                    ) : rejected_items ? (rejected_items.map((detail, index) => {
+                      <MenuItem key={index}
+                      onClick={handleCloseNotification}
+                      className={dropdownItem}
+                      >
+                        {detail.description}
+                      </MenuItem>
+
+                    })) : null}
+
+                  </MenuList>
+                </ClickAwayListener>
+              </Paper>
+            </Grow>
+          )}
+        </Popper>
+      </div>
 
       <div className={managerClasses}>
         <Button

@@ -10,6 +10,10 @@ import {
     ALL_ASSIGNED_TASKS_FAIL,
     ALL_ASSIGNED_TASKS_FETCH_REQUEST,
 
+    ALL_REJECTED_TASKS_SUCCESS,
+    ALL_REJECTED_TASKS_FAIL,
+    ALL_REJECTED_TASKS_FETCH_REQUEST,
+
     ALL_UNASSIGNED_TASKS_SUCCESS,
     ALL_UNASSIGNED_TASKS_FAIL,
     ALL_UNASSIGNED_TASKS_FETCH_REQUEST,
@@ -96,6 +100,28 @@ export const getAssignedTasks = (id) => {
         } catch (error) {
 
             dispatch({ type: ALL_ASSIGNED_TASKS_FAIL, payload: error.response.data })
+        }
+    }
+}
+
+export const getRejectedTasks = (id) => {
+
+    return async function (dispatch) {
+
+        dispatch({ type: ALL_REJECTED_TASKS_FETCH_REQUEST });
+
+        try {
+
+            let response = await axios.get(`/assignedtasks/fetchAssignerRejectedTasks?assigner_id=${id}`)
+            if (response.status == 200) {
+                dispatch({ type: ALL_REJECTED_TASKS_SUCCESS, payload: response.data })
+            } else {
+                dispatch({ type: ALL_REJECTED_TASKS_FAIL, payload: response.data })
+            }
+
+        } catch (error) {
+
+            dispatch({ type: ALL_REJECTED_TASKS_FAIL, payload: error.response.data })
         }
     }
 }
