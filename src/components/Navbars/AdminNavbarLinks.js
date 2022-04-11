@@ -19,7 +19,7 @@ import { logout } from "actions/auth";
 import Avatar from "../../assets/img/default-avatar.png";
 import Notifications from "@material-ui/icons/Notifications";
 import { getUser } from "actions/auth";
-import { getUnassignedTasks, getRejectedTasks } from "actions/tasks";
+import { getUnassignedTasks, getRejectedTasks, getAssignedTasks } from "actions/tasks";
 
 // core components
 import Button from "components/CustomButtons/Button.js";
@@ -31,12 +31,13 @@ const useStyles = makeStyles(styles);
 export default function HeaderLinks(props) {
   const { user : currentUser } = useSelector(state => state.auth);
   const { myuser } = useSelector(state => state.auth);
-  const { unassigned_items, unassigned_items_error, rejected_items, rejected_items_error } = useSelector(state => state.task);
+  const { items, unassigned_items, unassigned_items_error, rejected_items, rejected_items_error } = useSelector(state => state.task);
 
   console.log("unassigned_items_error", unassigned_items_error)
   console.log("unassigned_items", unassigned_items)
   console.log("rejected_items_error", rejected_items_error)
   console.log("rejected_items", rejected_items)
+  console.log("items", items )
 
   const dispatch = useDispatch();
   const history = useHistory();
@@ -46,6 +47,21 @@ export default function HeaderLinks(props) {
   const classes = useStyles();
   const { rtlActive } = props;
   const [openNotification, setOpenNotification] = React.useState(null);
+
+  useEffect(() => {
+    dispatch(getUser(currentUser.id));
+    dispatch(getUnassignedTasks(currentUser.id));
+    dispatch(getRejectedTasks(currentUser.id));
+    dispatch(getAssignedTasks(currentUser.id))
+  }, []);
+
+  useEffect(() => {
+    if(myuser) {
+      setName(myuser.fullnames);
+      setAvatar(myuser.userPicture);
+    }
+    
+  }, [myuser]);
 
   const handleClickNotification = (event) => {
     if (openNotification && openNotification.contains(event.target)) {
@@ -67,20 +83,6 @@ export default function HeaderLinks(props) {
   const managerClasses = classNames({
     [classes.managerClasses]: true,
   });
-
-  useEffect(() => {
-    dispatch(getUser(currentUser.id));
-    dispatch(getUnassignedTasks(currentUser.id));
-    dispatch(getRejectedTasks(currentUser.id));
-  }, []);
-
-  useEffect(() => {
-    if(myuser) {
-      setName(myuser.fullnames);
-      setAvatar(myuser.userPicture);
-    }
-    
-  }, [myuser]);
 
   const logoutHandler = () => {
     dispatch(logout)
@@ -163,34 +165,34 @@ export default function HeaderLinks(props) {
               <Paper className={classes.dropdown}>
                 <ClickAwayListener onClickAway={handleCloseNotification}>
                   <MenuList role="menu">
-                    <h5 style={{ fontWeight : 'bold', marginLeft : '1rem'}}>New Assigned MAS</h5>
+                    <h5 style={{ fontWeight : 'bold', marginLeft : '1rem'}}>New Assigned MAS </h5>
 
                     {unassigned_items == null || unassigned_items == undefined ? (
                       <p>You have no new assigned MAS.</p>
                     ) : unassigned_items ? (unassigned_items.map((detail, index) => {
-                      <div>
-                      <p>{index} {detail[0]} </p>
-                      <MenuItem key={index}
-                      onClick={handleCloseNotification}
-                      className={dropdownItem}
+                      return (<MenuItem key={index}
+                        onClick={handleCloseNotification}
+                        className={dropdownItem}
                       >
-                        {detail.description}
-                      </MenuItem>
-                      </div>
-
+                        {rtlActive
+                          ? "شعار إعلان الأرضية قد ذلك"
+                          : detail.description}
+                      </MenuItem>)
                     })) : null}
 
-                    <h5 style={{ fontWeight : 'bold', marginLeft : '1rem'}}>Rejected MAS</h5>
+                     <h5 style={{ fontWeight : 'bold', marginLeft : '1rem'}}>Rejected MAS</h5>
 
                     {rejected_items == null || rejected_items == undefined ? (
                       <p>You have no rejected MAS.</p>
                     ) : rejected_items ? (rejected_items.map((detail, index) => {
-                      <MenuItem key={index}
-                      onClick={handleCloseNotification}
-                      className={dropdownItem}
+                      return (<MenuItem key={index}
+                        onClick={handleCloseNotification}
+                        className={dropdownItem}
                       >
-                        {detail.description}
-                      </MenuItem>
+                        {rtlActive
+                          ? "شعار إعلان الأرضية قد ذلك"
+                          : (detail.description)}
+                      </MenuItem>)
 
                     })) : null}
 

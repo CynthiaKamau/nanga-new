@@ -72,7 +72,6 @@ export const getUnassignedTasks = (id) => {
             if (response.status == 200) {
                 dispatch({ type: ALL_UNASSIGNED_TASKS_SUCCESS, payload: response.data})
             } else {
-                console.log("error1",response.data)
                 dispatch({ type: ALL_UNASSIGNED_TASKS_FAIL, payload: response.data })
             }
 

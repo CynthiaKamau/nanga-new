@@ -971,7 +971,7 @@ function Dashboard() {
                                 <Card  className={classes.cardBodyGreen}>
                                     <CardBody>
                                         <h4 className={classes.cardTitle}>
-                                        {list.done} <small>Completed</small>
+                                        {list.complete} <small>Completed</small>
                                         </h4>
                                     </CardBody>
                                 </Card>
