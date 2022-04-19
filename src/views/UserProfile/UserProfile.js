@@ -346,7 +346,7 @@ export default function UserProfile() {
         <GridItem xs={12} sm={12} md={4}>
           <Card profile>
             <CardAvatar profile>
-                { avatar ? ( <img src={avatar} alt="..." /> )
+                { avatar ? ( <img src={`../../../${avatar}`} alt="..." /> )
                 : avatar === null || avatar === undefined || avatar === '' ? ( <img src={Avatar} alt="..." />
                 ) : (<img src={Avatar} alt="..." /> )}
 
