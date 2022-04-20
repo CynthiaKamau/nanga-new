@@ -74,6 +74,22 @@ export default function HeaderLinks(props) {
     setOpenNotification(null);
   };
 
+  const handleOnClickAssigned = () => {
+    if(currentUser.role_id === 0) {
+      history.push('/admin/shared-tasks')
+    } else {
+      history.push('/user/shared-tasks')
+    }
+  }
+
+  // const handleOnClickRejected = () => {
+  //   if(currentUser.role_id === 0) {
+  //     history.push('/admin/strategic-objectives')
+  //   } else {
+  //     history.push('/user/strategic-objectives')
+  //   }
+  // }
+
   const dropdownItem = classNames(classes.dropdownItem, classes.primaryHover, {
     [classes.dropdownItemRTL]: rtlActive,
   });
@@ -171,7 +187,7 @@ export default function HeaderLinks(props) {
                       <p>You have no new assigned MAS.</p>
                     ) : unassigned_items ? (unassigned_items.map((detail, index) => {
                       return (<MenuItem key={index}
-                        onClick={handleCloseNotification}
+                        onClick={handleOnClickAssigned}
                         className={dropdownItem}
                       >
                         {rtlActive
