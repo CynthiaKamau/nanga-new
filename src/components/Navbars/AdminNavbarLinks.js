@@ -14,16 +14,13 @@ import Paper from "@material-ui/core/Paper";
 import Grow from "@material-ui/core/Grow";
 import Hidden from "@material-ui/core/Hidden";
 import Popper from "@material-ui/core/Popper";
-import Divider from "@material-ui/core/Divider";
 import { logout } from "actions/auth";
 import Avatar from "../../assets/img/default-avatar.png";
 import Notifications from "@material-ui/icons/Notifications";
 import { getUser } from "actions/auth";
 import { getUnassignedTasks, getRejectedTasks, getAssignedTasks } from "actions/tasks";
-
-// core components
+import { List,ListItem, ListItemText, Divider } from "@material-ui/core";
 import Button from "components/CustomButtons/Button.js";
-
 import styles from "assets/jss/material-dashboard-pro-react/components/adminNavbarLinksStyle.js";
 
 const useStyles = makeStyles(styles);
@@ -47,6 +44,9 @@ export default function HeaderLinks(props) {
   const classes = useStyles();
   const { rtlActive } = props;
   const [openNotification, setOpenNotification] = React.useState(null);
+  const [selectedIndex, setSelectedIndex] = useState(null);
+
+  console.log("selected index", selectedIndex);
 
   useEffect(() => {
     dispatch(getUser(currentUser.id));
@@ -123,6 +123,13 @@ export default function HeaderLinks(props) {
   };
   const handleCloseProfile = () => {
     setOpenProfile(null);
+  };
+
+  const flexContainer = {
+    padding: '10px',
+    borderRadius: '1rem',
+    border: '1px solid green',
+    outline: 'none'
   };
   
   return (
@@ -201,18 +208,34 @@ export default function HeaderLinks(props) {
                     {rejected_items == null || rejected_items == undefined ? (
                       <p>You have no rejected MAS.</p>
                     ) : rejected_items ? (rejected_items.map((detail, index) => {
-                      return (<MenuItem key={index}
-                        onClick={handleCloseNotification}
-                        className={dropdownItem}
-                      >
-                        {rtlActive
-                          ? "شعار إعلان الأرضية قد ذلك"
-                          : (detail.description)}
-                      </MenuItem>)
-
-                    })) : null}
-
-                  </MenuList>
+                      if(selectedIndex === index) {
+                        return( <div><Divider/><List style={flexContainer}>
+                            <ListItem >
+                              <ListItemText> Title :  {detail.description}</ListItemText>
+                            </ListItem>
+                            <ListItem>  
+                              <ListItemText> Assigner : {detail.assigner_fullnames} </ListItemText>
+                            </ListItem>
+                            <ListItem>  
+                              <ListItemText> Status : {detail.status}</ListItemText>
+                            </ListItem>
+                            <ListItem>  
+                              <ListItemText> Reason : {detail.reason} </ListItemText>
+                            </ListItem>
+                          </List> <Divider/></div>)
+                      } else {
+                        return( <MenuItem key={index} currentIndex={index}
+                          onClick={() => {handleCloseNotification; setSelectedIndex(selectedIndex => selectedIndex === index ? null : index)}}
+                          className={dropdownItem}
+                          >
+                          {rtlActive
+                            ? "شعار إعلان الأرضية قد ذلك"
+                            : (detail.description)}
+                        </MenuItem>)
+                      }
+                      
+                    })) : null}  
+                  </MenuList>    
                 </ClickAwayListener>
               </Paper>
             </Grow>

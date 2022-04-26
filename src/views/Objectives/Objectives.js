@@ -121,7 +121,7 @@ export default function StrategicObjectives() {
     const [id, setId] = useState("");
     const [updated_by, setUpdatedBy] = useState("");
     const [show_tasks, setShowTasks] = useState(false);
-    const [setIndex, setSelectedIndex] = useState("");
+    const [setIndex, setSelectedIndex] = useState(null);
     const [err, setError] = useState("");
     const [obj_tasks, setObjTasks] = useState("");
     const [ task_objective_id, setTaskObjectiveId] = useState("");
@@ -961,8 +961,8 @@ export default function StrategicObjectives() {
                         <CardFooter className={classes.cardFooter}>
                             {/* <IconButton> <ExpandMoreIcon className={classes.iconBottom} onClick={() => handleRedirect()} /> </IconButton> */}
                             { show_tasks === false ? (
-                                <IconButton onClick={() => { setShowTasks(true); setSelectedIndex(index); setShowObjectivesTask(list.objectives.id)}} > <ExpandMoreIcon className={classes.iconBottom} /> </IconButton>
-                            ) : show_tasks === true ? ( <IconButton> <ExpandLess className={classes.iconBottom} onClick={() => setShowTasks(false)} /> </IconButton> 
+                                <IconButton onClick={() => { setShowTasks(true); setSelectedIndex(setIndex => setIndex === index ? null : index); setShowObjectivesTask(list.objectives.id)}} > <ExpandMoreIcon className={classes.iconBottom} /> </IconButton>
+                            ) : show_tasks === true && setIndex === index ? ( <IconButton> <ExpandLess className={classes.iconBottom} onClick={() => setShowTasks(false)} /> </IconButton> 
                             ) : null}
                         </CardFooter>
                         
