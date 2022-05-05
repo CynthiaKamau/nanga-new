@@ -6,7 +6,7 @@ import DashboardPage from "views/Dashboard/Dashboard.js";
 import AssignedTasksPage from "views/Tasks/AssignedTasksPage";
 import StrategicObjectives from "views/Objectives/Objectives";
 import KPIsPage from "views/KPI/kpi";
-// import KPIsPageTest from "views/KPI/kpitest";
+import Chart from "views/Teams/Organogram";
 
 // import MyKpis from "views/KPI/mykpi"; 
 import UserProfile from "views/UserProfile/UserProfile";
@@ -73,6 +73,15 @@ var dashRoutes = [
         mini: "TM",
         rtlMini: "ع",
         component: MyTeamPage,
+        layout: "/admin",
+      },
+      {
+        path: "/organogram",
+        name: "Organogram",
+        rtlName: "عالتسعير",
+        mini: "TM",
+        rtlMini: "ع",
+        component: Chart,
         layout: "/admin",
       },
     ],

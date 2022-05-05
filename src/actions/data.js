@@ -58,7 +58,11 @@ import {
 
     WEEKLY_REPORT_SUCCESS,
     WEEKLY_REPORT_FETCH_REQUEST,
-    WEEKLY_REPORT_FAIL
+    WEEKLY_REPORT_FAIL,
+
+    ORGANOGRAM_SUCCESS,
+    ORGANOGRAM_FETCH_REQUEST,
+    ORGANOGRAM_FAIL
 
 } from './types';
 
@@ -414,6 +418,27 @@ export const getWeeklyReport = (id) => {
     }
 }
 
+//organogram data
+export const getOrganogram = () => {
+
+    return async function (dispatch) {
+
+        dispatch({ type: ORGANOGRAM_FETCH_REQUEST });
+
+        try {
+
+            let response = await axios.get(`teams/fetchOrganogram`)
+            if (response.status == 200) {
+                dispatch({ type: ORGANOGRAM_SUCCESS, payload: response.data })
+            } else {
+                dispatch({ type: ORGANOGRAM_FAIL, payload: response.data })
+            }
+
+        } catch (error) {
+            dispatch({ type: ORGANOGRAM_FAIL, payload: error.response })
+        }
+    }
+}
 
 
 

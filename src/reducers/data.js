@@ -57,7 +57,11 @@ import {
 
     WEEKLY_REPORT_SUCCESS,
     WEEKLY_REPORT_FETCH_REQUEST,
-    WEEKLY_REPORT_FAIL
+    WEEKLY_REPORT_FAIL,
+
+    ORGANOGRAM_SUCCESS,
+    ORGANOGRAM_FETCH_REQUEST,
+    ORGANOGRAM_FAIL
 
 } from '../actions/types';
 
@@ -74,6 +78,8 @@ const initialState = {
     vision : [],
     error : [],
     task_count : [],
+    organogram: [],
+    organogram_error: null,
     strategic_intent1 : [],
     strategic_intent2 : [],
     strategic_intent1_error : null,
@@ -102,6 +108,7 @@ export default function(state = initialState, action) {
         case STRATEGIC_INTENT2_FETCH_REQUEST :
         case KPI_COUNT_FETCH_REQUEST :
         case WEEKLY_REPORT_FETCH_REQUEST :
+        case ORGANOGRAM_FETCH_REQUEST :
             return {
                 ...state,
                 isLoading: true
@@ -112,6 +119,12 @@ export default function(state = initialState, action) {
                 ...state,
                 categories : action.payload,
                 error : null
+            }
+        case ORGANOGRAM_SUCCESS :
+            return {
+                ...state,
+                organogram : action.payload,
+                organogram_error : null
             }
         case STRATEGIC_INTENT1_SUCCESS :
             return {
@@ -218,6 +231,14 @@ export default function(state = initialState, action) {
                 ...state,
                 weekly_report_error : action.payload.message,
                 error : null
+            }
+
+        case ORGANOGRAM_FAIL :
+            return {
+                ...state,
+                isLoading: false,
+                organogram : null,
+                organogram_error: action.payload.message
             }
         
         case ALL_STATUS_FAIL :
