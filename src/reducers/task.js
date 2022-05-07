@@ -6,6 +6,14 @@ import {
     ALL_ASSIGNED_TASKS_SUCCESS,
     ALL_ASSIGNED_TASKS_FAIL,
     ALL_ASSIGNED_TASKS_FETCH_REQUEST,
+
+    ALL_REJECTED_TASKS_SUCCESS,
+    ALL_REJECTED_TASKS_FAIL,
+    ALL_REJECTED_TASKS_FETCH_REQUEST,
+
+    ALL_UNASSIGNED_TASKS_SUCCESS,
+    ALL_UNASSIGNED_TASKS_FAIL,
+    ALL_UNASSIGNED_TASKS_FETCH_REQUEST,
     
     TASK_SUCCESS,
     TASK_FETCH_REQUEST,
@@ -43,6 +51,10 @@ import {
 
 const initialState = {
     items : [],
+    unassigned_items: [],
+    unassigned_items_error: [],
+    rejected_items: [],
+    rejected_items_error: [],
     item: [],
     error : [],
     isLoading : false
@@ -60,6 +72,8 @@ export default function(state = initialState, action) {
         case EDIT_ASSIGNED_TASK_FETCH_REQUEST :
         case DELETE_TASK_FETCH_REQUEST :
         case DELETE_ASSIGNED_TASK_FETCH_REQUEST :
+        case ALL_UNASSIGNED_TASKS_FETCH_REQUEST :  
+        case ALL_REJECTED_TASKS_FETCH_REQUEST :  
             return {
                 ...state,
                 isLoading: true
@@ -73,6 +87,23 @@ export default function(state = initialState, action) {
                 isLoading : false,
                 error : null
             }
+
+        case ALL_UNASSIGNED_TASKS_SUCCESS :
+            return {
+                ...state,
+                unassigned_items : action.payload.data ,
+                isLoading : false,
+                unassigned_items_error : null
+            }
+
+        case ALL_REJECTED_TASKS_SUCCESS :
+            return {
+                ...state,
+                rejected_items : action.payload.data ,
+                isLoading : false,
+                rejected_items_error : null
+            }
+
         case TASK_SUCCESS :
         case ASSIGNED_TASK_SUCCESS :
         case ADD_TASK_SUCCESS :
@@ -96,6 +127,23 @@ export default function(state = initialState, action) {
                 items : null,
                 error: action.payload.message
             }
+
+        case ALL_UNASSIGNED_TASKS_FAIL :
+            return {
+                ...state,
+                isLoading: false,
+                unassigned_items : null,
+                unassigned_items_error: action.payload.message
+            }
+
+        case ALL_REJECTED_TASKS_FAIL :
+            return {
+                ...state,
+                isLoading: false,
+                rejected_items : null,
+                rejected_items_error: action.payload.message
+            }
+
         case TASK_FAIL :
         case ASSIGNED_TASK_FAIL :
         case ADD_TASK_FAIL :

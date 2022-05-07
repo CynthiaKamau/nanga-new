@@ -30,7 +30,7 @@ import swal from "sweetalert2";
 import Loader from "react-loader-spinner";
 import MenuItem from '@material-ui/core/MenuItem';
 import { getUserObjectives } from "actions/objectives";
-import Avatar from "../../assets/img/default-avatar.png";
+// import Avatar from "../../assets/img/default-avatar.png";
 import MaterialTable from 'material-table';
 
 const useStyles = makeStyles(styles);
@@ -84,7 +84,7 @@ export default function AssignedTasksPage() {
         description: description,
         start_date: start_date,
         end_date: end_date,
-        user_ids: user_id,
+        user_id: user_id,
         created_by: user_id,
         objective_id: objective_id
         }
@@ -115,6 +115,12 @@ export default function AssignedTasksPage() {
                     title: "Success",
                     text: "Task added successfully!",
                     icon: "success",
+                }).then(() => {
+                    setStartDate("")
+                    setEndDate("")
+                    setDescription("")
+                    setObjectiveId("")
+                    dispatch(getAssignedTasks(user_id))
                 });
             }
         } catch (error) {
@@ -146,20 +152,17 @@ export default function AssignedTasksPage() {
             title: 'From'
         },
         {
-          field: 'resource',
-          title: 'Resources',
-          render: list => {
-            return list.assignedTasks.map((detail, index) => {
-                if(detail.assignee.userPicture != null) {
-                    return (<img key={index} src={detail.assignee.userPicture}
-                        alt={detail.assignee.fullnames}  style={{ maxWidth: '50px', maxHeight: '50px', borderRadius: '50%'}} />)
-                } else if (detail.assignee.userPicture === null || detail.assignee.userPicture === undefined) {
-                    return (<img key={index} src={Avatar} alt={detail.assignee.fullnames}  style={{ maxWidth: '50px', maxHeight: '50px', borderRadius: '50%'}} />) 
-                }
-               
-            })
-
-          }
+            field: 'resource',
+            title: 'Resources',
+            render: list => {
+              return list.assignedTasks.map((detail, index) => {
+                  if(detail.assignee.fullnames != null) {
+                      return (<p key={index}>{detail.assignee.fullnames}</p>)
+                  } else if (detail.assignee.fullnames === null || detail.assignee.fullnames === undefined) {
+                    return (<p key={index}>None</p>)                  }
+              })
+  
+            }
         },
         {
           field: 'duedate',
@@ -170,9 +173,8 @@ export default function AssignedTasksPage() {
         },
         {
           field: 'status',
-          title: 'Progress'
+          title: 'Status'
         },
-        
         {
           field: '',
           title: 'Actions',

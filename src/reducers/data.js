@@ -43,6 +43,26 @@ import {
     OBJECTIVE_COUNT_FETCH_REQUEST,
     OBJECTIVE_COUNT_FAIL,
 
+    KPI_COUNT_SUCCESS,
+    KPI_COUNT_FETCH_REQUEST,
+    KPI_COUNT_FAIL,
+
+    STRATEGIC_INTENT1_SUCCESS,
+    STRATEGIC_INTENT1_FETCH_REQUEST,
+    STRATEGIC_INTENT1_FAIL,
+
+    STRATEGIC_INTENT2_SUCCESS,
+    STRATEGIC_INTENT2_FETCH_REQUEST,
+    STRATEGIC_INTENT2_FAIL,
+
+    WEEKLY_REPORT_SUCCESS,
+    WEEKLY_REPORT_FETCH_REQUEST,
+    WEEKLY_REPORT_FAIL,
+
+    ORGANOGRAM_SUCCESS,
+    ORGANOGRAM_FETCH_REQUEST,
+    ORGANOGRAM_FAIL
+
 } from '../actions/types';
 
 const initialState = {
@@ -58,7 +78,16 @@ const initialState = {
     vision : [],
     error : [],
     task_count : [],
+    organogram: [],
+    organogram_error: null,
+    strategic_intent1 : [],
+    strategic_intent2 : [],
+    strategic_intent1_error : null,
+    strategic_intent2_error : null,
     objective_count : [],
+    kpi_count : [],
+    weekly_report : [],
+    weekly_report_error: [],
     isLoading : false
 }
 
@@ -75,6 +104,11 @@ export default function(state = initialState, action) {
         case SPEC_USER_FETCH_REQUEST :
         case TASK_COUNT_FETCH_REQUEST :
         case OBJECTIVE_COUNT_FETCH_REQUEST :
+        case STRATEGIC_INTENT1_FETCH_REQUEST :
+        case STRATEGIC_INTENT2_FETCH_REQUEST :
+        case KPI_COUNT_FETCH_REQUEST :
+        case WEEKLY_REPORT_FETCH_REQUEST :
+        case ORGANOGRAM_FETCH_REQUEST :
             return {
                 ...state,
                 isLoading: true
@@ -84,6 +118,24 @@ export default function(state = initialState, action) {
             return {
                 ...state,
                 categories : action.payload,
+                error : null
+            }
+        case ORGANOGRAM_SUCCESS :
+            return {
+                ...state,
+                organogram : action.payload,
+                organogram_error : null
+            }
+        case STRATEGIC_INTENT1_SUCCESS :
+            return {
+                ...state,
+                strategic_intent1 : action.payload,
+                error : null
+            }
+        case STRATEGIC_INTENT2_SUCCESS :
+            return {
+                ...state,
+                strategic_intent2 : action.payload,
                 error : null
             }
         case ALL_ROLES_SUCCESS : 
@@ -130,12 +182,28 @@ export default function(state = initialState, action) {
                 objective_count : action.payload,
                 error : null
             }
+
+        case KPI_COUNT_SUCCESS :
+            return {
+                ...state,
+                kpi_count : action.payload,
+                error : null
+            }
+
         case SPEC_USER_SUCCESS :
             return {
                 ...state,
                 spec_user : action.payload,
                 error : null
             }
+
+        case WEEKLY_REPORT_SUCCESS:
+            return {
+                ...state,
+                weekly_report : action.payload.data,
+                error : null
+            }
+
         case VISION_SUCCESS :
             return {
                 ...state,
@@ -156,6 +224,21 @@ export default function(state = initialState, action) {
                 isLoading: false,
                 roles: null,
                 error: action.payload.message
+            }
+
+        case WEEKLY_REPORT_FAIL:
+            return {
+                ...state,
+                weekly_report_error : action.payload.message,
+                error : null
+            }
+
+        case ORGANOGRAM_FAIL :
+            return {
+                ...state,
+                isLoading: false,
+                organogram : null,
+                organogram_error: action.payload.message
             }
         
         case ALL_STATUS_FAIL :
@@ -190,9 +273,18 @@ export default function(state = initialState, action) {
             return {
                 ...state,
                 isLoading: false,
-                task_count : null,
+                objectives_count : null,
                 error: action.payload.message
             }
+
+        case KPI_COUNT_FAIL :
+            return {
+                ...state,
+                isLoading: false,
+                kpi_count : null,
+                error: action.payload.message
+            }
+
         case EDIT_MISSION_FAIL :
         case MISSION_FAIL :
             return {
@@ -210,7 +302,22 @@ export default function(state = initialState, action) {
                 vision: null,
                 error: action.payload.message
             }
+
+        case STRATEGIC_INTENT1_FAIL :
+            return {
+                ...state,
+                isLoading : false,
+                strategic_intent1 : null,
+                strategic_intent1_error : action.payload.message
+            }
   
+        case STRATEGIC_INTENT2_FAIL :
+            return {
+                ...state,
+                isLoading : false,
+                strategic_intent2 : null,
+                strategic_intent2_error : action.payload.message
+            }
         
         default : return state;
 

@@ -21,8 +21,15 @@ import {
 
     OBJECTIVE_TASKS_SUCCESS,
     OBJECTIVE_TASKS_FETCH_REQUEST,
-    OBJECTIVE_TASKS_FAIL
+    OBJECTIVE_TASKS_FAIL,
 
+    OBJECTIVES_MONTH_ACTION_SUCCESS,
+    OBJECTIVES_MONTH_ACTION_FETCH_REQUEST,
+    OBJECTIVES_MONTH_ACTION_FAIL,
+
+    OBJECTIVES_MONTH_REPORT_SUCCESS,
+    OBJECTIVES_MONTH_REPORT_FETCH_REQUEST,
+    OBJECTIVES_MONTH_REPORT_FAIL
 
 } from '../actions/types';
 
@@ -31,7 +38,12 @@ const initialState = {
     item: [],
     obj_tasks: [],
     error : [],
-    isLoading : false
+    monthly_data : [],
+    monthly_data_error : [],
+    monthly_report : [],
+    monthly_report_error : [],
+    isLoading : false,
+    monthly_report_name: []
 }
 
 export default function(state = initialState, action) {
@@ -42,6 +54,8 @@ export default function(state = initialState, action) {
         case EDIT_OBJECTIVE_FETCH_REQUEST :
         case DELETE_OBJECTIVE_FETCH_REQUEST :
         case OBJECTIVE_TASKS_FETCH_REQUEST :
+        case OBJECTIVES_MONTH_ACTION_FETCH_REQUEST :
+        case OBJECTIVES_MONTH_REPORT_FETCH_REQUEST :
             return {
                 ...state,
                 isLoading: true
@@ -64,6 +78,23 @@ export default function(state = initialState, action) {
                 isLoading : false,
                 error : null
             }
+
+        case OBJECTIVES_MONTH_ACTION_SUCCESS :
+            return {
+                ...state,
+                monthly_data : action.payload.data,
+                isLoading : false,
+                monthly_data_error : null
+            }
+
+        case OBJECTIVES_MONTH_REPORT_SUCCESS :
+            return {
+                ...state,
+                monthly_report : action.payload.objectivesReports,
+                isLoading : false,
+                monthly_report_error: null,
+                monthly_report_name : action.payload.reportName
+            }
         
         case ADD_OBJECTIVE_SUCCESS :
         case EDIT_OBJECTIVE_SUCCESS :
@@ -80,6 +111,23 @@ export default function(state = initialState, action) {
                 isLoading: false,
                 items : null,
                 error: action.payload.message
+            }
+
+        case OBJECTIVES_MONTH_ACTION_FAIL :
+            return {
+                ...state,
+                isLoading: false,
+                monthly_data : null,
+                monthly_data_error: action.payload.message
+            }
+
+        case OBJECTIVES_MONTH_REPORT_FAIL :
+            return {
+                ...state,
+                isLoading: false,
+                monthly_report : null,
+                monthly_report_error: action.payload.data.message,
+                monthly_report_name : null
             }
 
         case OBJECTIVE_TASKS_FAIL :

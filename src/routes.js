@@ -5,14 +5,19 @@ import Objectives from "@material-ui/icons/DoneAll";
 import DashboardPage from "views/Dashboard/Dashboard.js";
 import AssignedTasksPage from "views/Tasks/AssignedTasksPage";
 import StrategicObjectives from "views/Objectives/Objectives";
-// import KPIsPage from "views/KPI/kpi";
-import KPIsPageTest from "views/KPI/kpitest";
+import KPIsPage from "views/KPI/kpi";
+import Chart from "views/Teams/Organogram";
 
 // import MyKpis from "views/KPI/mykpi"; 
 import UserProfile from "views/UserProfile/UserProfile";
 import UserDashboard from "views/Dashboard/UserDashboard";
-import ObjectiveReport from "views/Reports/objective-report";
+import ObjectiveReport from "views/Reports/objectives-report";
 import KPIReport from "views/Reports/kpi-report";
+import WeeklyReport from "views/Reports/weekly-report";
+import KPISnapshotReport from "views/Reports/kpi-report-snapshot";
+import ObjectiveSnapshotReport from "views/Reports/objective-report-snapshot";
+import UserReportDashboard from "views/Reports/user-report"
+import AllAssignedTasksPage from "views/Tasks/AllAssignedTasksPage";
 
 import BFC from "views/BFC/Bfc";
 
@@ -23,6 +28,8 @@ import MyTeamIcon from "@material-ui/icons/PeopleAltRounded";
 import PersonAdd from "@material-ui/icons/PersonAdd";
 import { PersonOutline} from "@material-ui/icons";
 import VerticalAlignCenterIcon from '@material-ui/icons/VerticalAlignCenter';
+import PlaylistAddCheckCircleIcon from '@material-ui/icons/PlaylistAddCheckOutlined';
+import Sync from '@material-ui/icons/Sync';
 import { Poll } from "@material-ui/icons";
 
 
@@ -60,7 +67,7 @@ var dashRoutes = [
         layout: "/admin",
       },
       {
-        path: "/user-team",
+        path: "/admin-team",
         name: "My Team",
         rtlName: "عالتسعير",
         mini: "TM",
@@ -68,14 +75,31 @@ var dashRoutes = [
         component: MyTeamPage,
         layout: "/admin",
       },
+      {
+        path: "/organogram",
+        name: "Organogram",
+        rtlName: "عالتسعير",
+        mini: "TM",
+        rtlMini: "ع",
+        component: Chart,
+        layout: "/admin",
+      },
     ],
+  },
+  {
+    path: "/bfc",
+    name: "Leadership Traits",
+    rtlName: "صفحات",
+    icon: "content_paste",
+    component: BFC,
+    layout: "/admin",
   },
   {
     path: "/kpis",
     name: "KPIS",
     rtlName: "الحاجيات",
     icon: VerticalAlignCenterIcon,
-    component: KPIsPageTest,
+    component: KPIsPage,
     layout: "/admin",
   },
   {
@@ -87,27 +111,36 @@ var dashRoutes = [
     layout: "/admin",
   },
   {
-    path: "/shared-tasks",
+    collapse: true,
     name: "MAS",
     rtlName: "صفحات",
-    icon: DateRange,
-    component: AssignedTasksPage,
-    layout: "/admin",
-  },
-  {
-    path: "/bfc",
-    name: "BFC",
-    rtlName: "صفحات",
-    icon: "content_paste",
-    component: BFC,
-    layout: "/admin",
-  },
+    icon: PlaylistAddCheckCircleIcon,
+    state: "tablesCollapse",
+    views: [
+      {
+        path: "/shared-tasks",
+        name: "Assigned MAS",
+        rtlName: "صفحات",
+        icon: DateRange,
+        component: AssignedTasksPage,
+        layout: "/admin",
+      },
+      {
+        path: "/all-assigned-tasks",
+        name: "All Assigned MAS",
+        rtlName: "صفحات",
+        icon: Sync,
+        component: AllAssignedTasksPage,
+        layout: "/admin",
+      },
+    ]
+  }, 
   {
     collapse: true,
     name: "Reports",
     rtlName: "صفحات",
     icon: Poll,
-    state: "tablesCollapse",
+    state: "mapsCollapse",
     views: [
       {
         path: "/kpis-report",
@@ -127,6 +160,15 @@ var dashRoutes = [
         component: ObjectiveReport,
         layout: "/admin",
       },
+      {
+        path: "/weekly-report",
+        name: "Weekly Report",
+        rtlName: "عالتسعير",
+        mini: "WR",
+        rtlMini: "ع",
+        component: WeeklyReport,
+        layout: "/admin",
+      },
     ],
   },
   {
@@ -141,9 +183,33 @@ var dashRoutes = [
     path: "/user-dashboard/:id",
     name: "",
     rtlName: "التقويم",
-    mini: ".",
+    mini: "",
     component: UserDashboard,
     layout: "/admin",
   },
+  {
+    path: "/user-report/:id",
+    name: "",
+    rtlName: "التقويم",
+    mini: "",
+    component: UserReportDashboard,
+    layout: "/admin",
+  },
+  {
+    path: "/kpi-report/:id",
+    name: "",
+    rtlName: "التقويم",
+    mini: "",
+    component: KPISnapshotReport,
+    layout: "/admin",
+  },
+  {
+    path: "/objectives-report/:id",
+    name: "",
+    rtlName: "التقويم",
+    mini: "",
+    component: ObjectiveSnapshotReport,
+    layout: "/admin",
+  }
 ];
 export default dashRoutes;

@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { useForm, Controller } from "react-hook-form";
+import Select from "react-select";
 
 // @material-ui/core
 import { makeStyles } from "@material-ui/core/styles";
@@ -28,25 +30,32 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import { Grid } from "@material-ui/core";
 import Button from "components/CustomButtons/Button.js";
-import DateFnsUtils from '@date-io/date-fns';
+import DateFnsUtils from '@date-io/date-fns'
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
+import { DeleteForever } from "@material-ui/icons";
 import EditIcon from '@material-ui/icons/Edit';
 import moment from "moment";
 import axios from "axios";
 import { getUserObjectives } from "actions/objectives";
 import { getKpis } from "actions/kpis";
 import { getStatus, getPillars } from "actions/data";
-import { getUsers } from "actions/users";
+import { getResourceUsers } from "actions/users";
 import styles1 from "assets/jss/material-dashboard-pro-react/views/extendedFormsStyle.js";
-import FormControl from "@material-ui/core/FormControl";
-import InputLabel from "@material-ui/core/InputLabel";
-import Select from "@material-ui/core/Select";
+// import FormControl from "@material-ui/core/FormControl";
+// import InputLabel from "@material-ui/core/InputLabel";
+// import Select from "@material-ui/core/Select";
+// import { format } from 'date-fns';
+
+// import { Checkbox, ListItemIcon, ListItemText } from "@material-ui/core";
+// import Avatar from "../../assets/img/default-avatar.png";
 
 const useStyles = makeStyles(styles, styles1);
 
 export default function StrategicObjectives() {
+
     const classes = useStyles();
     const dispatch = useDispatch();
+    const methods = useForm();
 
     // const history = useHistory();
 
@@ -54,56 +63,65 @@ export default function StrategicObjectives() {
     const { items, error, isLoading} = useSelector(state => state.objective);
     const {  items : kpis } = useSelector(state => state.kpi);
     const { statuses, pillars } = useSelector(state => state.data);
-    const { items : sysusers} = useSelector(state => state.user)
+    const { sys_resources} = useSelector(state => state.user)
 
+    // function convertUTCDateToLocalDate(date) {
+    //     var newDate = new Date(date.getTime() - date.getTimezoneOffset()*60*1000);
+    //     return newDate;   
+    // }
 
     useEffect(() => {
         dispatch(getUserObjectives(currentUser.id));
+        dispatch(getResourceUsers(currentUser.id));
         dispatch(getKpis(currentUser.id));
         setUserId(currentUser.id);
         setCreatedBy(currentUser.id);
+        setUpdatedBy(currentUser.id);
         dispatch(getStatus());
         dispatch(getPillars());
-        dispatch(getUsers())
-
     }, [])
 
     const obj_statuses = [
         {
-            value: 'COMPLETE',
-            label: 'COMPLETE'
+            value: 'ON TRACK',
+            label: 'ON TRACK'
         },
         {
-            value: 'INCOMPLETE',
-            label: 'INCOMPLETE'
+            value: 'MODERATELY OFF TRACK',
+            label: 'MODERATELY OFF TRACK'
+        },
+        {
+            value: 'SIGNIFICANTLY OFF TRACK',
+            label: 'SIGNIFICANTLY OFF TRACK'
         }
     ]
 
-    console.log(sysusers)
-
     const [addopen, setAddOpen] = useState(false);
     const [addopenindividualtask, setAddOpenIndividualTask] = useState(false);
+    const [deleteopen, setDeleteOpen] = useState(false);
+    const [deletetaskopen, setDeleteTaskOpen] = useState(false);
+
     const [showloader, setshowloader] = useState(false);
     const [description, setDescription] = useState("");
     const [kpi_unit_of_measure, setKpiUom] = useState("");
 
-    const [start_date, setStartDate] = useState("");
-    const [end_date, setEndDate] = useState("");
+
     const [kpi_id, setKpiId] = useState([]);
     const [target, setTarget] = useState("");
     const [target_achieved_on_review, setTargetAtReview] = useState("");
-    const [target_achieved, setTargetAchieved] = useState("");
+    // const [target_achieved, setTargetAchieved] = useState("");
     const [user_id, setUserId] = useState(currentUser.id);
+    const [year, setYear] = useState("");
     const [task_description, setTaskDescription] = useState("");
-    const [task_start_date, setTaskStartDate] = useState("");
-    const [task_end_date, setTaskEndDate] = useState("");
+    const [task_start_date, setTaskStartDate] = useState(new Date());
+    const [task_end_date, setTaskEndDate] = useState(new Date());
     const [addopentask, setAddOpenTask] = useState("");
     const [created_by, setCreatedBy] = useState("");
     const [editopen, setEditOpen] = useState(false);
     const [id, setId] = useState("");
-    const [updated_by, setUpdatedBy] = useState(currentUser.id);
+    const [updated_by, setUpdatedBy] = useState("");
     const [show_tasks, setShowTasks] = useState(false);
-    const [setIndex, setSelectedIndex] = useState("");
+    const [setIndex, setSelectedIndex] = useState(null);
     const [err, setError] = useState("");
     const [obj_tasks, setObjTasks] = useState("");
     const [ task_objective_id, setTaskObjectiveId] = useState("");
@@ -117,6 +135,20 @@ export default function StrategicObjectives() {
     const [support_required, setSupportRequired] = useState("");
     const [risk_and_opportunity, setRiskAndOpportunity] = useState(""); 
     const [obj_status, setObjStatus ] = useState("");
+    const [deleteId, setDeleteId] = useState("");
+    const [deleteTaskId, setDeleteTaskId] = useState("");
+    const [myKpis, setMyKpis] = useState("");
+    const [myResources, setMyResources] = useState("");
+    const [is_primary, setIsPrimary] = useState("");
+
+    const customStyles = {
+        control: base => ({
+          ...base,
+          height: 55,
+          minHeight: 55
+        }),
+        menuPortal: (base) => ({ ...base, zIndex: 9999})
+    };
 
     const handleAddClickOpen = () => {
         setAddOpen(true);
@@ -126,24 +158,23 @@ export default function StrategicObjectives() {
         // e.preventDefault();
         setAddOpen(false);
         
-        console.log("kpi uom", kpi_unit_of_measure)
-    
-        let end_date = moment(end_date).format('YYYY-MM-DD');
-        let start_date = moment(start_date).format('YYYY-MM-DD');
-    
-        console.log("save objective", description, end_date, kpi_id, start_date, target, user_id, created_by, pillar_id);
+        console.log("save objective", year, description, kpi_id, target, obj_status, user_id, created_by, pillar_id, kpi_unit_of_measure);
     
         const config = { headers: { 'Content-Type': 'application/json' } }
     
-        let body = ({description,
-            end_date: end_date,
+        let body = ({
+            description : description,
+            year: year,
+            status: obj_status,
             kpi_ids : kpi_id,
-            start_date : start_date,
-            target : target,
+            isPrimary: 1,
+            target :  0,
             user_id : user_id,
             created_by : created_by,
             pillar_id : pillar_id
         });
+
+        console.log("save objective body", body)
     
         try {
           let response = await axios.post('/objectives/create', body, config);
@@ -166,10 +197,7 @@ export default function StrategicObjectives() {
               setAddOpenTask(false);
     
               console.log("objective id", response.data.data.id)
-    
-              let task_end_date = moment(task_end_date).format('YYYY-MM-DD');
-              let task_start_date = moment(task_start_date).format('YYYY-MM-DD');
-    
+
               let task = {
                 description: task_description,
                 start_date: task_start_date,
@@ -199,6 +227,8 @@ export default function StrategicObjectives() {
               } else {
                 console.log("task add", response1.data.data)
 
+                console.log("users", assignee_id)
+
                 const body = JSON.stringify({
                 task_id : response1.data.data.id ,
                 assigner_id : created_by,
@@ -217,7 +247,18 @@ export default function StrategicObjectives() {
                     text: "Objective and task added successfully!",
                     icon: "success",
                     dangerMode: false
-                    }).then(() => dispatch(getUserObjectives(currentUser.id)));
+                    }).then(() => {
+                        setAssigneeId([]);
+                        setTaskDescription("")
+                        setTaskStartDate("")
+                        setTaskEndDate("")
+                        setYear("")
+                        setKpiId([])
+                        setTarget("")
+                        setPillar("")
+                        setDescription("")
+                        dispatch(getUserObjectives(currentUser.id))
+                    });
                     
                 } else {
             
@@ -282,7 +323,7 @@ export default function StrategicObjectives() {
 
     const setEditing = (list) => {
 
-        console.log("kpi", list)
+        console.log("objective", list)
 
         setDescription(list.description);
 
@@ -304,17 +345,21 @@ export default function StrategicObjectives() {
             setKpiId([]);
         }
 
+        if(list.kpis !== null) {
+            setMyKpis(list.kpis)
+        }
+
         setId(list.id);
         setTarget(list.target);
-        setTargetAchieved(list.target_achieved);
         setTargetAtReview(list.target_achieved_on_review);
-        setStartDate(list.start_date);
-        setEndDate(list.end_date)
+        setYear(list.year)
         setPillar(list.pillar_id)
         setSupportRequired(list.supportRequired);
         setAction(list.action);
+        setIsPrimary(list.isPrimary)
         setRootCause(list.rootCause)
         setRiskAndOpportunity(list.riskOrOpportunity)
+        setUpdatedBy(list.user.id)
         if(list.overallStatus !== null){
             setObjStatus(list.overallStatus);
             // setObjStatus((list.overallStatus).toUpperCase());
@@ -327,13 +372,20 @@ export default function StrategicObjectives() {
     const editObjective = async (e) => {
         e.preventDefault();
         setshowloader(true)
-        setUserId();
+        setUserId(currentUser.id);
         setId();
 
-        let end_date = moment(end_date).format('YYYY-MM-DD');
-        let start_date = moment(start_date).format('YYYY-MM-DD');
+        console.log(year, id, description, kpi_id, user_id, obj_status, target_achieved_on_review, pillar_id, root_cause, action, support_required, risk_and_opportunity, setUpdatedBy())
 
-        console.log("save objective", id, description, end_date, kpi_id, start_date, target, user_id, obj_status, target_achieved, target_achieved_on_review, pillar_id, root_cause, action, support_required, risk_and_opportunity, setUpdatedBy())
+        console.log("primary", is_primary)
+
+        let new_primary;
+
+        if(is_primary === null || is_primary == "" || is_primary == undefined || is_primary == 1) {
+            new_primary = "1";
+        } else {
+            new_primary == "0";
+        }
 
         const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
         const body = JSON.stringify({ 
@@ -341,10 +393,10 @@ export default function StrategicObjectives() {
             description : description,
             kpi_ids : kpi_id,
             user_id : user_id,
-            start_date : start_date,
-            end_date : end_date,
-            target : target,
-            target_achieved : target_achieved,
+            year : year,
+            isPrimary: new_primary,
+            // target : target,
+            // target_achieved : target_achieved,
             pillar_id : pillar_id,
             overallStatus : obj_status,
             // root_cause : root_cause,
@@ -354,6 +406,8 @@ export default function StrategicObjectives() {
             created_by : created_by,
             updated_by :updated_by
         });
+
+        console.log("edit objective", body)
 
         try {
 
@@ -365,7 +419,16 @@ export default function StrategicObjectives() {
                     title: "Success",
                     text: item,
                     icon: "success",
-                }).then(() => dispatch(getUserObjectives(currentUser.id)));
+                }).then(() => {
+                    setAssigneeId([]);
+                    setYear("")
+                    setKpiId([])
+                    setTarget("")
+                    setPillar("")
+                    setDescription("")
+                    setMyKpis("")
+                    dispatch(getUserObjectives(currentUser.id))
+                })
 
             } else {
                 setshowloader(false);
@@ -418,9 +481,8 @@ export default function StrategicObjectives() {
         setshowloader(true);
 
         const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
-    
-        let task_end_date = moment(task_end_date).format('YYYY-MM-DD');
-        let task_start_date = moment(task_start_date).format('YYYY-MM-DD');
+
+        console.log("raw data", task_start_date, task_end_date)
 
         let task = {
         description: task_description,
@@ -470,7 +532,15 @@ export default function StrategicObjectives() {
                   text: "Task added successfully!",
                   icon: "success",
                   dangerMode: false
-                }).then(() => {setShowObjectivesTask(objectiveId)})
+                }).then(() => {
+                    setTaskStartDate("")
+                    setTaskEndDate("")
+                    setTaskDescription("")
+                    setAssigneeId([])
+                    setObjectiveId("")
+                    setShowObjectivesTask(objectiveId)
+                    dispatch(getUserObjectives(currentUser.id));
+                })
                 
               } else {
         
@@ -508,7 +578,7 @@ export default function StrategicObjectives() {
     }
 
     const setEditingIndividualTask = (list) => {
-        console.log(list);
+        console.log("task", list);
     
         setTaskDescription(list.description)
         setTaskStatus(list.status);
@@ -516,17 +586,50 @@ export default function StrategicObjectives() {
         setTaskEndDate(list.end_date);
         setTaskObjectiveId(list.objective_id);
         setUserId(list.user_id);
-        setId(list.id)
-      }
+        setId(list.id);
+        setObjectiveId(list.objective_id)
+        setUpdatedBy(list.user_id)
+
+        console.log("assignee here", list.assignedTasks)
+
+        if(list.assignedTasks !== null) {
+            let x = [];
+            (list.assignedTasks).map(function (i) {
+                console.log("i", i.id)
+                x.push(i.assignee.id);
+            });
+            setAssigneeId(x);
+            console.log("hapo", x);
+        } else {
+            setAssigneeId([]);
+        }
+
+        if(list.assignedTasks !== null) {
+            let y = [];
+            (list.assignedTasks).map(function (i) {
+                console.log("my i", i)
+                y.push(i.assignee);
+            });
+            setMyResources(y);
+            console.log("hapo", y);
+        } else {
+            setMyResources([]);
+        }
+    }
     
-      const saveEditedIndividualTask = async (e) => {
-          e.preventDefault();
-          setshowloader(true);
-    
-          console.log("edit values",  task_description, task_end_date, task_start_date, task_objective_id, user_id, created_by, updated_by, id, task_status, setUpdatedBy)
-    
-          const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
-          const body = JSON.stringify({
+    const saveEditedIndividualTask = async (e) => {
+        e.preventDefault();
+        setshowloader(true);
+
+        // let task_start_date = moment.tz(task_start_date, 'yyyy-MM-dd HH:mm:ss', 'UTC+03:00').format() // "2018-07-17T19:00:00Z"
+        // let task_end_date = moment.tz(task_end_date, 'yyyy-MM-dd HH:mm:ss', 'UTC+03:00').format() // "2018-07-17T19:00:00Z"
+
+        console.log("new date", task_start_date, task_end_date)
+
+        console.log("edit values",  task_description, task_end_date, task_start_date, task_objective_id, user_id, created_by, updated_by, id, task_status, setUpdatedBy)
+
+        const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
+        const body = JSON.stringify({
             "id": id,
             "description": task_description,
             "user_id": user_id,
@@ -535,51 +638,218 @@ export default function StrategicObjectives() {
             "end_date": task_end_date,
             "status": task_status,
             "created_by": created_by,
-            "updated_by": updated_by
-          });
-    
-          console.log("task", body);
-    
-          try {
-    
-              let response = await axios.post('/tasks/update', body, config)
-              if (response.status == 201) {
-                  setshowloader(false);
-                  setEditOpenIndividualTask(false);
-    
-                  let item = response.data.message
-                  swal.fire({
-                      title: "Success",
-                      text: item,
-                      icon: "success",
-                  }).then(() => dispatch(getUserObjectives(currentUser.id)))
+            "updated_by": updated_by,
+            // "user_ids": assignee_id
+        });
 
-              } else {
-                  let error = response.data.message
+        console.log("task", body);
+
+        try {
+
+            let response = await axios.post('/tasks/update', body, config)
+
+            console.log("update response", response)
+
+            if (response.data.success === false) {
+
+                let error = response.data.message
+                    setshowloader(false);
+                    setEditOpenIndividualTask(false);
+
+                    swal.fire({
+                        title: "Error",
+                        text: error,
+                        icon: "error",
+                        dangerMode: true
+                    });
+
+            } else {
+
+                const body = JSON.stringify({
+                task_id : id ,
+                assigner_id : created_by,
+                user_ids : assignee_id
+                })
+
+                try {
+  
+                    let response2 = await axios.post('/assignedtasks/update', body, config)
+                    if (response2.status == 201) {
                       setshowloader(false);
                       setEditOpenIndividualTask(false);
-    
                       swal.fire({
-                          title: "Error",
-                          text: error,
-                          icon: "error",
-                          dangerMode: true
-                      });
-              }
-          } catch (error) {
-              let err = error.response.data.message
-              setshowloader(false);
-              setEditOpenIndividualTask(false);
-    
-              swal.fire({
-                  title: "Error",
-                  text: err,
-                  icon: "error",
-                  dangerMode: true
-              });
-          }
-    
-      }
+                        title: "Success",
+                        text: "Task updated successfully!",
+                        icon: "success",
+                        dangerMode: false
+                      }).then(() => {
+                        setTaskStartDate("")
+                        setTaskEndDate("")
+                        setTaskDescription("")
+                        setAssigneeId([])
+                        setObjectiveId("")
+                        setShowObjectivesTask(objectiveId)
+                        dispatch(getUserObjectives(created_by));
+                    })
+                      
+                    } else {
+              
+                        let error = response2.data.message
+                        setshowloader(false);
+                        setEditOpenIndividualTask(false);
+                        swal.fire({
+                            title: "Error",
+                            text: error,
+                            icon: "error",
+                            dangerMode: true
+                        });
+                    }
+                  } catch (error) {
+              
+                    let err = error.response.data.message
+                        setshowloader(false);
+                        setEditOpenIndividualTask(false);
+                        swal.fire({
+                            title: "Error",
+                            text: err,
+                            icon: "error",
+                            dangerMode: true
+                        });
+                  }
+
+            }
+        } catch (error) {
+
+            let err = error.response.data.message
+            setshowloader(false);
+            setEditOpenIndividualTask(false);
+
+            swal.fire({
+                title: "Error",
+                text: err,
+                icon: "error",
+                dangerMode: true
+            });
+        }
+
+    }
+
+    const handleDeleteClickOpen = () => {
+        setDeleteOpen(true);
+    };
+
+    const handleDeleteIndividualTaskOpen = () => {
+        setDeleteTaskOpen(true);
+    }
+
+    const handleDeleteClose = () => {
+        setDeleteOpen(false);
+    };
+
+    const handleDeleteTaskClose = () => {
+        setDeleteTaskOpen(false);
+    };
+
+    const setDeleting = (list) => {
+        console.log("delete items",list)
+        console.log("delete id",list.id)
+        setDeleteId(list.id)
+    }
+
+    const setDeletingTask = (list) => {
+        console.log("delete items",list)
+        console.log("delete id",list.id)
+        setDeleteTaskId(list.id)
+        setObjectiveId(list.objective_id)
+    }
+
+    const deleteObjective = async(e) => {
+        e.preventDefault();
+        setshowloader(true);
+
+        try {
+
+            let response = await axios.delete(`/objectives/deleteObjectiveById?objective_id=${deleteId}`)
+            if (response.status == 200) {
+                setshowloader(false);
+                setDeleteOpen(false);
+                console.log("here", response.data)
+                let item = response.data.message
+
+                swal.fire({
+                    title: "Success",
+                    text: item,
+                    icon: "success",
+                }).then(() => dispatch(getUserObjectives(currentUser.id)));
+            } else {
+                setshowloader(false);
+                setDeleteOpen(false);
+                let error = response.data.message
+                    setshowloader(false);
+                    swal.fire({
+                        title: "Error",
+                        text: error,
+                        icon: "error",
+                        dangerMode: true
+                    }).then(() => dispatch(getUserObjectives(currentUser.id)));
+            } 
+        } catch(error) {
+            setshowloader(false);
+            setDeleteOpen(false);
+            let err = error.response.data.message
+            setshowloader(false);
+            swal.fire({
+                title: "Error",
+                text: err,
+                icon: "error",
+                dangerMode: true
+            }).then(() => dispatch(getUserObjectives(currentUser.id)));
+        } 
+
+    }
+
+    const deleteTask = async(e) => {
+        e.preventDefault();
+        setshowloader(true);
+
+        try {
+
+            let response = await axios.delete(`/tasks/deleteTaskById?task_id=${deleteTaskId}`)
+            if (response.status == 200) {
+                setshowloader(false);
+                setDeleteTaskOpen(false);
+                console.log("here", response.data)
+                let item = response.data.message
+
+                swal.fire({
+                    title: "Success",
+                    text: item,
+                    icon: "success",
+                }).then(() => {setShowObjectivesTask(objectiveId)})
+            } else {
+                setshowloader(false);
+                setDeleteTaskOpen(false);
+                let error = response.data.message
+                    setshowloader(false);
+                    swal.fire({
+                        title: "Error",
+                        text: error,
+                        icon: "error",
+                        dangerMode: true
+                    }).then(() => {setShowObjectivesTask(objectiveId)})            } 
+        } catch(error) {
+            setshowloader(false);
+            setDeleteTaskOpen(false);
+            let err = error.response.data.message
+            setshowloader(false);
+            swal.fire({
+                title: "Error",
+                text: err,
+                icon: "error",
+                dangerMode: true
+            }).then(() => {setShowObjectivesTask(objectiveId)})        } 
+
+    }
 
 
     return (
@@ -603,9 +873,10 @@ export default function StrategicObjectives() {
                 />
             ) : items ? ( items.map((list, index) => (
                 <div key={index} style={{ justifyContent: 'center' }} >
-                    <Card style={{borderLeft : list.objectives.overallStatus === 'Incomplete' ? 'solid 5px red' : (list.objectives.overallStatus === 'COMPLETE' || list.objectives.overallStatus === 'Complete') ? 'solid 5px green' : (list.objectives.overallStatus === 'INCOMPLETE' || list.objectives.overallStatus === 'Incomplete' || list.objectives.overallStatus === '' || list.objectives.overallStatus === null ) ? 'solid 5px red'  :'solid 5px black' , marginBottom: '0'}} key={index} >
+                    <Card style={{borderLeft : list.objectives.overallStatus === 'Incomplete' ? 'solid 5px red' : (list.objectives.overallStatus === 'ONGOING' || list.objectives.overallStatus === 'Ongoing'  || list.objectives.overallStatus === 'MODERATELY OFF TRACK') ? 'solid 5px #ff9800' : (list.objectives.overallStatus === 'COMPLETE' || list.objectives.overallStatus === 'Complete' || list.objectives.overallStatus === 'ON TRACK') ? 'solid 5px green' : (list.objectives.overallStatus === 'INCOMPLETE' || list.objectives.overallStatus === 'Incomplete' || list.objectives.overallStatus === '' || list.objectives.overallStatus === null || list.objectives.overallStatus === 'SIGNIFICANTLY OFF TRACK'  ) ? 'solid 5px red'  :'solid 5px black' , marginBottom: '0'}} key={index} >
                         <Grid container justify="flex-end">
                             <IconButton aria-label="edit" className={classes.textGreen} onClick={() => { handleEditClickOpen(); setEditing(list.objectives); }} ><EditIcon /></IconButton>
+                            <IconButton aria-label="delete" style={{color: 'black'}} onClick={() => { setDeleting(list.objectives), handleDeleteClickOpen() }} ><DeleteForever /></IconButton>
                         </Grid>
 
                         <GridItem xs={12} sm={12} md={12}>
@@ -636,7 +907,7 @@ export default function StrategicObjectives() {
                                 <Card className={classes.cardBodyRed}>
                                     <CardBody>
                                         <h4 className={classes.cardTitle}>
-                                        {list.offtrack} <small>Off Ttack</small>
+                                        {list.offtrack} <small>Off Track</small>
                                         </h4>
                                     </CardBody>
                                 </Card>
@@ -672,7 +943,7 @@ export default function StrategicObjectives() {
                                 <Card  className={classes.cardBodyGreen}>
                                     <CardBody>
                                         <h4 className={classes.cardTitle}>
-                                        {list.done} <small>Completed</small>
+                                        {list.complete} <small>Completed</small>
                                         </h4>
                                     </CardBody>
                                 </Card>
@@ -690,8 +961,8 @@ export default function StrategicObjectives() {
                         <CardFooter className={classes.cardFooter}>
                             {/* <IconButton> <ExpandMoreIcon className={classes.iconBottom} onClick={() => handleRedirect()} /> </IconButton> */}
                             { show_tasks === false ? (
-                                <IconButton onClick={() => { setShowTasks(true); setSelectedIndex(index); setShowObjectivesTask(list.objectives.id)}} > <ExpandMoreIcon className={classes.iconBottom} /> </IconButton>
-                            ) : show_tasks === true ? ( <IconButton> <ExpandLess className={classes.iconBottom} onClick={() => setShowTasks(false)} /> </IconButton> 
+                                <IconButton onClick={() => { setShowTasks(true); setSelectedIndex(setIndex => setIndex === index ? null : index); setShowObjectivesTask(list.objectives.id)}} > <ExpandMoreIcon className={classes.iconBottom} /> </IconButton>
+                            ) : show_tasks === true && setIndex === index ? ( <IconButton> <ExpandLess className={classes.iconBottom} onClick={() => setShowTasks(false)} /> </IconButton> 
                             ) : null}
                         </CardFooter>
                         
@@ -710,24 +981,41 @@ export default function StrategicObjectives() {
                                             <TableCell>Start Date</TableCell>
                                             <TableCell>Due Date</TableCell>
                                             <TableCell>Status</TableCell>
+                                            <TableCell>Resources</TableCell>
                                             <TableCell>Action</TableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
-                                        {/* <TableRow key=''>
-                                            <TableCell>Task One</TableCell>
-                                            <TableCell>John Doe</TableCell>
-                                            <TableCell>2021-10-01</TableCell>
-                                            <TableCell>Pending</TableCell>
-                                        </TableRow> */}
                                         { obj_tasks ? obj_tasks.length === 0 ? (<TableRow> <TableCell> No tasks available </TableCell></TableRow>)
                                         : (obj_tasks.map((list, index) => (
                                             <TableRow key={index}>
                                                 <TableCell>{list.description}</TableCell>
-                                                <TableCell>{moment(list.start_date).format('YYYY-MM-DD')}</TableCell>
-                                                <TableCell>{moment(list.end_date).format('YYYY-MM-DD')}</TableCell>
+                                                <TableCell>{moment(list.start_date).format('DD-MM-YYYY')}</TableCell>
+                                                <TableCell>{moment(list.end_date).format('DD-MM-YYYY')}</TableCell>
                                                 <TableCell>{list.status}</TableCell>
-                                                <TableCell> <IconButton aria-label="edit" className={classes.textGreen} onClick={() => {handleEditIndividualTaskOpen(); setEditingIndividualTask(list) }} ><EditIcon /></IconButton></TableCell>
+                                                <TableCell>
+                                                    {list.assignedTasks.map((detail, index) => (
+                                                        <div key={index} style={{ display: 'inline' }}>
+                                                            {/* { detail.assignee.userPicture === null || detail.assignee.userPicture === undefined ? (
+                                                                <img key={index} src={Avatar} alt={detail.assignee.fullnames}  style={{ maxWidth: '50px', maxHeight: '50px', borderRadius: '50%'}} />
+                                                            ) : detail.assignee.userPicture != null ? (
+                                                                <img key={index} src={detail.assignee.userPicture}
+                                                                alt={detail.assignee.fullnames}  style={{ maxWidth: '50px', maxHeight: '50px', borderRadius: '50%'}} />
+                                                            ) : null} */}
+
+                                                            { detail.assignee.fullnames === null || detail.assignee.fullnames === undefined ? (
+                                                                <p>None </p>
+
+                                                            ) : detail.assignee.fullnames != null ? (
+                                                                <p>{detail.assignee.fullnames}, </p>
+                                                            ) : null}
+                                                        </div>
+                                                    ))}
+                                                </TableCell>
+                                                <TableCell>
+                                                    <IconButton aria-label="edit" className={classes.textGreen} onClick={() => {handleEditIndividualTaskOpen(); setEditingIndividualTask(list) }} ><EditIcon /></IconButton>
+                                                    <IconButton aria-label="delete" style={{color: 'black'}} onClick={() => {handleDeleteIndividualTaskOpen(); setDeletingTask(list) }} ><DeleteForever /></IconButton>
+                                                </TableCell>
                                             </TableRow>
                                         ))) : err ? (<TableRow> <TableCell> {err} </TableCell></TableRow>) 
                                         : null }
@@ -744,8 +1032,15 @@ export default function StrategicObjectives() {
                     ) : null }
                 </div>
                 
-            ))) :  null}
+            ))) : items == null ? (
+                <Grid container spacing={2} style={{marginRight : '10px', marginLeft : '10px'}}>
+                    <Card>
+                        <h3 style={{textAlign : 'center'}}> You have no objectives set </h3>
+                    </Card>
+                </Grid>
+            ) :  null}
 
+            {/* add objective */}
             <Dialog open={addopen} onClose={handleAddClose}>
                 <DialogTitle>Strategic Objective</DialogTitle>
                 <DialogContent>
@@ -767,45 +1062,30 @@ export default function StrategicObjectives() {
                             setDescription(value)
                         }}
                     />
+
                     <Grid container spacing={2}>
                         <Grid item xs={6} lg={6} xl={6} sm={12}>
                             <label> KPI : </label>
-                            <FormControl
-                                fullWidth
-                                className={classes.selectFormControl}
-                            >
-                                <InputLabel
-                                htmlFor="multiple-select"
-                                className={classes.selectLabel}
-                                >
-                                Select KPI
-                                </InputLabel>
+                            <Controller
+                                control={methods.control}
+                                className="basic-single"
+                                classNamePrefix="select"
+                                name="kpi_id"
+                                render={({ value, ref }) => (
                                 <Select
-                                multiple
-                                value={kpi_id}
-                                variant="outlined"
-                                onChange={(event) => {
-                                    const value = event.target.value;
-                                    setKpiId(value)
-                                }}
-                                MenuProps={{ className: classes.selectMenu }}
-                                classes={{ select: classes.select }}
-                                inputProps={{
-                                    name: "multipleSelect",
-                                    id: "multiple-select",
-                                }}
-                                >
-                                    {kpis && kpis.map((option) => (
-                                    <MenuItem key={option.id} value={option.id}
-                                        classes={{
-                                        root: classes.selectMenuItem,
-                                        selected: classes.selectMenuItemSelectedMultiple,
-                                        }}>
-                                        {option.title}
-                                    </MenuItem>
-                                ))}
-                                </Select>
-                            </FormControl>
+                                    inputRef={ref}
+                                    options={kpis}
+                                    isMulti
+                                    className="basic-multi-select"
+                                    menuPortalTarget={document.body}
+                                    styles={customStyles}
+                                    value={kpis.find((c) => c.id === value)}
+                                    onChange={(val) => setKpiId(val.map(v => v.id))}
+                                    getOptionLabel={(kpis) => kpis.title}
+                                    getOptionValue={(kpis) => kpis.id}
+                                />
+                                )}
+                            />
 
                         </Grid>
                         <Grid item xs={6} lg={6} xl={6} sm={12}>
@@ -834,63 +1114,38 @@ export default function StrategicObjectives() {
                         </Grid>
                     </Grid>
 
-                    <Grid item xs={6} lg={6} xl={6} sm={12}>
-                        <TextField
-                        autoFocus
-                        margin="dense"
-                        id="target"
-                        label="Target"
-                        className={classes.textInput}
-                        type="number"
+                    <TextField
+                        id="outlined-select-status"
+                        select
                         fullWidth
-                        style={{ marginBottom: '15px' }}
-                        value={target}
                         variant="outlined"
+                        label="Select Status"
+                        value={obj_status}
                         onChange={(event) => {
-                            setTarget(event.target.value);
+                            setObjStatus(event.target.value);
                         }}
-                        />
-                    </Grid>
+                        helperText="Please select the status"
+                    >
+                        {obj_statuses.map((option) => (
+                            <MenuItem key={option.value} value={option.value}>
+                                {option.label}
+                            </MenuItem>
+                        ))}
+                    </TextField>
 
-                    <Grid container spacing={2}>
-                        <Grid item xs={6} lg={6} xl={6} sm={12}>
-                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                            <KeyboardDatePicker
-                                margin="normal"
-                                id="date-picker-dialog"
-                                helperText="Set start date"
-                                format="yyyy/MM/dd"
-                                fullWidth
-                                inputVariant="outlined"
-                                value={start_date}
-                                onChange={setStartDate}
-                                KeyboardButtonProps={{
-                                    'aria-label': 'change date',
-                                }}
-                            />
-                            </MuiPickersUtilsProvider>
-
-                        </Grid>
-
-                        <Grid item xs={6} lg={6} xl={6} sm={12}>
-                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                            <KeyboardDatePicker
-                                margin="normal"
-                                id="date-picker-dialog"
-                                helperText="Set end date"
-                                format="yyyy/MM/dd"
-                                fullWidth
-                                inputVariant="outlined"
-                                value={end_date}
-                                onChange={setEndDate}
-                                KeyboardButtonProps={{
-                                    'aria-label': 'change date',
-                                }}
-                            />
-                            </MuiPickersUtilsProvider>
-                            
-                        </Grid>
-                    </Grid>
+                    <TextField
+                        fullWidth
+                        label="Year"
+                        id="year"
+                        variant="outlined"
+                        className={classes.textInput}
+                        type="text"
+                        value={year}
+                        onChange={(event) => {
+                            const value = event.target.value;
+                            setYear(value)
+                        }}
+                    />
 
                 </DialogContent>
                 <DialogActions>
@@ -911,11 +1166,12 @@ export default function StrategicObjectives() {
                 </DialogActions>
             </Dialog>
 
+            {/* add task */}
             <Dialog open={addopentask} onClose={handleAddTaskClose}>
-                <DialogTitle>Strategic Initiative</DialogTitle>
+                <DialogTitle>Management Actions</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        Add New Strategic Initiative
+                        Add New Management Actions
                     </DialogContentText>
 
                     <TextField
@@ -945,51 +1201,36 @@ export default function StrategicObjectives() {
                     />
 
                     <label style={{ fontWeight: 'bold', color: 'black' }}> Add A Resource: </label>
-                    <FormControl
-                        fullWidth
-                        className={classes.selectFormControl}
-                    >
-                        <InputLabel
-                        htmlFor="multiple-select"
-                        className={classes.selectLabel}
-                        >
-                        Select Resource
-                        </InputLabel>
+                    <Controller
+                        control={methods.control}
+                        className="basic-single"
+                        classNamePrefix="select"
+                        styles={{ marginTop: "10px", marginBottom: "10px" }}
+                        name="assignee_id"
+                        render={({ value, ref }) => (
                         <Select
-                        multiple
-                        value={assignee_id}
-                        variant="outlined"
-                        onChange={(event) => {
-                            const value = event.target.value;
-                            setAssigneeId(value)
-                        }}
-                        MenuProps={{ className: classes.selectMenu }}
-                        classes={{ select: classes.select }}
-                        inputProps={{
-                            name: "multipleSelect",
-                            id: "multiple-select",
-                        }}
-                        >
-                            {sysusers && sysusers.map((option) => (
-                            <MenuItem key={option.id} value={option.id}
-                                classes={{
-                                root: classes.selectMenuItem,
-                                selected: classes.selectMenuItemSelectedMultiple,
-                                }}>
-                                {option.fullnames}
-                            </MenuItem>
-                        ))}
-                        </Select>
-                    </FormControl>
+                            inputRef={ref}
+                            options={sys_resources}
+                            isMulti
+                            className="basic-multi-select"
+                            menuPortalTarget={document.body}
+                            styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
+                            value={sys_resources.find((c) => c.id === value)}
+                            onChange={(val) => setAssigneeId(val.map(v => v.id))}
+                            getOptionLabel={(sys_resources) => sys_resources.fullnames}
+                            getOptionValue={(sys_resources) => sys_resources.id}
+                        />
+                        )}
+                    />
 
                     <Grid container spacing={2}>
                         <Grid item xs={6} lg={6} xl={6} sm={12}>
                             <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                 <KeyboardDatePicker
                                     margin="normal"
-                                    id="date-picker-dialog"
+                                    id="date-picker-ddialog"
                                     helperText="Set start date"
-                                    format="yyyy/MM/dd"
+                                    format="yyyy-MM-dd"
                                     fullWidth
                                     inputVariant="outlined"
                                     value={task_start_date}
@@ -998,6 +1239,7 @@ export default function StrategicObjectives() {
                                         'aria-label': 'change date',
                                     }}
                                 />
+
                             </MuiPickersUtilsProvider>
                         </Grid>
 
@@ -1005,9 +1247,9 @@ export default function StrategicObjectives() {
                             <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                 <KeyboardDatePicker
                                     margin="normal"
-                                    id="date-picker-dialog"
+                                    id="date-picker-ddialog"
                                     helperText="Set end date"
-                                    format="yyyy/MM/dd"
+                                    format="yyyy-MM-dd"
                                     fullWidth
                                     inputVariant="outlined"
                                     value={task_end_date}
@@ -1038,11 +1280,12 @@ export default function StrategicObjectives() {
                 </DialogActions>
             </Dialog>
 
+            {/* add task */}
             <Dialog open={addopenindividualtask} onClose={handleAddIndividualTaskClose}>
-                <DialogTitle>Strategic Initiative</DialogTitle>
+                <DialogTitle>Management Actions</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        Add New Strategic Initiative
+                        Add New Management Actions
                     </DialogContentText>
 
                     <TextField
@@ -1063,51 +1306,36 @@ export default function StrategicObjectives() {
                     />
 
                     <label style={{ fontWeight: 'bold', color: 'black' }}> Add A Resource: </label>
-                    <FormControl
-                        fullWidth
-                        className={classes.selectFormControl}
-                    >
-                        <InputLabel
-                        htmlFor="multiple-select"
-                        className={classes.selectLabel}
-                        >
-                        Select Resource
-                        </InputLabel>
+                    <Controller
+                        control={methods.control}
+                        className="basic-single"
+                        classNamePrefix="select"
+                        styles={{ marginTop: "10px", marginBottom: "10px" }}
+                        name="assignee_id"
+                        render={({ value, ref }) => (
                         <Select
-                        multiple
-                        value={assignee_id}
-                        variant="outlined"
-                        onChange={(event) => {
-                            const value = event.target.value;
-                            setAssigneeId(value)
-                        }}
-                        MenuProps={{ className: classes.selectMenu }}
-                        classes={{ select: classes.select }}
-                        inputProps={{
-                            name: "multipleSelect",
-                            id: "multiple-select",
-                        }}
-                        >
-                            {sysusers && sysusers.map((option) => (
-                            <MenuItem key={option.id} value={option.id}
-                                classes={{
-                                root: classes.selectMenuItem,
-                                selected: classes.selectMenuItemSelectedMultiple,
-                                }}>
-                                {option.fullnames}
-                            </MenuItem>
-                        ))}
-                        </Select>
-                    </FormControl>
+                            inputRef={ref}
+                            options={sys_resources}
+                            isMulti
+                            className="basic-multi-select"
+                            menuPortalTarget={document.body}
+                            styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
+                            value={sys_resources.find((c) => c.id === value)}
+                            onChange={(val) => setAssigneeId(val.map(v => v.id))}
+                            getOptionLabel={(sys_resources) => sys_resources.fullnames}
+                            getOptionValue={(sys_resources) => sys_resources.id}
+                        />
+                        )}
+                    />
 
                     <Grid container spacing={2}>
                         <Grid item xs={6} lg={6} xl={6} sm={12}>
                             <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                 <KeyboardDatePicker
                                     margin="normal"
-                                    id="date-picker-dialog"
+                                    id="date-picker-ddialog"
                                     helperText="Set start date"
-                                    format="yyyy/MM/dd"
+                                    format="yyyy-MM-dd"
                                     fullWidth
                                     inputVariant="outlined"
                                     value={task_start_date}
@@ -1123,9 +1351,9 @@ export default function StrategicObjectives() {
                             <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                 <KeyboardDatePicker
                                     margin="normal"
-                                    id="date-picker-dialog"
+                                    id="date-picker-ddialog"
                                     helperText="Set end date"
-                                    format="yyyy/MM/dd"
+                                    format="yyyy-MM-dd"
                                     fullWidth
                                     inputVariant="outlined"
                                     value={task_end_date}
@@ -1156,6 +1384,7 @@ export default function StrategicObjectives() {
                 </DialogActions>
             </Dialog>
 
+            {/* edit objectives */}
             <Dialog open={editopen} onClose={handleEditClose}>
                 <DialogTitle>Strategic Objective</DialogTitle>
                 <DialogContent>
@@ -1179,42 +1408,28 @@ export default function StrategicObjectives() {
                     />
 
                     <label style={{ fontWeight: 'bold', color: 'black'}}> KPI : </label>
-                        <FormControl
-                            fullWidth
-                            className={classes.selectFormControl}
-                        >
-                            <InputLabel
-                            htmlFor="multiple-select"
-                            className={classes.selectLabel}
-                            >
-                            Select KPI
-                            </InputLabel>
-                            <Select
-                            multiple
-                            variant="outlined"
-                            value={kpi_id}
-                            onChange={(event) => {
-                                const value = event.target.value;
-                                setKpiId(value)
-                            }}
-                            MenuProps={{ className: classes.selectMenu }}
-                            classes={{ select: classes.select }}
-                            inputProps={{
-                                name: "multipleSelect",
-                                id: "multiple-select",
-                            }}
-                            >
-                                {kpis && kpis.map((option) => (
-                                <MenuItem key={option.id} value={option.id}
-                                    classes={{
-                                    root: classes.selectMenuItem,
-                                    selected: classes.selectMenuItemSelectedMultiple,
-                                    }}>
-                                    {option.title}
-                                </MenuItem>
-                            ))}
-                            </Select>
-                        </FormControl>
+                    <Controller
+                        control={methods.control}
+                        className="basic-single"
+                        classNamePrefix="select"
+                        styles={{ marginTop: "10px", marginBottom: "10px" }}
+                        name="kpi_id"
+                        render={({ value, ref }) => (
+                        <Select
+                            inputRef={ref}
+                            options={kpis}
+                            isMulti
+                            className="basic-multi-select"
+                            menuPortalTarget={document.body}
+                            styles={customStyles}
+                            defaultValue={ myKpis }
+                            value={kpis.find((c) => c.id === value)}
+                            onChange={(val) => setKpiId(val.map(v => v.id))}
+                            getOptionLabel={(kpis) => kpis.title}
+                            getOptionValue={(kpis) => kpis.id}
+                        />
+                        )}
+                    /> 
 
                     <label> Pillar : </label>
                     <TextField
@@ -1239,42 +1454,6 @@ export default function StrategicObjectives() {
                         ))}
                     </TextField>
 
-                    <Grid container spacing={2}>
-                        <Grid item xs={6} lg={6} xl={6} sm={12}>
-                            <TextField
-                            autoFocus
-                            margin="dense"
-                            id="target"
-                            label="Target"
-                            type="text"
-                            fullWidth
-                            style={{ marginBottom: '15px' }}
-                            value={target}
-                            variant="outlined"
-                            onChange={(event) => {
-                                setTarget(event.target.value);
-                            }}
-                            />
-                        </Grid>
-
-                        <Grid item xs={6} lg={6} xl={6} sm={12}>
-                            <TextField
-                            autoFocus
-                            margin="dense"
-                            id="target_achieved"
-                            label="Target Achieved"
-                            type="text"
-                            fullWidth
-                            style={{ marginBottom: '15px' }}
-                            value={target_achieved}
-                            variant="outlined"
-                            onChange={(event) => {
-                                setTargetAchieved(event.target.value);
-                            }}
-                            />
-                        </Grid>
-                    </Grid>
-
                     {/* <TextField
                         fullWidth
                         label="Root Cause"
@@ -1291,7 +1470,6 @@ export default function StrategicObjectives() {
                             setRootCause(value)
                         }}
                     />
-
                     <TextField
                         fullWidth
                         label="Support Required"
@@ -1308,7 +1486,6 @@ export default function StrategicObjectives() {
                             setSupportRequired(value)
                         }}
                     />
-
                     <TextField
                         fullWidth
                         label="Action"
@@ -1325,7 +1502,6 @@ export default function StrategicObjectives() {
                             setAction(value)
                         }}
                     />
-
                     <TextField
                         fullWidth
                         label="Risk And Opportunity"
@@ -1362,43 +1538,19 @@ export default function StrategicObjectives() {
                         ))}
                     </TextField>
 
-                    <Grid container spacing={2}>
-                        <Grid item xs={6} lg={6} xl={6} sm={12}>
-                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                            <KeyboardDatePicker
-                                margin="normal"
-                                id="date-picker-dialog"
-                                helperText="Set start date"
-                                format="yyyy/MM/dd"
-                                fullWidth
-                                inputVariant="outlined"
-                                value={start_date}
-                                onChange={setStartDate}
-                                KeyboardButtonProps={{
-                                    'aria-label': 'change date',
-                                }}
-                            />
-                            </MuiPickersUtilsProvider>
-                        </Grid>
-
-                        <Grid item xs={6} lg={6} xl={6} sm={12}>
-                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                            <KeyboardDatePicker
-                                margin="normal"
-                                id="date-picker-dialog"
-                                helperText="Set end date"
-                                format="yyyy/MM/dd"
-                                fullWidth
-                                inputVariant="outlined"
-                                value={end_date}
-                                onChange={setEndDate}
-                                KeyboardButtonProps={{
-                                    'aria-label': 'change date',
-                                }}
-                            />
-                            </MuiPickersUtilsProvider>
-                        </Grid>
-                    </Grid>
+                    <TextField
+                        fullWidth
+                        label="Year"
+                        id="year"
+                        variant="outlined"
+                        className={classes.textInput}
+                        type="text"
+                        value={year}
+                        onChange={(event) => {
+                            const value = event.target.value;
+                            setYear(value)
+                        }}
+                    />
 
                 </DialogContent>
                 <DialogActions>
@@ -1407,11 +1559,12 @@ export default function StrategicObjectives() {
                 </DialogActions>
             </Dialog>
 
+            {/* edit task */}
             <Dialog open={editopenindividualtask} onClose={handleEditIndividualTaskClose}>
-            <DialogTitle>Strategic Intitative</DialogTitle>
+            <DialogTitle>Management Actions</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        Edit Strategic Intitative Details
+                        Edit Management Actions Details
                     </DialogContentText>
                     <TextField
                         autoFocus
@@ -1428,43 +1581,68 @@ export default function StrategicObjectives() {
                         }}
                     />
 
-                <Grid container spacing={2}>
-                    <Grid item xs={6} lg={6} xl={6} sm={12}>
-                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                            <KeyboardDatePicker
-                                margin="normal"
-                                id="date-picker-dialog"
-                                helperText="Set start date"
-                                format="yyyy/MM/dd"
-                                fullWidth
-                                inputVariant="outlined"
-                                value={task_start_date}
-                                onChange={setTaskStartDate}
-                                KeyboardButtonProps={{
-                                    'aria-label': 'change date',
-                                }}
-                            />
-                        </MuiPickersUtilsProvider>
-                    </Grid>
+                    <label style={{ fontWeight: 'bold', color: 'black' }}> Add A Resource: </label>
+                    <Controller
+                        control={methods.control}
+                        className="basic-single"
+                        classNamePrefix="select"
+                        styles={{ marginTop: "10px", marginBottom: "10px" }}
+                        name="assignee_id"
+                        render={({ value, ref }) => (
+                        <Select
+                            inputRef={ref}
+                            options={sys_resources}
+                            isMulti
+                            className="basic-multi-select"
+                            menuPortalTarget={document.body}
+                            styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
+                            defaultValue={myResources}
+                            value={sys_resources.find((c) => c.id === value)}
+                            onChange={(val) => setAssigneeId(val.map(v => v.id))}
+                            getOptionLabel={(sys_resources) => sys_resources.fullnames}
+                            getOptionValue={(sys_resources) => sys_resources.id}
+                        />
+                        )}
+                    />
+                    
 
-                    <Grid item xs={6} lg={6} xl={6} sm={12}>
-                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                            <KeyboardDatePicker
-                                margin="normal"
-                                id="date-picker-dialog"
-                                helperText="Set due date"
-                                format="yyyy/MM/dd"
-                                fullWidth
-                                inputVariant="outlined"
-                                value={task_end_date}
-                                onChange={setTaskEndDate}
-                                KeyboardButtonProps={{
-                                    'aria-label': 'change date',
-                                }}
-                            />
-                        </MuiPickersUtilsProvider>
+                    <Grid container spacing={2}>
+                        <Grid item xs={6} lg={6} xl={6} sm={12}>
+                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                <KeyboardDatePicker
+                                    margin="normal"
+                                    id="date-picker-ddialog"
+                                    helperText="Set start date"
+                                    format="yyyy-MM-dd"
+                                    fullWidth
+                                    inputVariant="outlined"
+                                    value={task_start_date}
+                                    onChange={setTaskStartDate}
+                                    KeyboardButtonProps={{
+                                        'aria-label': 'change date',
+                                    }}
+                                />
+                            </MuiPickersUtilsProvider>
+                        </Grid>
+
+                        <Grid item xs={6} lg={6} xl={6} sm={12}>
+                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                <KeyboardDatePicker
+                                    margin="normal"
+                                    id="date-picker-ddialog"
+                                    helperText="Set due date"
+                                    format="yyyy-MM-dd"
+                                    fullWidth
+                                    inputVariant="outlined"
+                                    value={task_end_date}
+                                    onChange={setTaskEndDate}
+                                    KeyboardButtonProps={{
+                                        'aria-label': 'change date',
+                                    }}
+                                />
+                            </MuiPickersUtilsProvider>
+                        </Grid>
                     </Grid>
-                </Grid>
 
                     <label style={{ fontWeight: 'bold', color: 'black' }}> Status : </label>
                     <TextField
@@ -1492,6 +1670,63 @@ export default function StrategicObjectives() {
                     <Button color="primary" onClick={(e) => { saveEditedIndividualTask(e) }}>Save</Button>
                 </DialogActions>
             </Dialog>
+
+            {/* Delete Objective */}
+            <Dialog open={deleteopen} onClose={handleDeleteClose}>
+                <DialogTitle id="alert-ddialog-title">
+                {"Are you sure you want to delete this Objective?"}
+                </DialogTitle>
+                <DialogContent>
+                <DialogContentText id="alert-ddialog-ddescription">
+                    Please confirm that you want to delete this Objective.
+                </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                <Button color="danger" onClick={handleDeleteClose}>Disagree</Button>
+                { showloader === true ? (
+                    <div style={{ textAlign: "center", marginTop: 10 }}>
+                    <Loader
+                        type="Puff"
+                        color="#29A15B"
+                        height={100}
+                        width={100}
+                    />
+                    </div>
+                    ) :
+                    (
+                        <Button color="primary" onClick={(e) => { deleteObjective(e)}} > Agree</Button>
+                    )}
+                </DialogActions>
+            </Dialog>
+
+            {/* Delete Individual Task */}
+            <Dialog open={deletetaskopen} onClose={handleDeleteTaskClose}>
+                <DialogTitle id="alert-ddialog-title">
+                {"Are you sure you want to delete this Task?"}
+                </DialogTitle>
+                <DialogContent>
+                <DialogContentText id="alert-ddialog-ddescription">
+                    Please confirm that you want to delete this Task.
+                </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                <Button color="danger" onClick={handleDeleteClose}>Disagree</Button>
+                { showloader === true ? (
+                    <div style={{ textAlign: "center", marginTop: 10 }}>
+                    <Loader
+                        type="Puff"
+                        color="#29A15B"
+                        height={100}
+                        width={100}
+                    />
+                    </div>
+                    ) :
+                    (
+                        <Button color="primary" onClick={(e) => { deleteTask(e)}} > Agree</Button>
+                    )}
+                </DialogActions>
+            </Dialog>
+
         </div>
     );
 }

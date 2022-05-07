@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
+import { useHistory } from "react-router";
 // @material-ui/core
 import { makeStyles } from "@material-ui/core/styles";
 // core components
@@ -12,16 +13,14 @@ import Card from "components/Card/Card.js";
 import CardBody from "components/Card/CardBody.js";
 import IconButton from '@material-ui/core/Button';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { ExpandLess } from "@material-ui/icons";
-import { Grid } from "@material-ui/core";
-import { Backup } from "@material-ui/icons";
+import { ExpandLess, Backup } from "@material-ui/icons";
+import { Grid, CardContent, LinearProgress, Icon, Button } from "@material-ui/core";
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import Button from "components/CustomButtons/Button.js";
 import { getUserObjectives } from "actions/objectives";
 import { getKpis } from "actions/kpis";
 import { getCategories } from "actions/data";
@@ -36,9 +35,8 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import { getMission, getVision, getTaskCount, getObjectivesCount, getUserById } from "actions/data";
+import { getMission, getVision, getTaskCount, getObjectivesCount, getUserById, getStrategicIntent1, getKpiCount } from "actions/data";
 import CardHeader from "components/Card/CardHeader";
-import { CardContent } from "@material-ui/core";
 import Box from '@material-ui/core/Box';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
@@ -47,28 +45,26 @@ import AppBar from '@material-ui/core/AppBar';
 import { useTheme } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import PropTypes from 'prop-types';
-import { LinearProgress } from "@material-ui/core";
-import FiberManualRecord from "@material-ui/icons/FiberManualRecord";
 import { getBehaviours, getFreedoms, getConstraints } from "actions/bfc";
 import Highcharts from "highcharts";
 import HighchartsReact from 'highcharts-react-official';
+// import Avatar from "../../assets/img/default-avatar.png";
+
 
 const useStyles = makeStyles(styles);
 
 export default function UserDashboard() {
   const classes = useStyles();
   const theme = useTheme();
-
-  // const history = useHistory();
+  const history = useHistory();
 
   const dispatch = useDispatch();
 
   const { items : objectives } = useSelector(state => state.objective);
-  const {  mission, vision, spec_user, task_count, objective_count } = useSelector(state => state.data);
+  const { spec_user, task_count, objective_count, kpi_count, strategic_intent1 } = useSelector(state => state.data);
   const { items, error, isLoading } = useSelector(state => state.kpi);
-  const { behaviours, behaviours_error, freedoms, freedoms_error, constraints, constrains_error} = useSelector(state => state.bfc);
-
-  // const {  categories } = useSelector(state => state.data);
+  const { behaviours, behaviours_error, freedoms, freedoms_error, constraints, constrains_error } = useSelector(state => state.bfc);
+  const { user: currentUser } = useSelector(state => state.auth);
 
   const str = window.location.pathname;
   const chars = str.slice(25, 1000);
@@ -85,6 +81,10 @@ export default function UserDashboard() {
   const [usermission, setUserMission] = useState("");
   const [value, setValue] = React.useState(0);
 
+  let new_obj = [];
+  objective_count.forEach(function(i) {
+    new_obj.push(i.y)
+  })
 
   useEffect(() => {
 
@@ -99,47 +99,125 @@ export default function UserDashboard() {
         dispatch(getFreedoms(chars));
         dispatch(getConstraints(chars));
         dispatch(getTaskCount(chars));
-        dispatch(getObjectivesCount(chars))
+        dispatch(getObjectivesCount(chars));
+        dispatch(getKpiCount(chars))
+        dispatch(getStrategicIntent1(chars))
     }
     
   }, [chars])
-
-  console.log("here", items)
-
-
-  // const [newuser, setNewUser] = useState(true);
-
-  // const categories = JsonData.Categories;
-  // const kpis = JsonData.KPIS;
 
   const kpi_options = {
     chart: {
       plotBackgroundColor: null,
       plotBorderWidth: null,
       plotShadow: false,
-      type: 'pie'
+      type: 'pie',
     },
+    colors: ['blue', 'amber', 'red', 'green'],
     title: {
-      text: 'Objectives Breakdown'
+      text: 'KPI Breakdown'
     },
     series: [{
-      data: objective_count
-    }]
+      data: kpi_count
+    }],
+    tooltip: {
+      pointFormat: '{name}: <br>{point.percentage:.1f} %, Total: {point.y}'
+    },
+    accessibility: {
+      point: {
+          valueSuffix: '%'
+      }
+    },
+    plotOptions: {
+      pie: {
+          allowPointSelect: true,
+          cursor: 'pointer',
+          dataLabels: {
+              enabled: true,
+              format: '<b>{point.name}</b>:<br>{point.percentage:.1f} %, Total: {point.y}',
+          },
+          distance: -30,
+                filter: {
+                    property: 'percentage',
+                    operator: '>',
+                    value: 4
+                }
+      }
+    },
   }
 
   const obj_options = {
     chart: {
+      type: 'bar'
+    },
+    credits: {
+        enabled: false
+    },
+    title: {
+      text: 'Objectives Breakdown'
+    },
+    xAxis: {
+      categories: ['Objectives'],
+    },
+    yAxis: [{
+      min: 0
+    }],
+    legend: {
+      reversed: true
+    },
+    plotOptions: {
+      series: {
+        stacking: 'normal'
+      }
+    },
+    series: [{
+      name: 'SIGNIFICANTLY OFF TRACK',
+      data: [new_obj[0]]
+    }, {
+      name: 'MODERATELY OFF TRACK',
+      data: [new_obj[1]]
+    }, {
+      name: 'ON TRACK',
+      data: [new_obj[2]]
+    }],
+    tooltip: {
+      pointFormat: '{name}: <br> Total: {point.y}'
+
+    },
+  }
+
+  const mas_options = {
+    chart: {
       plotBackgroundColor: null,
       plotBorderWidth: null,
       plotShadow: false,
-      type: 'pie'
+      type: 'bar'
     },
     title: {
       text: 'MAS Breakdown'
     },
     series: [{
+      colorByPoint: true,
+      name: 'Status',
       data: task_count
-    }]
+    }],
+    tooltip: {
+      pointFormat: '{point.name}: <br>{point.percentage:.1f} %, Total: {point.y}'
+
+    },
+    plotOptions: {
+      bar : {
+          allowPointSelect: true,
+          cursor: 'pointer',
+          dataLabels: {
+              enabled: true,
+              format: '<b>{point.name}</b>:<br> Total: {point.y}',
+              style: {
+                  color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+              }
+          }
+      }
+    },
   }
 
   const handleChange = (event, newValue) => {
@@ -150,27 +228,16 @@ export default function UserDashboard() {
     setValue(index);
   };
 
-  console.log("user mission", mission)
-
   const handleEditMissionClose = () => {
     setEditMissionOpen(false);
     setEditingMission
   };
-
-  // const handleRedirect = () => {
-  //   history.push('/admin/tasks');
-  // }
-
-  // const handleEditMissionClickOpen = () => {
-  //   setEditMissionOpen(true);
-  // };
 
   const setEditingMission = () => {
     setUserMission();
   }
 
   const editMission = () => {
-
     setshowloader();
   }
 
@@ -186,6 +253,14 @@ export default function UserDashboard() {
 
   }
 
+  const handleUserReports = () => {
+    if(currentUser.role_id === 0) {
+      history.push(`/admin/user-report/id=${chars}`)
+    } else {
+      history.push(`/user/user-report/id=${chars}`)
+    }
+  }
+
   return (
     <div>
 
@@ -194,29 +269,33 @@ export default function UserDashboard() {
       {spec_user === undefined || spec_user === null || spec_user.length === 0 ? ( <h4> </h4>) : spec_user ? (
         <div> <h4 className={classes.textBold} style={{display : 'inline-block'}}> {spec_user.fullnames} | </h4>  <h6 style={{display : 'inline-block'}}> {spec_user.roles.role_name}</h6> </div> ) : null}
 
+      <Grid container spacing={1} justify="flex-end">
+        <Button style={{backgroundColor : '#29A15B'}} endIcon={<Icon>send</Icon>} variant="contained" onClick={handleUserReports}> User Reports</Button>
+      </Grid>      
+
       <Grid container spacing={2} style={{marginRight : '10px', marginLeft : '10px'}}>
-        <h3 className={classes.textBold}> THE VISION</h3>
+        <h3 className={classes.textBold}> MISSION: ONE LEVEL UP</h3>
 
         <Card className={classes.cardGrey} style={{margin: '0px'}}>
           <CardBody >
-            {vision === undefined || vision === null || vision.length === 0 ? (
-              <h4> No vision found. </h4>
-            ) : vision ? (
-              <h4 > {vision[0].description}</h4>
+            {strategic_intent1 === undefined || strategic_intent1 === null || strategic_intent1.length === 0 ? (
+            <h4>Not available.</h4>
+            ) : strategic_intent1 ? (
+            <h4 > {strategic_intent1[0].level_up_one}</h4>
             ) : null}
           </CardBody>
 
         </Card>
       </Grid>
 
-      <Grid container spacing={2} style={{marginRight : '10px', marginLeft : '10px', marginBottom : '20px'}}>
+      <Grid container spacing={2} style={{marginRight : '10px', marginLeft : '10px', marginBottom: '20px'}}>
         <h3 className={classes.textBold}> PERSONAL MISSION </h3>
           <Card className={classes.cardGrey} style={{margin: '0px'}}>
             <CardBody>
-              { mission === undefined || mission === null|| mission.length === 0 ? (
-                <h4>Please update your mission</h4>
-              ) : mission ? (
-                <h4>{mission[0].description}</h4>
+              {strategic_intent1 === undefined || strategic_intent1 === null || strategic_intent1.length === 0 ? (
+              <h4>Not available.</h4>
+              ) : strategic_intent1 ? (
+              <h4 > {strategic_intent1[0].strategic_intent}</h4>
               ) : null}
             </CardBody>
           </Card>
@@ -270,7 +349,7 @@ export default function UserDashboard() {
           <GridContainer>
 
 
-            <Box sx={{ bgcolor: 'background.paper' }} width="100%">
+            <Box sx={{ bgcolor: 'background.paper' }} width="98%" style={{ height: '80vh', paddingBottom : '70px' }}>
               <AppBar color="green" position="static">
                 <Tabs
                   value={value}
@@ -281,8 +360,8 @@ export default function UserDashboard() {
                   aria-label="full width tabs example"
                 >
                   <Tab label="KPIS" {...a11yProps(0)} />
-                  <Tab label="OBJECTIVES" {...a11yProps(1)} />
-                  <Tab label="BFC" {...a11yProps(2)} />
+                  <Tab label="STRATEGIC OBJECTIVES" {...a11yProps(1)} />
+                  <Tab label="LEADERSHIP TRAITS" {...a11yProps(2)} />
                 </Tabs>
               </AppBar>
               <SwipeableViews
@@ -290,7 +369,7 @@ export default function UserDashboard() {
                 index={value}
                 onChangeIndex={handleChangeIndex}
               >
-                <TabPanel value={value} index={0} dir={theme.direction}>
+                <TabPanel value={value} index={0} dir={theme.direction} style={{ height: '70vh' }}>
                     {items ? (
                       <GridItem container justify="flex-end"  >
 
@@ -319,12 +398,11 @@ export default function UserDashboard() {
                                           <TableCell>{list.target} </TableCell>
                                           <TableCell>{list.plannedYTD}</TableCell>
                                           <TableCell>{list.actualYTD}</TableCell>
-                                          { list.variance === 'amber' ? (
-                                              <TableCell> <FiberManualRecord style={{color : '#FFC107'}}/> </TableCell>)
-                                          : list.variance === 'green' ? (<TableCell> <FiberManualRecord style={{color : '#29A15B'}}/> </TableCell>)
-                                          : list.variance === 'blue' ? (<TableCell> <FiberManualRecord style={{color : '#03A9F4'}}/> </TableCell>)
-                                          : list.variance === 'red' ? (<TableCell> <FiberManualRecord style={{color : '#F44336'}}/> </TableCell>)
-                                          : list.variance === null || list.variance === undefined  ? (<TableCell> <FiberManualRecord style={{color : '#F44336'}}/> </TableCell>)
+                                          { list.variance === 'amber' ? ( <TableCell><div style={{backgroundColor : '#FFC107',height: '50px', width: '50px', display: 'flex',borderRadius: '50%'}}><p style={{margin: 'auto'}}>{list.varianceValue} %</p></div> </TableCell>)
+                                          : list.variance === 'green' ? (<TableCell> <div style={{backgroundColor : '#29A15B',height: '50px', width: '50px', display: 'flex',borderRadius: '50%'}}><p style={{margin: 'auto'}}>{list.varianceValue} %</p></div> </TableCell>)
+                                          : list.variance === 'blue' ? (<TableCell> <div style={{backgroundColor : '#03A9F4',height: '50px', width: '50px', display: 'flex',borderRadius: '50%'}}><p style={{margin: 'auto'}}>{list.varianceValue} %</p></div> </TableCell>)
+                                          : list.variance === 'red' ? (<TableCell> <div style={{backgroundColor : '#F44336',height: '50px', width: '50px', display: 'flex',borderRadius: '50%'}}><p style={{margin: 'auto'}}>{list.varianceValue} %</p></div> </TableCell>)
+                                          : list.variance === null || list.variance === undefined  ? (<TableCell> <div style={{backgroundColor : '#F44336',height: '50px', width: '50px', display: 'flex',borderRadius: '50%'}}><p style={{margin: 'auto'}}>0 %</p></div> </TableCell>)
                                           : null }
               
                                       </TableRow>
@@ -339,11 +417,11 @@ export default function UserDashboard() {
                     </GridItem>
                     ) : null }
                 </TabPanel>
-                <TabPanel value={value} index={1} dir={theme.direction}>
+                <TabPanel value={value} index={1} dir={theme.direction} style={{ overflowY: 'scroll', height: '70vh'}}>
                   {objectives ? ( objectives.map((list, index) => (
                     <GridItem container justify="flex-end" key={index}  >
 
-                      <Card style={{borderLeft : list.objectives.overallStatus === 'Incomplete' ? 'solid 5px red' : (list.objectives.overallStatus === 'COMPLETE' || list.objectives.overallStatus === 'Complete') ? 'solid 5px green' : (list.objectives.overallStatus === 'INCOMPLETE' || list.objectives.overallStatus === 'Incomplete' || list.objectives.overallStatus === '' || list.objectives.overallStatus === null ) ? 'solid 5px red'  :'solid 5px black' , marginBottom: '0'}} key={index} >
+                      <Card style={{borderLeft : list.objectives.overallStatus === 'Incomplete' ? 'solid 5px red' : (list.objectives.overallStatus === 'ONGOING' || list.objectives.overallStatus === 'Ongoing' || list.objectives.overallStatus === 'MODERATELY OFF TRACK') ? 'solid 5px #ff9800' : (list.objectives.overallStatus === 'COMPLETE' || list.objectives.overallStatus === 'Complete' || list.objectives.overallStatus === 'ON TRACK') ? 'solid 5px green' : (list.objectives.overallStatus === 'INCOMPLETE' || list.objectives.overallStatus === 'Incomplete' || list.objectives.overallStatus === 'SIGNIFICANTLY OFF TRACK' || list.objectives.overallStatus === null ) ? 'solid 5px red'  :'solid 5px black' , marginBottom: '0'}} key={index} >
                         <GridItem xs={12} sm={12} md={12}>
                           <h4 className={classes.textBold}> {list.objectives.description} </h4>
                           <h6 className={classes.textGreen}> {list.totalTasks} Management actions</h6>
@@ -372,7 +450,7 @@ export default function UserDashboard() {
                                 <Card className={classes.cardBodyRed}>
                                     <CardBody>
                                         <h4 className={classes.cardTitle}>
-                                        {list.offtrack} <small>Off Ttack</small>
+                                        {list.offtrack} <small>Off Track</small>
                                         </h4>
                                     </CardBody>
                                 </Card>
@@ -408,7 +486,7 @@ export default function UserDashboard() {
                                 <Card  className={classes.cardBodyGreen}>
                                     <CardBody>
                                         <h4 className={classes.cardTitle}>
-                                        {list.done} <small>Completed</small>
+                                        {list.complete} <small>Completed</small>
                                         </h4>
                                     </CardBody>
                                 </Card>
@@ -444,6 +522,7 @@ export default function UserDashboard() {
                                             <TableCell>Start Date</TableCell>
                                             <TableCell>Due Date</TableCell>
                                             <TableCell>Status</TableCell>
+                                            <TableCell>Resources</TableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
@@ -460,6 +539,27 @@ export default function UserDashboard() {
                                                 <TableCell>{moment(list.start_date).format('YYYY-MM-DD')}</TableCell>
                                                 <TableCell>{moment(list.end_date).format('YYYY-MM-DD')}</TableCell>
                                                 <TableCell>{list.status}</TableCell>
+                                                <TableCell>
+                                                  {list.assignedTasks.map((detail, index) => (
+                                                      <div key={index} style={{ display: 'inline' }}>
+                                                          {/* { detail.assignee.userPicture === null || detail.assignee.userPicture === undefined ? (
+                                                              <img key={index} src={Avatar} alt={detail.assignee.fullnames}  style={{ maxWidth: '50px', maxHeight: '50px', borderRadius: '50%'}} />
+
+                                                          ) : detail.assignee.userPicture != null ? (
+                                                              <img key={index} src={detail.assignee.userPicture}
+                                                              alt={detail.assignee.fullnames}  style={{ maxWidth: '50px', maxHeight: '50px', borderRadius: '50%'}} />
+                                                          ) : null} */}
+
+                                                            { detail.assignee.fullnames === null || detail.assignee.fullnames === undefined ? (
+                                                                <p>None </p>
+
+                                                            ) : detail.assignee.fullnames != null ? (
+                                                                <p>{detail.assignee.fullnames}, </p>
+                                                            ) : null}
+                                                      </div>
+                                                    
+                                                  ))}
+                                                </TableCell>
                                             </TableRow>
                                         ))) : err ? (<TableRow> <TableCell> {err} </TableCell></TableRow>) 
                                         : null }
@@ -475,7 +575,38 @@ export default function UserDashboard() {
                   </GridItem>
                   ))) : null }
                 </TabPanel>
-                <TabPanel value={value} index={2} dir={theme.direction}>
+                <TabPanel value={value} index={2} dir={theme.direction} style={{ height: '70vh' }} >
+
+                  <Grid
+                    container
+                    spacing={2}
+                    direction="row"
+                    >
+                      <Grid item xs={12} md={12} sm={12} key="1">
+                        <Card>
+                          <h4 style={{color: 'black', textAlign: 'center', justifyContent: 'center'}}> Strategic Intent Level 1 </h4>
+                            {/* <IconButton  style={{float: 'right'}} aria-label="edit" color="primary" onClick={() => { setEditingStrategicIntent1(strategic_intent1) }} ><EditIcon style={{ color : '#000000'}}/></IconButton> */}
+                            {strategic_intent1 === undefined || strategic_intent1 === null || strategic_intent1.length === 0 ? (
+                              <h4 style={{color: 'black', textAlign: 'center'}} >Not available.</h4>
+                            ) : strategic_intent1 ? (
+                              <h4 style={{color: 'black', textAlign: 'center'}} > {strategic_intent1[0].level_up_one}</h4>
+                            ) : null}
+                        </Card>
+                      </Grid>
+
+                      <Grid item xs={12} md={12} sm={12} key="2"> 
+                        {/* <IconButton  style={{float: 'right'}} aria-label="edit" color="primary" onClick={() => { setEditingStrategicIntent1(strategic_intent1) }} ><EditIcon style={{ color : '#000000'}}/></IconButton>          */}
+                          <Card>
+                            <h4 style={{color: 'black', textAlign:'center'}}> Strategic Intent Level 2 </h4> 
+                              {strategic_intent1 === undefined || strategic_intent1 === null || strategic_intent1.length === 0 ? (
+                                <h4 style={{color: 'black', textAlign: 'center'}} > Not available.</h4>
+                              ) : strategic_intent1 ? (
+                                <h4  style={{color: 'black', textAlign: 'center'}} > {strategic_intent1[0].level_up_two}</h4>
+                              ) : null}
+                          </Card>
+                      </Grid>
+                  </Grid>
+
                   <Grid
                     container
                     spacing={2}
@@ -571,28 +702,34 @@ export default function UserDashboard() {
               </SwipeableViews>
             </Box>
 
-            <Box sx={{ bgcolor: 'background.paper', marginTop: '20px' }} width="100%">
+            <Box sx={{ bgcolor: 'background.paper', marginTop: '20px' }} width="98%">
             <h4 style={{ fontWeight: 'bold', textAlign: 'center'}}> Analytics </h4>
 
               <Grid container spacing={2} direction="row" >
                 
-                <Grid item xs={5} key="1">
+                <Grid item xs={4} key="1">
                   <HighchartsReact
                     highcharts={Highcharts}
                     options={kpi_options}
                   />                
                 </Grid>
 
-                <Grid item xs={5} key="2">
+                <Grid item xs={4} key="2">
                   <HighchartsReact
                     highcharts={Highcharts}
                     options={obj_options}
+                  />                
+                </Grid>
+
+                <Grid item xs={4} key="3">
+                  <HighchartsReact
+                    highcharts={Highcharts}
+                    options={mas_options}
                   />  
                 </Grid>
               </Grid>   
             </Box> 
 
-            
           </GridContainer>
         </div>
 

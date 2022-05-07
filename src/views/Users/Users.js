@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
+
+import { useForm, Controller } from 'react-hook-form';
+import Select from "react-select";
+
 // @material-ui/core
 import { makeStyles } from "@material-ui/core/styles";
 // core components
@@ -27,9 +31,8 @@ import axios from "axios";
 import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
 import { Grid } from "@material-ui/core";
 import { getTeams} from "actions/teams"
-import { getRoles } from "actions/data";
+import { getRoles, getPillars } from "actions/data";
 import MaterialTable from 'material-table';
-
 // import classNames from "classnames";
 
 const useStyles = makeStyles(styles);
@@ -38,18 +41,19 @@ export default function UsersPage() {
   const classes = useStyles();
   const dispatch = useDispatch();
 
-  const { items , item } = useSelector(state => state.user);
-  const { user : currentUser } = useSelector(state => state.auth);
-  const { roles} = useSelector(state => state.data);
-  const { items : teams} = useSelector(state => state.team);
+  const methods = useForm();
 
-  console.log("here error", teams)
-  console.log("here item", items, item)
+  const { items } = useSelector(state => state.user);
+  const { user : currentUser, token } = useSelector(state => state.auth);
+  const { roles } = useSelector(state => state.data);
+  const { items : teams} = useSelector(state => state.team);
 
   useEffect(() => {
     dispatch(getUsers());
     dispatch(getTeams());
-    dispatch(getRoles())
+    dispatch(getRoles());
+    dispatch(getPillars());
+    dispatch(getUsers())
   }, []);
 
 
@@ -72,7 +76,9 @@ export default function UsersPage() {
   const [search_email, setSearchEmail] = useState("");
   const [showSearchLoading, setShowSearchLoading] = useState("");
   const [setUserError, setShowUserError] = useState("");
-  
+  const [line_manager, setLineManager] = useState("");  
+  const [myuser, setMyUser] = useState("");
+  const [access_level, setAccessLevel] = useState("");
   // const [selectedUser, setSelectedUser] = useState("");
 
   // const statuses = JsonData.Status;
@@ -105,7 +111,9 @@ export default function UsersPage() {
         email : search_email,
         extension : 0,
         view : true,
-        created_by : created_by
+        lineManager : line_manager,
+        created_by : created_by,
+        accessLevel : access_level
     });
 
     console.log("save user", search_user,status, created_by, team, role, search_email, setCreatedBy )
@@ -120,7 +128,16 @@ export default function UsersPage() {
             title: "Success",
             text: item,
             icon: "success",
-        }).then(() => dispatch(getUsers()));
+        }).then(() => {
+          setName("")
+          setTeam("")
+          setRole("")
+          setEmail("")
+          setLineManager("")
+          setAccessLevel("")
+          setCreatedBy(currentUser.id)
+          dispatch(getUsers())
+        });
         
       } else {
 
@@ -131,6 +148,15 @@ export default function UsersPage() {
               text: error,
               icon: "error",
               dangerMode: true
+          }).then(() => {
+            setName("")
+            setTeam("")
+            setRole("")
+            setEmail("")
+            setLineManager("")
+            setAccessLevel("")
+            setCreatedBy(currentUser.id)
+            dispatch(getUsers())
           });
       }
     } catch (error) {
@@ -142,6 +168,15 @@ export default function UsersPage() {
               text: err,
               icon: "error",
               dangerMode: true
+          }).then(() => {
+            setName("")
+            setTeam("")
+            setRole("")
+            setEmail("")
+            setLineManager("")
+            setAccessLevel("")
+            setCreatedBy(currentUser.id)
+            dispatch(getUsers())
           });
     }
 
@@ -153,7 +188,7 @@ export default function UsersPage() {
   };
 
   const setEditing = (list) => {
-
+    console.log("list here", list)
     setName(list.fullnames);
     setTeam(list.teams.id);
     setRole(list.roles.id);
@@ -162,6 +197,9 @@ export default function UsersPage() {
     setEmail(list.email);
     setExtension(list.extension);
     setView(list.view)
+    setLineManager(list.lineManager);
+    setMyUser(list.lineManagerUser);
+    setAccessLevel(list.accessLevel);
 
   }
 
@@ -184,8 +222,10 @@ export default function UsersPage() {
         extension: extension,
         // disabled : disabled,
         team_id : team, 
+        accessLevel : access_level,
         role_id : role,
         updated_by_id : updated_by,
+        lineManager : line_manager,
         view : view,
         
         });
@@ -205,7 +245,16 @@ export default function UsersPage() {
                     title: "Success",
                     text: item,
                     icon: "success",
-                }).then(() => dispatch(getUsers()));
+                }).then(() => {
+                  setName("")
+                  setTeam("")
+                  setRole("")
+                  setEmail("")
+                  setLineManager("")
+                  setAccessLevel("")
+                  setCreatedBy(currentUser.id)
+                  dispatch(getUsers())
+                });
 
             } else {
               let error = response.data.message
@@ -257,24 +306,44 @@ export default function UsersPage() {
 
       setShowSearchLoading(true)
 
-      console.log("name", name)
+      console.log("email", email)
 
       const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
-      let body = JSON.stringify({ username : name});
 
       try {
-        let response = await axios.post('/searchldap', body, config);
+        // let response = await axios.post('/searchldap', body, config);
+
+        let response = await axios.get(`fetchUsertoAdd?mail=${email}&accessToken=${token}`, config)
+        console.log("hh", response.data.firstname)
 
         if (response.data.success === false) {
           setShowSearchLoading(false);
-          setShowUserError("User not found!")
+          setSearchUser("");
+          setSearchEmail("");
+          setName("");
+          setEmail("");
+          setTeam("");
+          setRole("");
+          setAccessLevel("");
+          setEmail("");
+          setLineManager("")
+          setShowUserError("User not found!");
+          
         } else {
 
           setShowSearchLoading(false);
 
-          if(response.data.accountname === null) {
+          if(response.data.accountname === null || response.data.accountname === undefined) {
 
-            setSearchUser(false)
+            setSearchUser("");
+            setSearchEmail("");
+            setName("");
+            setEmail("");
+            setTeam("");
+            setRole("");
+            setAccessLevel("");
+            setEmail("");
+            setLineManager("")
             setShowUserError("User not found!");
 
           } else {
@@ -285,6 +354,17 @@ export default function UsersPage() {
         }
       } catch (error) {
         setShowSearchLoading(false);
+        setSearchUser("");
+        setSearchEmail("");
+        setName("");
+        setEmail("");
+        setTeam("");
+        setRole("");
+        setAccessLevel("");
+        setEmail("");
+        setLineManager("")
+        setShowUserError("User not found!");
+
           swal.fire({
               title: "Error",
               text: "User not found!",
@@ -318,18 +398,39 @@ export default function UsersPage() {
       title: 'Role'
     },
     {
+      field: 'accessLevel',
+      title: 'Access Level'
+    },
+    {
+      field: 'lineManagerUser.fullnames',
+      title: 'Line Manager'
+    },
+    {
       field: '',
       title: 'Action',
       render: (list) => {
-        console.log("editing table", list)
         if(currentUser.role_id === 0) {
-          return ( <div><IconButton aria-label="edit" className={classes.textGreen} onClick={() => { handleEditClickOpen(); setEditing(list)}}><EditIcon /></IconButton>
+          return ( <div><IconButton aria-label="edit" className={classes.textGreen} onClick={() => { setEditing(list); handleEditClickOpen();}}><EditIcon /></IconButton>
           </div>)
         }
       }
     }
   ]
 
+  const levels = [
+    {
+      value: 'Level1',
+      title: 'Level 1'
+    },
+    {
+      value: 'Level2',
+      title: 'Level 2'
+    },
+    {
+      value: 'Level3',
+      title: 'Level 3'
+    },
+  ]
 
   // const handleDeleteClose = () => {
   //   setDeleteOpen(false);
@@ -346,24 +447,44 @@ export default function UsersPage() {
     <div>
       <GridContainer>
         <GridItem xs={12} sm={12} md={12}>
+        { currentUser.role_id == 0 ? (
+          <div style={{ paddingBottom : '60px'}}>
+            <div className={classes.btnRight}><Button color="primary" size="lg" onClick={handleAddClickOpen}> Add User </Button> </div>
+          </div>
+        ) : null} 
+
           <Card>
             <CardHeader color="primary">
               <h4>Users</h4>
             </CardHeader>
             <CardBody>
-              { currentUser.role_id === 0 ? (<div className={classes.btnRight}><Button color="primary" size="lg" onClick={handleAddClickOpen}> Add User </Button> </div> ) : null }
+              {items.length !== null ? (
+                <MaterialTable
+                    title="User  details."
+                    data={items}
+                    columns={columns}
+                    options={{
+                      search: true,
+                      sorting: true,
+                      pageSize: 10,
+                      pageSizeOptions: [10,50,100 ],
+                    }}
+                />
+              ) : 
 
-              <MaterialTable
-                  title="User  details."
-                  data={items}
-                  columns={columns}
-                  options={{
-                    search: true,
-                    sorting: true,
-                    pageSize: 10,
-                    pageSizeOptions: [10,50,100 ],
-                  }}
-              />
+                <MaterialTable
+                    title="User  details."
+                    data={[]}
+                    columns={columns}
+                    options={{
+                      search: true,
+                      sorting: true,
+                      pageSize: 10,
+                      pageSizeOptions: [10,50,100 ],
+                    }}
+                />
+              }  
+
 
               <Dialog open={addopen} onClose={handleAddClose}>
                 <DialogTitle>User</DialogTitle>
@@ -376,13 +497,13 @@ export default function UsersPage() {
                     autoFocus
                     margin="dense"
                     id="name"
-                    label="Enter AD Username"
+                    label="Enter AD Email"
                     type="text"
                     fullWidth
-                    value={name}
+                    value={email}
                     variant="outlined"
                     onChange={(event) => {
-                      setName(event.target.value);
+                      setEmail(event.target.value);
                     }}
                     onKeyDown={(e) => {handleSearchUser(e)}}
                   />
@@ -438,6 +559,47 @@ export default function UsersPage() {
                       ))}
                       </TextField>
 
+                      <label> Line Manager : </label>
+                      <Controller
+                        control={methods.control}
+                        className="basic-single"
+                        classNamePrefix="select"
+                        styles={{ marginTop : '10px', marginBottom : '10px'}}
+                        name="line_manager"
+                        render={({ value, ref }) => (
+                          <Select
+                            inputRef={ref}
+                            options={items}
+                            className="basic-multi-select"
+                            menuPortalTarget={document.body} 
+                            styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
+                            value={items.find(c => c.id === value)}
+                            onChange={val => setLineManager(val.id)}
+                            getOptionLabel={items => items.fullnames}
+                            getOptionValue={items => items.id}
+                          />
+                        )}
+                      />
+
+                      {/* <TextField
+                        id="outlined-select-type"
+                        select
+                        fullWidth
+                        variant="outlined"
+                        label="Select"
+                        value={line_manager}
+                        onChange = {(event) => {
+                          setLineManager(event.target.value);
+                        }}
+                        helperText="Please select your line manager"
+                      >
+                        {items.length >= 1 && items.map((option) => (
+                          <MenuItem key={option.id} value={option.id}>
+                            {option.fullnames}
+                          </MenuItem>
+                        ))}
+                      </TextField> */}
+
                       <label style={{ fontWeight: 'bold', color: 'black' }}> Team : </label>
                       <TextField
                         id="outlined-select-team"
@@ -457,6 +619,26 @@ export default function UsersPage() {
                         </MenuItem>
                       ))}
                     </TextField>
+
+                    <label style={{ fontWeight: 'bold', color: 'black' }}> Access Level : </label>
+                      <TextField
+                        id="outlined-select-level"
+                        select
+                        fullWidth
+                        variant="outlined"
+                        label="Select"
+                        value={access_level}
+                        onChange={(event) => {
+                          setAccessLevel(event.target.value);
+                        }}
+                        helperText="Please select your access level"
+                      >
+                      {levels.map((option) => (
+                        <MenuItem key={option.value} value={option.value}>
+                          {option.title}
+                        </MenuItem>
+                      ))}
+                      </TextField>
 
                     <label style={{ fontWeight: 'bold', color: 'black' }}> Status : </label>
                     <TextField
@@ -549,6 +731,29 @@ export default function UsersPage() {
                     ))}
                   </TextField>
 
+                  <label> Line Manager : </label>
+                  <Controller
+                    control={methods.control}
+                    className="basic-single"
+                    classNamePrefix="select"
+                    styles={{ marginTop : '10px', marginBottom : '10px'}}
+                    name="line_manager"
+                    render={({ value, ref }) => (
+                      <Select
+                        inputRef={ref}
+                        options={items}
+                        className="basic-multi-select"
+                        menuPortalTarget={document.body} 
+                        styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
+                        defaultValue={myuser}
+                        value={items.find(c => c.id === value)}
+                        onChange={val => setLineManager(val.id)}
+                        getOptionLabel={items => items.fullnames}
+                        getOptionValue={items => items.id}
+                      />
+                    )}
+                  />
+
                   <label style={{ fontWeight: 'bold', color: 'black' }}> Team : </label>
                   <TextField
                     id="outlined-select-team"
@@ -568,6 +773,26 @@ export default function UsersPage() {
                       </MenuItem>
                     ))}
                   </TextField>
+
+                  <label style={{ fontWeight: 'bold', color: 'black' }}> Access Level : </label>
+                    <TextField
+                      id="outlined-select-level"
+                      select
+                      fullWidth
+                      variant="outlined"
+                      label="Select"
+                      value={access_level}
+                      onChange={(event) => {
+                        setAccessLevel(event.target.value);
+                      }}
+                      helperText="Please select your access level"
+                    >
+                    {levels.map((option) => (
+                      <MenuItem key={option.value} value={option.value}>
+                        {option.title}
+                      </MenuItem>
+                    ))}
+                    </TextField>
 
                   <label style={{ fontWeight: 'bold', color: 'black' }}> Status : </label>
                   <TextField

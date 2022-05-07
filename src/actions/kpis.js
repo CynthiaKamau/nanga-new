@@ -1,6 +1,4 @@
 import axios from 'axios';
-// import { setError } from './error';
-// import { tokenConfig } from './auth';
 import {
     ALL_KPIS_SUCCESS,
     ALL_KPIS_FETCH_REQUEST,
@@ -21,6 +19,14 @@ import {
     DELETE_KPI_SUCCESS,
     DELETE_KPI_FETCH_REQUEST,
     DELETE_KPI_FAIL,
+
+    KPI_MONTH_ACTION_SUCCESS,
+    KPI_MONTH_ACTION_FETCH_REQUEST,
+    KPI_MONTH_ACTION_FAIL,
+
+    KPI_MONTH_REPORT_SUCCESS,
+    KPI_MONTH_REPORT_FETCH_REQUEST,
+    KPI_MONTH_REPORT_FAIL
 
 } from '../actions/types';
 
@@ -139,9 +145,6 @@ export const editKpi = (id, kpi, uom, category, created_by, updated_by ) => {
 
 //delete specific kpi
 export const deleteKpi = (id) => {
-    const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
-    const body = JSON.stringify({ id });
-    console.log("kpi", body);
 
     return async function (dispatch) {
 
@@ -149,16 +152,63 @@ export const deleteKpi = (id) => {
 
         try {
 
-            let response = await axios.post(`/kpi/delete`, body, config)
+            let response = await axios.post(`/kpi/deleteKpiById?kpi_id=${id}`)
             if (response.status == 200) {
                 dispatch({ type: DELETE_KPI_SUCCESS, payload: response.data })
             } else {
                 dispatch({ type: DELETE_KPI_FAIL, payload: response.data })
             }
         } catch (error) {
-            dispatch({ type: ADD_KPI_FAIL, payload: error.response })
+            dispatch({ type: DELETE_KPI_FAIL, payload: error.response })
         }
 
     }
 }
+
+//get monthly actions
+export const getKMonthlyActions = (id) => {
+
+    return async function (dispatch) {
+
+        dispatch({ type: KPI_MONTH_ACTION_FETCH_REQUEST });
+
+        try {
+            let response = await axios.get(`/kpiactions/fetchActionsbyUserId?user_id=${id}`)
+            if (response.status == 200) {
+                dispatch({ type: KPI_MONTH_ACTION_SUCCESS, payload: response.data })
+            } else {
+                dispatch({ type: KPI_MONTH_ACTION_FAIL, payload: response.data })
+            }
+
+        } catch (error) {
+            dispatch({ type: KPI_MONTH_ACTION_FAIL, payload: error.response })
+        }
+    }
+
+}
+
+//get monthly report
+export const getKMonthlyReport = (user_id, month, year) => {
+
+    let report_name = `${month + year + 'Report'}`;
+
+    return async function (dispatch) {
+
+        dispatch({ type: KPI_MONTH_REPORT_FETCH_REQUEST });
+
+        try {
+            let response = await axios.get(`/kpiReports/filterKpiReport?user_id=${user_id}&reportName=${report_name}`)
+            if (response.status == 200) {
+                dispatch({ type: KPI_MONTH_REPORT_SUCCESS, payload: response.data.data[0] })
+            } else {
+                dispatch({ type: KPI_MONTH_REPORT_FAIL, payload: response.data })
+            }
+
+        } catch (error) {
+            dispatch({ type: KPI_MONTH_REPORT_FAIL, payload: error.response })
+        }
+    }
+
+}
+
 

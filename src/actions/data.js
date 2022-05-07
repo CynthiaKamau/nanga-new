@@ -44,6 +44,26 @@ import {
     OBJECTIVE_COUNT_FETCH_REQUEST,
     OBJECTIVE_COUNT_FAIL,
 
+    KPI_COUNT_SUCCESS,
+    KPI_COUNT_FETCH_REQUEST,
+    KPI_COUNT_FAIL,
+
+    STRATEGIC_INTENT1_SUCCESS,
+    STRATEGIC_INTENT1_FETCH_REQUEST,
+    STRATEGIC_INTENT1_FAIL,
+
+    STRATEGIC_INTENT2_SUCCESS,
+    STRATEGIC_INTENT2_FETCH_REQUEST,
+    STRATEGIC_INTENT2_FAIL,
+
+    WEEKLY_REPORT_SUCCESS,
+    WEEKLY_REPORT_FETCH_REQUEST,
+    WEEKLY_REPORT_FAIL,
+
+    ORGANOGRAM_SUCCESS,
+    ORGANOGRAM_FETCH_REQUEST,
+    ORGANOGRAM_FAIL
+
 } from './types';
 
 //all categories
@@ -305,6 +325,120 @@ export const getObjectivesCount = (id) => {
     }
 }
 
+//user kpi count
+export const getKpiCount = (id) => {
+
+    return async function (dispatch) {
+
+        dispatch({ type: KPI_COUNT_FETCH_REQUEST });
+
+        try {
+
+            let response = await axios.get(`/kpi/kpiPieChart?user_id=${id}`)
+            if (response.status == 200) {
+                dispatch({ type: KPI_COUNT_SUCCESS, payload: response.data.data })
+            } else {
+                dispatch({ type: KPI_COUNT_FAIL, payload: response.data })
+            }
+
+        } catch (error) {
+            dispatch({ type: KPI_COUNT_FAIL, payload: error.response })
+        }
+    }
+}
+
+
+//strategic intent1
+export const getStrategicIntent1 = (id) => {
+
+    return async function (dispatch) {
+
+        dispatch({ type: STRATEGIC_INTENT1_FETCH_REQUEST });
+
+        try {
+
+            let response = await axios.get(`strategicintent/fetchStrategicIntentbyUserId?user_id=${id}`)
+            if (response.status == 200) {
+                console.log("here", response.data)
+                dispatch({ type: STRATEGIC_INTENT1_SUCCESS, payload: response.data })
+            } else {
+                dispatch({ type: STRATEGIC_INTENT1_FAIL, payload: response.data })
+            }
+
+        } catch (error) {
+            dispatch({ type: STRATEGIC_INTENT1_FAIL, payload: error.response })
+        }
+    }
+
+}
+
+//strategic intent2
+export const getStrategicIntent2 = (id) => {
+
+    return async function (dispatch) {
+
+        dispatch({ type: STRATEGIC_INTENT2_FETCH_REQUEST });
+
+        try {
+
+            let response = await axios.get(`?user_id=${id}`)
+            if (response.status == 200) {
+                console.log("here", response.data)
+                dispatch({ type: STRATEGIC_INTENT2_SUCCESS, payload: response.data })
+            } else {
+                dispatch({ type: STRATEGIC_INTENT2_FAIL, payload: response.data })
+            }
+
+        } catch (error) {
+            dispatch({ type: STRATEGIC_INTENT2_FAIL, payload: error.response })
+        }
+    }
+
+}
+
+//weekly report
+export const getWeeklyReport = (id) => {
+
+    return async function (dispatch) {
+
+        dispatch({ type: WEEKLY_REPORT_FETCH_REQUEST });
+
+        try {
+
+            let response = await axios.get(`/weeklyReport/fetchweeklyReportbyUserId?user_id=${id}`)
+            if (response.status == 200) {
+                dispatch({ type: WEEKLY_REPORT_SUCCESS, payload: response.data })
+            } else {
+                dispatch({ type: WEEKLY_REPORT_FAIL, payload: response.data })
+            }
+
+        } catch (error) {
+            dispatch({ type: WEEKLY_REPORT_FAIL, payload: error.response })
+        }
+    }
+}
+
+//organogram data
+export const getOrganogram = () => {
+
+    return async function (dispatch) {
+
+        dispatch({ type: ORGANOGRAM_FETCH_REQUEST });
+
+        try {
+
+            let response = await axios.get(`teams/fetchOrganogram`)
+            if (response.status == 200) {
+                dispatch({ type: ORGANOGRAM_SUCCESS, payload: response.data })
+            } else {
+                dispatch({ type: ORGANOGRAM_FAIL, payload: response.data })
+            }
+
+        } catch (error) {
+            dispatch({ type: ORGANOGRAM_FAIL, payload: error.response })
+        }
+    }
+}
 
 
 

@@ -2,6 +2,7 @@ import React, { useEffect, useState,  } from "react";
 import { useSelector, useDispatch } from "react-redux";
 // import axios from "axios";
 import { getBehaviours, getFreedoms, getConstraints } from "actions/bfc";
+import { getStrategicIntent1 } from "actions/data";
 import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -10,7 +11,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import CardHeader from "components/Card/CardHeader";
 import { CardContent } from "@material-ui/core";
-import { Grid } from "@material-ui/core";
+import { Grid, IconButton } from "@material-ui/core";
 import Card from "components/Card/Card.js";
 import { makeStyles } from "@material-ui/core/styles";
 import Dialog from '@material-ui/core/Dialog';
@@ -23,8 +24,9 @@ import swal from "sweetalert2";
 import Loader from "react-loader-spinner";
 import TextField from '@material-ui/core/TextField';
 import axios from "axios";
-import IconButton from '@material-ui/core/Button';
+import { DeleteForever} from '@material-ui/icons';
 import EditIcon from '@material-ui/icons/Edit';
+import CardBody from "components/Card/CardBody";
 
 const useStyles = makeStyles(styles);
 
@@ -35,6 +37,7 @@ export default function BFC() {
 
     const { user: currentUser } = useSelector(state => state.auth);
     const { behaviours, behaviours_error, freedoms, freedoms_error, constraints, constrains_error} = useSelector(state => state.bfc);
+    const { strategic_intent1 } = useSelector(state => state.data);
 
     const [addBopen, setAddBOpen] = useState(false);
     const [addFopen, setAddFOpen] = useState(false);
@@ -51,17 +54,34 @@ export default function BFC() {
     const [behaviourId, setBehaviourId] = useState("");
     const [freedomId, setFreedomId] = useState("");
     const [constaraintId, setConstraintId] = useState("");
+    const [behaviourDeleteId, setBehaviourDeleteId] = useState("");
+    const [freedomDeleteId, setFreedomDeleteId] = useState("");
+    const [constaraintDeleteId, setConstraintDeleteId] = useState("");
+    const [userstrategicintent0, setStrategicIntent0] = useState("");
+    const [userstrategicintent1, setStrategicIntent1] = useState("");
+    const [userstrategicintent2, setStrategicIntent2] = useState("");
+    const [strategic_intent1_id, setStrategicIntent1Id] = useState("");
+    const [user_id, setUserId] = useState(currentUser.id);
+    const [editopensil1, setEditSIL1Open] = useState(false);
+    const [deletebehaviouropen, setDeleteBehaviourOpen] = useState(false);
+    const [deletefreedomsopen, setDeleteFreedomsOpen] = useState(false);
+    const [deleteconstraintsopen, setDeleteConstraintsOpen] = useState(false);
 
-    console.log("beh", behaviours, updated_by);
+    // const [strategic_intent2_id, setStrategicIntent2Id] = useState("");
 
-
+    console.log("beh", behaviours, updated_by, setUserId);
+    
     useEffect(() => {
         dispatch(getBehaviours(currentUser.id));
         dispatch(getFreedoms(currentUser.id));
         dispatch(getConstraints(currentUser.id))
         setCreatedBy(currentUser.id)
         setUpdatedBy(currentUser.id)
+        dispatch(getStrategicIntent1(currentUser.id))
     }, []);
+
+    console.log("constraints", constraints)
+
 
     const handleAddBehaviourClickOpen = () => {
         setAddBOpen(true);
@@ -134,7 +154,11 @@ export default function BFC() {
                         title: "Success",
                         text: item,
                         icon: "success",
-                    }).then(() => dispatch(getBehaviours(currentUser.id)));
+                    }).then(() => {
+                        setBehaviour("");
+                        setCreatedBy(currentUser.id)
+                        dispatch(getBehaviours(currentUser.id))
+                    }) 
     
                 } else {
                     let error = response.data.message
@@ -169,7 +193,7 @@ export default function BFC() {
     
         const body = JSON.stringify({ 
             createdBy: created_by,
-            description: behaviour_description,
+            description: freedom_description,
             userId: created_by
         });
 
@@ -184,7 +208,11 @@ export default function BFC() {
                         title: "Success",
                         text: item,
                         icon: "success",
-                    }).then(() => dispatch(getFreedoms(currentUser.id)));
+                    }).then(() =>  {
+                        setFreedom("");
+                        setCreatedBy(currentUser.id)
+                        dispatch(getFreedoms(currentUser.id))
+                    });
     
                 } else {
                     let error = response.data.message
@@ -219,7 +247,7 @@ export default function BFC() {
     
         const body = JSON.stringify({ 
             createdBy: created_by,
-            description: behaviour_description,
+            description: constraint_description,
             userId: created_by
         });
 
@@ -234,7 +262,11 @@ export default function BFC() {
                         title: "Success",
                         text: item,
                         icon: "success",
-                    }).then(() => dispatch(getConstraints(currentUser.id)));
+                    }).then(() => {
+                        setConstraint("")
+                        setCreatedBy(currentUser.id)
+                        dispatch(getConstraints(currentUser.id))
+                    });
     
                 } else {
                     let error = response.data.message
@@ -291,7 +323,10 @@ export default function BFC() {
                         title: "Success",
                         text: item,
                         icon: "success",
-                    }).then(() => dispatch(getBehaviours(currentUser.id)));
+                    }).then(() => {
+                        setBehaviour("");
+                        dispatch(getBehaviours(currentUser.id))
+                    });
     
                 } else {
                     let error = response.data.message
@@ -349,7 +384,10 @@ export default function BFC() {
                         title: "Success",
                         text: item,
                         icon: "success",
-                    }).then(() => dispatch(getFreedoms(currentUser.id)));
+                    }).then(() => {
+                        setFreedom("");
+                        dispatch(getFreedoms(currentUser.id))
+                    });
     
                 } else {
                     let error = response.data.message
@@ -406,7 +444,10 @@ export default function BFC() {
                         title: "Success",
                         text: item,
                         icon: "success",
-                    }).then(() => dispatch(getConstraints(currentUser.id)));
+                    }).then(() => {
+                        setConstraint("")
+                        dispatch(getConstraints(currentUser.id))
+                    });
     
                 } else {
                     let error = response.data.message
@@ -432,8 +473,382 @@ export default function BFC() {
         }
     }
 
+    const handleEditSIL1Close = () => {
+        setEditSIL1Open(false);
+    }
+
+    const handleEditSIL1Open = () => {
+        setEditSIL1Open(true);
+    }
+    
+    const setEditingStrategicIntent1 = (strategic_intent1) => {
+        console.log("strategic_intent1 here", strategic_intent1)
+        console.log("strategic_intent1 here here", strategic_intent1[0])
+        if(strategic_intent1.length < 1 ||strategic_intent1 === undefined || strategic_intent1 === null ) {
+          setStrategicIntent1('');
+          setStrategicIntent2('');
+          setStrategicIntent0('');
+          setStrategicIntent1Id(null);
+        } else {
+          setStrategicIntent1(strategic_intent1[0].level_up_one)
+          setStrategicIntent2(strategic_intent1[0].level_up_two)
+          setStrategicIntent0(strategic_intent1[0].strategic_intent)
+          setStrategicIntent1Id(strategic_intent1[0].id)
+        }
+      }
+
+    const editStrategicIntent1 = async (e) => {
+        e.preventDefault();
+        setshowloader(true);
+    
+        const config = { headers: { 'Content-Type': 'application/json', 'Accept' : '*/*' } }
+    
+        if(strategic_intent1_id === null) {
+    
+          const body = JSON.stringify({
+            levelUpTwo : userstrategicintent2,
+            levelUpOne : userstrategicintent1,
+            userId : user_id,
+            createdBy : user_id,
+            strategicIntent : userstrategicintent0
+          });
+    
+          try {
+    
+            let response = await axios.post('/strategicintent/create', body, config)
+            if (response.status == 201) {
+    
+              let res = response.data.message;
+              setshowloader(false);
+              setEditSIL1Open(false);
+    
+              swal.fire({
+                title: "Success",
+                text: res,
+                icon: "success",
+              }).then(() => {
+                setStrategicIntent1("")
+                setStrategicIntent2("")
+                setStrategicIntent0("")
+                setCreatedBy(currentUser.id)
+                dispatch(getStrategicIntent1(currentUser.id))
+
+            })
+              
+    
+          } else {
+            setshowloader(false);
+            setEditSIL1Open(false);
+            let err = response.data.message;
+    
+            swal.fire({
+              title: "Error",
+              text: err,
+              icon: "error",
+              dangerMode: true
+            });
+          }
+    
+          } catch (error) {
+              setshowloader(false);
+              setEditSIL1Open(false);
+    
+              let err = error.response.data.message;
+              swal.fire({
+                title: "Error",
+                text: err,
+                icon: "error",
+                dangerMode: true
+              });
+          }
+    
+        } else {  
+          try {
+    
+              const body = JSON.stringify({
+                userId : user_id,
+                updatedBy : user_id,
+                id : strategic_intent1_id,
+                level_up_one : userstrategicintent1,
+                level_up_two : userstrategicintent2,
+                strategic_intent : userstrategicintent0
+              });
+    
+              let response = await axios.post('/strategicintent/update', body, config)
+              console.log("level 1 resp", response.data)
+              if (response.status == 201) {
+                setshowloader(false);
+                setEditSIL1Open(false);
+    
+                let resp = response.data.message;
+                  swal.fire({
+                    title: "Success",
+                    text: resp,
+                    icon: "success",
+                  }).then(() =>  {
+                    setStrategicIntent1("")
+                    setStrategicIntent2("")
+                    setStrategicIntent0("")
+                    dispatch(getStrategicIntent1(currentUser.id))
+                  })
+    
+              } else {
+                setshowloader(false);
+                setEditSIL1Open(false);
+    
+                let err = response.data.message;
+    
+                swal.fire({
+                  title: "Error",
+                  text: err,
+                  icon: "error",
+                  dangerMode: true
+                });
+              }
+    
+          } catch (error) {
+              setshowloader(false);
+              setEditSIL1Open(false);
+    
+              let err = error.response.data.message;
+              swal.fire({
+                title: "Error",
+                text: err,
+                icon: "error",
+                dangerMode: true
+              });
+          }
+    
+        }
+    } 
+    
+    const handleDeleteBehaviourClickOpen = () => {
+        setDeleteBehaviourOpen(true);
+    };
+
+    const handleDeleteBehaviourClose = () => {
+        setDeleteBehaviourOpen(false);
+    };
+
+    const handleDeleteConstraintsClickOpen = () => {
+        setDeleteConstraintsOpen(true);
+    };
+
+    const handleDeleteConstraintsClose = () => {
+        setDeleteConstraintsOpen(false);
+    };
+
+    const handleDeleteFreedomsClickOpen = () => {
+        setDeleteFreedomsOpen(true);
+    };
+
+    const handleDeleteFreedomsClose = () => {
+        setDeleteFreedomsOpen(false);
+    };
+
+    const setDeletingBehaviour =(list) => {
+        setBehaviourDeleteId(list.id)
+    }
+
+    const deleteBehaviour = async(e) => {
+        e.preventDefault();
+        setshowloader(true);
+
+        try {
+
+            let response = await axios.delete(`/behaviours/deleteBehaviourById?behaviour_id=${behaviourDeleteId}`)
+            if (response.status == 200) {
+                setshowloader(false);
+                setDeleteBehaviourOpen(false);
+                console.log("here", response.data)
+                let item = response.data.message
+
+                swal.fire({
+                    title: "Success",
+                    text: item,
+                    icon: "success",
+                }).then(() => dispatch(getBehaviours(currentUser.id)));
+            } else {
+                setshowloader(false);
+                setDeleteBehaviourOpen(false);
+                let error = response.data.message
+                    setshowloader(false);
+                    swal.fire({
+                        title: "Error",
+                        text: error,
+                        icon: "error",
+                        dangerMode: true
+                    }).then(() => dispatch(getBehaviours(currentUser.id)));
+            } 
+        } catch(error) {
+            setshowloader(false);
+            setDeleteBehaviourOpen(false);
+            let err = error.response.data.message
+            setshowloader(false);
+            swal.fire({
+                title: "Error",
+                text: err,
+                icon: "error",
+                dangerMode: true
+            }).then(() => dispatch(getBehaviours(currentUser.id)));
+        } 
+
+    }
+
+    const setDeletingFreedoms =(list) => {
+        setFreedomDeleteId(list.id)
+    }
+
+    const deleteFreedoms = async(e) => {
+        e.preventDefault();
+        setshowloader(true);
+
+        try {
+
+            let response = await axios.delete(`/freedoms/deleteFreedomById?freedom_id=${freedomDeleteId}`)
+            if (response.status == 200) {
+                setshowloader(false);
+                setDeleteFreedomsOpen(false);
+                console.log("here", response.data)
+                let item = response.data.message
+
+                swal.fire({
+                    title: "Success",
+                    text: item,
+                    icon: "success",
+                }).then(() => dispatch(getFreedoms(currentUser.id)));
+            } else {
+                setshowloader(false);
+                setDeleteFreedomsOpen(false);
+                let error = response.data.message
+                    setshowloader(false);
+                    swal.fire({
+                        title: "Error",
+                        text: error,
+                        icon: "error",
+                        dangerMode: true
+                    }).then(() => dispatch(getFreedoms(currentUser.id)));
+            } 
+        } catch(error) {
+            setshowloader(false);
+            setDeleteFreedomsOpen(false);
+            let err = error.response.data.message
+            setshowloader(false);
+            swal.fire({
+                title: "Error",
+                text: err,
+                icon: "error",
+                dangerMode: true
+            }).then(() => dispatch(getFreedoms(currentUser.id)));
+        } 
+
+    }
+
+    const setDeletingConstraints =(list) => {
+        setConstraintDeleteId(list.id)
+    }
+
+    const deleteConstraints = async(e) => {
+        e.preventDefault();
+        setshowloader(true);
+
+        try {
+
+            let response = await axios.delete(`/constraints/deleteConstraintsById?constraints_id=${constaraintDeleteId}`)
+            if (response.status == 200) {
+                setshowloader(false);
+                setDeleteConstraintsOpen(false);
+                console.log("here", response.data)
+                let item = response.data.message
+
+                swal.fire({
+                    title: "Success",
+                    text: item,
+                    icon: "success",
+                }).then(() => dispatch(getConstraints(currentUser.id)));
+            } else {
+                setshowloader(false);
+                setDeleteConstraintsOpen(false);
+                let error = response.data.message
+                    setshowloader(false);
+                    swal.fire({
+                        title: "Error",
+                        text: error,
+                        icon: "error",
+                        dangerMode: true
+                    }).then(() => dispatch(getConstraints(currentUser.id)));
+            } 
+        } catch(error) {
+            setshowloader(false);
+            setDeleteConstraintsOpen(false);
+            let err = error.response.data.message
+            setshowloader(false);
+            swal.fire({
+                title: "Error",
+                text: err,
+                icon: "error",
+                dangerMode: true
+            }).then(() => dispatch(getConstraints(currentUser.id)));
+        } 
+
+    }
+   
     return (
         <div>
+
+            <Grid
+            container
+            spacing={2}
+            direction="row"
+            >
+                <Grid item xs={12} md={12} sm={12} key="2" style={{margin: '0', padding: '0px'}}>     
+                <IconButton  style={{float: 'right'}} aria-label="edit" color="primary" onClick={() => { handleEditSIL1Open(); setEditingStrategicIntent1(strategic_intent1) }} ><EditIcon style={{ color : '#000000'}}/></IconButton>
+
+
+                <Card>
+                    <h4 style={{color: 'black', textAlign:'center'}}> Mission: Two Levels Up </h4>          
+                    <CardBody >
+                        {strategic_intent1 === undefined || strategic_intent1 === null || strategic_intent1.length === 0 ? (
+                        <h4> Not available.</h4>
+                        ) : strategic_intent1 ? (
+                        <h4 > {strategic_intent1[0].level_up_two}</h4>
+                        ) : null}
+                    </CardBody>
+                </Card>
+                </Grid>
+
+                <Grid item xs={12} md={12} sm={12} key="1" style={{margin: '0', padding: '0px'}}>
+                <Card>
+                    <h4 style={{color: 'black', textAlign:'center'}}> Mission: One Level Up </h4>
+
+                    <CardBody >
+                        {strategic_intent1 === undefined || strategic_intent1 === null || strategic_intent1.length === 0 ? (
+                        <h4>Not available.</h4>
+                        ) : strategic_intent1 ? (
+                        <h4 > {strategic_intent1[0].level_up_one}</h4>
+                        ) : null}
+                    </CardBody>
+
+                    </Card>
+                </Grid>
+
+                <Grid item xs={12} md={12} sm={12} key="0" style={{margin: '0px', padding: '0px'}}>
+                    <Card>
+                    <h4 style={{color: 'black', textAlign:'center'}}> MY MISSION </h4>
+
+                    <CardBody >
+                        {strategic_intent1 === undefined || strategic_intent1 === null || strategic_intent1.length === 0 ? (
+                        <h4>Not available.</h4>
+                        ) : strategic_intent1 ? (
+                        <h4 > {strategic_intent1[0].strategic_intent}</h4>
+                        ) : null}
+                    </CardBody>
+
+                    </Card>
+                </Grid>
+
+            </Grid>
+
             <Grid
             container
             spacing={2}
@@ -463,7 +878,10 @@ export default function BFC() {
                             ) : behaviours ? ( behaviours.map((list, index) => (
                                 <TableRow key={index}>
                                     <TableCell>{list.currentDescription}</TableCell>
-                                    <TableCell> <IconButton aria-label="edit" className={classes.textGreen} onClick={() => {handleEditBehaviourOpen(); setEditingBehaviour(list) }} ><EditIcon /></IconButton></TableCell>
+                                    <TableCell>
+                                        <IconButton aria-label="edit" className={classes.textGreen} onClick={() => {handleEditBehaviourOpen(); setEditingBehaviour(list) }} ><EditIcon /></IconButton>
+                                        <IconButton aria-label="delete" style={{color: 'black'}} onClick={() => { handleDeleteBehaviourClickOpen(); setDeletingBehaviour(list)  }} ><DeleteForever /></IconButton>
+                                    </TableCell>
                                 </TableRow>
                             ))) : behaviours_error ? (<TableRow> <TableCell> {behaviours_error} </TableCell></TableRow> ) : null }
                         </TableBody>
@@ -495,7 +913,10 @@ export default function BFC() {
                             ) :freedoms ? ( freedoms.map((list, index) => (
                                 <TableRow key={index}>
                                     <TableCell>{list.currentDescription}</TableCell>
-                                    <TableCell> <IconButton aria-label="edit" className={classes.textGreen} onClick={() => {handleEditFreedomOpen(); setEditingFreedom(list) }} ><EditIcon /></IconButton></TableCell>
+                                    <TableCell>
+                                        <IconButton aria-label="edit" className={classes.textGreen} onClick={() => {handleEditFreedomOpen(); setEditingFreedom(list) }} ><EditIcon /></IconButton>
+                                        <IconButton aria-label="delete" style={{color: 'black'}} onClick={() => { handleDeleteFreedomsClickOpen(); setDeletingFreedoms(list)  }} ><DeleteForever /></IconButton>
+                                    </TableCell>
                                 </TableRow>
                             ))) : freedoms_error ? (<TableRow> <TableCell> {freedoms_error} </TableCell></TableRow>) : null }
                         </TableBody>
@@ -527,7 +948,10 @@ export default function BFC() {
                             ) : constraints ? ( constraints.map((list, index) => (
                                 <TableRow key={index}>
                                     <TableCell>{list.currentDescription}</TableCell>
-                                    <TableCell> <IconButton aria-label="edit" className={classes.textGreen} onClick={() => {handleEditConstraintOpen(); setEditingConstraint(list) }} ><EditIcon /></IconButton></TableCell>
+                                    <TableCell>
+                                        <IconButton aria-label="edit" className={classes.textGreen} onClick={() => {handleEditConstraintOpen(); setEditingConstraint(list) }} ><EditIcon /></IconButton>
+                                        <IconButton aria-label="delete" style={{color: 'black'}} onClick={() => { handleDeleteConstraintsClickOpen(); setDeletingConstraints(list)  }} ><DeleteForever /></IconButton>
+                                    </TableCell>
                                 </TableRow>
                             ))) : constrains_error ? (<TableRow> <TableCell> {constrains_error} </TableCell></TableRow>) : null }
                         </TableBody>
@@ -782,6 +1206,165 @@ export default function BFC() {
                         (
                             <Button color="primary" onClick={editConstraint}>Save</Button>
                         )}
+                </DialogActions>
+            </Dialog>
+
+            {/* edit Strategic Level 1 */}
+            <Dialog open={editopensil1} onClose={handleEditSIL1Close} >
+            <DialogTitle>Leadership Traits</DialogTitle>
+            <DialogContent>
+                <DialogContentText>
+                Edit Leadership Traits
+                </DialogContentText>
+
+                <TextField
+                id="outlined-multiline-static"
+                fullWidth
+                autoFocus
+                label="Your Mission"
+                type="text"
+                margin="dense"
+                multiline
+                variant="outlined"
+                rows={4}
+                value={userstrategicintent0}
+                className={classes.textInput}
+                onChange={(event) => {
+                    setStrategicIntent0(event.target.value);
+                }}
+                />
+                <TextField
+                id="outlined-multiline-static"
+                fullWidth
+                autoFocus
+                label="Mission One Level Up"
+                type="text"
+                margin="dense"
+                multiline
+                variant="outlined"
+                rows={4}
+                value={userstrategicintent1}
+                className={classes.textInput}
+                onChange={(event) => {
+                    setStrategicIntent1(event.target.value);
+                }}
+                />
+
+                <TextField
+                id="outlined-multiline-static"
+                fullWidth
+                autoFocus
+                label="Mission Two Levels Up"
+                type="text"
+                margin="dense"
+                multiline
+                variant="outlined"
+                rows={4}
+                value={userstrategicintent2}
+                className={classes.textInput}
+                onChange={(event) => {
+                    setStrategicIntent2(event.target.value);
+                }}
+                />
+
+            </DialogContent>
+            <DialogActions>
+                <Button color="danger" onClick={handleEditSIL1Close}>Cancel</Button>
+                { showloader === true  ? (
+                <div style={{ textAlign: "center", marginTop: 10 }}>
+                    <Loader
+                        type="Puff"
+                        color="#29A15B"
+                        height={100}
+                        width={100}
+                    />
+                </div>
+                ) :
+                (
+                    <Button color="primary" onClick={(e) => { editStrategicIntent1(e); }}>Save</Button>
+                )}
+            </DialogActions>
+            </Dialog>
+
+            {/* Deleting Modals */}
+            <Dialog open={deletebehaviouropen} onClose={handleDeleteBehaviourClose}>
+                <DialogTitle id="alert-dialog-title">
+                {"Are you sure you want to delete this behaviour?"}
+                </DialogTitle>
+                <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                    Please confirm that you want to delete this behaviour.
+                </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                <Button color="danger" onClick={handleDeleteBehaviourClose}>Disagree</Button>
+                { showloader === true ? (
+                    <div style={{ textAlign: "center", marginTop: 10 }}>
+                    <Loader
+                        type="Puff"
+                        color="#29A15B"
+                        height={100}
+                        width={100}
+                    />
+                    </div>
+                    ) :
+                    (
+                        <Button color="primary" onClick={(e) => { deleteBehaviour(e)}} > Agree</Button>
+                    )}
+                </DialogActions>
+            </Dialog>
+
+            <Dialog open={deletefreedomsopen} onClose={handleDeleteFreedomsClose}>
+                <DialogTitle id="alert-dialog-title">
+                {"Are you sure you want to delete this freedom?"}
+                </DialogTitle>
+                <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                    Please confirm that you want to delete this freedom.
+                </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                <Button color="danger" onClick={handleDeleteFreedomsClose}>Disagree</Button>
+                { showloader === true ? (
+                    <div style={{ textAlign: "center", marginTop: 10 }}>
+                    <Loader
+                        type="Puff"
+                        color="#29A15B"
+                        height={100}
+                        width={100}
+                    />
+                    </div>
+                    ) :
+                    (
+                        <Button color="primary" onClick={(e) => { deleteFreedoms(e)}} > Agree</Button>
+                    )}
+                </DialogActions>
+            </Dialog>
+
+            <Dialog open={deleteconstraintsopen} onClose={handleDeleteConstraintsClose}>
+                <DialogTitle id="alert-dialog-title">
+                {"Are you sure you want to delete this constraint?"}
+                </DialogTitle>
+                <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                    Please confirm that you want to delete this constraint.
+                </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                <Button color="danger" onClick={handleDeleteConstraintsClose}>Disagree</Button>
+                { showloader === true ? (
+                    <div style={{ textAlign: "center", marginTop: 10 }}>
+                    <Loader
+                        type="Puff"
+                        color="#29A15B"
+                        height={100}
+                        width={100}
+                    />
+                    </div>
+                    ) :
+                    (
+                        <Button color="primary" onClick={(e) => { deleteConstraints(e)}} > Agree</Button>
+                    )}
                 </DialogActions>
             </Dialog>
 

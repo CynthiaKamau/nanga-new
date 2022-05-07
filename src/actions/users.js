@@ -6,6 +6,14 @@ import {
     ALL_USERS_FETCH_REQUEST,
     ALL_USERS_FAIL,
 
+    USER_TEAM_SUCCESS,
+    USER_TEAM_FETCH_REQUEST,
+    USER_TEAM_FAIL,
+
+    ALL_RESOURCE_USERS_SUCCESS,
+    ALL_RESOURCE_USERS_FETCH_REQUEST,
+    ALL_RESOURCE_USERS_FAIL,
+
     USER_SUCCESS,
     USER_FETCH_REQUEST,
     USER_FAIL,
@@ -44,6 +52,27 @@ export const getUsers = () => {
     }
 }
 
+//get exclusive user
+export const getResourceUsers = (id) => {
+    return async function (dispatch) {
+
+        dispatch({ type: ALL_RESOURCE_USERS_FETCH_REQUEST });
+
+        try {
+
+            let response = await axios.get(`/users/findAllExceptLoggedInUser?user_id=${id}`)
+            if (response.status == 200) {
+                dispatch({ type: ALL_RESOURCE_USERS_SUCCESS, payload: response.data.data })
+            } else {
+                dispatch({ type: ALL_RESOURCE_USERS_FAIL, payload: response.data })
+            }
+
+        } catch (error) {
+            dispatch({ type: ALL_RESOURCE_USERS_FAIL, payload: error.response.data })
+        }
+    }
+}
+
 //get specific user
 export const getUser = (id) => {
 
@@ -66,6 +95,8 @@ export const getUser = (id) => {
     }
 
 }
+
+//get exclusive user
 
 //add specific user
 export const addUser = (search_user, created_by, team, role, search_email ) => {
@@ -142,6 +173,29 @@ export const editUser = (user_id, name, status, team, role, updated_by, view, ex
             dispatch({ type: EDIT_USER_FAIL, payload: error.response.data })
         }
 
+    }
+
+}
+
+//get specific user team members
+export const getUserTeamates = (id) => {
+
+    return async function (dispatch) {
+
+        dispatch({ type: USER_TEAM_FETCH_REQUEST });
+
+        try {
+
+            let response = await axios.get(`users/all_per_team?user_id=${id}`)
+            if (response.status == 200) {
+                dispatch({ type: USER_TEAM_SUCCESS, payload: response.data })
+            } else {
+                dispatch({ type: USER_TEAM_FAIL, payload: response.data })
+            }
+
+        } catch (error) {
+            dispatch({ type: USER_TEAM_FAIL, payload: error.response })
+        }
     }
 
 }

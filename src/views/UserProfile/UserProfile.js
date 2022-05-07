@@ -53,6 +53,8 @@ export default function UserProfile() {
   const [image, _setImage] = useState(null);
   const [avatar, setAvatar] = useState("")
   const inputFileRef = createRef(null);
+  const [fileSizeLimit, setFileSizeLimit] = useState("");
+
 
   // var urlCreator = window.URL || window.webkitURL;
 
@@ -92,26 +94,20 @@ export default function UserProfile() {
 
   const handleOnChange = async (event) => {
     const newImage = event.target?.files?.[0];
+    const fileSize = event.target?.files?.[0].size;
+    
+    const file = Math.round((fileSize / 1024));
 
-    if (newImage) {
-      const base64 = await convertBase64(newImage)
-      console.log(base64)
-      setImage(base64)
+    if (file > 2048 ) {
+      setFileSizeLimit("File too big, please select a file less than 2mb");
+      setImage(null)
+    } else {
+      setFileSizeLimit("");
+      setImage(newImage)
     }
+
   };
 
-  const convertBase64 = (file) => {
-    return new Promise((resolve, reject) => {
-      const fileReader = new FileReader();
-      fileReader.readAsDataURL(file)
-      fileReader.onload = () => {
-        resolve(fileReader.result);
-      }
-      fileReader.onerror = (error) => {
-        reject(error);
-      }
-    })
-  }
 
   /**
    *
@@ -129,8 +125,6 @@ export default function UserProfile() {
     setshowloader(true);
 
     console.log("save values", id, name, email, department, team, role, updated_by, setUpdatedBy, setAvatar);
-
-    console.log("save image", image)
 
     const config = { headers: { 'Content-Type': 'application/json' } };
 
@@ -157,13 +151,48 @@ export default function UserProfile() {
         dangerMode: true
       });
     } else {
-      let msg = response.data.message;
-      setshowloader(false)
-      swal.fire({
-        title: "Success",
-        text: msg,
-        icon: "success",
-      }).then(() => dispatch(getUser(currentUser.id)));
+
+      let url = `/users/uploadToServerPath?user_id=${id}`
+      const formData = new FormData();
+      formData.append('file',image)
+      const config = {
+        headers: {'content-type': 'multipart/form-data'}
+      }
+
+      try {
+        let response1 = await axios.post(url, formData, config)
+
+        let msg = response1.data.message;
+
+        console.log("status code", response1.status);
+
+        if(response1.status != 200) {
+          setshowloader(false)
+          swal.fire({
+            title: "Error",
+            text: "An error occurred, please try again!",
+            icon: "error",
+            dangerMode: true
+          }).then(() => dispatch(getUser(currentUser.id)));
+          
+        } else {
+          setshowloader(false)
+          swal.fire({
+            title: "Success",
+            text: msg,
+            icon: "success",
+          }).then(() => dispatch(getUser(currentUser.id)));
+        }
+
+      } catch (error) {
+        setshowloader(false)
+        swal.fire({
+          title: "Error",
+          text: error,
+          icon: "error",
+          dangerMode: true
+        }).then(() => dispatch(getUser(currentUser.id)));
+      } 
     }  
   }
 
@@ -290,14 +319,17 @@ export default function UserProfile() {
                   </Button>
                 </label>
                 </GridItem>
+
+                <GridItem xs={12} sm={12} md={4}> <h5 style={{fontWeight : 'bold', color : 'red'}}> { fileSizeLimit }  </h5> </GridItem>
+                
                 <GridItem xs={12} sm={12} md={4}>
                 { showloader === true ? (
                   <div style={{ textAlign: "center", marginTop: 10 }}>
                       <Loader
                           type="Puff"
                           color="#29A15B"
-                          height={150}
-                          width={150}
+                          height={100}
+                          width={100}
                       />
                   </div>
                   ) :
@@ -323,9 +355,6 @@ export default function UserProfile() {
               <h6 className={classes.cardCategory}>{role}</h6>
               <h4 className={classes.cardTitle}>{name}</h4>
               <p className={classes.description}>
-                Don{"'"}t be scared of the truth because we need to restart the
-                human foundation in truth And I love you like Kanye loves Kanye
-                I love Rick Owens’ bed design but the back is...
               </p>
             </CardBody>
           </Card>

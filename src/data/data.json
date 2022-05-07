@@ -244,5 +244,152 @@
             "date_updated": "2021-10-13T07:44:56.000+0000"
         }
     ],
-    "Status": []
+    "Status": [],
+    "Months": [
+        {
+            "abbreviation": "JAN",
+            "name": "January"
+        }, {
+            "abbreviation": "FEB",
+            "name": "February"
+        }, {
+            "abbreviation": "MAR",
+            "name": "March"
+        },
+        {
+            "abbreviation": "APR",
+            "name": "April"
+        },
+        {
+            "abbreviation": "MAY",
+            "name": "May"
+        },
+        {
+            "abbreviation": "JUN",
+            "name": "June"
+        },
+        {
+            "abbreviation": "JUL",
+            "name": "July"
+        },
+        {
+            "abbreviation": "AUG",
+            "name": "August"
+        },
+        {
+            "abbreviation": "SEP",
+            "name": "September"
+        },
+        {
+            "abbreviation": "OCT",
+            "name": "October"
+        },
+        {
+            "abbreviation": "NOV",
+            "name": "November"
+        },
+        {
+            "abbreviation": "DEC",
+            "name": "December"
+        }
+    ],
+    "Years": [
+        {
+            "value": "2022",
+            "name": "2022"
+        }, {
+            "value": "2023",
+            "name": "2023"
+        }, {
+            "value": "2024",
+            "name": "2024"
+        }, {
+            "value": "2025",
+            "name": "2025"
+        }, {
+            "value": "2026",
+            "name": "2026"
+        }, {
+            "value": "2027",
+            "name": "2027"
+        }, {
+            "value": "2028",
+            "name": "2028"
+        }, {
+            "value": "2029",
+            "name": "2029"
+        }, {
+            "value": "2030",
+            "name": "2030"
+        }, {
+            "value": "2031",
+            "name": "2031"
+        }, {
+            "value": "2032",
+            "name": "2032"
+        }, {
+            "value": "2033",
+            "name": "2033"
+        }, {
+            "value": "2034",
+            "name": "2034"
+        }, {
+            "value": "2035",
+            "name": "2035"
+        }, {
+            "value": "2036",
+            "name": "2036"
+        }, {
+            "value": "2037",
+            "name": "2037"
+        }, {
+            "value": "2038",
+            "name": "2038"
+        }, {
+            "value": "2039",
+            "name": "2039"
+        }, {
+            "value": "2040",
+            "name": "2040"
+        }
+    ],
+    "ReportNames": [
+        {
+            "value": "JAN2022Report",
+            "name": "JANUARY 2022 Report"
+        }, {
+            "value": "FEB2022Report",
+            "name": "FEBRUARY 2022 Report"
+        }, {
+            "value": "MARCH2022Report",
+            "name": "MARCH 2022 Report"
+        }, {
+            "value": "APRIL2022Report",
+            "name": "APRIL 2022 Report"
+        }, {
+            "value": "MAY2022Report",
+            "name": "MAY 2022 Report"
+        }, {
+            "value": "JUNE2022Report",
+            "name": "JUNE 2022 Report"
+        }, {
+            "value": "JULY2022Report",
+            "name": "JULY 2022 Report"
+        }, {
+            "value": "AUGUST2022Report",
+            "name": "AUGUST 2022 Report"
+        }, {
+            "value": "SEPTEMBER2022Report",
+            "name": "SEPTEMBER 2022 Report"
+        }, {
+            "value": "OCTOBER2022Report",
+            "name": "OCTOBER 2022 Report"
+        }, {
+            "value": "NOVEMBER2022Report",
+            "name": "NOVEMBER 2022 Report"
+        }, {
+            "value": "DECEMBER2022Report",
+            "name": "DECEMBER 2022 Report"
+        }
+    ]
 }

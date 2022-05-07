@@ -7,7 +7,7 @@ import { LOGIN_SUCCESS,
     LOGOUT } from '../actions/types';
 
 const initialState = {
-token : localStorage.getItem('token'),
+token : null,
 isAuthenticated : null,
 isLoading : false,
 user : null,
@@ -23,13 +23,12 @@ switch(action.type) {
             isLoading : true,
         }
     case LOGIN_SUCCESS :
-        localStorage.setItem('token', action.payload.token)
         return {
             ...state, 
             isAuthenticated : true,
             isLoading : false,
             user : action.payload.user,
-            token : action.payload.token,
+            token : action.payload.accessToken,
             error : null
         }
     case USER_FETCHED :
@@ -41,7 +40,6 @@ switch(action.type) {
         }
     case LOGIN_FAIL :
     case AUTH_ERROR :
-        localStorage.removeItem('token');
         return  {
             ...state,
             isAuthenticated: false,
@@ -52,7 +50,6 @@ switch(action.type) {
         }
 
     case LOGOUT :
-        localStorage.removeItem('token');
         return  {
             ...state,
             isAuthenticated: null,

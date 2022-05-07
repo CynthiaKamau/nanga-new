@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useSelector,useDispatch } from "react-redux";
+
+import { useForm, Controller } from 'react-hook-form';
+import Select from "react-select";
+
 // @material-ui/core
 import { makeStyles } from "@material-ui/core/styles";
 // core components
@@ -35,9 +39,13 @@ export default function TeamsPage() {
     const classes = useStyles();
     const dispatch = useDispatch();
 
+    const methods = useForm();
+
     const { items } = useSelector(state => state.team);
     const { user : currentUser } = useSelector(state => state.auth);
     const { items : teamleads} = useSelector(state => state.user)
+
+    console.log("here", teamleads)
 
     useEffect(() => {
         dispatch(getTeams());
@@ -55,7 +63,7 @@ export default function TeamsPage() {
     const [showloader, setshowloader] = useState(false);
     const [updated_by, setUpdated_by] = useState(currentUser.id);
     const [created_by, setCreatedBy] = useState(currentUser.id);
-
+    const [myteamlead, setMyTeamLead] = useState("");
 
     const handleAddClickOpen = () => {
         setAddOpen(true);
@@ -87,7 +95,14 @@ export default function TeamsPage() {
                     title: "Success",
                     text: item,
                     icon: "success",
-                }).then(() => dispatch(getTeams()));
+                }).then(() => {
+                    setName("");
+                    setTeamLead("");
+                    setIsParent(true)
+                    setCreatedBy(currentUser.id)
+                    dispatch(getTeams())
+
+                });
 
             } else {
                 let error = response.data.message
@@ -119,6 +134,7 @@ export default function TeamsPage() {
     const setEditing = (list) => {
         console.log("here", list)
         setName(list.team_name);
+        setMyTeamLead(list.team_lead)
         setTeamLead(list.team_lead_id)
         setIsParent(list.is_parent)
         setParentId(list.parent_team_id)
@@ -153,7 +169,12 @@ export default function TeamsPage() {
                     title: "Success",
                     text: item,
                     icon: "success",
-                }).then(() => dispatch(getTeams()));
+                }).then(() => {
+                    setName("");
+                    setTeamLead("");
+                    setIsParent(true);
+                    dispatch(getTeams());
+                })
                 
             } else {
                 let error = response.data.message;
@@ -214,7 +235,7 @@ export default function TeamsPage() {
           title: 'Name'
         }, 
         {
-          field: 'team_lead',
+          field: 'team_lead.fullnames',
           title: 'Team Lead'
         }, 
         {
@@ -234,13 +255,19 @@ export default function TeamsPage() {
         <div>
             <GridContainer>
                 <GridItem xs={12} sm={12} md={12}>
+                { currentUser.role_id === 0 ? (
+                    <div style={{ paddingBottom : '60px'}}>
+                        <div className={classes.btnRight}><Button color="primary" size="lg" onClick={handleAddClickOpen}> Add Team </Button> </div>
+                    </div>
+                ) : null}
+
                     <Card>
                         <CardHeader color="primary">
                             <h4>Teams</h4>
                         </CardHeader>
                         <CardBody>
-                        { currentUser.role_id === 0 ? (<div className={classes.btnRight}><Button color="primary" size="lg" onClick={handleAddClickOpen}> Add Team </Button> </div> ) : null}
 
+                        {items !== null ? (
                             <MaterialTable
                                 title="Team details."
                                 data={items}
@@ -252,6 +279,21 @@ export default function TeamsPage() {
                                     pageSizeOptions: [10,50,100 ],
                                 }}
                             />
+                        ) : 
+
+                            <MaterialTable
+                                title="Team details."
+                                data={[]}
+                                columns={columns}
+                                options={{
+                                    search: true,
+                                    sorting: true,
+                                    pageSize: 10,
+                                    pageSizeOptions: [10,50,100 ],
+                                }}
+                            />
+                        }
+
 
                             <Dialog open={addopen} onClose={handleAddClose} >
                                 <DialogTitle>Team</DialogTitle>
@@ -276,24 +318,26 @@ export default function TeamsPage() {
                                     />
 
                                     <label style={{ fontWeight: 'bold', color: 'black' }}> Team Lead : </label>
-                                    <TextField
-                                        id="outlined-select-teamlead"
-                                        select
-                                        fullWidth
-                                        variant="outlined"
-                                        label="Select"
-                                        value={teamlead}
-                                        onChange={(event) => {
-                                            setTeamLead(event.target.value);
-                                        }}
-                                        helperText="Please select your team lead"
-                                    >
-                                        {teamleads.map((option) => (
-                                            <MenuItem key={option.id} value={option.id}>
-                                                {option.fullnames}
-                                            </MenuItem>
-                                        ))}
-                                    </TextField>
+                                    <Controller
+                                        control={methods.control}
+                                        className="basic-single"
+                                        classNamePrefix="select"
+                                        styles={{ marginTop : '10px', marginBottom : '10px'}}
+                                        name="team_lead"
+                                        render={({ value, ref }) => (
+                                        <Select
+                                            inputRef={ref}
+                                            options={teamleads}
+                                            className="basic-multi-select"
+                                            menuPortalTarget={document.body} 
+                                            styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
+                                            value={teamleads.find(c => c.id === value)}
+                                            onChange={val => setTeamLead(val.id)}
+                                            getOptionLabel={teamleads => teamleads.fullnames}
+                                            getOptionValue={teamleads => teamleads.id}
+                                        />
+                                        )}
+                                    />
 
                                     <label style={{ fontWeight: 'bold', color: 'black' }}> Team Level : </label>
                                     <TextField
@@ -381,24 +425,27 @@ export default function TeamsPage() {
                                     />
 
                                     <label style={{ fontWeight: 'bold', color: 'black' }}> Team Lead : </label>
-                                    <TextField
-                                        id="outlined-select-teamlead"
-                                        select
-                                        fullWidth
-                                        variant="outlined"
-                                        label="Select"
-                                        value={teamlead}
-                                        onChange={(event) => {
-                                            setTeamLead(event.target.value);
-                                        }}
-                                        helperText="Please select your team lead"
-                                    >
-                                        {teamleads.map((option) => (
-                                            <MenuItem key={option.id} value={option.id}>
-                                                {option.fullnames}
-                                            </MenuItem>
-                                        ))}
-                                    </TextField>
+                                    <Controller
+                                        control={methods.control}
+                                        className="basic-single"
+                                        classNamePrefix="select"
+                                        styles={{ marginTop : '10px', marginBottom : '10px'}}
+                                        name="team_lead"
+                                        render={({ value, ref }) => (
+                                        <Select
+                                            inputRef={ref}
+                                            options={teamleads}
+                                            className="basic-multi-select"
+                                            menuPortalTarget={document.body} 
+                                            styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
+                                            defaultValue={myteamlead}
+                                            value={teamleads.find(c => c.id === value)}
+                                            onChange={val => setTeamLead(val.id)}
+                                            getOptionLabel={teamleads => teamleads.fullnames}
+                                            getOptionValue={teamleads => teamleads.id}
+                                        />
+                                        )}
+                                    />
 
                                     <label style={{ fontWeight: 'bold', color: 'black' }}> Team Level : </label>
                                     <TextField

@@ -17,13 +17,27 @@ import {
 
     DELETE_KPI_SUCCESS,
     DELETE_KPI_FETCH_REQUEST,
-    DELETE_KPI_FAIL
+    DELETE_KPI_FAIL,
+
+    KPI_MONTH_ACTION_SUCCESS,
+    KPI_MONTH_ACTION_FETCH_REQUEST,
+    KPI_MONTH_ACTION_FAIL,
+
+    KPI_MONTH_REPORT_SUCCESS,
+    KPI_MONTH_REPORT_FETCH_REQUEST,
+    KPI_MONTH_REPORT_FAIL
+
 } from '../actions/types';
 
 const initialState = {
     items : [],
     item: [],
     error : [],
+    monthly_data : [],
+    monthly_data_error : [],
+    monthly_report : [],
+    monthly_report_error : [],
+    monthly_report_name : [],
     isLoading : false
 }
 
@@ -34,6 +48,8 @@ export default function(state = initialState, action) {
         case ADD_KPI_FETCH_REQUEST :
         case EDIT_KPI_FETCH_REQUEST :
         case DELETE_KPI_FETCH_REQUEST :
+        case KPI_MONTH_ACTION_FETCH_REQUEST :
+        case KPI_MONTH_REPORT_FETCH_REQUEST :
             return {
                 ...state,
                 isLoading: true
@@ -46,6 +62,24 @@ export default function(state = initialState, action) {
                 isLoading : false,
                 error : null
             }
+
+        case KPI_MONTH_ACTION_SUCCESS :
+            return {
+                ...state,
+                monthly_data : action.payload.data,
+                isLoading : false,
+                monthly_data_error : null
+            }
+
+        case KPI_MONTH_REPORT_SUCCESS :
+            return {
+                ...state,
+                monthly_report : action.payload.kpiReports,
+                isLoading : false,
+                monthly_report_error : null,
+                monthly_report_name : action.payload.reportName
+            }
+
         case KPI_SUCCESS :
         case ADD_KPI_SUCCESS :
         case EDIT_KPI_SUCCESS :
@@ -55,6 +89,23 @@ export default function(state = initialState, action) {
                 item : action.payload.message,
                 isLoading : false,
                 error : null
+            }
+
+        case KPI_MONTH_ACTION_FAIL :
+            return {
+                ...state,
+                isLoading: false,
+                monthly_data : null,
+                monthly_data_error: action.payload.message
+            }
+
+        case KPI_MONTH_REPORT_FAIL :
+            return {
+                ...state,
+                isLoading: false,
+                monthly_report : null,
+                monthly_report_error: action.payload.message,
+                monthly_report_name : null
             }
 
         case ALL_KPIS_FAIL :

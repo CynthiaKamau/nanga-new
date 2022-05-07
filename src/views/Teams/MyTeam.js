@@ -12,7 +12,7 @@ import CardBody from "components/Card/CardBody.js";
 import { ArrowForward } from "@material-ui/icons";
 import IconButton from '@material-ui/core/Button';
 import { useHistory } from "react-router";
-import { getUsers } from "actions/users";
+import { getUserTeamates } from "actions/users";
 import MaterialTable from 'material-table';
 
 import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle.js";
@@ -24,18 +24,22 @@ export default function MyTeamPage() {
     const history = useHistory();
     const dispatch = useDispatch();
 
-    const { items } = useSelector(state => state.user)
-
+    const { user_teamates : items } = useSelector(state => state.user)
+    const { user : currentUser } = useSelector(state => state.auth);
+    
     useEffect(() => {
-        dispatch(getUsers())
+        dispatch(getUserTeamates(currentUser.id))
     }, []);
 
     console.log("team members", items)
     // const { error } = useSelector(state => state.team);
 
     const handleClickOpen = (user) => {
-
-        history.push(`/admin/user-dashboard/id=${user}`);
+        if(currentUser.role_id === 0) {
+            history.push(`/admin/user-dashboard/id=${user}`);
+        } else {
+            history.push(`/user/user-dashboard/id=${user}`);
+        }
     }
 
     const columns = [
@@ -53,7 +57,7 @@ export default function MyTeamPage() {
         },
         {
             field: 'actions',
-            title: 'Action',
+            title: 'View Dashboard',
             render: (list) => {
                 console.log("editing table", list)
                 return ( <div><IconButton aria-label="redirect" className={classes.textGreen} onClick={() => { handleClickOpen(list.id)}}><ArrowForward /></IconButton>
@@ -71,18 +75,32 @@ export default function MyTeamPage() {
                             <h4>Teams</h4>
                         </CardHeader>
                         <CardBody>
+                            {items !== null ? (
 
-                        <MaterialTable
-                            title="Team details."
-                            data={items}
-                            columns={columns}
-                            options={{
-                            search: true,
-                            sorting: true,
-                            pageSize: 10,
-                            pageSizeOptions: [10,50,100 ],
-                            }}
-                        />
+                                <MaterialTable
+                                    title="Team details."
+                                    data={items}
+                                    columns={columns}
+                                    options={{
+                                    search: true,
+                                    sorting: true,
+                                    pageSize: 10,
+                                    pageSizeOptions: [10,50,100 ],
+                                    }}
+                                />
+                            ) : 
+                                <MaterialTable
+                                    title="Team details."
+                                    data={[]}
+                                    columns={columns}
+                                    options={{
+                                    search: true,
+                                    sorting: true,
+                                    pageSize: 10,
+                                    pageSizeOptions: [10,50,100 ],
+                                    }}
+                                />
+                            }
 
                         </CardBody>
                     </Card>
